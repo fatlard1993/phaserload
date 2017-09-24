@@ -19,6 +19,7 @@ gulp.task('watch', ['compile'], function(){
   gulp.watch('gulpfile.js', ['gulp-reload']);
   
   gulp.watch('src/js/*.js', ['compile-js']);
+  gulp.watch('src/js/**/*.js', ['compile-js']);
   
   gulp.watch('src/scss/*.scss', ['compile-css']);
 });
