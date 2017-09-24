@@ -30,10 +30,6 @@ Game.entities.ground.create = function(game, x, y){
 };
 
 Game.entities.ground.crush = function(pos){
-  // var position = {};//Game.normalizePosition(x, y);
-  // x = position.x;
-  // y = position.y;
-
   var groundType = Game.groundAt(pos.x, pos.y);
   console.log('crush: ', groundType, pos);
 
@@ -46,21 +42,19 @@ Game.entities.ground.crush = function(pos){
     }
   }
   
-  // Game.groundMap[x] = Game.groundMap[x] || [];
   Game.groundMap[pos.x][pos.y] = 0;
 };
 
 Game.entities.ground.dig = function(pos){
-  // var position = {};//Game.normalizePosition(x, y);
-  // x = position.x;
-  // y = position.y;
-  
   var groundType = Game.groundAt(pos.x, pos.y);
   console.log('dig: ', groundType, pos);
 
   Game.entities.ground.crush(pos);
 
-  if(groundType === 'ground_blue'){
+  if(groundType === 'ground'){
+    Game.whiteScore++;
+  }
+  else if(groundType === 'ground_blue'){
     // ARMOUR
 
     Game.blueScore++;
@@ -68,7 +62,13 @@ Game.entities.ground.dig = function(pos){
   else if(groundType === 'ground_red'){
     // LAVA SPAWN
 
-    if(Game.chance()) Game.entities.lava.create(Game.game, pos.x, pos.y);
+    Game.redScore++;
+
+    if(Game.config.blockBehavior[Game.config.mode] && Game.config.blockBehavior[Game.config.mode][groundType] && Game.entities.ground.behaviors[Game.config.blockBehavior[Game.config.mode][groundType].split(':~:')[0]]){
+      Game.entities.ground.applyBehavior(Game.config.blockBehavior[Game.config.mode][groundType].split(':~:')[0], Game.config.blockBehavior[Game.config.mode][groundType].split(':~:')[1], pos);
+    }
+
+    // if(Game.chance()) Game.entities.lava.create(Game.game, pos.x, pos.y);    
   }
   else if(groundType === 'ground_green'){
     // FUEL
@@ -78,6 +78,8 @@ Game.entities.ground.dig = function(pos){
   else if(groundType === 'ground_purple'){ //these should have the chance to be opposite effect
     // SUPER SAVE
 
+    Game.purpleScore++;
+    
     var good = Game.chance(80);
 
     Game.lava.forEachAlive(function(lava){
@@ -101,6 +103,8 @@ Game.entities.ground.dig = function(pos){
   }
   else if(groundType === 'ground_teal'){
     // SAVE
+    
+    Game.tealScore++;
 
     Game.lava.forEachAlive(function(lava){
       if(Game.chance(85)) lava.kill();
@@ -110,4 +114,19 @@ Game.entities.ground.dig = function(pos){
       if(Game.chance(85)) monster.kill();
     }, this);
   }
+};
+
+
+Game.entities.ground.behaviors = {
+  lava: function(chance, pos){
+    if(Game.chance(chance)) Game.entities.lava.create(Game.game, pos.x, pos.y);
+  }
+};
+
+Game.entities.ground.applyBehavior = function(name, options, pos){
+  options = options.split(',');
+
+  if(name === 'lava') options.push(pos);
+
+  if(Game.entities.ground.behaviors[name]) Game.entities.ground.behaviors[name].apply(null, options);
 };

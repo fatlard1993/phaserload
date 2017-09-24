@@ -20,7 +20,8 @@ var Game = {
 
     groundDistribution: {
       safe: { ground: 0.7, ground_blue: 0.1, ground_green: 0.2 },
-      normal: { ground: 0.7, ground_blue: 0.01, ground_green: 0.12, ground_purple: 0.01, ground_teal: 0.01, ground_red: 0.15 }
+      normal: { ground: 0.7, ground_blue: 0.01, ground_green: 0.12, ground_purple: 0.01, ground_teal: 0.01, ground_red: 0.15 },
+      chaos: { ground: 0.16, ground_blue: 0.16, ground_green: 0.16, ground_purple: 0.16, ground_teal: 0.16, ground_red: 0.16 }
     },
 
     digTime: {
@@ -36,6 +37,42 @@ var Game = {
         ground_blue: 700,
         ground_teal: 820,
         ground_purple: 960
+      },
+      chaos: {
+        ground_red: 300,
+        ground: 300,
+        ground_green: 300,
+        ground_blue: 300,
+        ground_teal: 300,
+        ground_purple: 300
+      }
+    },
+
+    blockBehavior: {
+      normal: {
+        ground_red: 'lava:~:40',
+        ground_teal: 'save:~:90',
+        ground_purple: 'save:~:90,lavaRelease'
+      }
+    },
+
+    hudContents: {
+      safe: {
+        depth: 'depth',
+        blue: 'score:~:blue',
+        green: 'score:~:green'
+      },
+      normal: {
+        depth: 'depth',
+        fuel: 'score:~:green',
+        armor: 'score:~:blue'
+      },
+      chaos: {
+        depth: 'depth',
+        blue: 'score:~:blue',
+        green: 'score:~:green',
+        teal: 'score:~:teal',
+        purple: 'score:~:purple'
       }
     },
   

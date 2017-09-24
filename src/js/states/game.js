@@ -35,7 +35,6 @@ Game.states.game.prototype.create = function(){
     Phaser.Keyboard.SPACEBAR
   ]);
 
-  //setup touch regions
   var leftQuarter = new Phaser.Rectangle(0, 0, this.game.width/4, this.game.height);
   var middleUpperQuarter = new Phaser.Rectangle(this.game.width/4, 0, this.game.width/2, this.game.height/2);
   var middleLowerQuarter = new Phaser.Rectangle(this.game.width/4, this.game.height/2, this.game.width/2, this.game.height/2);
@@ -88,10 +87,12 @@ Game.states.game.prototype.resetGame = function(){
 
   Game.depth = 0;
   
+  Game.whiteScore = 0;
   Game.blueScore = 0;
   Game.greenScore = 20;
-  // Game.purpleScore = 0;
-  // Game.tealScore = 0;
+  Game.redScore = 0;
+  Game.purpleScore = 0;
+  Game.tealScore = 0;
 
   Game.depthText.setText('Depth: '+ Game.depth);
   
@@ -149,16 +150,16 @@ Game.states.game.prototype.update = function(){
   if(!this.game.tweens.isTweening(Game.drill)){
     var surrounds = Game.entities.player.getSurrounds();
 
-    if(this.input.keyboard.isDown(Phaser.Keyboard.LEFT)){//&& Game.drill.x > Game.config.blockSize/2
+    if(this.input.keyboard.isDown(Phaser.Keyboard.LEFT)){
       moving = 'left';
     }
-    else if(this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)){// && Game.drill.x < this.game.width - Game.config.blockSize/2
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)){
       moving = 'right';
     }
     else if(this.input.keyboard.isDown(Phaser.Keyboard.DOWN)){
       moving = 'down';
     }
-    else if(this.input.keyboard.isDown(Phaser.Keyboard.UP)){//&& (surrounds.left || surrounds.right)
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.UP)){
       moving = 'up';
     }
 
@@ -183,27 +184,9 @@ Game.states.game.prototype.update = function(){
 
         Game.entities.player.move(this.game, direction);
       }
-  
-      // if(!Game.groundAt(Game.drill.x + Game.config.blockSize, Game.drill.y) && !Game.groundAt(Game.drill.x - Game.config.blockSize, Game.drill.y) && !Game.groundAt(Game.drill.x, Game.drill.y + Game.config.blockSize)){
-        
-      //   if(Game.entities.player.lastMove === 'up' && Game.groundAt(Game.drill.x + Game.config.blockSize, Game.drill.y + Game.config.blockSize)){
-      //     Game.entities.player.move(this.game, 'right');
-      //   }
-  
-      //   else if(Game.entities.player.lastMove === 'up' && Game.groundAt(Game.drill.x - Game.config.blockSize, Game.drill.y + Game.config.blockSize)){
-      //     Game.entities.player.move(this.game, 'left');
-      //   }
-  
-      //   else{
-      //     Game.entities.player.move(this.game, 'down');
-      //   }
-      // }
     }
   }
 
-  
-
-  // Lava kills
   Game.lava.forEachAlive(function(lava){
     if(!lava.lethal) return;
 
@@ -222,7 +205,6 @@ Game.states.game.prototype.update = function(){
     }, this);
   }, this);
 
-  // Monsters kill
   Game.monsters.forEachAlive(function(monster){
     if(this.game.math.distance(Game.drill.x, Game.drill.y, monster.x, monster.y) < Game.config.blockSize/2){
       if(Game.blueScore > 10) Game.blueScore--;
