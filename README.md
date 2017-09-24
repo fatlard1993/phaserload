@@ -1,7 +1,7 @@
 # phaserload
 
 ## setup
-``` npm install ```
+``` npm install && gulp ```
 
 # start server
 ``` sudo node app ```
