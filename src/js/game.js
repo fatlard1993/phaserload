@@ -14,7 +14,7 @@ var Game = {
     blockSize: 64,
     blockMiddle: 64 * 3.5,
   
-    drillMoveSpeed: 300,
+    drillMoveTime: 300,
 
     mode: 'normal',
 

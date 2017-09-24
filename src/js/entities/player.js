@@ -35,10 +35,10 @@ Game.entities.player.move = function(game, direction){
 
   var surrounds = Game.entities.player.getSurrounds();
 
-  if(direction === 'left' && Game.drill.x < Game.config.blockSize/2){
+  if(direction === 'left' && (Game.drill.x < Game.config.blockSize/2 || (!surrounds.bottomLeft && !surrounds.bottom))){
     return;
   }
-  else if(direction === 'right' && Game.drill.x > game.width - Game.config.blockSize/2){
+  else if(direction === 'right' && (Game.drill.x > game.width - Game.config.blockSize/2 || (!surrounds.bottomRight && !surrounds.bottom))){
     return;
   }
   else if(direction === 'down'){
@@ -68,10 +68,10 @@ Game.entities.player.move = function(game, direction){
     
   //keep camera with player
   if(direction === 'up' && newPosition.y < Game.drill.y && newPosition.y <= game.camera.y + Game.config.blockMiddle){
-    game.add.tween(game.camera).to({ y: game.camera.y - Game.config.blockSize }, Game.config.drillMoveSpeed, Phaser.Easing.Sinusoidal.InOut, true);
+    game.add.tween(game.camera).to({ y: game.camera.y - Game.config.blockSize }, Game.config.drillMoveTime, Phaser.Easing.Sinusoidal.InOut, true);
   }
   else if(direction === 'down' && newPosition.y > Game.drill.y && newPosition.y >= game.camera.y + Game.config.blockMiddle){
-    game.add.tween(game.camera).to({ y: game.camera.y + Game.config.blockSize }, Game.config.drillMoveSpeed, Phaser.Easing.Sinusoidal.InOut, true);
+    game.add.tween(game.camera).to({ y: game.camera.y + Game.config.blockSize }, Game.config.drillMoveTime, Phaser.Easing.Sinusoidal.InOut, true);
   }
 
   var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
@@ -81,7 +81,7 @@ Game.entities.player.move = function(game, direction){
     Game.entities.ground.dig(newPosition);
   }
   
-  game.add.tween(Game.drill).to(newPosition, targetGroundType ? Game.config.digTime[Game.config.mode][targetGroundType] : Game.config.drillMoveSpeed, Phaser.Easing.Sinusoidal.InOut, true);
+  game.add.tween(Game.drill).to(newPosition, targetGroundType ? Game.config.digTime[Game.config.mode][targetGroundType] : Game.config.drillMoveTime, Phaser.Easing.Sinusoidal.InOut, true);
 
 
   var invertTexture = false;
