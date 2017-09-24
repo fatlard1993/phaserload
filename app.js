@@ -30,13 +30,6 @@ app.get('/test', function(req, res, next){
   res.send('test');
 });
 
-app.get('/', function(req, res, next){
-  console.log('Hit '+ req.path);
-
-  res.sendFile(__dirname +'/public/games/phaserload/index.html');
-});
-
-
 app.use(function(req, res, next){
   next({ detail: `The path ${req.path} does not exist`, status: 404 });
 });
