@@ -5,7 +5,7 @@ Game.entities.ground = function(){};
 Game.entities.ground.prototype.update = function(){};
 
 Game.entities.ground.create = function(game, x, y){
-  var groundType = Game.weightedChance(Game.config.groundDistribution[Game.config.distributionSetting]);
+  var groundType = Game.weightedChance(Game.config.groundDistribution[Game.config.mode]);
 
   var ground = Game.ground.getFirstDead();
 
@@ -41,7 +41,7 @@ Game.entities.ground.crush = function(pos){
     var ground = Game.ground.children[i];
     
     if(ground.x === pos.x && ground.y === pos.y && !ground.animations.getAnimation('crush').isPlaying){
-      ground.tween = Game.game.add.tween(ground).to({ alpha: 0 }, Game.config.digTime[groundType], Phaser.Easing.Cubic.In, true);
+      ground.tween = Game.game.add.tween(ground).to({ alpha: 0 }, Game.config.digTime[Game.config.mode][groundType], Phaser.Easing.Cubic.In, true);
       ground.animations.play('crush');
     }
   }

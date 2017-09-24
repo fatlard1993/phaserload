@@ -81,7 +81,7 @@ Game.entities.player.move = function(game, direction){
     Game.entities.ground.dig(newPosition);
   }
   
-  game.add.tween(Game.drill).to(newPosition, targetGroundType ? Game.config.digTime[targetGroundType] : Game.config.drillMoveSpeed, Phaser.Easing.Sinusoidal.InOut, true);
+  game.add.tween(Game.drill).to(newPosition, targetGroundType ? Game.config.digTime[Game.config.mode][targetGroundType] : Game.config.drillMoveSpeed, Phaser.Easing.Sinusoidal.InOut, true);
 
 
   var invertTexture = false;

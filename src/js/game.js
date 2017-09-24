@@ -16,19 +16,27 @@ var Game = {
   
     drillMoveSpeed: 300,
 
-    distributionSetting: 'normal',
+    mode: 'normal',
+
     groundDistribution: {
       safe: { ground: 0.7, ground_blue: 0.1, ground_green: 0.2 },
       normal: { ground: 0.7, ground_blue: 0.01, ground_green: 0.12, ground_purple: 0.01, ground_teal: 0.01, ground_red: 0.15 }
     },
 
     digTime: {
-      ground_red: 450,
-      ground: 500,
-      ground_green: 620,
-      ground_blue: 700,
-      ground_teal: 820,
-      ground_purple: 960
+      safe: {
+        ground: 300,
+        ground_green: 300,
+        ground_blue: 300
+      },
+      normal: {
+        ground_red: 450,
+        ground: 500,
+        ground_green: 620,
+        ground_blue: 700,
+        ground_teal: 820,
+        ground_purple: 960
+      }
     },
   
     monsterWakeupDelay: 600,
