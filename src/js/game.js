@@ -7,7 +7,7 @@ var Game = {
     font: 'monospace',
 
     hudTextColor: '#94B133',
-  
+
     width: 832,
     height: 448,
   

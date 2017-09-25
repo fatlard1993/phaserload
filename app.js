@@ -3,7 +3,7 @@ const HttpServer = require('http').createServer(app);
 const BodyParser = require('body-parser');
 const CookieParser = require('cookie-parser');
 
-const HttpPort = 80;
+const HTTP_PORT = process.env.NODE_ENV === 'production' ? 80 : 8080;
 
 app.use(Express.static('./public'));
 
@@ -58,6 +58,6 @@ app.use(function(err, req, res, next){
   res.status(err.status)[req.headers.accept && req.headers.accept === 'application/json' ? 'json' : 'send'](detail);
 });
 
-HttpServer.listen(HttpPort, function(){
+HttpServer.listen(HTTP_PORT, function(){
   console.log('HTTP server is running!');
 });
