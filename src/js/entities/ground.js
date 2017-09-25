@@ -120,13 +120,39 @@ Game.entities.ground.dig = function(pos){
 Game.entities.ground.behaviors = {
   lava: function(chance, pos){
     if(Game.chance(chance)) Game.entities.lava.create(Game.game, pos.x, pos.y);
+  },
+  lavaRelease: function(){
+    for(var x = Game.config.blockSize / 2; x < Game.game.width; x += Game.config.blockSize){
+      for(var y = Game.groundDepth - Game.config.height; y < Game.groundDepth; y += Game.config.blockSize){
+        if(Game.chance(90) && Game.groundAt(x, y) === 'ground_red'){
+          Game.entities.ground.crush({ x: x, y: y });
+          Game.entities.lava.create(Game.game, x, y);
+        }
+      }
+    }
+  },
+  save: function(chance, offChanceFunc){
+    if(Game.chance(chance)){
+      Game.lava.forEachAlive(function(lava){
+        if(Game.chance(85)) lava.kill();
+      }, this);
+  
+      Game.monsters.forEachAlive(function(monster){
+        if(Game.chance(85)) monster.kill();
+      }, this);
+    }
+
+    else if(offChanceFunc) Game.entities.ground.applyBehavior(offChanceFunc);
   }
 };
 
 Game.entities.ground.applyBehavior = function(name, options, pos){
-  options = options.split(',');
+  if(options) options = options.split(',');
 
-  if(name === 'lava') options.push(pos);
+  if(name === 'lava'){
+    if(!options) options = [null, pos];
+    else options.push(pos);
+  }
 
   if(Game.entities.ground.behaviors[name]) Game.entities.ground.behaviors[name].apply(null, options);
 };
