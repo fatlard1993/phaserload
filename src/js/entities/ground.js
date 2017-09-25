@@ -7,6 +7,8 @@ Game.entities.ground.prototype.update = function(){};
 Game.entities.ground.create = function(game, x, y){
   var groundType = Game.weightedChance(Game.config.groundDistribution[Game.config.mode]);
 
+  console.log('creating: ', groundType);
+
   var ground = Game.ground.getFirstDead();
 
   if(ground === null){
@@ -51,68 +53,27 @@ Game.entities.ground.dig = function(pos){
 
   Game.entities.ground.crush(pos);
 
+  if(Game.config.blockBehavior[Game.config.mode] && Game.config.blockBehavior[Game.config.mode][groundType] && Game.entities.ground.behaviors[Game.config.blockBehavior[Game.config.mode][groundType].split(':~:')[0]]){
+    Game.entities.ground.applyBehavior(Game.config.blockBehavior[Game.config.mode][groundType].split(':~:')[0], Game.config.blockBehavior[Game.config.mode][groundType].split(':~:')[1], pos);
+  }
+
   if(groundType === 'ground'){
     Game.whiteScore++;
   }
   else if(groundType === 'ground_blue'){
-    // ARMOUR
-
     Game.blueScore++;
   }
   else if(groundType === 'ground_red'){
-    // LAVA SPAWN
-
-    Game.redScore++;
-
-    if(Game.config.blockBehavior[Game.config.mode] && Game.config.blockBehavior[Game.config.mode][groundType] && Game.entities.ground.behaviors[Game.config.blockBehavior[Game.config.mode][groundType].split(':~:')[0]]){
-      Game.entities.ground.applyBehavior(Game.config.blockBehavior[Game.config.mode][groundType].split(':~:')[0], Game.config.blockBehavior[Game.config.mode][groundType].split(':~:')[1], pos);
-    }
-
-    // if(Game.chance()) Game.entities.lava.create(Game.game, pos.x, pos.y);    
+    Game.redScore++; 
   }
   else if(groundType === 'ground_green'){
-    // FUEL
-
     Game.greenScore++;
   }
-  else if(groundType === 'ground_purple'){ //these should have the chance to be opposite effect
-    // SUPER SAVE
-
+  else if(groundType === 'ground_purple'){
     Game.purpleScore++;
-    
-    var good = Game.chance(80);
-
-    Game.lava.forEachAlive(function(lava){
-      if(good && Game.chance(85)) lava.kill();
-    }, this);
-
-    Game.monsters.forEachAlive(function(monster){
-      if(good && Game.chance(85)) monster.kill();
-    }, this);
-
-    if(!good){
-      for(var x = Game.config.blockSize / 2; x < Game.game.width; x += Game.config.blockSize){
-        for(var y = Game.groundDepth - Game.config.height; y < Game.groundDepth; y += Game.config.blockSize){
-          if(Game.chance(90) && Game.groundAt(x, y) === 'ground_red'){
-            Game.entities.ground.crush({ x: x, y: y });
-            Game.entities.lava.create(Game.game, x, y);
-          }
-        }
-      }
-    }
   }
   else if(groundType === 'ground_teal'){
-    // SAVE
-    
     Game.tealScore++;
-
-    Game.lava.forEachAlive(function(lava){
-      if(Game.chance(85)) lava.kill();
-    }, this);
-
-    Game.monsters.forEachAlive(function(monster){
-      if(Game.chance(85)) monster.kill();
-    }, this);
   }
 };
 

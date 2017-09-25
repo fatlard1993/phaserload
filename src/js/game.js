@@ -14,14 +14,18 @@ var Game = {
     blockSize: 64,
     blockMiddle: 64 * 3.5,
   
-    drillMoveTime: 300,
+    drillMoveTime: {
+      safe: 300,
+      normal: 300,
+      chaos: 100
+    },
 
     mode: 'normal',
 
     groundDistribution: {
       safe: { ground: 0.7, ground_blue: 0.1, ground_green: 0.2 },
       normal: { ground: 0.7, ground_blue: 0.01, ground_green: 0.12, ground_purple: 0.01, ground_teal: 0.01, ground_red: 0.15 },
-      chaos: { ground: 0.16, ground_blue: 0.16, ground_green: 0.16, ground_purple: 0.16, ground_teal: 0.16, ground_red: 0.16 }
+      chaos: { ground: 0.2, ground_blue: 0.16, ground_green: 0.16, ground_purple: 0.16, ground_teal: 0.16, ground_red: 0.16 }
     },
 
     digTime: {
@@ -39,12 +43,12 @@ var Game = {
         ground_purple: 960
       },
       chaos: {
-        ground_red: 300,
-        ground: 300,
-        ground_green: 300,
-        ground_blue: 300,
-        ground_teal: 300,
-        ground_purple: 300
+        ground_red: 100,
+        ground: 100,
+        ground_green: 100,
+        ground_blue: 100,
+        ground_teal: 100,
+        ground_purple: 100
       }
     },
 
@@ -73,6 +77,36 @@ var Game = {
         green: 'score:~:green',
         teal: 'score:~:teal',
         purple: 'score:~:purple'
+      }
+    },
+
+    holeChance: {
+      safe: 0,
+      get normal(){
+        return Game.depth * 0.1;
+      },
+      get chaos(){
+        return Game.depth * 0.5;
+      }
+    },
+
+    lavaChance: {
+      safe: 0,
+      get normal(){
+        return Game.depth * 0.1;
+      },
+      get chaos(){
+        return Game.depth * 0.5;
+      }
+    },
+
+    monsterChance: {
+      safe: 0,
+      get normal(){
+        return Game.depth * 0.1;
+      },
+      get chaos(){
+        return Game.depth * 0.5;
       }
     },
   
@@ -136,6 +170,24 @@ var Game = {
     var position = Game.normalizePosition(x, y);
 
     return (!Game.groundMap[position.x] ? 0 : (!Game.groundMap[position.x][position.y] ? 0 : Game.groundMap[position.x][position.y]));
+  },
+  updateHud: function(){
+    var hudItemLabels = Object.keys(Game.config.hudContents[Game.config.mode]);
+    for(var x = 0; x < Game.hudItemCount; x++){
+      var label = hudItemLabels[x];
+      var value = Game.config.hudContents[Game.config.mode][hudItemLabels[x]].split(':~:');
+      var text = label +': ';
+      
+      if(value[0] === 'depth') text += Game.depth;
+      else if(value[0] === 'fuel') text += Game.greenScore.toFixed(1);
+      else{
+        if(value[0] === 'score' && Game[value[1] +'Score']) text += Game[value[1] +'Score'];
+      }
+
+      console.log('setting: ', 'hudLine'+ (x + 1), ' to: ', text);
+  
+      Game['hudLine'+ (x + 1)].setText(text);
+    }
   }
 };
 

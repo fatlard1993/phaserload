@@ -13,19 +13,28 @@ Game.states.game.prototype.create = function(){
   Game.hud.scale.setTo(0.4, 0.4);
   Game.hud.fixedToCamera = true;
 
-  Game.depthText = this.game.add.text(15, 10, 'Depth: 0', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor, stroke: Game.config.backgroundColor, strokeThickness: 0 });
-  
-  Game.blueScoreText = this.game.add.text(15, 52, 'Armor: 0', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor, stroke: Game.config.backgroundColor, strokeThickness: 0 });
-  Game.greenScoreText = this.game.add.text(15, 94, 'Fuel: 0', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor, stroke: Game.config.backgroundColor, strokeThickness: 0 });
-  // Game.purpleScoreText = this.game.add.text(15, 136, 'Purple: 0', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor, stroke: Game.config.backgroundColor, strokeThickness: 0 });
-  // Game.tealScoreText = this.game.add.text(15, 178, 'Teal: 0', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor, stroke: Game.config.backgroundColor, strokeThickness: 0 });
+  var hudItemCount = Game.hudItemCount = Object.keys(Game.config.hudContents[Game.config.mode]).length;
 
-  Game.hud.addChild(Game.depthText);
-
-  Game.hud.addChild(Game.blueScoreText);
-  Game.hud.addChild(Game.greenScoreText);
-  // Game.hud.addChild(Game.purpleScoreText);
-  // Game.hud.addChild(Game.tealScoreText);
+  if(hudItemCount > 0){
+    Game.hudLine1 = this.game.add.text(15, 10, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor, stroke: Game.config.backgroundColor, strokeThickness: 0 });
+    Game.hud.addChild(Game.hudLine1);
+  }
+  if(hudItemCount > 1){
+    Game.hudLine2 = this.game.add.text(15, 52, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor, stroke: Game.config.backgroundColor, strokeThickness: 0 });
+    Game.hud.addChild(Game.hudLine2);
+  }
+  if(hudItemCount > 2){
+    Game.hudLine3 = this.game.add.text(15, 94, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor, stroke: Game.config.backgroundColor, strokeThickness: 0 });
+    Game.hud.addChild(Game.hudLine3);
+  }
+  if(hudItemCount > 3){
+    Game.hudLine4 = this.game.add.text(15, 136, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor, stroke: Game.config.backgroundColor, strokeThickness: 0 });
+    Game.hud.addChild(Game.hudLine4);
+  }
+  if(hudItemCount > 4){
+    Game.hudLine5 = this.game.add.text(15, 178, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor, stroke: Game.config.backgroundColor, strokeThickness: 0 });
+    Game.hud.addChild(Game.hudLine5);
+  }
 
   this.game.input.keyboard.addKeyCapture([
     Phaser.Keyboard.LEFT,
@@ -70,7 +79,6 @@ Game.states.game.prototype.create = function(){
   };
 
   this.game.input.onDown.add(handleTouchRegions);
-  
 
   this.resetGame();
 };
@@ -89,17 +97,12 @@ Game.states.game.prototype.resetGame = function(){
   
   Game.whiteScore = 0;
   Game.blueScore = 0;
-  Game.greenScore = 20;
+  Game.greenScore = Game.config.mode === 'normal' ? 20 : 0;
   Game.redScore = 0;
   Game.purpleScore = 0;
   Game.tealScore = 0;
 
-  Game.depthText.setText('Depth: '+ Game.depth);
-  
-  Game.blueScoreText.setText('Armor: '+ Game.blueScore);
-  Game.greenScoreText.setText('Fuel: '+ Game.greenScore);
-  // Game.purpleScoreText.setText('Purple: '+ Game.purpleScore);
-  // Game.tealScoreText.setText('Teal: '+ Game.tealScore);
+  Game.updateHud();  
 };
 
 Game.states.game.prototype.showInstructions = function(){
@@ -132,15 +135,8 @@ Game.states.game.prototype.showInstructions = function(){
   setTimeout(function(){ instructions.destroy(); }, delay);
 };
 
-// Game.states.game.prototype.render = function(){
-//   this.game.debug.pointer(this.game.input.mousePointer);
-//   this.game.debug.pointer(this.game.input.pointer1);
-//   this.game.debug.pointer(this.game.input.pointer2);
-// };
-
-
 Game.states.game.prototype.update = function(){
-  if(!Game.greenScore){
+  if(Game.mode === 'normal' && !Game.greenScore){
     Game.loseReason = 'fuel';
     return this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);
   }
@@ -228,17 +224,15 @@ Game.states.game.prototype.addMoreGround = function(){
   var x, y;
   for(x = Game.config.blockSize * 0.5; x < this.game.width; x += Game.config.blockSize){
     for(y = Game.groundDepth; y < Game.groundDepth + Game.config.blockSize * 5; y += Game.config.blockSize){
-      var difficulty = 100 * (Game.depth / 100);
-      var monsterChance = Game.chance(difficulty);
-      var groundChance = !Game.chance(difficulty);
-
-      if(y === Game.groundDepth && Game.chance(difficulty)) Game.entities.lava.create(this.game, x, y);
-
-      else if(groundChance){
+      if(this.game.camera.y < 5 || !Game.chance(Game.config.holeChance[Game.config.mode])){
         Game.entities.ground.create(this.game, x, y);
       }
       
-      else if(monsterChance){
+      else if(Game.chance(Game.config.lavaChance[Game.config.mode])){
+        Game.entities.lava.create(this.game, x, y);
+      }
+
+      else if(Game.chance(Game.config.monsterChance[Game.config.mode])){
         Game.entities.monster.create(this.game, x, y);
       }
     }

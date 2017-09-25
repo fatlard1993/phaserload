@@ -13,8 +13,6 @@ Game.entities.player.create = function(game, x, y){
   Game.drill.animations.add('up', [9, 10, 11], 10, true);
 
   Game.drill.animations.play('right');
-
-  return Game.drill;
 };
 
 Game.entities.player.getSurrounds = function(){
@@ -65,23 +63,24 @@ Game.entities.player.move = function(game, direction){
     x: Game.drill.x + (direction === 'left' ? -Game.config.blockSize : direction === 'right' ? Game.config.blockSize : 0),
     y: Game.drill.y + (direction === 'up' ? -Game.config.blockSize : direction === 'down' ? Game.config.blockSize : 0)
   };
+  var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
+  var moveTime = targetGroundType ? Game.config.digTime[Game.config.mode][targetGroundType] : Game.config.drillMoveTime[Game.config.mode];
     
   //keep camera with player
   if(direction === 'up' && newPosition.y < Game.drill.y && newPosition.y <= game.camera.y + Game.config.blockMiddle){
-    game.add.tween(game.camera).to({ y: game.camera.y - Game.config.blockSize }, Game.config.drillMoveTime, Phaser.Easing.Sinusoidal.InOut, true);
+    game.add.tween(game.camera).to({ y: game.camera.y - Game.config.blockSize }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
   }
   else if(direction === 'down' && newPosition.y > Game.drill.y && newPosition.y >= game.camera.y + Game.config.blockMiddle){
-    game.add.tween(game.camera).to({ y: game.camera.y + Game.config.blockSize }, Game.config.drillMoveTime, Phaser.Easing.Sinusoidal.InOut, true);
+    game.add.tween(game.camera).to({ y: game.camera.y + Game.config.blockSize }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
   }
 
-  var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
 
   if(targetGroundType){
     console.log('Drill: Im diggin here! ', targetGroundType, newPosition);
     Game.entities.ground.dig(newPosition);
   }
   
-  game.add.tween(Game.drill).to(newPosition, targetGroundType ? Game.config.digTime[Game.config.mode][targetGroundType] : Game.config.drillMoveTime, Phaser.Easing.Sinusoidal.InOut, true);
+  game.add.tween(Game.drill).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
 
 
   var invertTexture = false;
@@ -111,13 +110,11 @@ Game.entities.player.move = function(game, direction){
   
   
   Game.depth = (newPosition.y - Game.config.blockMiddle) / Game.config.blockSize;
-  
-  Game.greenScore -= 0.1;//Game.chance(40) ? 0 : 1;
 
-  Game.depthText.setText('Depth: ' + Game.depth);
-  
-  Game.blueScoreText.setText('Armor: '+ Game.blueScore);
-  Game.greenScoreText.setText('Fuel: '+ Game.greenScore.toFixed(1));
-  // Game.purpleScoreText.setText('Purple: '+ Game.purpleScore);
-  // Game.tealScoreText.setText('Teal: '+ Game.tealScore);
+  if(Game.mode === 'normal'){
+    // use fuel
+    Game.greenScore -= 0.1;
+  }
+
+  Game.updateHud();
 };
