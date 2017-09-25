@@ -97,7 +97,7 @@ Game.states.game.prototype.resetGame = function(){
   
   Game.whiteScore = 0;
   Game.blueScore = 0;
-  Game.greenScore = Game.config.mode === 'normal' ? 20 : 0;
+  Game.greenScore = Game.config.mode === 'normal' ? 5 : 0;
   Game.redScore = 0;
   Game.purpleScore = 0;
   Game.tealScore = 0;
