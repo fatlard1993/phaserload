@@ -136,7 +136,7 @@ Game.states.game.prototype.showInstructions = function(){
 };
 
 Game.states.game.prototype.update = function(){
-  if(Game.mode === 'normal' && !Game.greenScore){
+  if(Game.config.mode === 'normal' && !Game.greenScore){
     Game.loseReason = 'fuel';
     return this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);
   }

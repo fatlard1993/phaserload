@@ -68,7 +68,7 @@ var Game = {
       },
       normal: {
         depth: 'depth',
-        fuel: 'score:~:green',
+        fuel: 'fuel',
         armor: 'score:~:blue'
       },
       chaos: {

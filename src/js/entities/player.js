@@ -111,7 +111,7 @@ Game.entities.player.move = function(game, direction){
   
   Game.depth = (newPosition.y - Game.config.blockMiddle) / Game.config.blockSize;
 
-  if(Game.mode === 'normal'){
+  if(Game.config.mode === 'normal'){
     // use fuel
     Game.greenScore -= 0.1;
   }
