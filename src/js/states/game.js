@@ -187,8 +187,7 @@ Game.states.game.prototype.update = function(){
     if(!lava.lethal) return;
 
     if(this.game.math.distance(Game.drill.x, Game.drill.y, lava.x, lava.y) < Game.config.blockSize/2){
-      if(Game.blueScore > 10) Game.blueScore--;
-      else Game.drill.kill();
+      Game.drill.kill();
       Game.loseReason = 'lava';
       
       this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);
@@ -203,8 +202,7 @@ Game.states.game.prototype.update = function(){
 
   Game.monsters.forEachAlive(function(monster){
     if(this.game.math.distance(Game.drill.x, Game.drill.y, monster.x, monster.y) < Game.config.blockSize/2){
-      if(Game.blueScore > 10) Game.blueScore--;
-      else Game.drill.kill();
+      Game.drill.kill();
       Game.loseReason = 'monster';
       
       this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);

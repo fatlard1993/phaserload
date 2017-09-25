@@ -69,7 +69,7 @@ var Game = {
       normal: {
         depth: 'depth',
         fuel: 'fuel',
-        armor: 'score:~:blue'
+        diamonds: 'score:~:blue'
       },
       chaos: {
         depth: 'depth',
