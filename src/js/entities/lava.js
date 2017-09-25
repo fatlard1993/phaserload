@@ -16,8 +16,6 @@ Game.entities.lava.prototype.constructor = Game.entities.lava;
 Game.entities.lava.prototype.update = function(){
   if(!this.alive) return;
 
-  if(this.y < this.game.camera.y - Game.config.blockSize) this.kill();
-
   if(this.animations.getAnimation('full').isPlaying){
     this.lethal = true;
     var canMoveRight = true;

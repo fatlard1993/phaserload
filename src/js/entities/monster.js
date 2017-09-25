@@ -15,8 +15,6 @@ Game.entities.monster.prototype.constructor = Game.entities.monster;
 Game.entities.monster.prototype.update = function(){
   if(!this.alive) return;
 
-  if(this.y < this.game.camera.y - Game.config.blockSize) this.kill();
-
   if(!this.game.tweens.isTweening(this)){
     var canMoveRight = true;
     var canMoveLeft = true;
