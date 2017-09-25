@@ -55,7 +55,7 @@ var Game = {
     blockBehavior: {
       normal: {
         ground_red: 'lava:~:40',
-        ground_teal: 'save:~:90',
+        ground_teal: 'lavaSolidify',
         ground_purple: 'save:~:90,lavaRelease'
       }
     },

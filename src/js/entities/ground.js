@@ -92,6 +92,14 @@ Game.entities.ground.behaviors = {
       }
     }
   },
+  lavaSolidify: function(radius){
+    Game.lava.forEachAlive(function(lava){
+      if(Game.game.math.distance(Game.drill.x, Game.drill.y, lava.x, lava.y) < Game.config.blockSize * (radius || 4)){
+        Game.entities.ground.create(Game.game, lava.x, lava.y);
+        lava.kill();
+      }
+    }, this);
+  },
   save: function(chance, offChanceFunc){
     if(Game.chance(chance)){
       Game.lava.forEachAlive(function(lava){
