@@ -80,12 +80,8 @@ Game.states.game.prototype.create = function(){
 
   this.game.input.onDown.add(handleTouchRegions);
 
-  this.resetGame();
-};
-
-Game.states.game.prototype.resetGame = function(){
   Game.groundMap = [[]];
-
+  
   this.createGround();
 
   Game.entities.player.create(this.game, Game.config.blockSize * 1.5, Game.config.blockMiddle);
@@ -102,7 +98,7 @@ Game.states.game.prototype.resetGame = function(){
   Game.purpleScore = 0;
   Game.tealScore = 0;
 
-  Game.updateHud();  
+  Game.updateHud();
 };
 
 Game.states.game.prototype.showInstructions = function(){
