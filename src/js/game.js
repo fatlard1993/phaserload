@@ -1,4 +1,6 @@
 /* global Phaser */
+// a static size map is going to require the adoption of camera x scrolling
+
 
 var Game = {
   config: {
@@ -18,6 +20,29 @@ var Game = {
       safe: 300,
       normal: 300,
       chaos: 100
+    },
+
+    storeItemPrices: {
+      safe: {
+        fuel: 1,
+        teleporter: 1
+      },
+      normal: {
+        fuel: 1,
+        teleporter: 1,
+        hullUpgrade: 1
+      }
+    },
+
+    storeMineralPurchase: {
+      safe: {
+        dirt: 'white:~:1',
+        diamonds: 'blue:~:1'
+      },
+      normal: {
+        dirt: 'white:~:1',
+        diamonds: 'blue:~:1'
+      }
     },
 
     playerStartPos: {
@@ -253,6 +278,17 @@ var Game = {
     }
 
     Game.config.playerStartPos.x = playerX;
+  },
+  findInMap: function(nameOrId){
+    var found = [], id = typeof nameOrId === 'string' ? Game.mapNames.indexOf(nameOrId) : nameOrId;
+
+    for(var x = 0; x < Game.config.maxBlockWidth; x++){
+      for(var y = 0; y < Game.config.maxBlockHeight; y++){
+        if(Game.map[x][y] === id) found.push({ x: x, y: y });
+      }
+    }
+
+    return found;
   },
   viewBufferSize: 3,
   get viewCenterPos(){
