@@ -80,7 +80,7 @@ Game.states.game.prototype.create = function(){
 
   this.game.input.onDown.add(handleTouchRegions);
 
-  Game.groundMap = [[]];
+  Game.map = [[]];
   
   // this.createGround();
 
@@ -147,7 +147,7 @@ Game.states.game.prototype.update = function(){
 
   var moving;
 
-  if(!1 && !this.game.tweens.isTweening(Game.drill)){
+  if(!this.game.tweens.isTweening(Game.drill)){
     var surrounds = Game.entities.player.getSurrounds();
 
     if(this.input.keyboard.isDown(Phaser.Keyboard.LEFT)){

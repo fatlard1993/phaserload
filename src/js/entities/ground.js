@@ -25,8 +25,8 @@ Game.entities.ground.create = function(game, x, y, groundType){
     ground.revive();
   }
 
-  Game.groundMap[x] = Game.groundMap[x] || [];
-  Game.groundMap[x][y] = groundType;
+  Game.map[x] = Game.map[x] || [];
+  Game.map[x][y] = groundType;
 
   return ground;
 };
@@ -44,7 +44,7 @@ Game.entities.ground.crush = function(pos){
     }
   }
   
-  Game.groundMap[pos.x][pos.y] = 0;
+  Game.map[pos.x][pos.y] = 0;
 };
 
 Game.entities.ground.dig = function(pos){

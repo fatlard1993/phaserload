@@ -179,7 +179,7 @@ var Game = {
   groundAt: function(x, y){
     var position = Game.normalizePosition(x, y);
 
-    return (!Game.groundMap[position.x] ? 0 : (!Game.groundMap[position.x][position.y] ? 0 : Game.groundMap[position.x][position.y]));
+    return (!Game.map[position.x] ? 0 : (!Game.map[position.x][position.y] ? 0 : Game.map[position.x][position.y]));
   },
   updateHud: function(){
     var hudItemLabels = Object.keys(Game.config.hudContents[Game.config.mode]);
@@ -200,7 +200,7 @@ var Game = {
     }
   },
   toGridPos: function(px){
-    return Math.round((px - 32) / 64) * 64;
+    return Math.round((px - 32) / 64);
   },
   toPx: function(gridPos){
     return (gridPos * 64) + 32;
@@ -266,20 +266,23 @@ var Game = {
     }
   },
   upkeepView: function(){
-    var xDiff = Math.abs(this.drill.x - this.viewBufferCenterPoint.x);
-    var yDif = Math.abs(this.drill.y - this.viewBufferCenterPoint.y);
+    let xDiff = Math.abs(this.drill.x - this.viewBufferCenterPoint.x);
+    let yDiff = Math.abs(this.drill.y - this.viewBufferCenterPoint.y);
+    let currentViewBottom = this.toGridPos(this.game.camera.y + this.config.height);
 
-    console.log({xDiff, yDif});
-    
-    if(xDiff > this.viewBufferSize || yDif > this.viewBufferSize){
+    console.log({xDiff, yDiff, currentViewBottom});
+
+    if(xDiff > this.viewBufferSize || yDiff > this.viewBufferSize){
       this.cleanupView();
     }
+
+    this.drawView(currentViewBottom, currentViewBottom + 1);
   },
   cleanupView: function(){
     console.log('Cleaning up view');
 
     let top = this.game.camera.y;
-    let bottom = this.game.camera.y + Game.config.height;
+    let bottom = this.game.camera.y + this.config.height;
 
     function cleanup(entity){
       if(entity.y > bottom || entity.y < top){
@@ -287,13 +290,13 @@ var Game = {
       }
     }
 
-    Game.ground.forEachAlive(cleanup, this);
-    Game.lava.forEachAlive(cleanup);
-    Game.monsters.forEachAlive(cleanup);
+    this.ground.forEachAlive(cleanup, this);
+    this.lava.forEachAlive(cleanup);
+    this.monsters.forEachAlive(cleanup);
 
     this.viewBufferCenterPoint = {
-      x: Game.drill.x,
-      y: Game.drill.y
+      x: this.drill.x,
+      y: this.drill.y
     };
   }
 };
