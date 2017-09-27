@@ -229,6 +229,42 @@ var Game = {
         }
       }
     }
+  },
+  viewBufferSize: 10,
+  viewBufferCenterPoint: {
+    x: Game.drill.x,
+    y: Game.drill.y
+  },
+  upkeepView: function(){
+    var xDiff = Math.abs(this.drill.x - this.viewBufferCenterPoint.x);
+    var yDif = Math.abs(this.drill.y - this.viewBufferCenterPoint.y);
+
+    console.log({xDiff, yDif});
+    
+    if(xDiff > this.viewBufferSize || yDif > this.viewBufferSize){
+      this.cleanupView();
+    }
+  },
+  cleanupView: function(){
+    console.log('Cleaning up view');
+
+    let top = this.game.camera.y;
+    let bottom = this.game.camera.y + Game.config.height;
+
+    function cleanup(entity){
+      if(entity.y > bottom || entity.y < top){
+        entity.kill();
+      }
+    }
+
+    Game.ground.forEachAlive(cleanup, this);
+    Game.lava.forEachAlive(cleanup);
+    Game.monsters.forEachAlive(cleanup);
+
+    this.viewBufferCenterPoint = {
+      x: Game.drill.x,
+      y: Game.drill.y
+    };
   }
 };
 
