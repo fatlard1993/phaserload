@@ -117,4 +117,6 @@ Game.entities.player.move = function(game, direction){
   }
 
   Game.updateHud();
+
+  Game.upkeepView();
 };
