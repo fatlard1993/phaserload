@@ -110,7 +110,7 @@ Game.states.game.prototype.create = function(){
     }
   }
 
-  Game.entities.player.create(this.game, Game.toPx(2), Game.toPx(Game.config.skyHeight));
+  Game.entities.player.create(this.game, Game.toPx(Game.config.playerStartPos.x), Game.toPx(Game.config.playerStartPos.y));
   Game.drillScaleX = Game.drill.scale.x;
 
   this.showInstructions();

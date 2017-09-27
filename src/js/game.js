@@ -20,6 +20,11 @@ var Game = {
       chaos: 100
     },
 
+    playerStartPos: {
+      x: 2,
+      y: 4
+    },
+
     mode: 'normal',
 
     groundDistribution: {
@@ -115,8 +120,8 @@ var Game = {
     monsterMoveSpeed: 400,
 
     skyHeight: 4,
-    blockWidth: 13,
-    blockHeight: 100,
+    maxBlockWidth: 13,
+    maxBlockHeight: 100,
     viewBlockHeight: 7
   },
   states: {},
@@ -204,8 +209,8 @@ var Game = {
   generateMap: function(){
     Game.map = [];
     
-    for(var x = 0; x < Game.config.blockWidth; x++){
-      for(var y = 0; y < Game.config.blockHeight; y++){
+    for(var x = 0; x < Game.config.maxBlockWidth; x++){
+      for(var y = 0; y < Game.config.maxBlockHeight; y++){
         var groundChance = 100 - (y * 0.1);
         var lavaChance = y * 0.1;
         var monsterChance = y * 0.1;
@@ -232,8 +237,8 @@ var Game = {
   },
   viewBufferSize: 10,
   viewBufferCenterPoint: {
-    x: Game.drill.x,
-    y: Game.drill.y
+    x: this.toPx(this.config.playerStartPos.x),
+    y: this.toPx(this.config.playerStartPos.y)
   },
   upkeepView: function(){
     var xDiff = Math.abs(this.drill.x - this.viewBufferCenterPoint.x);
