@@ -188,6 +188,18 @@ var Game = {
   
       Game['hudLine'+ (x + 1)].setText(text);
     }
+  },
+  toGridPos: function(px){
+    return Math.round((px - 32) / 64) * 64;
+  },
+  toPx: function(gridPos){
+    return (gridPos * 64) + 32;
+  },
+  toMapName: function(){
+    var entities = ['hole', 'ground', 'ground_red', 'lava', 'monster'];
+  },
+  toMapId: function(name){
+
   }
 };
 

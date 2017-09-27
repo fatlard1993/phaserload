@@ -82,9 +82,65 @@ Game.states.game.prototype.create = function(){
 
   Game.groundMap = [[]];
   
-  this.createGround();
+  // this.createGround();
 
-  Game.entities.player.create(this.game, Game.config.blockSize * 1.5, Game.config.blockMiddle);
+  // a static size map is going to require the adoption of camera x scrolling
+
+  var width = 13, height = 100;
+  var skyHeight = 4;
+
+  Game.map = [];
+
+  for(var x = 0; x < width; x++){
+    for(var y = 0; y < height; y++){
+      var groundChance = 100 - (y * 0.1);
+      var lavaChance = y * 0.1;
+      var monsterChance = y * 0.1;
+
+      Game.map[x] = Game.map[x] || [];
+
+      if(y > skyHeight && Game.chance(groundChance)){
+        Game.map[x][y] = Game.weightedChance(Game.config.groundDistribution[Game.config.mode]);
+      }
+      
+      else if(y > skyHeight + 5 && Game.chance(lavaChance)){
+        Game.map[x][y] = 'lava';
+      }
+
+      else if(y > skyHeight + 5 && Game.chance(monsterChance)){
+        Game.map[x][y] = 'monster';
+      }
+
+      else{
+        Game.map[x][y] = 0;
+      }
+    }
+  }
+
+  console.log(Game.map);
+
+  var displayHeight = 7;
+
+  for(var x = 0; x < width; x++){
+    for(var y = skyHeight; y < displayHeight; y++){
+      var element = Game.map[x][y];
+      if(!element) continue;
+
+      if(element.startsWith('ground')){
+        Game.entities.ground.create(this.game, Game.toPx(x), Game.toPx(y), element);
+      }
+      
+      else if(element === 'lava'){
+        Game.entities.lava.create(this.game, Game.toPx(x), Game.toPx(y));
+      }
+
+      else if(element === 'monster'){
+        Game.entities.monster.create(this.game, Game.toPx(x), Game.toPx(y));        
+      }
+    }
+  }
+
+  Game.entities.player.create(this.game, Game.config.blockSize * 1.5, (skyHeight * 64) + 32);
   Game.drillScaleX = Game.drill.scale.x;
 
   this.showInstructions();
@@ -139,7 +195,7 @@ Game.states.game.prototype.update = function(){
 
   var moving;
 
-  if(!this.game.tweens.isTweening(Game.drill)){
+  if(!1 && !this.game.tweens.isTweening(Game.drill)){
     var surrounds = Game.entities.player.getSurrounds();
 
     if(this.input.keyboard.isDown(Phaser.Keyboard.LEFT)){

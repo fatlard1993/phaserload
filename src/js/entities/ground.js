@@ -4,8 +4,8 @@ Game.entities.ground = function(){};
 
 Game.entities.ground.prototype.update = function(){};
 
-Game.entities.ground.create = function(game, x, y){
-  var groundType = Game.weightedChance(Game.config.groundDistribution[Game.config.mode]);
+Game.entities.ground.create = function(game, x, y, groundType){
+  groundType = groundType || Game.weightedChance(Game.config.groundDistribution[Game.config.mode]);
 
   console.log('creating: ', groundType);
 
