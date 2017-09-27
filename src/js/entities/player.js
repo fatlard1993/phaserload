@@ -13,6 +13,10 @@ Game.entities.player.create = function(game, x, y){
   Game.drill.animations.add('up', [9, 10, 11], 10, true);
 
   Game.drill.animations.play('right');
+
+  Game.map[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)] = Game.mapNames.indexOf('player1');
+
+  Game.drillScaleX = Game.drill.scale.x;  
 };
 
 Game.entities.player.getSurrounds = function(){
