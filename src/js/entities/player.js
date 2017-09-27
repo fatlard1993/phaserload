@@ -33,10 +33,10 @@ Game.entities.player.move = function(game, direction){
 
   var surrounds = Game.entities.player.getSurrounds();
 
-  if(direction === 'left' && (Game.drill.x < Game.config.blockSize/2 || (!surrounds.bottomLeft && !surrounds.bottom))){
+  if(direction === 'left' && (Game.drill.x <= Game.config.blockSize/2 || (!surrounds.bottomLeft && !surrounds.bottom))){
     return;
   }
-  else if(direction === 'right' && (Game.drill.x > game.width - Game.config.blockSize/2 || (!surrounds.bottomRight && !surrounds.bottom))){
+  else if(direction === 'right' && (Game.drill.x >= game.width - Game.config.blockSize/2 || (!surrounds.bottomRight && !surrounds.bottom))){
     return;
   }
   else if(direction === 'down'){
