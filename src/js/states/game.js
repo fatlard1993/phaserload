@@ -86,45 +86,15 @@ Game.states.game.prototype.create = function(){
 
   // a static size map is going to require the adoption of camera x scrolling
 
-  var width = 13, height = 100;
-  var skyHeight = 4;
-
-  Game.map = [];
-
-  for(var x = 0; x < width; x++){
-    for(var y = 0; y < height; y++){
-      var groundChance = 100 - (y * 0.1);
-      var lavaChance = y * 0.1;
-      var monsterChance = y * 0.1;
-
-      Game.map[x] = Game.map[x] || [];
-
-      if(y > skyHeight && Game.chance(groundChance)){
-        Game.map[x][y] = Game.weightedChance(Game.config.groundDistribution[Game.config.mode]);
-      }
-      
-      else if(y > skyHeight + 5 && Game.chance(lavaChance)){
-        Game.map[x][y] = 'lava';
-      }
-
-      else if(y > skyHeight + 5 && Game.chance(monsterChance)){
-        Game.map[x][y] = 'monster';
-      }
-
-      else{
-        Game.map[x][y] = 0;
-      }
-    }
-  }
+  Game.generateMap();
 
   console.log(Game.map);
 
-  var displayHeight = 7;
+  for(var x = 0; x < Game.config.blockWidth; x++){
+    for(var y = Game.config.skyHeight; y < Game.config.viewBlockHeight; y++){
+      var element = Game.mapNames[Game.map[x][y]];
 
-  for(var x = 0; x < width; x++){
-    for(var y = skyHeight; y < displayHeight; y++){
-      var element = Game.map[x][y];
-      if(!element) continue;
+      // console.log(element);
 
       if(element.startsWith('ground')){
         Game.entities.ground.create(this.game, Game.toPx(x), Game.toPx(y), element);
@@ -140,7 +110,7 @@ Game.states.game.prototype.create = function(){
     }
   }
 
-  Game.entities.player.create(this.game, Game.config.blockSize * 1.5, (skyHeight * 64) + 32);
+  Game.entities.player.create(this.game, Game.toPx(2), Game.toPx(Game.config.skyHeight));
   Game.drillScaleX = Game.drill.scale.x;
 
   this.showInstructions();

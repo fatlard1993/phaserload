@@ -112,7 +112,12 @@ var Game = {
   
     monsterWakeupDelay: 600,
     monsterStepDelay: 300,
-    monsterMoveSpeed: 400
+    monsterMoveSpeed: 400,
+
+    skyHeight: 4,
+    blockWidth: 13,
+    blockHeight: 100,
+    viewBlockHeight: 7
   },
   states: {},
   entities: {},
@@ -195,11 +200,35 @@ var Game = {
   toPx: function(gridPos){
     return (gridPos * 64) + 32;
   },
-  toMapName: function(){
-    var entities = ['hole', 'ground', 'ground_red', 'lava', 'monster'];
-  },
-  toMapId: function(name){
-
+  mapNames: ['hole', 'ground', 'ground_red', 'ground_green', 'ground_blue', 'ground_teal', 'ground_purple', 'lava', 'monster'],
+  generateMap: function(){
+    Game.map = [];
+    
+    for(var x = 0; x < Game.config.blockWidth; x++){
+      for(var y = 0; y < Game.config.blockHeight; y++){
+        var groundChance = 100 - (y * 0.1);
+        var lavaChance = y * 0.1;
+        var monsterChance = y * 0.1;
+  
+        Game.map[x] = Game.map[x] || [];
+  
+        if(y > Game.config.skyHeight && Game.chance(groundChance)){
+          Game.map[x][y] = Game.mapNames.indexOf(Game.weightedChance(Game.config.groundDistribution[Game.config.mode]));
+        }
+        
+        else if(y > Game.config.skyHeight + 5 && Game.chance(lavaChance)){
+          Game.map[x][y] = Game.mapNames.indexOf('lava');
+        }
+  
+        else if(y > Game.config.skyHeight + 5 && Game.chance(monsterChance)){
+          Game.map[x][y] = Game.mapNames.indexOf('monster');
+        }
+  
+        else{
+          Game.map[x][y] = 0;
+        }
+      }
+    }
   }
 };
 
