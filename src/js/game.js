@@ -237,8 +237,12 @@ var Game = {
   },
   viewBufferSize: 10,
   viewBufferCenterPoint: {
-    x: this.toPx(this.config.playerStartPos.x),
-    y: this.toPx(this.config.playerStartPos.y)
+    get x(){
+      return Game.toPx(Game.config.playerStartPos.x);
+    },
+    get y(){
+      return Game.toPx(Game.config.playerStartPos.y);
+    }
   },
   upkeepView: function(){
     var xDiff = Math.abs(this.drill.x - this.viewBufferCenterPoint.x);
