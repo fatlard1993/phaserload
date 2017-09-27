@@ -126,6 +126,15 @@ var Game = {
   },
   states: {},
   entities: {},
+  rand: function(min, max, excludes){
+    excludes = excludes || [];
+    
+    var num = Math.round(Math.random() * (max - min) + min);
+
+    if(excludes.includes(num)) return Game.rand(min, max, excludes);
+
+    return num;
+  },
   chance: function(chance){
     if(chance === undefined){ chance = 50; }
     return chance > 0 && (Math.random() * 100 <= chance);
@@ -176,10 +185,14 @@ var Game = {
 
     return { x: x, y: y };
   },
-  groundAt: function(x, y){
-    var position = Game.normalizePosition(x, y);
-
-    return (!Game.map[position.x] ? 0 : (!Game.map[position.x][position.y] ? 0 : Game.map[position.x][position.y]));
+  groundAt: function(x, y, dontconvert){
+    if(!dontconvert){
+      x = Game.toGridPos(x);
+      y = Game.toGridPos(y);
+    }
+    var element = Game.map[x] !== undefined ? (Game.map[x][y] !== undefined ? Game.mapNames[Game.map[x][y]] : 0) : 0;
+    
+    return element === 'hole' ? 0 : element;
   },
   updateHud: function(){
     var hudItemLabels = Object.keys(Game.config.hudContents[Game.config.mode]);
@@ -194,7 +207,7 @@ var Game = {
         if(value[0] === 'score' && Game[value[1] +'Score']) text += Game[value[1] +'Score'];
       }
 
-      console.log('setting: ', 'hudLine'+ (x + 1), ' to: ', text);
+      // console.log('setting: ', 'hudLine'+ (x + 1), ' to: ', text);
   
       Game['hudLine'+ (x + 1)].setText(text);
     }
@@ -205,9 +218,11 @@ var Game = {
   toPx: function(gridPos){
     return (gridPos * 64) + 32;
   },
-  mapNames: ['hole', 'ground', 'ground_red', 'ground_green', 'ground_blue', 'ground_teal', 'ground_purple', 'lava', 'monster'],
+  mapNames: ['hole', 'ground', 'ground_red', 'ground_green', 'ground_blue', 'ground_teal', 'ground_purple', 'lava', 'monster', 'player1'],
   generateMap: function(){
     Game.map = [];
+
+    var playerX = Game.rand(0, Game.config.maxBlockWidth);
     
     for(var x = 0; x < Game.config.maxBlockWidth; x++){
       for(var y = 0; y < Game.config.maxBlockHeight; y++){
@@ -216,6 +231,8 @@ var Game = {
         var monsterChance = y * 0.1;
   
         Game.map[x] = Game.map[x] || [];
+
+        if(y === Game.config.skyHeight && x === playerX) Game.map[x][y] = Game.mapNames.indexOf('player1');
   
         if(y > Game.config.skyHeight && Game.chance(groundChance)){
           Game.map[x][y] = Game.mapNames.indexOf(Game.weightedChance(Game.config.groundDistribution[Game.config.mode]));
@@ -234,23 +251,26 @@ var Game = {
         }
       }
     }
+
+    Game.config.playerStartPos.x = playerX;
   },
-  viewBufferSize: 10,
-  viewBufferCenterPoint: {
-    get x(){
-      return Game.toPx(Game.config.playerStartPos.x);
-    },
-    get y(){
-      return Game.toPx(Game.config.playerStartPos.y);
-    }
+  viewBufferSize: 3,
+  get viewCenterPos(){
+    return { x: (Game.game.camera.x + Game.config.width) / 2, y: (Game.game.camera.y + Game.config.height) / 2 };
   },
+  get viewBufferCenterPos(){
+    return { x: (Game.game.camera.x + Game.config.width + ((Game.viewBufferSize * 2) * 64)) / 2, y: (Game.game.camera.y + Game.config.height + ((Game.viewBufferSize * 2) * 64)) / 2 };
+  },
+  viewBufferCenterPoint: { x: 608, y: 416 },
   drawView: function(startY, height){
+    console.log('drawing: '+ startY +' - '+ height);
+
     for(var x = 0; x < Game.config.maxBlockWidth; x++){
       for(var y = startY; y < height; y++){
-        var element = Game.mapNames[Game.map[x][y]];
+        var element = Game.groundAt(x, y, 1);//Game.mapNames[Game.map[x][y]];
   
-        // console.log(element);
-  
+        if(!element) continue;
+        
         if(element.startsWith('ground')){
           Game.entities.ground.create(this.game, Game.toPx(x), Game.toPx(y), element);
         }
@@ -266,45 +286,44 @@ var Game = {
     }
   },
   upkeepView: function(){
-    let xDiff = Math.abs(this.drill.x - this.viewBufferCenterPoint.x);
-    let yDiff = Math.abs(this.drill.y - this.viewBufferCenterPoint.y);
-    let currentViewBottom = this.toGridPos(this.game.camera.y + this.config.height);
+    let xDiff = this.viewBufferCenterPos.x - this.viewBufferCenterPoint.x;
+    let yDiff = this.viewBufferCenterPos.y - this.viewBufferCenterPoint.y;
 
-    console.log({xDiff, yDiff, currentViewBottom});
+    let viewTop = this.toGridPos(this.game.camera.y + this.config.height);
+    let viewBottom = this.toGridPos(this.game.camera.y);
 
-    if(xDiff > this.viewBufferSize || yDiff > this.viewBufferSize){
+    let moving = yDiff < 0 ? 'up' : 'down';
+
+    let drawTop = moving === 'up' ? viewBottom - this.viewBufferSize : viewTop;
+    let drawBottom = moving === 'up' ? viewBottom : viewTop + this.viewBufferSize;
+
+    if(Math.abs(xDiff) / 32 >= this.viewBufferSize || Math.abs(yDiff) / 32 >= this.viewBufferSize){
       this.cleanupView();
+      this.drawView(drawTop, drawBottom);
     }
-
-    this.drawView(currentViewBottom, currentViewBottom + 1);
   },
   cleanupView: function(){
-    console.log('Cleaning up view');
-
     let top = this.game.camera.y;
     let bottom = this.game.camera.y + this.config.height;
 
     function cleanup(entity){
-      if(entity.y > bottom || entity.y < top){
+      if(entity.y > bottom + this.viewBufferSize || entity.y < top + this.viewBufferSize){
         entity.kill();
       }
     }
 
-    this.ground.forEachAlive(cleanup, this);
+    this.ground.forEachAlive(cleanup);
     this.lava.forEachAlive(cleanup);
     this.monsters.forEachAlive(cleanup);
 
-    this.viewBufferCenterPoint = {
-      x: this.drill.x,
-      y: this.drill.y
-    };
+    this.viewBufferCenterPoint = this.viewBufferCenterPos;
   }
 };
 
 window.onload = function(){
   document.getElementById('game').style.marginTop = (document.body.clientHeight - Game.config.height) / 2 +'px';
 
-  Game.config.width = Math.max(10, Math.floor(document.body.clientWidth / 64)) * 64;
+  // Game.config.width = Math.max(10, Math.floor(document.body.clientWidth / 64)) * 64;
   
   var game = Game.game = new Phaser.Game(Game.config.width, Game.config.height, Phaser.AUTO, 'game');
 

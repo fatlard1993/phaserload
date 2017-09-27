@@ -29,7 +29,7 @@ Game.entities.player.getSurrounds = function(){
 };
 
 Game.entities.player.move = function(game, direction){
-  console.log('Drill: On the move, goin: ', direction);
+  // console.log('Drill: On the move, goin: ', direction);
 
   var surrounds = Game.entities.player.getSurrounds();
 
@@ -65,12 +65,12 @@ Game.entities.player.move = function(game, direction){
   };
   var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
   var moveTime = targetGroundType ? Game.config.digTime[Game.config.mode][targetGroundType] : Game.config.drillMoveTime[Game.config.mode];
-    
-  //keep camera with player
-  if(direction === 'up' && newPosition.y < Game.drill.y && newPosition.y <= game.camera.y + Game.config.blockMiddle){
+
+
+  if(direction === 'up'){
     game.add.tween(game.camera).to({ y: game.camera.y - Game.config.blockSize }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
   }
-  else if(direction === 'down' && newPosition.y > Game.drill.y && newPosition.y >= game.camera.y + Game.config.blockMiddle){
+  else if(direction === 'down'){
     game.add.tween(game.camera).to({ y: game.camera.y + Game.config.blockSize }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
   }
 
@@ -93,21 +93,22 @@ Game.entities.player.move = function(game, direction){
 
 
   if(invertTexture){  
-    console.log('Drill: Inverting texture!');
+    // console.log('Drill: Inverting texture!');
     Game.drill.scale.x = -Game.drillScaleX;
   }
   else{
     Game.drill.scale.x = Game.drillScaleX;
   }
   
-  console.log('playing animation: ', direction, Game.drill.scale.x);
+  // console.log('playing animation: ', direction, Game.drill.scale.x);
 
-  
   Game.entities.player.lastMoveInvert = invertTexture;
   Game.entities.player.lastMove = direction;
 
   Game.entities.player.lastPosition = newPosition;
   
+  Game.map[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)] = 0;
+  Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)] = Game.mapNames.indexOf('player1');
   
   Game.depth = (newPosition.y - Game.config.blockMiddle) / Game.config.blockSize;
 

@@ -2,12 +2,10 @@
 
 Game.entities.ground = function(){};
 
-Game.entities.ground.prototype.update = function(){};
+// Game.entities.ground.prototype.update = function(){};
 
 Game.entities.ground.create = function(game, x, y, groundType){
-  groundType = groundType || Game.weightedChance(Game.config.groundDistribution[Game.config.mode]);
-
-  console.log('creating: ', groundType);
+  // console.log('creating: ', groundType);
 
   var ground = Game.ground.getFirstDead();
 
@@ -25,9 +23,6 @@ Game.entities.ground.create = function(game, x, y, groundType){
     ground.revive();
   }
 
-  Game.map[x] = Game.map[x] || [];
-  Game.map[x][y] = groundType;
-
   return ground;
 };
 
@@ -35,16 +30,14 @@ Game.entities.ground.crush = function(pos){
   var groundType = Game.groundAt(pos.x, pos.y);
   console.log('crush: ', groundType, pos);
 
-  for(var i = 0; i < Game.ground.children.length; i++){
-    var ground = Game.ground.children[i];
-    
+  Game.ground.forEachAlive(function(ground){
     if(ground.x === pos.x && ground.y === pos.y && !ground.animations.getAnimation('crush').isPlaying){
       ground.tween = Game.game.add.tween(ground).to({ alpha: 0 }, Game.config.digTime[Game.config.mode][groundType], Phaser.Easing.Cubic.In, true);
       ground.animations.play('crush');
+
+      Game.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)] = 0;
     }
-  }
-  
-  Game.map[pos.x][pos.y] = 0;
+  });
 };
 
 Game.entities.ground.dig = function(pos){

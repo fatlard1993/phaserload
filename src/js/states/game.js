@@ -71,26 +71,17 @@ Game.states.game.prototype.create = function(){
     if(moving){
       console.log(moving);
       Game.entities.player.move(Game.game, moving);
-      
-      if(Game.game.camera.y + Game.game.camera.height > Game.groundDepth - Game.config.blockSize){
-        This.addMoreGround();
-      }
     }
   };
 
   this.game.input.onDown.add(handleTouchRegions);
 
-  Game.map = [[]];
-  
-  // this.createGround();
-
   // a static size map is going to require the adoption of camera x scrolling
-
   Game.generateMap();
 
   console.log(Game.map);
 
-  Game.drawView(Game.config.skyHeight, Game.config.viewBlockHeight);
+  Game.drawView(Game.config.skyHeight, Game.config.viewBlockHeight + Game.viewBufferSize);
 
   Game.entities.player.create(this.game, Game.toPx(Game.config.playerStartPos.x), Game.toPx(Game.config.playerStartPos.y));
   Game.drillScaleX = Game.drill.scale.x;
@@ -165,10 +156,6 @@ Game.states.game.prototype.update = function(){
 
     if(moving){
       Game.entities.player.move(this.game, moving);
-      
-      if(this.game.camera.y + this.game.camera.height > Game.groundDepth - Game.config.blockSize){
-        this.addMoreGround();
-      }
     }
 
     else if(!Game.entities.player.justMoved){
@@ -212,33 +199,4 @@ Game.states.game.prototype.update = function(){
       this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);
     }
   }, this);
-};
-
-Game.states.game.prototype.createGround = function(){
-  Game.groundDepth = Game.config.blockMiddle + Game.config.blockSize;
-
-  this.addMoreGround();
-};
-
-Game.states.game.prototype.addMoreGround = function(){
-  if(this.game.camera.y + this.game.camera.height < Game.groundDepth - Game.config.blockSize) return;
-
-  var x, y;
-  for(x = Game.config.blockSize * 0.5; x < this.game.width; x += Game.config.blockSize){
-    for(y = Game.groundDepth; y < Game.groundDepth + Game.config.blockSize * 5; y += Game.config.blockSize){
-      if(this.game.camera.y < 5 || !Game.chance(Game.config.holeChance[Game.config.mode])){
-        Game.entities.ground.create(this.game, x, y);
-      }
-      
-      else if(Game.chance(Game.config.lavaChance[Game.config.mode])){
-        Game.entities.lava.create(this.game, x, y);
-      }
-
-      else if(Game.chance(Game.config.monsterChance[Game.config.mode])){
-        Game.entities.monster.create(this.game, x, y);
-      }
-    }
-  }
-
-  Game.groundDepth = y;
 };
