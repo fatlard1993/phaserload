@@ -76,7 +76,6 @@ Game.states.game.prototype.create = function(){
 
   this.game.input.onDown.add(handleTouchRegions);
 
-  // a static size map is going to require the adoption of camera x scrolling
   Game.generateMap();
 
   console.log(Game.map);
@@ -84,7 +83,6 @@ Game.states.game.prototype.create = function(){
   Game.drawView(Game.config.skyHeight, Game.config.viewBlockHeight + Game.viewBufferSize);
 
   Game.entities.player.create(this.game, Game.toPx(Game.config.playerStartPos.x), Game.toPx(Game.config.playerStartPos.y));
-  Game.drillScaleX = Game.drill.scale.x;
 
   this.showInstructions();
 
