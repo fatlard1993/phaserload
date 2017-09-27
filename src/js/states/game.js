@@ -90,25 +90,7 @@ Game.states.game.prototype.create = function(){
 
   console.log(Game.map);
 
-  for(var x = 0; x < Game.config.blockWidth; x++){
-    for(var y = Game.config.skyHeight; y < Game.config.viewBlockHeight; y++){
-      var element = Game.mapNames[Game.map[x][y]];
-
-      // console.log(element);
-
-      if(element.startsWith('ground')){
-        Game.entities.ground.create(this.game, Game.toPx(x), Game.toPx(y), element);
-      }
-      
-      else if(element === 'lava'){
-        Game.entities.lava.create(this.game, Game.toPx(x), Game.toPx(y));
-      }
-
-      else if(element === 'monster'){
-        Game.entities.monster.create(this.game, Game.toPx(x), Game.toPx(y));        
-      }
-    }
-  }
+  Game.drawView(Game.config.skyHeight, Game.config.viewBlockHeight);
 
   Game.entities.player.create(this.game, Game.toPx(Game.config.playerStartPos.x), Game.toPx(Game.config.playerStartPos.y));
   Game.drillScaleX = Game.drill.scale.x;

@@ -244,6 +244,27 @@ var Game = {
       return Game.toPx(Game.config.playerStartPos.y);
     }
   },
+  drawView: function(startY, height){
+    for(var x = 0; x < Game.config.maxBlockWidth; x++){
+      for(var y = startY; y < height; y++){
+        var element = Game.mapNames[Game.map[x][y]];
+  
+        // console.log(element);
+  
+        if(element.startsWith('ground')){
+          Game.entities.ground.create(this.game, Game.toPx(x), Game.toPx(y), element);
+        }
+        
+        else if(element === 'lava'){
+          Game.entities.lava.create(this.game, Game.toPx(x), Game.toPx(y));
+        }
+  
+        else if(element === 'monster'){
+          Game.entities.monster.create(this.game, Game.toPx(x), Game.toPx(y));        
+        }
+      }
+    }
+  },
   upkeepView: function(){
     var xDiff = Math.abs(this.drill.x - this.viewBufferCenterPoint.x);
     var yDif = Math.abs(this.drill.y - this.viewBufferCenterPoint.y);
