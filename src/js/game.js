@@ -109,36 +109,6 @@ var Game = {
         purple: 'score:~:purple'
       }
     },
-
-    holeChance: {
-      safe: 0,
-      get normal(){
-        return Game.depth * 0.1;
-      },
-      get chaos(){
-        return Game.depth * 0.5;
-      }
-    },
-
-    lavaChance: {
-      safe: 0,
-      get normal(){
-        return Game.depth * 0.1;
-      },
-      get chaos(){
-        return Game.depth * 0.5;
-      }
-    },
-
-    monsterChance: {
-      safe: 0,
-      get normal(){
-        return Game.depth * 0.1;
-      },
-      get chaos(){
-        return Game.depth * 0.5;
-      }
-    },
   
     monsterWakeupDelay: 600,
     monsterStepDelay: 300,
