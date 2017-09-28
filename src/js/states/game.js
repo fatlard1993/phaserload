@@ -8,7 +8,7 @@ Game.states.game.prototype.create = function(){
   Game.ground = this.game.add.group();
   Game.lava = this.game.add.group();
   
-  var spacecoX = Game.rand(0, Game.config.maxBlockWidth - 3);  
+  var spacecoX = Game.rand(2, Game.config.maxBlockWidth - 2);  
   Game.spaceco = Game.game.add.sprite(Game.toPx(spacecoX), Game.toPx(Game.config.playerStartPos.y), 'spaceco', 10);
   
   Game.spaceco.anchor.setTo(0.5, 0.69);
@@ -176,7 +176,7 @@ Game.states.game.prototype.update = function(){
         var direction;
         
         if(Game.entities.player.lastMove === 'up' && (surrounds.bottomLeft || surrounds.bottomRight)){
-          direction = surrounds.bottomLeft && !surrounds.bottomRight ? 'left' : (surrounds.bottomLeft && surrounds.bottomRight ? (!Game.entities.player.lastMoveInvert ? 'left' : 'right') : 'right');
+          direction = surrounds.bottomLeft && !surrounds.bottomRight ? 'left' : (surrounds.bottomLeft && surrounds.bottomRight ? (Game.entities.player.lastMoveInvert ? 'left' : 'right') : 'right');
         }
         else direction = 'down';
 
