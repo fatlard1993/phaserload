@@ -5,15 +5,22 @@ Game.entities.ground = function(){};
 // Game.entities.ground.prototype.update = function(){};
 
 Game.entities.ground.create = function(game, x, y, groundType){
-  // console.log('creating: ', groundType);
+  if(!groundType){
+    groundType = Game.weightedChance(Game.config.groundDistribution[Game.config.mode]);
+    Game.map[Game.toGridPos(x)][Game.toGridPos(y)] = Game.mapNames.indexOf(groundType);
+  }
+  // console.log('creating: ', groundType, x, y);
 
-  var ground = Game.ground.getFirstDead();
+  // cannot use this until we have a fix for resetting the texture (color)
+  // best idea sofar is to add images to a larger image to create a spritesheet
+  // = Game.ground.getFirstDead();
+  var ground = null;
 
   if(ground === null){
     ground = game.add.sprite(x, y, groundType, 4, Game.ground);
     ground.anchor.setTo(0.5, 0.5);
     
-    var animation = ground.animations.add('crush', [0, 1, 2, 3], 15, false);
+    var animation = ground.animations.add('crush', [1, 2, 3, 4], 10, false);
     animation.killOnComplete = true;
   }
   else{
@@ -28,7 +35,7 @@ Game.entities.ground.create = function(game, x, y, groundType){
 
 Game.entities.ground.crush = function(pos){
   var groundType = Game.groundAt(pos.x, pos.y);
-  console.log('crush: ', groundType, pos);
+  // console.log('crush: ', groundType, pos);
 
   Game.ground.forEachAlive(function(ground){
     if(ground.x === pos.x && ground.y === pos.y && !ground.animations.getAnimation('crush').isPlaying){
@@ -42,7 +49,7 @@ Game.entities.ground.crush = function(pos){
 
 Game.entities.ground.dig = function(pos){
   var groundType = Game.groundAt(pos.x, pos.y);
-  console.log('dig: ', groundType, pos);
+  // console.log('dig: ', groundType, pos);
 
   Game.entities.ground.crush(pos);
 
