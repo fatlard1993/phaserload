@@ -248,6 +248,15 @@ var Game = {
     Game.map = [];
 
     var playerX = Game.rand(0, Game.config.maxBlockWidth);
+
+    var spacecoX = Game.rand(0, Game.config.maxBlockWidth - 3);
+    var spacecoSprite = Game.game.add.sprite(Game.toPx(Game.config.playerStartPos.x), Game.toPx(Game.config.playerStartPos.y), 'spaceco', 10);
+    
+    spacecoSprite.anchor.setTo(0.1, 0.69);
+
+    spacecoSprite.frame = 4;//yeah yeah I know, I fucked up the order..
+    spacecoSprite.scale.setTo(0.25, 0.25);
+    
     
     for(var x = 0; x < Game.config.maxBlockWidth; x++){
       for(var y = 0; y < Game.config.maxBlockHeight; y++){
@@ -258,6 +267,7 @@ var Game = {
         Game.map[x] = Game.map[x] || [];
 
         if(y === Game.config.skyHeight && x === playerX) Game.map[x][y] = Game.mapNames.indexOf('player1');
+        if(y === Game.config.skyHeight && x === spacecoX) Game.map[x][y] = Game.mapNames.indexOf('player1');
   
         if(y > Game.config.skyHeight && Game.chance(groundChance)){
           Game.map[x][y] = Game.mapNames.indexOf(Game.weightedChance(Game.config.groundDistribution[Game.config.mode]));

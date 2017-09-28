@@ -18,6 +18,7 @@ Game.states.load.prototype.preload = function(){
   this.game.load.setPreloadSprite(preloadFg);
 
   this.game.load.spritesheet('hud', '/assets/hud.png', 320, 256);
+  this.game.load.spritesheet('spaceco', '/assets/spaceco.png', 704, 448);
   this.game.load.spritesheet('ground', '/assets/ground.png', 64, 64, 4);
   this.game.load.spritesheet('ground_blue', '/assets/ground_blue.png', 64, 64, 4);
   this.game.load.spritesheet('ground_green', '/assets/ground_green.png', 64, 64, 4);
