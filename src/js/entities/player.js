@@ -3,16 +3,20 @@
 Game.entities.player = function(){};
 
 Game.entities.player.create = function(game, x, y){
-  Game.drill = game.add.sprite(x, y, 'drill', 12);
+  Game.drill = game.add.sprite(x, y, 'drill', 15);
   
   Game.drill.anchor.setTo(0.5, 0.5);
 
-  Game.drill.animations.add('right', [0, 1, 2], 10, true);
-  Game.drill.animations.add('left', [3, 4, 5], 10, true);
-  Game.drill.animations.add('down', [6, 7, 8], 10, true);
-  Game.drill.animations.add('up', [9, 10, 11], 10, true);
+  Game.drill.animations.add('alive', [0, 1, 2], 10, true);
+  Game.drill.animations.add('upgraded', [3, 4, 5], 10, true);
+  Game.drill.animations.add('upgradedx2', [6, 7, 8], 10, true);
+  Game.drill.animations.add('upgradedx3', [9, 10, 11], 10, true);
+  Game.drill.animations.add('teleporting', [12, 13, 14], 10, true);
+  // teleportationAnim.onComplete.add(function(){
+  //   Game.drill.animations.play('alive');
+  // });
 
-  Game.drill.animations.play('right');
+  Game.drill.animations.play('alive');
 
   Game.map[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)] = Game.mapNames.indexOf('player1');
 
@@ -65,22 +69,29 @@ Game.entities.player.move = function(game, direction){
     }, 500);
   }
   
-  Game.drill.animations.play(direction);
+  // Game.drill.animations.play(direction);
   
   var newPosition = {
     x: Game.drill.x + (direction === 'left' ? -Game.config.blockSize : direction === 'right' ? Game.config.blockSize : 0),
     y: Game.drill.y + (direction === 'up' ? -Game.config.blockSize : direction === 'down' ? Game.config.blockSize : 0)
   };
   var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
-  var moveTime = targetGroundType ? Game.config.digTime[Game.config.mode][targetGroundType] : Game.config.drillMoveTime[Game.config.mode];
+  var moveTime = targetGroundType ? Game.config.digTime[Game.config.mode][targetGroundType] ? Game.config.digTime[Game.config.mode][targetGroundType] : Game.config.drillMoveTime[Game.config.mode] : Game.config.drillMoveTime[Game.config.mode];
 
   if(direction === 'teleport'){
+    Game.drill.animations.play('teleporting');
+
+    moveTime = Math.ceil(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y));
+
+    setTimeout(function(){
+      Game.drill.animations.play('alive');
+      Game.offerSpaceco();
+    }, 200 + moveTime);
+
     game.add.tween(game.camera).to({ y: 0 }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
     
     newPosition.x = Game.spaceco.x;
     newPosition.y = Game.spaceco.y;
-
-    Game.offerSpaceco();
   }
   else if(direction === 'up'){
     game.add.tween(game.camera).to({ y: game.camera.y - Game.config.blockSize }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
@@ -88,7 +99,6 @@ Game.entities.player.move = function(game, direction){
   else if(direction === 'down'){
     game.add.tween(game.camera).to({ y: game.camera.y + Game.config.blockSize }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
   }
-
 
   if(targetGroundType){
     console.log('Drill: Im diggin here! ', targetGroundType, newPosition);
@@ -99,11 +109,27 @@ Game.entities.player.move = function(game, direction){
 
 
   var invertTexture = false;
-  if(direction === 'up' && surrounds.right && (!surrounds.left || Game.entities.player.lastMoveInvert)){
-    invertTexture = true;
+
+  if(direction === 'up'){
+    if(surrounds.left){//&& (!surrounds.left || Game.entities.player.lastMoveInvert)
+      invertTexture = true;
+      Game.drill.angle = 90;
+    }
+    else Game.drill.angle = -90;
   }
-  else if(direction === 'down' && (surrounds.right && !surrounds.left || Game.entities.player.lastMoveInvert || Game.entities.player.lastMove === 'left')){
-    invertTexture = true;    
+  else if(direction === 'down'){
+    if(surrounds.right){//&& !surrounds.left || Game.entities.player.lastMoveInvert || Game.entities.player.lastMove === 'left')
+      invertTexture = true;
+      Game.drill.angle = -90;
+    }
+    else Game.drill.angle = 90;
+  }
+  else{
+    Game.drill.angle = 0;    
+  }
+
+  if(direction === 'left'){
+    invertTexture = true;
   }
 
 
@@ -112,7 +138,7 @@ Game.entities.player.move = function(game, direction){
     Game.drill.scale.x = -Game.drillScaleX;
   }
   else{
-    Game.drill.scale.x = Game.drillScaleX;
+    Game.drill.scale.x = Game.drillScaleX;   
   }
   
   // console.log('playing animation: ', direction, Game.drill.scale.x);
