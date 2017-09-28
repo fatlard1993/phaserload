@@ -146,7 +146,7 @@ var Game = {
 
     skyHeight: 4,
     maxBlockWidth: 13,
-    maxBlockHeight: 100,
+    maxBlockHeight: 500,
     viewBlockHeight: 7
   },
   states: {},
