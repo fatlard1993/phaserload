@@ -213,20 +213,29 @@ var Game = {
   toPx: function(gridPos){
     return (gridPos * 64) + 32;
   },
+  offerSpaceco: function(){
+    Game.spacecoOffered = true;
+
+    Game.spacecoText.setText('Move up to enter Spaceco');
+  },
+  revokeSpaceco: function(){
+    Game.spacecoOffered = false;
+    
+    Game.spacecoText.setText('');
+  },
+  enterSapceco: function(){
+    Game.spacecoText.setText('Welcome to Spaceco we love you');
+
+    if(Game.config.mode === 'normal'){
+      Game.greenScore += Game.blueScore * 2;
+      Game.blueScore = 0;
+    }
+  },
   mapNames: ['hole', 'monster', 'player1', 'ground', 'ground_red', 'ground_green', 'ground_blue', 'ground_teal', 'ground_purple', 'lava'],
   generateMap: function(){
     Game.map = [];
 
     var playerX = Game.rand(0, Game.config.maxBlockWidth);
-
-    var spacecoX = Game.rand(0, Game.config.maxBlockWidth - 3);
-    var spacecoSprite = Game.game.add.sprite(Game.toPx(Game.config.playerStartPos.x), Game.toPx(Game.config.playerStartPos.y), 'spaceco', 10);
-    
-    spacecoSprite.anchor.setTo(0.1, 0.69);
-
-    spacecoSprite.frame = 4;//yeah yeah I know, I fucked up the order..
-    spacecoSprite.scale.setTo(0.25, 0.25);
-    
     
     for(var x = 0; x < Game.config.maxBlockWidth; x++){
       for(var y = 0; y < Game.config.maxBlockHeight; y++){
@@ -237,7 +246,6 @@ var Game = {
         Game.map[x] = Game.map[x] || [];
 
         if(y === Game.config.skyHeight && x === playerX) Game.map[x][y] = Game.mapNames.indexOf('player1');
-        if(y === Game.config.skyHeight && x === spacecoX) Game.map[x][y] = Game.mapNames.indexOf('player1');
   
         if(y > Game.config.skyHeight && Game.chance(groundChance)){
           Game.map[x][y] = Game.mapNames.indexOf(Game.weightedChance(Game.config.groundDistribution[Game.config.mode]));

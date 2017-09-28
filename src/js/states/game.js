@@ -7,6 +7,15 @@ Game.states.game.prototype.create = function(){
 
   Game.ground = this.game.add.group();
   Game.lava = this.game.add.group();
+  
+  var spacecoX = Game.rand(0, Game.config.maxBlockWidth - 3);  
+  Game.spaceco = Game.game.add.sprite(Game.toPx(spacecoX), Game.toPx(Game.config.playerStartPos.y), 'spaceco', 10);
+  
+  Game.spaceco.anchor.setTo(0.5, 0.69);
+
+  Game.spaceco.frame = 4;//yeah yeah I know, I fucked up the order..
+  Game.spaceco.scale.setTo(0.25, 0.25);
+
   Game.monsters = this.game.add.group();
 
   Game.hud = this.game.add.sprite(0, 0, 'hud');
@@ -16,32 +25,35 @@ Game.states.game.prototype.create = function(){
   var hudItemCount = Game.hudItemCount = Object.keys(Game.config.hudContents[Game.config.mode]).length;
 
   if(hudItemCount > 0){
-    Game.hudLine1 = this.game.add.text(15, 10, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor, stroke: Game.config.backgroundColor, strokeThickness: 0 });
+    Game.hudLine1 = this.game.add.text(15, 10, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor });
     Game.hud.addChild(Game.hudLine1);
   }
   if(hudItemCount > 1){
-    Game.hudLine2 = this.game.add.text(15, 52, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor, stroke: Game.config.backgroundColor, strokeThickness: 0 });
+    Game.hudLine2 = this.game.add.text(15, 52, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor });
     Game.hud.addChild(Game.hudLine2);
   }
   if(hudItemCount > 2){
-    Game.hudLine3 = this.game.add.text(15, 94, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor, stroke: Game.config.backgroundColor, strokeThickness: 0 });
+    Game.hudLine3 = this.game.add.text(15, 94, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor });
     Game.hud.addChild(Game.hudLine3);
   }
   if(hudItemCount > 3){
-    Game.hudLine4 = this.game.add.text(15, 136, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor, stroke: Game.config.backgroundColor, strokeThickness: 0 });
+    Game.hudLine4 = this.game.add.text(15, 136, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor });
     Game.hud.addChild(Game.hudLine4);
   }
   if(hudItemCount > 4){
-    Game.hudLine5 = this.game.add.text(15, 178, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor, stroke: Game.config.backgroundColor, strokeThickness: 0 });
+    Game.hudLine5 = this.game.add.text(15, 178, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor });
     Game.hud.addChild(Game.hudLine5);
   }
+
+  Game.spacecoText = this.game.add.text(350, 10, '', { font: '48px '+ Game.config.font, fill: '#fff', weight: 'bold' });
+  Game.hud.addChild(Game.spacecoText);
 
   this.game.input.keyboard.addKeyCapture([
     Phaser.Keyboard.LEFT,
     Phaser.Keyboard.RIGHT,
     Phaser.Keyboard.UP,
     Phaser.Keyboard.DOWN,
-    Phaser.Keyboard.SPACEBAR
+    Phaser.Keyboard.X
   ]);
 
   var leftQuarter = new Phaser.Rectangle(0, 0, this.game.width/4, this.game.height);
@@ -150,6 +162,9 @@ Game.states.game.prototype.update = function(){
     }
     else if(this.input.keyboard.isDown(Phaser.Keyboard.UP)){
       moving = 'up';
+    }
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.X)){
+      moving = 'teleport';
     }
 
     if(moving){

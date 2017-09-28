@@ -35,6 +35,10 @@ Game.entities.player.getSurrounds = function(){
 Game.entities.player.move = function(game, direction){
   // console.log('Drill: On the move, goin: ', direction);
 
+  if(direction === 'up' && Game.spacecoOffered){
+    return Game.enterSapceco();
+  }
+
   var surrounds = Game.entities.player.getSurrounds();
 
   if(direction === 'left' && (Game.drill.x <= Game.config.blockSize/2 || (!surrounds.bottomLeft && !surrounds.bottom))){
@@ -70,8 +74,15 @@ Game.entities.player.move = function(game, direction){
   var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
   var moveTime = targetGroundType ? Game.config.digTime[Game.config.mode][targetGroundType] : Game.config.drillMoveTime[Game.config.mode];
 
+  if(direction === 'teleport'){
+    game.add.tween(game.camera).to({ y: 0 }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
+    
+    newPosition.x = Game.spaceco.x;
+    newPosition.y = Game.spaceco.y;
 
-  if(direction === 'up'){
+    Game.offerSpaceco();
+  }
+  else if(direction === 'up'){
     game.add.tween(game.camera).to({ y: game.camera.y - Game.config.blockSize }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
   }
   else if(direction === 'down'){
@@ -115,6 +126,13 @@ Game.entities.player.move = function(game, direction){
   Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)] = Game.mapNames.indexOf('player1');
   
   Game.depth = (newPosition.y - Game.config.blockMiddle) / Game.config.blockSize;
+
+  if(!Game.spacecoOffered && Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.config.blockSize + 10){
+    Game.offerSpaceco();
+  }
+  else if(Game.spacecoOffered && Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) > Game.config.blockSize - 10){
+    Game.revokeSpaceco();
+  }
 
   if(Game.config.mode === 'normal'){
     // use fuel
