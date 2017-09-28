@@ -243,7 +243,7 @@ var Game = {
   toPx: function(gridPos){
     return (gridPos * 64) + 32;
   },
-  mapNames: ['hole', 'ground', 'ground_red', 'ground_green', 'ground_blue', 'ground_teal', 'ground_purple', 'lava', 'monster', 'player1'],
+  mapNames: ['hole', 'monster', 'player1', 'ground', 'ground_red', 'ground_green', 'ground_blue', 'ground_teal', 'ground_purple', 'lava'],
   generateMap: function(){
     Game.map = [];
 
