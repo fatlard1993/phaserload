@@ -3,9 +3,9 @@
 Game.states.boot = function(game){};
 
 Game.states.boot.prototype.preload = function(){
-  this.game.load.image('preloader-icon', '/assets/preloader-icon.png');
-  this.game.load.image('preloader-bg', '/assets/preloader-bg.png');
-  this.game.load.image('preloader-fg', '/assets/preloader-fg.png');
+  this.game.load.image('preloader-icon', '/assets/preloader/preloader-icon.png');
+  this.game.load.image('preloader-bg', '/assets/preloader/preloader-bg.png');
+  this.game.load.image('preloader-fg', '/assets/preloader/preloader-fg.png');
 };
 
 Game.states.boot.prototype.create = function(){
