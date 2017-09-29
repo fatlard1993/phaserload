@@ -7,6 +7,7 @@ Game.states.game.prototype.create = function(){
 
   Game.ground = this.game.add.group();
   Game.lava = this.game.add.group();
+  Game.minerals = this.game.add.group();
   
   var spacecoX = Game.rand(2, Game.config.maxBlockWidth - 2);  
   Game.spaceco = Game.game.add.sprite(Game.toPx(spacecoX), Game.toPx(Game.config.playerStartPos.y), 'spaceco', 10);

@@ -58,6 +58,12 @@ var Game = {
       chaos: { ground: 0.2, ground_blue: 0.16, ground_green: 0.16, ground_purple: 0.16, ground_teal: 0.16, ground_red: 0.16 }
     },
 
+    mineralDistribution: {
+      safe: { mineral_green: 0.7, mineral_red: 0.1, mineral_blue: 0.2 },
+      normal: { mineral_green: 0.7, mineral_red: 0.1, mineral_blue: 0.2 },
+      chaos: { mineral_green: 0.7, mineral_red: 0.1, mineral_blue: 0.2 }
+    },
+
     digTime: {
       safe: {
         ground: 300,
@@ -243,7 +249,7 @@ var Game = {
       Game.purpleScore = 0;
     }
   },
-  mapNames: ['hole', 'monster', 'player1', 'ground', 'ground_red', 'ground_green', 'ground_blue', 'ground_teal', 'ground_purple', 'lava'],
+  mapNames: ['hole', 'monster', 'player1', 'ground', 'ground_red', 'ground_green', 'ground_blue', 'ground_teal', 'ground_purple', 'lava', 'mineral_green', 'mineral_red', 'mineral_blue'],
   generateMap: function(){
     Game.map = [];
 
@@ -251,8 +257,9 @@ var Game = {
     
     for(var x = 0; x < Game.config.maxBlockWidth; x++){
       for(var y = 0; y < Game.config.maxBlockHeight; y++){
-        var groundChance = 100 - (y * 0.1);
+        var groundChance = 100 - (y * 0.5);
         var lavaChance = y * 0.1;
+        var mineralChance = 90;
         var monsterChance = y * 0.1;
   
         Game.map[x] = Game.map[x] || [];
@@ -261,6 +268,10 @@ var Game = {
   
         if(y > Game.config.skyHeight && Game.chance(groundChance)){
           Game.map[x][y] = Game.mapNames.indexOf(Game.weightedChance(Game.config.groundDistribution[Game.config.mode]));
+        }
+
+        else if(y > Game.config.skyHeight + 3 && Game.chance(mineralChance)){      
+          Game.map[x][y] = Game.mapNames.indexOf(Game.weightedChance(Game.config.mineralDistribution[Game.config.mode]));
         }
         
         else if(y > Game.config.skyHeight + 5 && Game.chance(lavaChance)){
@@ -309,6 +320,11 @@ var Game = {
         
         if(element.startsWith('ground')){
           Game.entities.ground.create(this.game, Game.toPx(x), Game.toPx(y), element);
+        }
+
+        else if(element.startsWith('mineral')){
+          console.log(element);
+          Game.entities.mineral.create(Game.game, Game.toPx(x), Game.toPx(y), element);
         }
         
         else if(element === 'lava'){

@@ -49,6 +49,7 @@ gulp.task('compile-js', function(){
     'src/js/_log.js',
     'src/js/game.js',
     'src/js/entities/player.js',
+    'src/js/entities/mineral.js',
     'src/js/entities/ground.js',
     'src/js/entities/lava.js',
     'src/js/entities/monster.js',
