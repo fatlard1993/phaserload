@@ -85,8 +85,7 @@ var Game = {
     blockBehavior: {
       normal: {
         ground_red: 'lava:~:40',
-        ground_teal: 'lavaSolidify',
-        ground_purple: 'save:~:90,lavaRelease'
+        ground_teal: 'lavaSolidify'
       }
     },
 
@@ -99,7 +98,9 @@ var Game = {
       normal: {
         depth: 'depth',
         fuel: 'fuel',
-        diamonds: 'score:~:blue'
+        blue: 'score:~:blue',
+        green: 'score:~:green',
+        purple: 'score:~:purple'
       },
       chaos: {
         depth: 'depth',
@@ -194,10 +195,10 @@ var Game = {
     for(var x = 0; x < Game.hudItemCount; x++){
       var label = hudItemLabels[x];
       var value = Game.config.hudContents[Game.config.mode][hudItemLabels[x]].split(':~:');
-      var text = label +': ';
+      var text = label.substring(0, 1).toUpperCase() + label.substring(1) +': ';
       
       if(value[0] === 'depth') text += Game.depth;
-      else if(value[0] === 'fuel') text += Game.greenScore.toFixed(1);
+      else if(value[0] === 'fuel') text += Game.fuel.toFixed(1);
       else{
         if(value[0] === 'score' && Game[value[1] +'Score']) text += Game[value[1] +'Score'];
       }
@@ -216,19 +217,30 @@ var Game = {
   offerSpaceco: function(){
     Game.spacecoOffered = true;
 
-    Game.spacecoText.setText('Move up to enter Spaceco');
+    Game.spacecoText.setText(' [up] to enter Spaceco ');
   },
   revokeSpaceco: function(){
     Game.spacecoOffered = false;
     
-    Game.spacecoText.setText('');
+    Game.spacecoText.setText(' Good bye! ');
+
+    setTimeout(function(){
+      Game.spacecoText.setText('');
+    }, 500);
   },
   enterSapceco: function(){
-    Game.spacecoText.setText('Welcome to Spaceco we love you');
+    Game.spacecoText.setText(' Welcome to Spaceco we love you ');
 
     if(Game.config.mode === 'normal'){
-      Game.greenScore += Game.blueScore * 2;
+      Game.fuel += Game.whiteScore * 0.02;
+      Game.fuel += Game.blueScore * 1.5;
+      Game.fuel += Game.greenScore * 0.05;
+      Game.fuel += Game.purpleScore * 1.3;
+
+      Game.whiteScore = 0;
       Game.blueScore = 0;
+      Game.greenScore = 0;
+      Game.purpleScore = 0;
     }
   },
   mapNames: ['hole', 'monster', 'player1', 'ground', 'ground_red', 'ground_green', 'ground_blue', 'ground_teal', 'ground_purple', 'lava'],

@@ -161,8 +161,7 @@ Game.entities.player.move = function(game, direction){
   }
 
   if(Game.config.mode === 'normal'){
-    // use fuel
-    Game.greenScore -= 0.1;
+    Game.fuel -= 0.1;
   }
 
   Game.updateHud();

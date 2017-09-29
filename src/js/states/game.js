@@ -46,7 +46,7 @@ Game.states.game.prototype.create = function(){
     Game.hud.addChild(Game.hudLine5);
   }
 
-  Game.spacecoText = this.game.add.text(350, 10, '', { font: '48px '+ Game.config.font, fill: '#fff', weight: 'bold' });
+  Game.spacecoText = this.game.add.text(350, 10, '', { font: '48px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
   Game.hud.addChild(Game.spacecoText);
 
   this.game.input.keyboard.addKeyCapture([
@@ -100,10 +100,11 @@ Game.states.game.prototype.create = function(){
   this.showInstructions();
 
   Game.depth = 0;
+  Game.fuel = Game.config.mode === 'normal' ? 5 : 0;
   
   Game.whiteScore = 0;
   Game.blueScore = 0;
-  Game.greenScore = Game.config.mode === 'normal' ? 5 : 0;
+  Game.greenScore = 0;
   Game.redScore = 0;
   Game.purpleScore = 0;
   Game.tealScore = 0;
@@ -142,7 +143,7 @@ Game.states.game.prototype.showInstructions = function(){
 };
 
 Game.states.game.prototype.update = function(){
-  if(Game.config.mode === 'normal' && Game.greenScore < 0){
+  if(Game.config.mode === 'normal' && Game.fuel < 0){
     Game.loseReason = 'fuel';
     return this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);
   }
