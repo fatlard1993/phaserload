@@ -234,6 +234,10 @@ var Game = {
   },
   revokeSpaceco: function(){
     Game.spacecoOffered = false;
+
+    Game.spacecoText.setText('');    
+
+    Game.closeDialog();
     
     Game.infoLine.setText(' Good bye! ');
 
