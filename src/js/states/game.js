@@ -13,7 +13,8 @@ Game.states.game.prototype.create = function(){
   
   Game.spaceco.anchor.setTo(0.5, 0.69);
 
-  Game.spaceco.frame = 4;//yeah yeah I know, I fucked up the order..
+  Game.spacecoDamage = 0;
+  Game.spaceco.frame = Game.spacecoDamage;
   Game.spaceco.scale.setTo(0.25, 0.25);
 
   Game.monsters = this.game.add.group();
@@ -197,6 +198,10 @@ Game.states.game.prototype.update = function(){
       this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);
     }
 
+    if(this.game.math.distance(Game.spaceco.x, Game.spaceco.y, lava.x, lava.y) < Game.config.blockSize){
+      Game.spaceco.kill();
+    }
+
     Game.monsters.forEachAlive(function(monster){
       if(this.game.math.distance(monster.x, monster.y, lava.x, lava.y) < Game.config.blockSize){
         monster.kill();
@@ -212,4 +217,26 @@ Game.states.game.prototype.update = function(){
       this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);
     }
   }, this);
+
+  if(Game.spacecoDamage < 10 && !this.game.tweens.isTweening(Game.spaceco)){
+    var gridPos = {
+      x: Game.toGridPos(Game.spaceco.x),
+      y: Game.toGridPos(Game.spaceco.y)
+    };
+
+    var spacecoGroundBase = {
+      bottomRight: Game.map[gridPos.x + 1][gridPos.y + 1],
+      bottom: Game.map[gridPos.x][gridPos.y + 1],
+      bottomLeft: Game.map[gridPos.x - 1][gridPos.y + 1]
+    };
+
+    if(spacecoGroundBase.bottomRight < 3 && spacecoGroundBase.bottom < 3 && spacecoGroundBase.bottomLeft < 3){
+      Game.game.add.tween(Game.spaceco).to({ y: Game.spaceco.y + Game.config.blockSize }, 500, Phaser.Easing.Sinusoidal.InOut, true);
+
+      Game.spacecoDamage++;
+
+      if(Game.spacecoDamage === 10) setTimeout(Game.spaceco.kill, 400);
+      else Game.spaceco.frame = Game.spacecoDamage;
+    }  
+  }
 };

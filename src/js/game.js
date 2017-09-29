@@ -235,7 +235,7 @@ var Game = {
   generateMap: function(){
     Game.map = [];
 
-    var playerX = Game.rand(0, Game.config.maxBlockWidth);
+    var playerX = Game.rand(0, Game.config.maxBlockWidth - 1);
     
     for(var x = 0; x < Game.config.maxBlockWidth; x++){
       for(var y = 0; y < Game.config.maxBlockHeight; y++){
