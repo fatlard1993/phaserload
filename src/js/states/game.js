@@ -80,14 +80,22 @@ Game.states.game.prototype.create = function(){
   var This = this;
 
   var handleTouchRegions = function(pointer){
-    // if(Game.inSpaceco){
+    if(Game.inSpaceco){
       
-    //   console.log(pointer, pointer.x, pointer.y);
+      console.log(pointer, pointer.x, pointer.y);
 
-    //   if(this.game.math.distance(pointer.x, pointer.y, monster.x, monster.y) < Game.config.blockSize/2)
+      if(pointer.y > 65 && pointer.y < 92){
+        //menu
+        if(pointer.x > 42 && pointer.x < 134) Game.drawSpacecoView('rates');
+        else if(pointer.x > 142 && pointer.x < 250) Game.drawSpacecoView('fuel');
+        else if(pointer.x > 255 && pointer.x < 335) Game.drawSpacecoView('shop');
+        else if(pointer.x > 345 && pointer.x < 420) Game.revokeSpaceco();
+      }
 
-    //   return;
-    // }
+      // if(this.game.math.distance(pointer.x, pointer.y, monster.x, monster.y) < Game.config.blockSize/2)
+
+      return;
+    }
 
     if(Game.game.tweens.isTweening(Game.drill)) return;
     var moving;

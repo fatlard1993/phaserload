@@ -245,21 +245,25 @@ var Game = {
 
     setTimeout(function(){
       Game.infoLine.setText('');
+      
+      Game.updateHud();
     }, 500);
   },
   drawSpacecoView: function(view){
+    Game.spacecoView = view;
+
     if(view === 'rates'){
-       
+      Game.spacecoText.setText(Game.spacecoGreeting + '\n  {Rates} | Fuel | Shop | Exit\n' + Game.spacecoRates);
     }
     else if(view === 'fuel'){
-      Game.spacecoText.setText(Game.spacecoGreeting + Game.spacecoMenu + Game.spacecoFuel);
+      Game.spacecoText.setText(Game.spacecoGreeting + '\n  Rates | {Fuel} | Shop | Exit\n' + Game.spacecoFuel);
     }
     else if(view === 'shop'){
-      Game.spacecoText.setText(Game.spacecoGreeting + Game.spacecoMenu + Game.spacecoProducts);
+      Game.spacecoText.setText(Game.spacecoGreeting + '\n  Rates | Fuel | {Shop} | Exit\n' + Game.spacecoProducts);
     }
   },
   spacecoGreeting: ' Welcome to Spaceco, we love you ',
-  spacecoMenu: '\n      Rates | Fuel | Shop\n',
+  spacecoRates: '\nCS32 : $8',
   spacecoFuel: '\nGas : $1\nSuper Oxygen Liquid Nitrogen : $2\nEnergy Charge : $1',
   spacecoProducts: '\nTeleporter : $2\nRepair : $4\nUpgrade : $10',
   enterSapceco: function(){
@@ -274,7 +278,7 @@ var Game = {
     Game.displayOpen = true;
     Game.inSpaceco = true;
 
-    Game.drawSpacecoView('fuel');
+    Game.drawSpacecoView('rates');
 
     if(Game.config.mode === 'normal'){
       Game.credits += Game.whiteScore * 0.02;
