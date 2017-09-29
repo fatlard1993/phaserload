@@ -259,7 +259,7 @@ var Game = {
     }
   },
   spacecoGreeting: ' Welcome to Spaceco, we love you ',
-  spacecoMenu: '\nRates | Fuel | Shop\n',
+  spacecoMenu: '\n      Rates | Fuel | Shop\n',
   spacecoFuel: '\nGas : $1\nSuper Oxygen Liquid Nitrogen : $2\nEnergy Charge : $1',
   spacecoProducts: '\nTeleporter : $2\nRepair : $4\nUpgrade : $10',
   enterSapceco: function(){
@@ -295,6 +295,9 @@ var Game = {
       Game.hull.mineral_green = 0;
       Game.hull.mineral_red = 0;
       Game.hull.mineral_blue = 0;
+
+      Game.fuel += Game.credits;
+      Game.credits = 0;
 
       Game.updateHud();
     }
