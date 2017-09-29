@@ -8,6 +8,11 @@ Game.states.game.prototype.create = function(){
   Game.ground = this.game.add.group();
   Game.lava = this.game.add.group();
   Game.minerals = this.game.add.group();
+
+  Game.teleporter = Game.game.add.sprite(150, 20, 'teleporter');
+  Game.teleporter.anchor.setTo(0.5, 0.5);
+  Game.teleporter.fixedToCamera = true;  
+  
   
   var spacecoX = Game.rand(2, Game.config.maxBlockWidth - 2);  
   Game.spaceco = Game.game.add.sprite(Game.toPx(spacecoX), Game.toPx(Game.config.playerStartPos.y), 'spaceco', 10);
@@ -75,19 +80,22 @@ Game.states.game.prototype.create = function(){
   var This = this;
 
   var handleTouchRegions = function(pointer){
-    if(Game.inSpaceco){
+    // if(Game.inSpaceco){
       
-      console.log(pointer, pointer.x, pointer.y);
+    //   console.log(pointer, pointer.x, pointer.y);
 
-      if(this.game.math.distance(pointer.x, pointer.y, monster.x, monster.y) < Game.config.blockSize/2)
+    //   if(this.game.math.distance(pointer.x, pointer.y, monster.x, monster.y) < Game.config.blockSize/2)
 
-      return;
-    }
+    //   return;
+    // }
 
     if(Game.game.tweens.isTweening(Game.drill)) return;
     var moving;
 
-    if(middleUpperQuarter.contains(pointer.x, pointer.y)){
+    if(Game.game.math.distance(pointer.x, pointer.y, Game.teleporter.x, Game.teleporter.y) < 32){
+      moving = 'teleport';
+    }
+    else if(middleUpperQuarter.contains(pointer.x, pointer.y)){
       moving = 'up';
     }
     else if(middleLowerQuarter.contains(pointer.x, pointer.y)){
