@@ -20,6 +20,12 @@ Game.states.game.prototype.create = function(){
 
   Game.monsters = this.game.add.group();
 
+  Game.generateMap();  
+
+  Game.drawView(Game.config.skyHeight, Game.config.viewBlockHeight + Game.viewBufferSize);
+  
+  Game.entities.player.create(this.game, Game.toPx(Game.config.playerStartPos.x), Game.toPx(Game.config.playerStartPos.y));
+
   Game.hud = this.game.add.sprite(0, 0, 'hud');
   Game.hud.scale.setTo(0.4, 0.4);
   Game.hud.fixedToCamera = true;
@@ -47,7 +53,10 @@ Game.states.game.prototype.create = function(){
     Game.hud.addChild(Game.hudLine5);
   }
 
-  Game.spacecoText = this.game.add.text(350, 10, '', { font: '48px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
+  Game.infoLine = this.game.add.text(15, 320, '', { font: '48px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
+  Game.hud.addChild(Game.infoLine);
+
+  Game.spacecoText = this.game.add.text(20, 20, '', { font: '14px '+ Game.config.font, fill: '#fff', fontWeight: 'bold' });
   Game.hud.addChild(Game.spacecoText);
 
   this.game.input.keyboard.addKeyCapture([
@@ -66,6 +75,15 @@ Game.states.game.prototype.create = function(){
   var This = this;
 
   var handleTouchRegions = function(pointer){
+    if(Game.inSpaceco){
+      
+      console.log(pointer, pointer.x, pointer.y);
+
+      if(this.game.math.distance(pointer.x, pointer.y, monster.x, monster.y) < Game.config.blockSize/2)
+
+      return;
+    }
+
     if(Game.game.tweens.isTweening(Game.drill)) return;
     var moving;
 
@@ -90,17 +108,13 @@ Game.states.game.prototype.create = function(){
 
   this.game.input.onDown.add(handleTouchRegions);
 
-  Game.generateMap();
-
-  console.log(Game.map);
-
-  Game.drawView(Game.config.skyHeight, Game.config.viewBlockHeight + Game.viewBufferSize);
-
-  Game.entities.player.create(this.game, Game.toPx(Game.config.playerStartPos.x), Game.toPx(Game.config.playerStartPos.y));
-
   this.showInstructions();
 
+  Game.hull = {};
+  Game.hull.space = 10;
+
   Game.depth = 0;
+  Game.credits = 0;
   Game.fuel = Game.config.mode === 'normal' ? 5 : 0;
   
   Game.whiteScore = 0;
@@ -109,6 +123,9 @@ Game.states.game.prototype.create = function(){
   Game.redScore = 0;
   Game.purpleScore = 0;
   Game.tealScore = 0;
+  Game.hull.mineral_green = 0;
+  Game.hull.mineral_red = 0;
+  Game.hull.mineral_blue = 0;
 
   Game.updateHud();
 };
@@ -193,7 +210,7 @@ Game.states.game.prototype.update = function(){
   Game.lava.forEachAlive(function(lava){
     if(!lava.lethal) return;
 
-    if(this.game.math.distance(Game.drill.x, Game.drill.y, lava.x, lava.y) < Game.config.blockSize/2){
+    if(!Game.drill.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(Game.drill.x, Game.drill.y, lava.x, lava.y) < Game.config.blockSize/2){
       Game.drill.kill();
       Game.loseReason = 'lava';
       

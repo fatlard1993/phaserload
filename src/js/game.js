@@ -54,7 +54,7 @@ var Game = {
 
     groundDistribution: {
       safe: { ground: 0.7, ground_blue: 0.1, ground_green: 0.2 },
-      normal: { ground: 0.7, ground_blue: 0.01, ground_green: 0.12, ground_purple: 0.01, ground_teal: 0.01, ground_red: 0.15 },
+      normal: { ground: 0.7, ground_blue: 0.01, ground_green: 0.12, ground_purple: 0.01, ground_red: 0.15 },
       chaos: { ground: 0.2, ground_blue: 0.16, ground_green: 0.16, ground_purple: 0.16, ground_teal: 0.16, ground_red: 0.16 }
     },
 
@@ -75,8 +75,7 @@ var Game = {
         ground: 500,
         ground_green: 620,
         ground_blue: 700,
-        ground_teal: 820,
-        ground_purple: 960
+        ground_purple: 860
       },
       chaos: {
         ground_red: 100,
@@ -90,30 +89,23 @@ var Game = {
 
     blockBehavior: {
       normal: {
-        ground_red: 'lava:~:40',
-        ground_teal: 'lavaSolidify'
+        ground_red: 'lava:~:35'
       }
     },
 
     hudContents: {
       safe: {
-        depth: 'depth',
-        blue: 'score:~:blue',
-        green: 'score:~:green'
+        depth: 'Depth'
       },
       normal: {
-        depth: 'depth',
-        fuel: 'fuel',
-        blue: 'score:~:blue',
-        green: 'score:~:green',
-        purple: 'score:~:purple'
+        depth: 'Depth',
+        credits: '$',
+        fuel: 'Fuel',
+        hull: 'Hull',
+        mineral_blue: 'CSP32'
       },
       chaos: {
-        depth: 'depth',
-        blue: 'score:~:blue',
-        green: 'score:~:green',
-        teal: 'score:~:teal',
-        purple: 'score:~:purple'
+        depth: 'Depth'
       }
     },
   
@@ -196,23 +188,38 @@ var Game = {
     
     return element === 'hole' ? 0 : element;
   },
+  hull: {},
+  displayOpen: false,
   updateHud: function(){
-    var hudItemLabels = Object.keys(Game.config.hudContents[Game.config.mode]);
+    if(Game.displayOpen) return;
+    var hudItemNames = Object.keys(Game.config.hudContents[Game.config.mode]);
     for(var x = 0; x < Game.hudItemCount; x++){
-      var label = hudItemLabels[x];
-      var value = Game.config.hudContents[Game.config.mode][hudItemLabels[x]].split(':~:');
-      var text = label.substring(0, 1).toUpperCase() + label.substring(1) +': ';
+      var item = hudItemNames[x];
+      var value = Game.config.hudContents[Game.config.mode][hudItemNames[x]].split(':~:');
+      var text = value[0] +': ';
       
-      if(value[0] === 'depth') text += Game.depth;
-      else if(value[0] === 'fuel') text += Game.fuel.toFixed(1);
+      if(item === 'depth') text += Game.depth;
+      else if(item === 'fuel') text += Game.fuel.toFixed(1);
+      else if(item === 'credits') text += Game.credits.toFixed(1);
+      else if(item === 'hull') text += Game.hull.space.toFixed(1);
       else{
-        if(value[0] === 'score' && Game[value[1] +'Score']) text += Game[value[1] +'Score'];
+        if(item.startsWith('mineral') && Game.hull[item]) text += Game.hull[item];
       }
 
       // console.log('setting: ', 'hudLine'+ (x + 1), ' to: ', text);
   
       Game['hudLine'+ (x + 1)].setText(text);
     }
+  },
+  openInventory: function(){
+    Game.hud.scale.setTo(1, 1);
+    
+    Game.displayOpen = true;
+  },
+  closeDialog: function(){
+    Game.hud.scale.setTo(0.4, 0.4);
+    
+    Game.displayOpen = false;
   },
   toGridPos: function(px){
     return Math.round((px - 32) / 64);
@@ -223,30 +230,69 @@ var Game = {
   offerSpaceco: function(){
     Game.spacecoOffered = true;
 
-    Game.spacecoText.setText(' [up] to enter Spaceco ');
+    Game.infoLine.setText(' [up] to enter Spaceco ');
   },
   revokeSpaceco: function(){
     Game.spacecoOffered = false;
     
-    Game.spacecoText.setText(' Good bye! ');
+    Game.infoLine.setText(' Good bye! ');
+
+    Game.inSpaceco = false;
 
     setTimeout(function(){
-      Game.spacecoText.setText('');
+      Game.infoLine.setText('');
     }, 500);
   },
+  drawSpacecoView: function(view){
+    if(view === 'rates'){
+       
+    }
+    else if(view === 'fuel'){
+      Game.spacecoText.setText(Game.spacecoGreeting + Game.spacecoMenu + Game.spacecoFuel);
+    }
+    else if(view === 'shop'){
+      Game.spacecoText.setText(Game.spacecoGreeting + Game.spacecoMenu + Game.spacecoProducts);
+    }
+  },
+  spacecoGreeting: ' Welcome to Spaceco, we love you ',
+  spacecoMenu: '\nRates | Fuel | Shop\n',
+  spacecoFuel: '\nGas : $1\nSuper Oxygen Liquid Nitrogen : $2\nEnergy Charge : $1',
+  spacecoProducts: '\nTeleporter : $2\nRepair : $4\nUpgrade : $10',
   enterSapceco: function(){
-    Game.spacecoText.setText(' Welcome to Spaceco we love you ');
+    for(var x = 0; x < Game.hudItemCount; x++){
+      Game['hudLine'+ (x + 1)].setText('');
+    }
+
+    Game.infoLine.setText('');
+    
+    Game.hud.scale.setTo(1.5, 1.5);
+    
+    Game.displayOpen = true;
+    Game.inSpaceco = true;
+
+    Game.drawSpacecoView('fuel');
 
     if(Game.config.mode === 'normal'){
-      Game.fuel += Game.whiteScore * 0.02;
-      Game.fuel += Game.blueScore * 1.5;
-      Game.fuel += Game.greenScore * 0.05;
-      Game.fuel += Game.purpleScore * 1.3;
+      Game.credits += Game.whiteScore * 0.02;
+      Game.credits += Game.greenScore * 0.05;
+      Game.credits += Game.blueScore * 0.9;
+      Game.credits += Game.purpleScore * 1.1;
+      Game.credits += Game.hull.mineral_green * 3;
+      Game.credits += Game.hull.mineral_red * 4.5;
+      Game.credits += Game.hull.mineral_blue * 8;
 
       Game.whiteScore = 0;
       Game.blueScore = 0;
       Game.greenScore = 0;
       Game.purpleScore = 0;
+
+      Game.hull = {};
+      Game.hull.space = 10;
+      Game.hull.mineral_green = 0;
+      Game.hull.mineral_red = 0;
+      Game.hull.mineral_blue = 0;
+
+      Game.updateHud();
     }
   },
   mapNames: ['hole', 'monster', 'player1', 'ground', 'ground_red', 'ground_green', 'ground_blue', 'ground_teal', 'ground_purple', 'lava', 'mineral_green', 'mineral_red', 'mineral_blue'],
@@ -257,9 +303,9 @@ var Game = {
     
     for(var x = 0; x < Game.config.maxBlockWidth; x++){
       for(var y = 0; y < Game.config.maxBlockHeight; y++){
-        var groundChance = 100 - (y * 0.5);
-        var lavaChance = y * 0.1;
-        var mineralChance = 90;
+        var groundChance = 100 - (y * 0.2);
+        var mineralChance = y;
+        var lavaChance = y * 0.2;
         var monsterChance = y * 0.1;
   
         Game.map[x] = Game.map[x] || [];

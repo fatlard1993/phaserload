@@ -57,6 +57,10 @@ Game.entities.ground.dig = function(pos){
     Game.entities.ground.applyBehavior(Game.config.blockBehavior[Game.config.mode][groundType].split(':~:')[0], Game.config.blockBehavior[Game.config.mode][groundType].split(':~:')[1], pos);
   }
 
+  Game.hull.space -= 0.13;
+
+  if(Game.hull.space < 0) return;
+
   if(groundType === 'ground'){
     Game.whiteScore++;
   }

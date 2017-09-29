@@ -102,7 +102,24 @@ Game.entities.player.move = function(game, direction){
 
   if(targetGroundType){
     console.log('Drill: Im diggin here! ', targetGroundType, newPosition);
-    Game.entities.ground.dig(newPosition);
+
+    if(targetGroundType.startsWith('mineral') && Game.hull.space > 0){
+      Game.minerals.forEachAlive(function(mineral){
+        if(mineral.x === newPosition.x && mineral.y === newPosition.y){
+          Game.hull[mineral.type] = Game.hull[mineral.type] || 0;
+          
+          Game.hull[mineral.type]++;
+
+          Game.hull.space -= 1;
+
+          mineral.kill();
+    
+          Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)] = 0;
+        }
+      });
+    }
+
+    else Game.entities.ground.dig(newPosition);
   }
   
   game.add.tween(Game.drill).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
