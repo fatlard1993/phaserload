@@ -92,7 +92,7 @@ Game.states.game.prototype.create = function(){
     if(Game.game.tweens.isTweening(Game.drill)) return;
     var moving;
 
-    if(Game.game.math.distance(pointer.x, pointer.y, Game.teleporter.x, Game.teleporter.y) < 32){
+    if(Game.game.math.distance(pointer.x, pointer.y, 150, 20) < 32){
       moving = 'teleport';
     }
     else if(middleUpperQuarter.contains(pointer.x, pointer.y)){
