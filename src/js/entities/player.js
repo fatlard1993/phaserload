@@ -69,39 +69,42 @@ Game.entities.player.move = function(game, direction){
   var newPosition = {
     x: Game.drill.x + (direction === 'left' ? -Game.config.blockSize : direction === 'right' ? Game.config.blockSize : 0),
     y: Game.drill.y + (direction === 'up' ? -Game.config.blockSize : direction === 'down' ? Game.config.blockSize : 0)
-  };
+  }, newCameraPosition;
   var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
-  var moveTime = targetGroundType ? Game.config.digTime[Game.config.mode][targetGroundType] ? Game.config.digTime[Game.config.mode][targetGroundType] : Game.config.drillMoveTime[Game.config.mode] : Game.config.drillMoveTime[Game.config.mode];
+  var moveTime = targetGroundType ? Game.config.digTime[Game.config.mode][targetGroundType.replace('ground_', '')] ? Game.config.digTime[Game.config.mode][targetGroundType.replace('ground_', '')] : Game.config.drillMoveTime[Game.config.mode] : Game.config.drillMoveTime[Game.config.mode];
 
   if(direction === 'teleport'){
+    Game.cleanupView(1);
+
     Game.drill.animations.play('teleporting');
 
     moveTime = Math.ceil(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y));
 
     setTimeout(function(){
+      Game.drawCurrentView();
       Game.drill.animations.play('alive');
       Game.offerSpaceco();
     }, 200 + moveTime);
 
-    game.add.tween(game.camera).to({ y: 0, x: Game.spaceco.x }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
-    
+    newCameraPosition = { x: Game.spaceco.x - Game.config.width / 2, y: 0 };    
+
     newPosition.x = Game.spaceco.x;
     newPosition.y = Game.spaceco.y;
   }
   else if(direction === 'up'){
-    game.add.tween(game.camera).to({ y: game.camera.y - Game.config.blockSize }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
+    newCameraPosition = { x: game.camera.x, y: game.camera.y - Game.config.blockSize };
   }
   else if(direction === 'down'){
-    game.add.tween(game.camera).to({ y: game.camera.y + Game.config.blockSize }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
+    newCameraPosition = { x: game.camera.x, y: game.camera.y + Game.config.blockSize };
   }
   else if(direction === 'left' && Math.abs((game.camera.x + Game.config.width) - Game.drill.x) > Game.config.width / 2){
-    console.log(game.camera.x);
-    game.add.tween(game.camera).to({ x: Math.max(0, game.camera.x - Game.config.blockSize) }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
+    newCameraPosition = { x: Math.max(0, game.camera.x - Game.config.blockSize), y: game.camera.y };
   }
-  else if(direction === 'right'  && Math.abs(game.camera.x - Game.drill.x) > Game.config.width / 2){
-    console.log(game.camera.x);
-    game.add.tween(game.camera).to({ x: Math.min((Game.config.maxBlockWidth * 64) - (Game.config.width), game.camera.x + Game.config.blockSize) }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
+  else if(direction === 'right' && Math.abs(game.camera.x - Game.drill.x) > Game.config.width / 2){
+    newCameraPosition = { x: Math.min((Game.config.maxBlockWidth * 64) - (Game.config.width), game.camera.x + Game.config.blockSize), y: game.camera.y };
   }
+
+  if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime);
 
   if(targetGroundType){
     console.log('Drill: Im diggin here! ', targetGroundType, newPosition);
@@ -109,22 +112,29 @@ Game.entities.player.move = function(game, direction){
     if(targetGroundType.startsWith('mineral') && Game.hull.space > 0){
       Game.minerals.forEachAlive(function(mineral){
         if(mineral.x === newPosition.x && mineral.y === newPosition.y){
-          Game.hull[mineral.type] = Game.hull[mineral.type] || 0;
+          Game.hull[mineral.type] = Game.hull[mineral.type] !== undefined ? Game.hull[mineral.type] : 0;
           
           Game.hull[mineral.type]++;
 
-          Game.hull.space -= 1;
-
-          mineral.kill();
-    
-          Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)] = 0;
+          game.add.tween(mineral).to({ x: game.camera.x, y: game.camera.y }, 600, Phaser.Easing.Quadratic.Out, true);
+  
+          setTimeout(function(){
+            Game.hull.space -= 0.5;
+  
+            mineral.kill();
+      
+            Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)] = -1;
+            Game.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)] = -1;
+          }, 600);
         }
       });
     }
 
-    else Game.entities.ground.dig(newPosition);
+    else if(targetGroundType.startsWith('ground')) Game.entities.ground.dig(newPosition);
   }
   
+  if(Game.hull.space < 0) moveTime += 250;
+
   game.add.tween(Game.drill).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
 
 
@@ -166,8 +176,10 @@ Game.entities.player.move = function(game, direction){
 
   Game.entities.player.lastPosition = newPosition;
   
-  Game.map[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)] = 0;
+  Game.map[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)] = -1;
   Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)] = Game.mapNames.indexOf('player1');
+  Game.viewBufferMap[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)] = -1;
+  Game.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)] = Game.mapNames.indexOf('player1');
   
   Game.depth = (newPosition.y - Game.config.blockMiddle) / Game.config.blockSize;
 
@@ -184,7 +196,5 @@ Game.entities.player.move = function(game, direction){
 
   setTimeout(function(){
     Game.updateHud();
-  
-    Game.upkeepView();
-  }, moveTime);
+  }, moveTime + 150);
 };
