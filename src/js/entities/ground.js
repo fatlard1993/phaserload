@@ -1,90 +1,86 @@
 /* global Phaser, Game */
 
-Game.entities.ground = function(){};
+Game.entities.ground = function(game, x, y, type){
+  Phaser.Sprite.call(this, game, x, y, 'ground');
 
-// Game.entities.ground.prototype.update = function(){};
+  this.anchor.setTo(0.5, 0.5);
 
-Game.entities.ground.create = function(game, x, y, groundType){
-  if(!groundType){
-    groundType = Game.weightedChance(Game.config.groundDistribution[Game.config.mode]);
-    Game.map[Game.toGridPos(x)][Game.toGridPos(y)] = Game.mapNames.indexOf(groundType);
-  }
-  // console.log('creating: ', groundType, x, y);
-
-  // cannot use this until we have a fix for resetting the texture (color)
-  // best idea sofar is to add images to a larger image to create a spritesheet
-  // = Game.ground.getFirstDead();
-  var ground = null;
-
-  if(ground === null){
-    ground = game.add.sprite(x, y, groundType, 4, Game.ground);
-    ground.anchor.setTo(0.5, 0.5);
-    
-    var animation = ground.animations.add('crush', [1, 2, 3, 4], 10, false);
-    animation.killOnComplete = true;
-  }
-  else{
-    ground.reset(x, y);
-    ground.frame = 0;
-    ground.alpha = 1;
-    ground.revive();
+  if(!type){
+    type = Game.weightedChance(Game.config.groundDistribution[Game.config.mode]);
+    Game.map[Game.toGridPos(x)][Game.toGridPos(y)] = Game.mapNames.indexOf(type);
+    Game.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)] = Game.mapNames.indexOf(type);
   }
 
-  return ground;
+  type = type.replace('ground_', '');
+
+  this.ground_type = type;
+  this.ground_type_ID = Game.entities.ground.types.indexOf(type);
+
+  var frameMod = this.ground_type_ID * 4;
+
+  this.frame = 0 + frameMod;
+  
+  var animation = this.animations.add('crush_'+ type, [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod], 10, false);
+  animation.killOnComplete = true;
 };
 
+Game.entities.ground.prototype = Object.create(Phaser.Sprite.prototype);
+Game.entities.ground.prototype.constructor = Game.entities.ground;
+
+Game.entities.ground.types = ['white', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink', 'red', 'black'];
+
+Game.entities.ground.create = function(game, x, y, type){
+  return Game.ground.add(new Game.entities.ground(game, x, y, type))
+};
+
+
 Game.entities.ground.crush = function(pos){
-  var groundType = Game.groundAt(pos.x, pos.y);
+  var groundType = Game.groundAt(pos.x, pos.y).replace('ground_', '');
   // console.log('crush: ', groundType, pos);
 
   Game.ground.forEachAlive(function(ground){
-    if(ground.x === pos.x && ground.y === pos.y && !ground.animations.getAnimation('crush').isPlaying){
+    if(ground.x === pos.x && ground.y === pos.y && !ground.animations.getAnimation('crush_'+ ground.ground_type).isPlaying){
       ground.tween = Game.game.add.tween(ground).to({ alpha: 0 }, Game.config.digTime[Game.config.mode][groundType], Phaser.Easing.Cubic.In, true);
-      ground.animations.play('crush');
+      ground.animations.play('crush_'+ ground.ground_type);
 
-      Game.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)] = 0;
+      Game.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)] = -1;
+      Game.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)] = -1;
     }
   });
 };
 
 Game.entities.ground.dig = function(pos){
-  var groundType = Game.groundAt(pos.x, pos.y);
-  // console.log('dig: ', groundType, pos);
+  var type = Game.groundAt(pos.x, pos.y);
 
+  // console.log('dig: ', type, pos);
+  if(!type) return;
+  
   Game.entities.ground.crush(pos);
-
-  if(Game.config.blockBehavior[Game.config.mode] && Game.config.blockBehavior[Game.config.mode][groundType] && Game.entities.ground.behaviors[Game.config.blockBehavior[Game.config.mode][groundType].split(':~:')[0]]){
-    Game.entities.ground.applyBehavior(Game.config.blockBehavior[Game.config.mode][groundType].split(':~:')[0], Game.config.blockBehavior[Game.config.mode][groundType].split(':~:')[1], pos);
+  
+  if(Game.config.blockBehavior[Game.config.mode] && Game.config.blockBehavior[Game.config.mode][type] && Game.entities.ground.behaviors[Game.config.blockBehavior[Game.config.mode][type].split(':~:')[0]]){
+    Game.entities.ground.applyBehavior(Game.config.blockBehavior[Game.config.mode][type].split(':~:')[0], Game.config.blockBehavior[Game.config.mode][type].split(':~:')[1], pos);
   }
+
+  if(type === 'ground_red') return;
+
+  type = type.replace('ground_', '');
+
+  if(Game.hull.space < 0) return;  
 
   Game.hull.space -= 0.13;
 
-  if(Game.hull.space < 0) return;
+  Game.hull['ground_'+ type] = Game.hull['ground_'+ type] !== undefined ? Game.hull['ground_'+ type] : 0;
 
-  if(groundType === 'ground'){
-    Game.whiteScore++;
-  }
-  else if(groundType === 'ground_blue'){
-    Game.blueScore++;
-  }
-  else if(groundType === 'ground_red'){
-    Game.redScore++; 
-  }
-  else if(groundType === 'ground_green'){
-    Game.greenScore++;
-  }
-  else if(groundType === 'ground_purple'){
-    Game.purpleScore++;
-  }
-  else if(groundType === 'ground_teal'){
-    Game.tealScore++;
-  }
+  Game.hull['ground_'+ type]++;
 };
 
 
 Game.entities.ground.behaviors = {
   lava: function(chance, pos){
-    if(Game.chance(chance)) Game.entities.lava.create(Game.game, pos.x, pos.y);
+    if(Game.chance(chance)){
+      Game.entities.lava.create(Game.game, pos.x, pos.y);
+      Game.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)] = Game.mapNames.indexOf('lava');
+    }
   },
   lavaRelease: function(){
     for(var x = Game.config.blockSize / 2; x < Game.game.width; x += Game.config.blockSize){
@@ -92,6 +88,7 @@ Game.entities.ground.behaviors = {
         if(Game.chance(90) && Game.groundAt(x, y) === 'ground_red'){
           Game.entities.ground.crush({ x: x, y: y });
           Game.entities.lava.create(Game.game, x, y);
+          Game.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)] = Game.mapNames.indexOf('lava');
         }
       }
     }
@@ -108,10 +105,12 @@ Game.entities.ground.behaviors = {
     if(Game.chance(chance)){
       Game.lava.forEachAlive(function(lava){
         if(Game.chance(85)) lava.kill();
+        Game.viewBufferMap[Game.toGridPos(lava.x)][Game.toGridPos(lava.y)] = -1;
       }, this);
   
       Game.monsters.forEachAlive(function(monster){
         if(Game.chance(85)) monster.kill();
+        Game.viewBufferMap[Game.toGridPos(monster.x)][Game.toGridPos(monster.y)] = -1;
       }, this);
     }
 
