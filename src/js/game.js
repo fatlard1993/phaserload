@@ -10,39 +10,15 @@ var Game = {
 
     hudTextColor: '#94B133',
 
-    width: 832,
-    height: 448,
+    width: 'auto',//832,
+    height: 'auto',//448,
   
     blockSize: 64,
     blockMiddle: 64 * 3.5,
   
     drillMoveTime: {
-      safe: 300,
-      normal: 300,
-      chaos: 100
-    },
-
-    storeItemPrices: {
-      safe: {
-        fuel: 1,
-        teleporter: 1
-      },
-      normal: {
-        fuel: 1,
-        teleporter: 1,
-        hullUpgrade: 1
-      }
-    },
-
-    storeMineralPurchase: {
-      safe: {
-        dirt: 'white:~:1',
-        diamonds: 'blue:~:1'
-      },
-      normal: {
-        dirt: 'white:~:1',
-        diamonds: 'blue:~:1'
-      }
+      debug: 200,
+      normal: 300
     },
 
     playerStartPos: {
@@ -50,41 +26,43 @@ var Game = {
       y: 4
     },
 
-    mode: 'normal',
+    mode: 'normal',//idea: needle in a haystact mode 1 block with a win condition
 
     groundDistribution: {
-      safe: { ground: 0.7, ground_blue: 0.1, ground_green: 0.2 },
-      normal: { ground: 0.7, ground_blue: 0.01, ground_green: 0.12, ground_purple: 0.01, ground_red: 0.15 },
-      chaos: { ground: 0.2, ground_blue: 0.16, ground_green: 0.16, ground_purple: 0.16, ground_teal: 0.16, ground_red: 0.16 }
+      debug: { white: 0.1, orange: 0.1, yellow: 0.1, green: 0.1, teal: 0.1, blue: 0.1, purple: 0.1, pink: 0.1, red: 0.1, black: 0.1 },
+      normal: { white: 0.18, orange: 0.18, yellow: 0.15, green: 0.05, teal: 0.04, blue: 0.03, purple: 0.02, pink: 0.02, red: 0.18, black: 0.15 }
     },
 
     mineralDistribution: {
-      safe: { mineral_green: 0.7, mineral_red: 0.1, mineral_blue: 0.2 },
-      normal: { mineral_green: 0.7, mineral_red: 0.1, mineral_blue: 0.2 },
-      chaos: { mineral_green: 0.7, mineral_red: 0.1, mineral_blue: 0.2 }
+      debug: { mineral_green: 0.4, mineral_red: 0.3, mineral_blue: 0.3 },
+      normal: { mineral_green: 0.7, mineral_red: 0.1, mineral_blue: 0.2 }
     },
 
     digTime: {
-      safe: {
-        ground: 300,
-        ground_green: 300,
-        ground_blue: 300
+      debug: {
+        white: 200,
+        orange: 200,
+        yellow: 200,
+        green: 200,
+        teal: 200,
+        blue: 200,
+        purple: 200,
+        pink: 200,
+        red: 200,
+        black: 200
       },
       normal: {
-        ground_red: 450,
-        ground: 500,
-        ground_green: 620,
-        ground_blue: 700,
-        ground_purple: 860
+        white: 400,
+        orange: 450,
+        yellow: 480,
+        green: 500,
+        teal: 620,
+        blue: 560,
+        purple: 580,
+        pink: 600,
+        red: 350,
+        black: 1100
       },
-      chaos: {
-        ground_red: 100,
-        ground: 100,
-        ground_green: 100,
-        ground_blue: 100,
-        ground_teal: 100,
-        ground_purple: 100
-      }
     },
 
     blockBehavior: {
@@ -94,18 +72,17 @@ var Game = {
     },
 
     hudContents: {
-      safe: {
-        depth: 'Depth'
-      },
-      normal: {
-        position: 'GPS',
+      debug: {
+        position_dbg: '*',
         credits: '$',
         fuel: 'Fuel',
-        hull: 'Hull',
-        mineral_blue: 'CSP32'
+        hull: 'Hull'
       },
-      chaos: {
-        depth: 'Depth'
+      normal: {
+        position: '*',
+        credits: '$',
+        fuel: 'Fuel',
+        hull: 'Hull'
       }
     },
   
@@ -114,7 +91,7 @@ var Game = {
     monsterMoveSpeed: 400,
 
     skyHeight: 4,
-    maxBlockWidth: 23,
+    maxBlockWidth: 32,
     maxBlockHeight: 500,
     viewBlockHeight: 7
   },
@@ -199,7 +176,8 @@ var Game = {
       var text = value[0] +': ';
       
       if(item === 'depth') text += Game.depth;
-      else if(item === 'position') text += 'x'+ Game.toGridPos(Game.drill.x) +' y'+ Game.toGridPos(Game.drill.y);
+      else if(item === 'position_dbg') text += 'x'+ Game.toGridPos(Game.drill.x) +' y'+ Game.toGridPos(Game.drill.y);
+      else if(item === 'position') text += 'x'+ (Game.toGridPos(Game.drill.x) + 1) +' y'+ -(Game.toGridPos(Game.drill.y) - Game.config.skyHeight);
       else if(item === 'fuel') text += Game.fuel.toFixed(1);
       else if(item === 'credits') text += Game.credits.toFixed(1);
       else if(item === 'hull') text += Game.hull.space.toFixed(1);
@@ -239,6 +217,7 @@ var Game = {
     Game.spacecoText.setText('');    
 
     Game.closeDialog();
+    Game.updateHud();
     
     Game.infoLine.setText(' Good bye! ');
 
@@ -246,9 +225,7 @@ var Game = {
 
     setTimeout(function(){
       Game.infoLine.setText('');
-      
-      Game.updateHud();
-    }, 500);
+    }, 800);
   },
   drawSpacecoView: function(view){
     Game.spacecoView = view;
@@ -263,8 +240,13 @@ var Game = {
       Game.spacecoText.setText(Game.spacecoGreeting + '\n  Rates | Fuel | {Shop} | Exit\n' + Game.spacecoProducts);
     }
   },
+  spacecoMineralPrices: {
+    green: 3,
+    red: 4.5,
+    blue: 8
+  },
   spacecoGreeting: ' Welcome to Spaceco, we love you ',
-  spacecoRates: '\nCS32 : $8',
+  spacecoRates: '\n    We basically just rob you,\n              but...\n    We do give you some fuel!',
   spacecoFuel: '\nGas : $1\nSuper Oxygen Liquid Nitrogen : $2\nEnergy Charge : $1',
   spacecoProducts: '\nTeleporter : $2\nRepair : $4\nUpgrade : $10',
   enterSapceco: function(){
@@ -282,24 +264,19 @@ var Game = {
     Game.drawSpacecoView('rates');
 
     if(Game.config.mode === 'normal'){
-      Game.credits += Game.whiteScore * 0.02;
-      Game.credits += Game.greenScore * 0.05;
-      Game.credits += Game.blueScore * 0.9;
-      Game.credits += Game.purpleScore * 1.1;
-      Game.credits += Game.hull.mineral_green * 3;
-      Game.credits += Game.hull.mineral_red * 4.5;
-      Game.credits += Game.hull.mineral_blue * 8;
+      delete Game.hull.space;
 
-      Game.whiteScore = 0;
-      Game.blueScore = 0;
-      Game.greenScore = 0;
-      Game.purpleScore = 0;
+      var mineralNames = Object.keys(Game.hull);
+
+      for(var x = 0; x < mineralNames.length; x++){
+        if(mineralNames[x].startsWith('ground')) Game.credits += Game.hull[mineralNames[x]] * Game.config.groundDistribution[Game.config.mode][mineralNames[x].replace('ground_', '')]
+        else if(mineralNames[x].startsWith('mineral')){
+          Game.credits += Game.hull[mineralNames[x]] * Game.spacecoMineralPrices[mineralNames[x].replace('mineral_', '')];
+        }
+      }
 
       Game.hull = {};
       Game.hull.space = 10;
-      Game.hull.mineral_green = 0;
-      Game.hull.mineral_red = 0;
-      Game.hull.mineral_blue = 0;
 
       Game.fuel += Game.credits;
       Game.credits = 0;
@@ -307,7 +284,7 @@ var Game = {
       Game.updateHud();
     }
   },
-  mapNames: ['hole', 'monster', 'player1', 'ground', 'ground_red', 'ground_green', 'ground_blue', 'ground_teal', 'ground_purple', 'lava', 'mineral_green', 'mineral_red', 'mineral_blue'],
+  mapNames: ['hole', 'monster', 'player1', 'lava', 'mineral_green', 'mineral_red', 'mineral_blue', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
   generateMap: function(){
     Game.map = [];
 
@@ -321,11 +298,13 @@ var Game = {
         var monsterChance = y * 0.1;
   
         Game.map[x] = Game.map[x] || [];
+        Game.viewBufferMap[x] = Game.viewBufferMap[x] || [];
+        Game.viewBufferMap[x][y] = -1;
 
         if(y === Game.config.skyHeight && x === playerX) Game.map[x][y] = Game.mapNames.indexOf('player1');
   
         if(y > Game.config.skyHeight && Game.chance(groundChance)){
-          Game.map[x][y] = Game.mapNames.indexOf(Game.weightedChance(Game.config.groundDistribution[Game.config.mode]));
+          Game.map[x][y] = Game.mapNames.indexOf('ground_'+ Game.weightedChance(Game.config.groundDistribution[Game.config.mode]));
         }
 
         else if(y > Game.config.skyHeight + 3 && Game.chance(mineralChance)){      
@@ -359,28 +338,51 @@ var Game = {
 
     return found;
   },
+  viewBufferMap: [],
   viewBufferSize: 3,
-  get viewCenterPos(){
-    return { x: (Game.game.camera.x + 832) / 2, y: (Game.game.camera.y + Game.config.height) / 2 };
+  adjustViewPosition: function(newX, newY, time){
+    var oldX = Game.game.camera.x;
+    var oldY = Game.game.camera.y;
+    
+    var left = Game.toGridPos(oldX > newX ? newX : oldX) - Game.viewBufferSize;
+    var top = Game.toGridPos(oldY > newY ? newY : oldY) - Game.viewBufferSize;
+    var right = Game.toGridPos((oldX < newX ? newX : oldX) + Game.config.width) + Game.viewBufferSize;
+    var bottom = Game.toGridPos((oldY < newY ? newY : oldY) + Game.config.height) + Game.viewBufferSize;
+    
+    left = Math.max(0, Math.min(Game.toPx(Game.config.maxBlockWidth) - Game.config.width - 32, left));
+    newX = Math.max(0, Math.min(Game.toPx(Game.config.maxBlockWidth) - Game.config.width - 32, newX));
+    
+    Game.drawView(left, top, right, bottom);
+
+    Game.game.add.tween(Game.game.camera).to({ x: newX, y: newY }, time, Phaser.Easing.Sinusoidal.InOut, true);
+
+    Game.cleanupView();
   },
-  get viewBufferCenterPos(){
-    return { x: (Game.game.camera.x + 832 + ((Game.viewBufferSize * 2) * 64)) / 2, y: (Game.game.camera.y + Game.config.height + ((Game.viewBufferSize * 2) * 64)) / 2 };
+  drawCurrentView: function(){
+    Game.drawView(Game.toGridPos(Game.game.camera.x) - Game.viewBufferSize, Game.toGridPos(Game.game.camera.y) - Game.viewBufferSize, Game.toGridPos(Game.game.camera.x + Game.config.width) + Game.viewBufferSize, Game.toGridPos(Game.game.camera.y + Game.config.height) + Game.viewBufferSize);    
   },
-  viewBufferCenterPoint: { x: 608, y: 416 },
   drawView: function(left, top, right, bottom){
-    left = Math.max(0, left);
-    right = Math.min(Game.config.maxBlockWidth, right);
+    if(top - 3 < 0) top = 0;
+    if(left - 3 < 0) left = 0;
+    if(bottom + 3 > Game.config.maxBlockHeight) bottom = Game.config.maxBlockHeight;
+    if(right + 3 > Game.config.maxBlockWidth) right = Game.config.maxBlockWidth;
 
     console.log('drawing: x'+ left +' y'+ top +' to x'+ right +' y'+ bottom);
 
     for(var x = left; x < right; x++){
       for(var y = top; y < bottom; y++){
         var element = Game.groundAt(x, y, 1);
-  
+
         if(!element) continue;
+        if(Game.viewBufferMap[x][y] >= 0){
+          // console.log('alerady rendered ', x, y, Game.viewBufferMap[x][y], element);
+          continue;
+        }
+        
+        Game.viewBufferMap[x][y] = Game.mapNames.indexOf(element);
         
         if(element.startsWith('ground')){
-          Game.entities.ground.create(this.game, Game.toPx(x), Game.toPx(y), element);
+          Game.entities.ground.create(Game.game, Game.toPx(x), Game.toPx(y), element);
         }
 
         else if(element.startsWith('mineral')){
@@ -397,41 +399,25 @@ var Game = {
       }
     }
   },
-  upkeepView: function(){
-    let xDiff = this.viewBufferCenterPos.x - this.viewBufferCenterPoint.x;
-    let yDiff = this.viewBufferCenterPos.y - this.viewBufferCenterPoint.y;
-
-    let viewTop = this.toGridPos(this.game.camera.y);
-    let viewLeft = this.toGridPos(this.game.camera.x);
-    let viewBottom = this.toGridPos(this.game.camera.y + this.config.height);
-    let viewRight = this.toGridPos(this.game.camera.x + this.config.width);
-
-    let movingV = yDiff === 0 ? 'not' : yDiff < 0 ? 'up' : 'down';
-    let movingH = xDiff === 0 ? 'not' : xDiff < 0 ? 'left' : 'right';
-    
-    console.log(xDiff, yDiff, movingH, movingV);
-    
-    if(Math.abs(xDiff) / 32 >= this.viewBufferSize || Math.abs(yDiff) / 32 >= this.viewBufferSize){
-      let drawTop = movingV === 'not' ? viewTop : movingV === 'up' ? viewTop - this.viewBufferSize : viewBottom;
-      let drawBottom = movingV === 'not' ? viewBottom : movingV === 'up' ? viewTop : viewBottom + this.viewBufferSize;
-      let drawLeft = movingH === 'not' ? viewLeft : movingH === 'left' ? viewLeft : viewRight - this.viewBufferSize;
-      let drawRight = movingH === 'not' ? viewRight : movingH === 'left' ? viewLeft + this.viewBufferSize : viewRight;
-
-      this.cleanupView();
-      this.drawView(drawLeft, drawTop, drawRight, drawBottom);
-    }
-  },
-  cleanupView: function(){
+  cleanupView: function(force){
     let viewTop = this.game.camera.y;
     let viewLeft = this.game.camera.x;
     let viewBottom = this.game.camera.y + this.config.height;
     let viewRight = this.game.camera.x + this.config.width;
 
     function cleanup(entity){
-      if(entity.y > viewBottom + (this.viewBufferSize * 64) || entity.y < viewTop - (this.viewBufferSize * 64)){
-        entity.kill();
+      var clean = false;
+
+      if(force) clean = true;
+      else{
+        var pxViewBuffer = Game.toPx(Game.viewBufferSize);
+  
+        if(entity.y > viewBottom + pxViewBuffer || entity.y < viewTop - pxViewBuffer) clean = true;
+        else if(entity.x > viewRight + pxViewBuffer || entity.x < viewLeft - pxViewBuffer) clean = true;
       }
-      if(entity.x > viewRight + (this.viewBufferSize * 64) || entity.x < viewLeft - (this.viewBufferSize * 64)){
+
+      if(clean){
+        Game.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)] = -1;
         entity.kill();
       }
     }
@@ -439,17 +425,22 @@ var Game = {
     this.ground.forEachAlive(cleanup);
     this.lava.forEachAlive(cleanup);
     this.monsters.forEachAlive(cleanup);
-
-    this.viewBufferCenterPoint = this.viewBufferCenterPos;
   }
 };
 
 window.onload = function(){
   console.log('onload');
 
-  document.getElementById('game').style.marginTop = (document.body.clientHeight - Game.config.height) / 2 +'px';
+  if(Game.config.width === 'auto') Game.config.width = Math.max(10, Math.min(20, Math.floor(document.body.clientWidth / 64))) * 64;
+  if(Game.config.height === 'auto'){
+    Game.config.height = Math.max(6, Math.min(9, Math.floor(document.body.clientHeight / 64))) * 64;
+    
+    document.getElementById('game').style.marginTop = (document.body.clientHeight > Game.config.height ? (document.body.clientHeight - Game.config.height) / 5 : 0) +'px';
 
-  // Game.config.width = Math.max(10, Math.floor(document.body.clientWidth / 64)) * 64;
+    if(Game.config.height <= 448){
+      Game.config.skyHeight = Game.config.playerStartPos.y = 3;
+    }
+  }
   
   Game.game = new Phaser.Game(Game.config.width, Game.config.height, Phaser.AUTO, 'game');
   
