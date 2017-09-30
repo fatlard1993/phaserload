@@ -18,7 +18,10 @@ Game.entities.lava = function(game, x, y){
 
     var slotId = Game.map[gridPos.x][gridPos.y];
   
-    if(slotId < 3) Game.map[gridPos.x][gridPos.y] = Game.mapNames.indexOf('lava');
+    if(slotId < 3){
+      Game.viewBufferMap[gridPos.x][gridPos.y] = Game.mapNames.indexOf('lava');
+      Game.map[gridPos.x][gridPos.y] = Game.mapNames.indexOf('lava');
+    }
 
     var spread = {
       left: this.x > Game.config.blockSize / 2 && Game.map[gridPos.x - 1][gridPos.y] < 3 ? 1 : 0,

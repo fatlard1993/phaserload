@@ -11,17 +11,9 @@ Game.states.boot.prototype.preload = function(){
 Game.states.boot.prototype.create = function(){
   console.log('boot');
 
-  // this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-  // this.game.scale.width = Game.config.width;
-  // this.game.scale.height = Game.config.height;
-  this.game.scale.maxWidth = Game.config.width;
-  this.game.scale.maxHeight = Game.config.height;
+  this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   this.game.scale.pageAlignHorizontally = true;
-  // this.game.scale.pageAlignVertically = true;
-  // this.game.scale.refresh();
-  // this.game.stage.backgroundColor = Game.config.backgroundColor;
-
-  // this.game.setBounds(0, 0, Game.toPx(Game.maxBlockWidth), Game.toPx(Game.maxBlockHeight));
+  this.game.scale.pageAlignVertically = true;
 
   this.game.add.text(10, 10, '...', { font: '100px '+ Game.config.font, fill: Game.config.textColor });
 
