@@ -5,11 +5,10 @@ Game.states.game = function(game){};
 Game.states.game.prototype.create = function(){
   console.log('game');
 
-  Game.setupStage();
+  Game.setupStage(); 
 
   Game.ground = this.game.add.group();
   Game.lava = this.game.add.group();
-  Game.minerals = this.game.add.group();
 
   Game.teleporter = Game.game.add.sprite(150, 20, 'teleporter');
   Game.teleporter.anchor.setTo(0.5, 0.5);
@@ -26,13 +25,14 @@ Game.states.game.prototype.create = function(){
   Game.spaceco.scale.setTo(0.25, 0.25);
 
   Game.monsters = this.game.add.group();
+  Game.minerals = this.game.add.group();
 
   Game.generateMap();
 
   Game.game.camera.bounds = null;
-  Game.game.camera.x = Math.max(0, Math.min((Game.config.maxBlockWidth * 64) - Game.config.width, Game.toPx(Game.config.playerStartPos.x - (13 / 2))));
+  Game.game.camera.x = Math.max(0, Math.min((Game.config.maxBlockWidth * 64) - Game.config.width, Game.toPx(Game.config.playerStartPos.x) - Game.config.width / 2));
 
-  Game.drawView(Game.toGridPos(Game.game.camera.x), Game.config.skyHeight, Game.toGridPos(Game.game.camera.x) + 16, Game.config.viewBlockHeight + Game.viewBufferSize);
+  Game.drawView(Game.toGridPos(Game.game.camera.x) - Game.viewBufferSize, Game.config.skyHeight + 1, Game.toGridPos(Game.game.camera.x + Game.config.width) + Game.viewBufferSize, Game.toGridPos(Game.config.height) + Game.viewBufferSize);
   
   Game.entities.player.create(this.game, Game.toPx(Game.config.playerStartPos.x), Game.toPx(Game.config.playerStartPos.y));
 
