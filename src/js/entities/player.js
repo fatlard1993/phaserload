@@ -12,10 +12,7 @@ Game.entities.player.create = function(game, x, y){
   Game.drill.animations.add('upgradedx2', [6, 7, 8], 10, true);
   Game.drill.animations.add('upgradedx3', [9, 10, 11], 10, true);
   Game.drill.animations.add('teleporting', [12, 13, 14], 10, true);
-  // teleportationAnim.onComplete.add(function(){
-  //   Game.drill.animations.play('alive');
-  // });
-
+  
   Game.drill.animations.play('alive');
 
   Game.map[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)] = Game.mapNames.indexOf('player1');
@@ -48,7 +45,7 @@ Game.entities.player.move = function(game, direction){
   if(direction === 'left' && (Game.drill.x <= Game.config.blockSize/2 || (!surrounds.bottomLeft && !surrounds.bottom))){
     return;
   }
-  else if(direction === 'right' && (Game.drill.x >= game.width - Game.config.blockSize/2 || (!surrounds.bottomRight && !surrounds.bottom))){
+  else if(direction === 'right' && (Game.drill.x >= (Game.config.maxBlockWidth * 64) - 32 || (!surrounds.bottomRight && !surrounds.bottom))){
     return;
   }
   else if(direction === 'down'){
@@ -69,8 +66,6 @@ Game.entities.player.move = function(game, direction){
     }, 500);
   }
   
-  // Game.drill.animations.play(direction);
-  
   var newPosition = {
     x: Game.drill.x + (direction === 'left' ? -Game.config.blockSize : direction === 'right' ? Game.config.blockSize : 0),
     y: Game.drill.y + (direction === 'up' ? -Game.config.blockSize : direction === 'down' ? Game.config.blockSize : 0)
@@ -88,7 +83,7 @@ Game.entities.player.move = function(game, direction){
       Game.offerSpaceco();
     }, 200 + moveTime);
 
-    game.add.tween(game.camera).to({ y: 0 }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
+    game.add.tween(game.camera).to({ y: 0, x: Game.spaceco.x }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
     
     newPosition.x = Game.spaceco.x;
     newPosition.y = Game.spaceco.y;
@@ -98,6 +93,14 @@ Game.entities.player.move = function(game, direction){
   }
   else if(direction === 'down'){
     game.add.tween(game.camera).to({ y: game.camera.y + Game.config.blockSize }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
+  }
+  else if(direction === 'left' && Math.abs((game.camera.x + Game.config.width) - Game.drill.x) > Game.config.width / 2){
+    console.log(game.camera.x);
+    game.add.tween(game.camera).to({ x: Math.max(0, game.camera.x - Game.config.blockSize) }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
+  }
+  else if(direction === 'right'  && Math.abs(game.camera.x - Game.drill.x) > Game.config.width / 2){
+    console.log(game.camera.x);
+    game.add.tween(game.camera).to({ x: Math.min((Game.config.maxBlockWidth * 64) - (Game.config.width), game.camera.x + Game.config.blockSize) }, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
   }
 
   if(targetGroundType){
@@ -150,15 +153,13 @@ Game.entities.player.move = function(game, direction){
   }
 
 
-  if(invertTexture){  
+  if(invertTexture){
     // console.log('Drill: Inverting texture!');
     Game.drill.scale.x = -Game.drillScaleX;
   }
   else{
     Game.drill.scale.x = Game.drillScaleX;   
   }
-  
-  // console.log('playing animation: ', direction, Game.drill.scale.x);
 
   Game.entities.player.lastMoveInvert = invertTexture;
   Game.entities.player.lastMove = direction;
@@ -181,7 +182,9 @@ Game.entities.player.move = function(game, direction){
     Game.fuel -= 0.1;
   }
 
-  Game.updateHud();
-
-  Game.upkeepView();
+  setTimeout(function(){
+    Game.updateHud();
+  
+    Game.upkeepView();
+  }, moveTime);
 };

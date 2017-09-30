@@ -3,6 +3,8 @@
 Game.states.game = function(game){};
 
 Game.states.game.prototype.create = function(){
+  console.log('game');
+
   Game.setupStage();
 
   Game.ground = this.game.add.group();
@@ -25,9 +27,12 @@ Game.states.game.prototype.create = function(){
 
   Game.monsters = this.game.add.group();
 
-  Game.generateMap();  
+  Game.generateMap();
 
-  Game.drawView(Game.config.skyHeight, Game.config.viewBlockHeight + Game.viewBufferSize);
+  Game.game.camera.bounds = null;
+  Game.game.camera.x = Math.max(0, Math.min((Game.config.maxBlockWidth * 64) - Game.config.width, Game.toPx(Game.config.playerStartPos.x - (13 / 2))));
+
+  Game.drawView(Game.toGridPos(Game.game.camera.x), Game.config.skyHeight, Game.toGridPos(Game.game.camera.x) + 16, Game.config.viewBlockHeight + Game.viewBufferSize);
   
   Game.entities.player.create(this.game, Game.toPx(Game.config.playerStartPos.x), Game.toPx(Game.config.playerStartPos.y));
 

@@ -3,6 +3,8 @@
 Game.states.end = function(game){};
 
 Game.states.end.prototype.create = function(){
+  console.log('end');
+  
   Game.setupStage();
 
   var tweenTime = 500;
@@ -49,5 +51,3 @@ Game.states.end.prototype.create = function(){
     }
   };
 };
-
-Game.states.end.prototype.update = function(){};

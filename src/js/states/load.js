@@ -33,15 +33,14 @@ Game.states.load.prototype.preload = function(){
 };
 
 Game.states.load.prototype.create = function(){
+  console.log('load');
+
   this.game.stage.backgroundColor = Game.config.backgroundColor;
 
   // Delay is to allow web fonts to load
   Game.fadeOut(1000, Game.config.backgroundColor);
 
   this.game.time.events.add(1000, function(){
-
-    console.log('load');    
-
     this.game.state.start('lobby');
   }, this);
 };

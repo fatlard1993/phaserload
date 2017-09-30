@@ -98,7 +98,7 @@ var Game = {
         depth: 'Depth'
       },
       normal: {
-        depth: 'Depth',
+        position: 'GPS',
         credits: '$',
         fuel: 'Fuel',
         hull: 'Hull',
@@ -114,7 +114,7 @@ var Game = {
     monsterMoveSpeed: 400,
 
     skyHeight: 4,
-    maxBlockWidth: 13,
+    maxBlockWidth: 23,
     maxBlockHeight: 500,
     viewBlockHeight: 7
   },
@@ -199,6 +199,7 @@ var Game = {
       var text = value[0] +': ';
       
       if(item === 'depth') text += Game.depth;
+      else if(item === 'position') text += 'x'+ Game.toGridPos(Game.drill.x) +' y'+ Game.toGridPos(Game.drill.y);
       else if(item === 'fuel') text += Game.fuel.toFixed(1);
       else if(item === 'credits') text += Game.credits.toFixed(1);
       else if(item === 'hull') text += Game.hull.space.toFixed(1);
@@ -360,18 +361,21 @@ var Game = {
   },
   viewBufferSize: 3,
   get viewCenterPos(){
-    return { x: (Game.game.camera.x + Game.config.width) / 2, y: (Game.game.camera.y + Game.config.height) / 2 };
+    return { x: (Game.game.camera.x + 832) / 2, y: (Game.game.camera.y + Game.config.height) / 2 };
   },
   get viewBufferCenterPos(){
-    return { x: (Game.game.camera.x + Game.config.width + ((Game.viewBufferSize * 2) * 64)) / 2, y: (Game.game.camera.y + Game.config.height + ((Game.viewBufferSize * 2) * 64)) / 2 };
+    return { x: (Game.game.camera.x + 832 + ((Game.viewBufferSize * 2) * 64)) / 2, y: (Game.game.camera.y + Game.config.height + ((Game.viewBufferSize * 2) * 64)) / 2 };
   },
   viewBufferCenterPoint: { x: 608, y: 416 },
-  drawView: function(startY, height){
-    console.log('drawing: '+ startY +' - '+ height);
+  drawView: function(left, top, right, bottom){
+    left = Math.max(0, left);
+    right = Math.min(Game.config.maxBlockWidth, right);
 
-    for(var x = 0; x < Game.config.maxBlockWidth; x++){
-      for(var y = startY; y < height; y++){
-        var element = Game.groundAt(x, y, 1);//Game.mapNames[Game.map[x][y]];
+    console.log('drawing: x'+ left +' y'+ top +' to x'+ right +' y'+ bottom);
+
+    for(var x = left; x < right; x++){
+      for(var y = top; y < bottom; y++){
+        var element = Game.groundAt(x, y, 1);
   
         if(!element) continue;
         
@@ -380,7 +384,6 @@ var Game = {
         }
 
         else if(element.startsWith('mineral')){
-          console.log(element);
           Game.entities.mineral.create(Game.game, Game.toPx(x), Game.toPx(y), element);
         }
         
@@ -398,25 +401,37 @@ var Game = {
     let xDiff = this.viewBufferCenterPos.x - this.viewBufferCenterPoint.x;
     let yDiff = this.viewBufferCenterPos.y - this.viewBufferCenterPoint.y;
 
-    let viewTop = this.toGridPos(this.game.camera.y + this.config.height);
-    let viewBottom = this.toGridPos(this.game.camera.y);
+    let viewTop = this.toGridPos(this.game.camera.y);
+    let viewLeft = this.toGridPos(this.game.camera.x);
+    let viewBottom = this.toGridPos(this.game.camera.y + this.config.height);
+    let viewRight = this.toGridPos(this.game.camera.x + this.config.width);
 
-    let moving = yDiff < 0 ? 'up' : 'down';
-
-    let drawTop = moving === 'up' ? viewBottom - this.viewBufferSize : viewTop;
-    let drawBottom = moving === 'up' ? viewBottom : viewTop + this.viewBufferSize;
-
+    let movingV = yDiff === 0 ? 'not' : yDiff < 0 ? 'up' : 'down';
+    let movingH = xDiff === 0 ? 'not' : xDiff < 0 ? 'left' : 'right';
+    
+    console.log(xDiff, yDiff, movingH, movingV);
+    
     if(Math.abs(xDiff) / 32 >= this.viewBufferSize || Math.abs(yDiff) / 32 >= this.viewBufferSize){
+      let drawTop = movingV === 'not' ? viewTop : movingV === 'up' ? viewTop - this.viewBufferSize : viewBottom;
+      let drawBottom = movingV === 'not' ? viewBottom : movingV === 'up' ? viewTop : viewBottom + this.viewBufferSize;
+      let drawLeft = movingH === 'not' ? viewLeft : movingH === 'left' ? viewLeft : viewRight - this.viewBufferSize;
+      let drawRight = movingH === 'not' ? viewRight : movingH === 'left' ? viewLeft + this.viewBufferSize : viewRight;
+
       this.cleanupView();
-      this.drawView(drawTop, drawBottom);
+      this.drawView(drawLeft, drawTop, drawRight, drawBottom);
     }
   },
   cleanupView: function(){
-    let top = this.game.camera.y;
-    let bottom = this.game.camera.y + this.config.height;
+    let viewTop = this.game.camera.y;
+    let viewLeft = this.game.camera.x;
+    let viewBottom = this.game.camera.y + this.config.height;
+    let viewRight = this.game.camera.x + this.config.width;
 
     function cleanup(entity){
-      if(entity.y > bottom + this.viewBufferSize || entity.y < top + this.viewBufferSize){
+      if(entity.y > viewBottom + (this.viewBufferSize * 64) || entity.y < viewTop - (this.viewBufferSize * 64)){
+        entity.kill();
+      }
+      if(entity.x > viewRight + (this.viewBufferSize * 64) || entity.x < viewLeft - (this.viewBufferSize * 64)){
         entity.kill();
       }
     }
@@ -430,21 +445,21 @@ var Game = {
 };
 
 window.onload = function(){
+  console.log('onload');
+
   document.getElementById('game').style.marginTop = (document.body.clientHeight - Game.config.height) / 2 +'px';
 
   // Game.config.width = Math.max(10, Math.floor(document.body.clientWidth / 64)) * 64;
   
-  var game = Game.game = new Phaser.Game(Game.config.width, Game.config.height, Phaser.AUTO, 'game');
-
-  console.log('onload');
+  Game.game = new Phaser.Game(Game.config.width, Game.config.height, Phaser.AUTO, 'game');
   
-  game.state.add('boot', Game.states.boot);
-  game.state.add('load', Game.states.load);
-  game.state.add('lobby', Game.states.lobby);
-  game.state.add('game', Game.states.game);
-  game.state.add('end', Game.states.end);
+  Game.game.state.add('boot', Game.states.boot);
+  Game.game.state.add('load', Game.states.load);
+  Game.game.state.add('lobby', Game.states.lobby);
+  Game.game.state.add('game', Game.states.game);
+  Game.game.state.add('end', Game.states.end);
 
   console.log('states added');
 
-  game.state.start('boot');  
+  Game.game.state.start('boot');
 };
