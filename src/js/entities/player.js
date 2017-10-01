@@ -7,13 +7,13 @@ Game.entities.player.create = function(game, x, y){
   
   Game.drill.anchor.setTo(0.5, 0.5);
 
-  Game.drill.animations.add('alive', [0, 1, 2], 10, true);
+  Game.drill.animations.add('normal', [0, 1, 2], 10, true);
   Game.drill.animations.add('upgraded', [3, 4, 5], 10, true);
   Game.drill.animations.add('upgradedx2', [6, 7, 8], 10, true);
   Game.drill.animations.add('upgradedx3', [9, 10, 11], 10, true);
   Game.drill.animations.add('teleporting', [12, 13, 14], 10, true);
   
-  Game.drill.animations.play('alive');
+  Game.drill.animations.play('normal');
 
   Game.map[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)] = Game.mapNames.indexOf('player1');
 
@@ -36,8 +36,14 @@ Game.entities.player.getSurrounds = function(){
 Game.entities.player.move = function(game, direction){
   // console.log('Drill: On the move, goin: ', direction);
 
+  if(Game.missionTextOpen){
+    Game.hud.interfaceText.setText('');
+    Game.entities.hud.close();
+    Game.missionTextOpen = false;
+  }
+
   if(direction === 'up' && Game.spacecoOffered){
-    return Game.enterSapceco();
+    return Game.entities.spaceco.open();
   }
 
   var surrounds = Game.entities.player.getSurrounds();
@@ -82,8 +88,8 @@ Game.entities.player.move = function(game, direction){
 
     setTimeout(function(){
       Game.drawCurrentView();
-      Game.drill.animations.play('alive');
-      Game.offerSpaceco();
+      Game.drill.animations.play('normal');
+      Game.entities.spaceco.offer();
     }, 200 + moveTime);
 
     newCameraPosition = { x: Game.spaceco.x - Game.config.width / 2, y: 0 };    
@@ -116,7 +122,9 @@ Game.entities.player.move = function(game, direction){
           
           Game.hull[mineral.type]++;
 
-          game.add.tween(mineral).to({ x: game.camera.x, y: game.camera.y }, 600, Phaser.Easing.Quadratic.Out, true);
+          var animationTime = 200 + Math.ceil(Game.game.math.distance(game.camera.x, game.camera.y, mineral.x, mineral.y));
+
+          game.add.tween(mineral).to({ x: game.camera.x, y: game.camera.y }, animationTime, Phaser.Easing.Quadratic.Out, true);
   
           setTimeout(function(){
             Game.hull.space -= 0.5;
@@ -125,7 +133,7 @@ Game.entities.player.move = function(game, direction){
       
             Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)] = -1;
             Game.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)] = -1;
-          }, 600);
+          }, animationTime);
         }
       });
     }
@@ -184,10 +192,10 @@ Game.entities.player.move = function(game, direction){
   Game.depth = (newPosition.y - Game.config.blockMiddle) / Game.config.blockSize;
 
   if(!Game.spacecoOffered && Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.config.blockSize + 10){
-    Game.offerSpaceco();
+    Game.entities.spaceco.offer();
   }
   else if(Game.spacecoOffered && Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) > Game.config.blockSize - 10){
-    Game.revokeSpaceco();
+    Game.entities.spaceco.revoke();
   }
 
   if(Game.config.mode === 'normal'){
@@ -195,6 +203,6 @@ Game.entities.player.move = function(game, direction){
   }
 
   setTimeout(function(){
-    Game.updateHud();
+    Game.entities.hud.update();
   }, moveTime + 150);
 };

@@ -26,6 +26,19 @@ var Game = {
       y: 4
     },
 
+    spacecoMineralPrices: {
+      debug: {
+        green: 2,
+        red: 4,
+        blue: 4
+      },
+      normal: {
+        green: 3,
+        red: 4.5,
+        blue: 8
+      }
+    },
+
     mode: 'normal',//idea: needle in a haystact mode 1 block with a win condition
 
     groundDistribution: {
@@ -166,123 +179,11 @@ var Game = {
     return element === 'hole' ? 0 : element;
   },
   hull: {},
-  displayOpen: false,
-  updateHud: function(){
-    if(Game.displayOpen) return;
-    var hudItemNames = Object.keys(Game.config.hudContents[Game.config.mode]);
-    for(var x = 0; x < Game.hudItemCount; x++){
-      var item = hudItemNames[x];
-      var value = Game.config.hudContents[Game.config.mode][hudItemNames[x]].split(':~:');
-      var text = value[0] +': ';
-      
-      if(item === 'depth') text += Game.depth;
-      else if(item === 'position_dbg') text += 'x'+ Game.toGridPos(Game.drill.x) +' y'+ Game.toGridPos(Game.drill.y);
-      else if(item === 'position') text += 'x'+ (Game.toGridPos(Game.drill.x) + 1) +' y'+ -(Game.toGridPos(Game.drill.y) - Game.config.skyHeight);
-      else if(item === 'fuel') text += Game.fuel.toFixed(1);
-      else if(item === 'credits') text += Game.credits.toFixed(1);
-      else if(item === 'hull') text += Game.hull.space.toFixed(1);
-      else{
-        if(item.startsWith('mineral') && Game.hull[item]) text += Game.hull[item];
-      }
-
-      // console.log('setting: ', 'hudLine'+ (x + 1), ' to: ', text);
-  
-      Game['hudLine'+ (x + 1)].setText(text);
-    }
-  },
-  openInventory: function(){
-    Game.hud.scale.setTo(1, 1);
-    
-    Game.displayOpen = true;
-  },
-  closeDialog: function(){
-    Game.hud.scale.setTo(0.4, 0.4);
-    
-    Game.displayOpen = false;
-  },
   toGridPos: function(px){
     return Math.round((px - 32) / 64);
   },
   toPx: function(gridPos){
     return (gridPos * 64) + 32;
-  },
-  offerSpaceco: function(){
-    Game.spacecoOffered = true;
-
-    Game.infoLine.setText(' [up] to enter Spaceco ');
-  },
-  revokeSpaceco: function(){
-    Game.spacecoOffered = false;
-
-    Game.spacecoText.setText('');    
-
-    Game.closeDialog();
-    Game.updateHud();
-    
-    Game.infoLine.setText(' Good bye! ');
-
-    Game.inSpaceco = false;
-
-    setTimeout(function(){
-      Game.infoLine.setText('');
-    }, 800);
-  },
-  drawSpacecoView: function(view){
-    Game.spacecoView = view;
-
-    if(view === 'rates'){
-      Game.spacecoText.setText(Game.spacecoGreeting + '\n  {Rates} | Fuel | Shop | Exit\n' + Game.spacecoRates);
-    }
-    else if(view === 'fuel'){
-      Game.spacecoText.setText(Game.spacecoGreeting + '\n  Rates | {Fuel} | Shop | Exit\n' + Game.spacecoFuel);
-    }
-    else if(view === 'shop'){
-      Game.spacecoText.setText(Game.spacecoGreeting + '\n  Rates | Fuel | {Shop} | Exit\n' + Game.spacecoProducts);
-    }
-  },
-  spacecoMineralPrices: {
-    green: 3,
-    red: 4.5,
-    blue: 8
-  },
-  spacecoGreeting: ' Welcome to Spaceco, we love you ',
-  spacecoRates: '\n    We basically just rob you,\n              but...\n    We do give you some fuel!',
-  spacecoFuel: '\nGas : $1\nSuper Oxygen Liquid Nitrogen : $2\nEnergy Charge : $1',
-  spacecoProducts: '\nTeleporter : $2\nRepair : $4\nUpgrade : $10',
-  enterSapceco: function(){
-    for(var x = 0; x < Game.hudItemCount; x++){
-      Game['hudLine'+ (x + 1)].setText('');
-    }
-
-    Game.infoLine.setText('');
-    
-    Game.hud.scale.setTo(1.5, 1.5);
-    
-    Game.displayOpen = true;
-    Game.inSpaceco = true;
-
-    Game.drawSpacecoView('rates');
-
-    if(Game.config.mode === 'normal'){
-      delete Game.hull.space;
-
-      var mineralNames = Object.keys(Game.hull);
-
-      for(var x = 0; x < mineralNames.length; x++){
-        if(mineralNames[x].startsWith('ground')) Game.credits += Game.hull[mineralNames[x]] * Game.config.groundDistribution[Game.config.mode][mineralNames[x].replace('ground_', '')]
-        else if(mineralNames[x].startsWith('mineral')){
-          Game.credits += Game.hull[mineralNames[x]] * Game.spacecoMineralPrices[mineralNames[x].replace('mineral_', '')];
-        }
-      }
-
-      Game.hull = {};
-      Game.hull.space = 10;
-
-      Game.fuel += Game.credits;
-      Game.credits = 0;
-
-      Game.updateHud();
-    }
   },
   mapNames: ['hole', 'monster', 'player1', 'lava', 'mineral_green', 'mineral_red', 'mineral_blue', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
   generateMap: function(){
@@ -433,12 +334,12 @@ window.onload = function(){
 
   if(Game.config.width === 'auto') Game.config.width = Math.max(10, Math.min(20, Math.floor(document.body.clientWidth / 64))) * 64;
   if(Game.config.height === 'auto'){
-    Game.config.height = Math.max(6, Math.min(9, Math.floor(document.body.clientHeight / 64))) * 64;
+    Game.config.height = Math.max(4, Math.min(13, Math.floor(document.body.clientHeight / 64))) * 64;
     
     document.getElementById('game').style.marginTop = (document.body.clientHeight > Game.config.height ? (document.body.clientHeight - Game.config.height) / 5 : 0) +'px';
 
-    if(Game.config.height <= 448){
-      Game.config.skyHeight = Game.config.playerStartPos.y = 3;
+    if(Game.config.height <= 460){
+      Game.config.skyHeight = Game.config.playerStartPos.y = 2;
     }
   }
   
