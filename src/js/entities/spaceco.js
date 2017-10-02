@@ -27,16 +27,13 @@ Game.entities.spaceco.offer = function(){
 
 Game.entities.spaceco.revoke = function(){
   Game.spacecoOffered = false;
-  
-  Game.infoLine.setText(' Good bye!');    
+
+  Game.hud.interfaceText.setText('');
+  Game.infoLine.setText('');
 
   Game.entities.hud.close();
 
   Game.inSpaceco = false;
-
-  setTimeout(function(){
-    Game.infoLine.setText('');
-  }, 800);
 };
 
 Game.entities.spaceco.open = function(){
