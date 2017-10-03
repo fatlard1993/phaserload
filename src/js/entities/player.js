@@ -145,15 +145,15 @@ Game.entities.player.move = function(game, direction){
 
   game.add.tween(Game.drill).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
 
-  // var particules = 6;
-  // var _pArray = Array.apply(null, { length: particules }).map(Number.call, Number);
-
-  Game.drill.emitter = Game.game.add.emitter(Game.game.world.centerX, 200, 200);
+  Game.drill.emitter = Game.game.add.emitter(0, 0, 100);
   Game.drill.addChild(Game.drill.emitter);
 
-  Game.drill.emitter.makeParticles('mineral', [0, 1, 2]);
+  Game.drill.emitter.makeParticles('mineral');
 
-  Game.drill.emitter.start(false, 5000, 100);
+  Game.drill.emitter.x = Game.drill.x;
+  Game.drill.emitter.y = Game.drill.y;
+
+  Game.drill.emitter.start(true, 4000, null, 10);
 
   var invertTexture = false;
 
@@ -214,6 +214,6 @@ Game.entities.player.move = function(game, direction){
   setTimeout(function(){
     Game.entities.hud.update();
     
-    Game.drill.emitter.kill();
+    // Game.drill.emitter.destroy();
   }, moveTime + 150);
 };
