@@ -5,6 +5,7 @@ Game.states.game = function(game){};
 Game.states.game.prototype.create = function(){
   console.log('game');
 
+  
   Game.ground = this.game.add.group();
   Game.lava = this.game.add.group();
 
@@ -14,26 +15,26 @@ Game.states.game.prototype.create = function(){
   
   
   var spacecoX = Game.rand(2, Game.config.maxBlockWidth - 2);
-
+  
   Game.spaceco = Game.entities.spaceco.create(this.game, Game.toPx(spacecoX), Game.toPx(Game.config.playerStartPos.y));
   
-
+  
   Game.monsters = this.game.add.group();
   Game.minerals = this.game.add.group();
-
+  
   Game.generateMap();
-
+  
   Game.game.camera.bounds = null;
   Game.game.camera.x = Math.max(0, Math.min((Game.config.maxBlockWidth * 64) - Game.config.width, Game.toPx(Game.config.playerStartPos.x) - Game.config.width / 2));
-
+  
   Game.drawView(Game.toGridPos(Game.game.camera.x) - Game.viewBufferSize, Game.config.skyHeight + 1, Game.toGridPos(Game.game.camera.x + Game.config.width) + Game.viewBufferSize, Game.toGridPos(Game.config.height) + Game.viewBufferSize);
   
   Game.entities.player.create(this.game, Game.toPx(Game.config.playerStartPos.x), Game.toPx(Game.config.playerStartPos.y));
-
+  
   Game.hud = Game.entities.hud.create(0, 0);
-
+  
   var hudItemCount = Game.hudItemCount = Object.keys(Game.config.hudContents[Game.config.mode]).length;
-
+  
   if(hudItemCount > 0){
     Game.hudLine1 = this.game.add.text(15, 10, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor });
     Game.hud.addChild(Game.hudLine1);
@@ -54,13 +55,13 @@ Game.states.game.prototype.create = function(){
     Game.hudLine5 = this.game.add.text(15, 178, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor });
     Game.hud.addChild(Game.hudLine5);
   }
-
+  
   Game.infoLine = this.game.add.text(15, 320, '', { font: '48px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
   Game.hud.addChild(Game.infoLine);
-
+  
   Game.hud.interfaceText = this.game.add.text(20, 20, '', { font: '14px '+ Game.config.font, fill: '#fff', fontWeight: 'bold' });
   Game.hud.addChild(Game.hud.interfaceText);
-
+  
   this.game.input.keyboard.addKeyCapture([
     Phaser.Keyboard.LEFT,
     Phaser.Keyboard.RIGHT,
@@ -69,7 +70,7 @@ Game.states.game.prototype.create = function(){
     Phaser.Keyboard.Z,
     Phaser.Keyboard.X
   ]);
-
+  
   var upperQuarter = new Phaser.Rectangle(0, 0, this.game.width, this.game.height / 4);
   var middleLeftQuarter = new Phaser.Rectangle(0, this.game.height / 4, this.game.width / 2, (this.game.height / 4) * 3);
   var middleRightQuarter = new Phaser.Rectangle(this.game.width / 2, this.game.height / 4, this.game.width, (this.game.height / 4) * 3);

@@ -26,6 +26,8 @@ Game.states.load.prototype.preload = function(){
   this.game.load.spritesheet('drill', '/assets/drill.png', 64, 64);
   this.game.load.spritesheet('lava', '/assets/lava.png', 64, 64);
   this.game.load.spritesheet('monster', '/assets/monster.png', 64, 64);
+
+  this.game.load.spritesheet('ground_particles', '/assets/ground.png', 64, 64, 64*64*40);
 };
 
 Game.states.load.prototype.create = function(){

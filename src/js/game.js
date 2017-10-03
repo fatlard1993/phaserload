@@ -1,8 +1,8 @@
 /* global Phaser */
-// a static size map is going to require the adoption of camera x scrolling
-
 
 var Game = {
+  mode: 'normal',
+  modes: {},
   config: {
     backgroundColor: '#333',
     textColor: '#227660',
@@ -10,14 +10,15 @@ var Game = {
 
     hudTextColor: '#94B133',
 
-    width: 'auto',//832,
-    height: 'auto',//448,
+    width: 'auto',
+    height: 'auto',
   
     blockSize: 64,
     blockMiddle: 64 * 3.5,
   
     drillMoveTime: {
       debug: 200,
+      test: 300,
       normal: 300
     },
 
@@ -32,6 +33,11 @@ var Game = {
         red: 4,
         blue: 4
       },
+      test: {
+        green: 2,
+        red: 4,
+        blue: 4
+      },
       normal: {
         green: 3,
         red: 4.5,
@@ -39,20 +45,38 @@ var Game = {
       }
     },
 
-    mode: 'normal',//idea: needle in a haystact mode 1 block with a win condition
+    mode: 'test',//idea: needle in a haystack mode 1 block with a win condition
+
+    asteroidComposition: {
+
+    },
 
     groundDistribution: {
       debug: { white: 0.1, orange: 0.1, yellow: 0.1, green: 0.1, teal: 0.1, blue: 0.1, purple: 0.1, pink: 0.1, red: 0.1, black: 0.1 },
+      test: { white: 0.01, orange: 0.24, yellow: 0.3, green: 0.25, teal: 0.01, blue: 0.01, purple: 0.01, pink: 0.01, red: 0.01, black: 0.15 },
       normal: { white: 0.18, orange: 0.18, yellow: 0.15, green: 0.05, teal: 0.04, blue: 0.03, purple: 0.02, pink: 0.02, red: 0.18, black: 0.15 }
     },
 
     mineralDistribution: {
       debug: { mineral_green: 0.4, mineral_red: 0.3, mineral_blue: 0.3 },
+      test: { mineral_green: 0.4, mineral_red: 0.3, mineral_blue: 0.3 },
       normal: { mineral_green: 0.7, mineral_red: 0.1, mineral_blue: 0.2 }
     },
 
     digTime: {
       debug: {
+        white: 200,
+        orange: 200,
+        yellow: 200,
+        green: 200,
+        teal: 200,
+        blue: 200,
+        purple: 200,
+        pink: 200,
+        red: 200,
+        black: 200
+      },
+      test: {
         white: 200,
         orange: 200,
         yellow: 200,
@@ -86,6 +110,12 @@ var Game = {
 
     hudContents: {
       debug: {
+        position_dbg: '*',
+        credits: '$',
+        fuel: 'Fuel',
+        hull: 'Hull'
+      },
+      test: {
         position_dbg: '*',
         credits: '$',
         fuel: 'Fuel',
@@ -130,6 +160,17 @@ var Game = {
       sum += spec[i];
 
       if(rand <= sum) return i;
+    }
+  },
+  weightedChance2: function(items){
+    var sum = 0, rand = Math.random() * 100;
+
+    var itemNames = Object.keys(items);
+    
+    for(var x = 0; x < itemNames.length; x++){
+      sum += items[itemNames[x]];
+
+      if(rand <= sum) return itemNames[x];
     }
   },
   addRectangle: function(color, width, height){
@@ -181,17 +222,28 @@ var Game = {
     return (gridPos * 64) + 32;
   },
   mapNames: ['hole', 'monster', 'player1', 'lava', 'mineral_green', 'mineral_red', 'mineral_blue', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
-  generateMap: function(){
-    Game.map = [];
+  generateMap: function(settings){
+    settings = settings || {};
+
+    var width = settings.width || Game.config.maxBlockWidth;
+    var height = settings.height || Game.config.maxBlockHeight;
+    var groundRareity = settings.groundRareity || Game.config.groundDistribution[Game.config.mode];
+    var mineralRareity = settings.mineralRareity || Game.config.mineralDistribution[Game.config.mode];
+
+    Game.map = []; // todo map[x][y] = [1, 3]
 
     var playerX = Game.rand(0, Game.config.maxBlockWidth - 1);
     
-    for(var x = 0; x < Game.config.maxBlockWidth; x++){
-      for(var y = 0; y < Game.config.maxBlockHeight; y++){
-        var groundChance = 100 - (y * 0.2);
+    for(var x = 0; x < width; x++){
+      for(var y = 0; y < height; y++){
+        var groundChance = 100 - (y * (settings.groundChance || 0.2));
         var mineralChance = y;
-        var lavaChance = y * 0.2;
-        var monsterChance = y * 0.1;
+        var lavaChance = y * (settings.lavaChance || 0.2);
+        var monsterChance = y * (settings.monsterChance || 0.1);
+
+        if(settings.levels){
+          groundRareity = settings.levels[settings.levels.length / (height / y) * y];
+        }
   
         Game.map[x] = Game.map[x] || [];
         Game.viewBufferMap[x] = Game.viewBufferMap[x] || [];
@@ -200,11 +252,11 @@ var Game = {
         if(y === Game.config.skyHeight && x === playerX) Game.map[x][y] = Game.mapNames.indexOf('player1');
   
         if(y > Game.config.skyHeight && Game.chance(groundChance)){
-          Game.map[x][y] = Game.mapNames.indexOf('ground_'+ Game.weightedChance(Game.config.groundDistribution[Game.config.mode]));
+          Game.map[x][y] = Game.mapNames.indexOf('ground_'+ Game.weightedChance(groundRareity));
         }
 
         else if(y > Game.config.skyHeight + 3 && Game.chance(mineralChance)){      
-          Game.map[x][y] = Game.mapNames.indexOf(Game.weightedChance(Game.config.mineralDistribution[Game.config.mode]));
+          Game.map[x][y] = Game.mapNames.indexOf(Game.weightedChance(mineralRareity));
         }
         
         else if(y > Game.config.skyHeight + 5 && Game.chance(lavaChance)){
