@@ -48,6 +48,7 @@ gulp.task('compile-js', function(){
     'src/js/_polyfill.js',
     'src/js/_log.js',
     'src/js/game.js',
+    'src/js/modes/normal.js',
     'src/js/entities/player.js',
     'src/js/entities/hud.js',
     'src/js/entities/spaceco.js',

@@ -45,7 +45,7 @@ var Game = {
       }
     },
 
-    mode: 'test',//idea: needle in a haystack mode 1 block with a win condition
+    mode: 'normal',//idea: needle in a haystack mode 1 block with a win condition
 
     asteroidComposition: {
 
@@ -225,8 +225,8 @@ var Game = {
   generateMap: function(settings){
     settings = settings || {};
 
-    var width = settings.width || Game.config.maxBlockWidth;
-    var height = settings.height || Game.config.maxBlockHeight;
+    var width = settings.size ? Game.rand(settings.size.width[0], settings.size.width[1]) : Game.config.maxBlockWidth;
+    var height = settings.size ? Game.rand(settings.size.depth[0], settings.size.depth[1]) : Game.config.maxBlockHeight;
     var groundRareity = settings.groundRareity || Game.config.groundDistribution[Game.config.mode];
     var mineralRareity = settings.mineralRareity || Game.config.mineralDistribution[Game.config.mode];
 
@@ -240,9 +240,11 @@ var Game = {
         var mineralChance = y;
         var lavaChance = y * (settings.lavaChance || 0.2);
         var monsterChance = y * (settings.monsterChance || 0.1);
+        var chanceFunc = 'weightedChance';
 
         if(settings.levels){
-          groundRareity = settings.levels[settings.levels.length / (height / y) * y];
+          chanceFunc += 2;
+          groundRareity = settings.levels[Math.ceil(settings.levels.length * (y / height)) - 1];
         }
   
         Game.map[x] = Game.map[x] || [];
@@ -252,11 +254,11 @@ var Game = {
         if(y === Game.config.skyHeight && x === playerX) Game.map[x][y] = Game.mapNames.indexOf('player1');
   
         if(y > Game.config.skyHeight && Game.chance(groundChance)){
-          Game.map[x][y] = Game.mapNames.indexOf('ground_'+ Game.weightedChance(groundRareity));
+          Game.map[x][y] = Game.mapNames.indexOf('ground_'+ Game[chanceFunc](groundRareity));
         }
 
         else if(y > Game.config.skyHeight + 3 && Game.chance(mineralChance)){      
-          Game.map[x][y] = Game.mapNames.indexOf(Game.weightedChance(mineralRareity));
+          Game.map[x][y] = Game.mapNames.indexOf(Game[chanceFunc](mineralRareity));
         }
         
         else if(y > Game.config.skyHeight + 5 && Game.chance(lavaChance)){

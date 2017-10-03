@@ -1,6 +1,6 @@
 /* global Phaser, Game */
 
-Game.modes.normal =  {
+Game.modes.normal = {
   baseDrillMoveTime: 300,
   hudLayout: {
     position: '*',
@@ -28,6 +28,7 @@ Game.modes.normal =  {
     red: 350,
     black: 1100
   },
+  level: 2,
   levels: [//decending difficulty increases
     {
       size: {

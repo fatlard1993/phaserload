@@ -22,7 +22,7 @@ Game.states.game.prototype.create = function(){
   Game.monsters = this.game.add.group();
   Game.minerals = this.game.add.group();
   
-  Game.generateMap();
+  Game.generateMap(Game.modes[Game.mode].levels[Game.modes[Game.mode].level]);
   
   Game.game.camera.bounds = null;
   Game.game.camera.x = Math.max(0, Math.min((Game.config.maxBlockWidth * 64) - Game.config.width, Game.toPx(Game.config.playerStartPos.x) - Game.config.width / 2));
