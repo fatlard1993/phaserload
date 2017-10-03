@@ -132,11 +132,6 @@ var Game = {
       if(rand <= sum) return i;
     }
   },
-  setupStage: function(){
-    Game.game.stage.backgroundColor = Game.config.backgroundColor;
-  
-    Game.game.world.setBounds(0, 0, Game.game.width, 1000 * Game.config.blockSize);
-  },
   addRectangle: function(color, width, height){
     var rect = Game.game.add.graphics(0, 0);
     rect.beginFill(color, 1);

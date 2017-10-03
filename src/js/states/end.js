@@ -4,8 +4,6 @@ Game.states.end = function(game){};
 
 Game.states.end.prototype.create = function(){
   console.log('end');
-  
-  Game.setupStage();
 
   var tweenTime = 500;
   var delay = 0;

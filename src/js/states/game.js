@@ -5,8 +5,6 @@ Game.states.game = function(game){};
 Game.states.game.prototype.create = function(){
   console.log('game');
 
-  Game.setupStage(); 
-
   Game.ground = this.game.add.group();
   Game.lava = this.game.add.group();
 

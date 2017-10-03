@@ -5,8 +5,6 @@ Game.states.lobby = function(game){};
 Game.states.lobby.prototype.create = function(){
   console.log('lobby');
 
-  Game.setupStage();
-
   this.addTitles();
 
   this.game.input.onDown.add(function(){ this.game.state.start('game'); }, this);
