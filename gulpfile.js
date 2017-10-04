@@ -59,7 +59,7 @@ gulp.task('compile-js', function(){
     'src/js/states/boot.js',
     'src/js/states/load.js',
     'src/js/states/lobby.js',
-    'src/js/states/game.js',
+    'src/js/states/play.js',
     'src/js/states/end.js'
   ]).pipe(concat('phaserload.js'))
   .pipe(gulp.dest('public/js'))

@@ -1,9 +1,9 @@
 /* global Phaser, Game */
 
-Game.states.game = function(game){};
+Game.states.play = function(game){};
 
-Game.states.game.prototype.create = function(){
-  console.log('game');
+Game.states.play.prototype.create = function(){
+  console.log('play');
 
   
   Game.ground = this.game.add.group();
@@ -145,7 +145,7 @@ Game.states.game.prototype.create = function(){
   Game.entities.hud.update();
 };
 
-Game.states.game.prototype.update = function(){
+Game.states.play.prototype.update = function(){
   if(Game.mode === 'normal' && Game.fuel < 0){
     Game.loseReason = 'fuel';
     return this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);

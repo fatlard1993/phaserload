@@ -7,10 +7,10 @@ Game.states.lobby.prototype.create = function(){
 
   this.addTitles();
 
-  this.game.input.onDown.add(function(){ this.game.state.start('game'); }, this);
+  this.game.input.onDown.add(function(){ this.game.state.start('play'); }, this);
   this.game.input.keyboard.onDownCallback = function(evt){
     if(this.game.input.keyboard.event.keyCode === Phaser.Keyboard.ENTER){
-      this.game.state.start('game');
+      this.game.state.start('play');
     }
   };
 };

@@ -251,7 +251,7 @@ window.onload = function(){
   Game.game.state.add('boot', Game.states.boot);
   Game.game.state.add('load', Game.states.load);
   Game.game.state.add('lobby', Game.states.lobby);
-  Game.game.state.add('game', Game.states.game);
+  Game.game.state.add('play', Game.states.play);
   Game.game.state.add('end', Game.states.end);
 
   console.log('states added');
