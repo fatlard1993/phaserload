@@ -23,7 +23,7 @@ Game.states.play.prototype.create = function(){
   
   Game.generateMap();
   
-  Game.entities.player.create();
+  Game.drill = Game.entities.player.create();
   
   Game.game.camera.bounds = null;
   

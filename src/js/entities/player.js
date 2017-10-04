@@ -5,24 +5,25 @@ Game.entities.player = function(){};
 Game.entities.player.create = function(){
   var playerX = Game.rand(1, Game.width - 1);
   
-  Game.drill = Game.game.add.sprite(Game.toPx(playerX), Game.toPx(Game.skyHeight), 'drill', 15);
+  var player = Game.game.add.sprite(Game.toPx(playerX), Game.toPx(Game.skyHeight), 'drill', 15);
   
-  Game.drill.anchor.setTo(0.5, 0.5);
+  player.anchor.setTo(0.5, 0.5);
 
-  Game.drill.animations.add('normal', [0, 1, 2], 10, true);
-  Game.drill.animations.add('upgraded', [3, 4, 5], 10, true);
-  Game.drill.animations.add('upgradedx2', [6, 7, 8], 10, true);
-  Game.drill.animations.add('upgradedx3', [9, 10, 11], 10, true);
-  Game.drill.animations.add('teleporting', [12, 13, 14], 10, true);
+  player.animations.add('normal', [0, 1, 2], 10, true);
+  player.animations.add('upgraded', [3, 4, 5], 10, true);
+  player.animations.add('upgradedx2', [6, 7, 8], 10, true);
+  player.animations.add('upgradedx3', [9, 10, 11], 10, true);
+  player.animations.add('teleporting', [12, 13, 14], 10, true);
   
-  Game.drill.animations.play('normal');
+  player.animations.play('normal');
 
-  Game.map[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)] = Game.mapNames.indexOf('player1');
+  Game.map[Game.toGridPos(player.x)][Game.toGridPos(player.y)] = Game.mapNames.indexOf('player1');
 
-  Game.drillScaleX = Game.drill.scale.x;
+  Game.drillScaleX = player.scale.x;
 
-  // Game.drawView(Game.toGridPos(Game.game.camera.x), Game.toGridPos(Game.game.camera.y), Game.toGridPos(Game.drill.x + Game.viewWidth), Game.toGridPos(Game.drill.y + Game.viewHeight));
-  Game.adjustViewPosition(Game.drill.x - Game.viewWidth / 2, Game.drill.y - Game.viewHeight / 2, Math.ceil(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.game.camera.x / 2, Game.game.camera.y / 2)));
+  Game.adjustViewPosition(player.x - Game.viewWidth / 2, player.y - Game.viewHeight / 2, Math.ceil(Game.game.math.distance(player.x, player.y, Game.game.camera.x / 2, Game.game.camera.y / 2)));
+
+  return player;
 };
 
 Game.entities.player.getSurrounds = function(){
