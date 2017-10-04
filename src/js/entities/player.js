@@ -138,22 +138,28 @@ Game.entities.player.move = function(game, direction){
       });
     }
 
-    else if(targetGroundType.startsWith('ground')) Game.entities.ground.dig(newPosition);
+    else if(targetGroundType.startsWith('ground')){
+      Game.drill.emitter = Game.game.add.emitter(0, 0, 100);
+      Game.drill.addChild(Game.drill.emitter);
+  
+      var frameMod = Game.entities.ground.types.indexOf(targetGroundType.replace('ground_', '')) * 4;
+    
+      Game.drill.emitter.makeParticles('ground', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod]);
+    
+      // Game.drill.emitter.x = Game.drill.x;
+      // Game.drill.emitter.y = Game.drill.y;
+
+      Game.drill.emitter.setScale(0.2, 0.4, 0.2, 0.4);
+    
+      Game.drill.emitter.start(true, 1000, null, 4);
+
+      Game.entities.ground.dig(newPosition);
+    }
   }
   
   if(Game.hull.space < 0) moveTime += 250;
 
   game.add.tween(Game.drill).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
-
-  Game.drill.emitter = Game.game.add.emitter(0, 0, 100);
-  Game.drill.addChild(Game.drill.emitter);
-
-  Game.drill.emitter.makeParticles('mineral');
-
-  Game.drill.emitter.x = Game.drill.x;
-  Game.drill.emitter.y = Game.drill.y;
-
-  Game.drill.emitter.start(true, 4000, null, 10);
 
   var invertTexture = false;
 
@@ -214,6 +220,9 @@ Game.entities.player.move = function(game, direction){
   setTimeout(function(){
     Game.entities.hud.update();
     
-    // Game.drill.emitter.destroy();
+    // if(Game.drill.emitter){
+    //   Game.drill.emitter.destroy();
+    //   Game.drill.emitter = null;
+    // }
   }, moveTime + 150);
 };
