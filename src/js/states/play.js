@@ -14,9 +14,7 @@ Game.states.play.prototype.create = function(){
   Game.teleporter.anchor.setTo(0.5, 0.5);
   Game.teleporter.fixedToCamera = true;
   
-  var spacecoX = Game.rand(3, Game.width - 3);
-  
-  Game.spaceco = Game.entities.spaceco.create(this.game, Game.toPx(spacecoX), Game.toPx(Game.skyHeight));
+  Game.spaceco = Game.entities.spaceco.create();
 
   Game.monsters = this.game.add.group();
   Game.minerals = this.game.add.group();
@@ -29,7 +27,7 @@ Game.states.play.prototype.create = function(){
   
   Game.hud = Game.entities.hud.create(0, 0);
   
-  Game.infoLine = this.game.add.text(15, 320, '', { font: '48px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
+  Game.infoLine = this.game.add.text(5, 110, '', { font: '25px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
   Game.infoLine.fixedToCamera = true;  
   
   this.game.input.keyboard.addKeyCapture([

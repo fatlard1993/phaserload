@@ -7,8 +7,10 @@ Game.entities.spaceco.spacecoRates = '\n    We basically just rob you,\n        
 Game.entities.spaceco.spacecoFuel = '\nGas : $1\nSuper Oxygen Liquid Nitrogen : $2\nEnergy Charge : $1';
 Game.entities.spaceco.spacecoProducts = '\nTeleporter : $2\nRepair : $4\nUpgrade : $10';
 
-Game.entities.spaceco.create = function(game, x, y){
-  var spaceco = game.add.sprite(x, y, 'spaceco', 10);
+Game.entities.spaceco.create = function(){
+  var spacecoX = Game.rand(3, Game.width - 3);
+
+  var spaceco = Game.game.add.sprite(Game.toPx(spacecoX), Game.toPx(Game.skyHeight), 'spaceco', 10);
 
   spaceco.frame = spaceco.damage = 0;
 
