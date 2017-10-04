@@ -6,13 +6,13 @@ Game.states.play.prototype.create = function(){
   console.log('play');
 
   Game.modes[Game.mode].nextLevel();
-  
+
   Game.ground = this.game.add.group();
   Game.lava = this.game.add.group();
 
   Game.teleporter = Game.game.add.sprite(150, 20, 'teleporter');
   Game.teleporter.anchor.setTo(0.5, 0.5);
-  Game.teleporter.fixedToCamera = true;  
+  Game.teleporter.fixedToCamera = true;
   
   var spacecoX = Game.rand(3, Game.width - 3);
   
@@ -29,34 +29,8 @@ Game.states.play.prototype.create = function(){
   
   Game.hud = Game.entities.hud.create(0, 0);
   
-  var hudItemCount = Game.hudItemCount = Object.keys(Game.modes[Game.mode].hudLayout).length;
-  
-  if(hudItemCount > 0){
-    Game.hudLine1 = this.game.add.text(15, 10, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor });
-    Game.hud.addChild(Game.hudLine1);
-  }
-  if(hudItemCount > 1){
-    Game.hudLine2 = this.game.add.text(15, 52, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor });
-    Game.hud.addChild(Game.hudLine2);
-  }
-  if(hudItemCount > 2){
-    Game.hudLine3 = this.game.add.text(15, 94, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor });
-    Game.hud.addChild(Game.hudLine3);
-  }
-  if(hudItemCount > 3){
-    Game.hudLine4 = this.game.add.text(15, 136, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor });
-    Game.hud.addChild(Game.hudLine4);
-  }
-  if(hudItemCount > 4){
-    Game.hudLine5 = this.game.add.text(15, 178, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor });
-    Game.hud.addChild(Game.hudLine5);
-  }
-  
   Game.infoLine = this.game.add.text(15, 320, '', { font: '48px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
-  Game.hud.addChild(Game.infoLine);
-  
-  Game.hud.interfaceText = this.game.add.text(20, 20, '', { font: '14px '+ Game.config.font, fill: '#fff', fontWeight: 'bold' });
-  Game.hud.addChild(Game.hud.interfaceText);
+  Game.infoLine.fixedToCamera = true;  
   
   this.game.input.keyboard.addKeyCapture([
     Phaser.Keyboard.LEFT,

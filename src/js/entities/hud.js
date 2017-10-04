@@ -9,6 +9,13 @@ Game.entities.hud.create = function(x, y){
   hud.fixedToCamera = true;
 
   hud.isOpen = false;
+
+  hud.statusText = Game.game.add.text(20, 15, '', { font: '35px '+ Game.config.font, fill: Game.config.hudTextColor });
+  hud.statusText.lineSpacing = -8;
+  hud.addChild(hud.statusText);
+
+  hud.interfaceText = Game.game.add.text(20, 20, '', { font: '14px '+ Game.config.font, fill: '#fff', fontWeight: 'bold' });
+  hud.addChild(hud.interfaceText);
   
   return hud;
 };
@@ -16,25 +23,26 @@ Game.entities.hud.create = function(x, y){
 Game.entities.hud.update = function(){
   if(Game.hud.isOpen) return;
   
-  var hudItemNames = Object.keys(Game.modes[Game.mode].hudLayout);
-  for(var x = 0; x < Game.hudItemCount; x++){
+  var hudItemNames = Object.keys(Game.modes[Game.mode].hudLayout), hudItemCount = hudItemNames.length;
+  var statusText;
+
+  for(var x = 0; x < hudItemCount; x++){
     var item = hudItemNames[x];
     var value = Game.modes[Game.mode].hudLayout[hudItemNames[x]].split(':~:');
-    var text = value[0] +': ';
+    if(statusText) statusText += '\n'+ value[0] +': ';
+    else statusText = value[0] +': ';
     
-    if(item === 'position_dbg') text += 'x'+ Game.toGridPos(Game.drill.x) +' y'+ Game.toGridPos(Game.drill.y);
-    else if(item === 'position') text += 'x'+ (Game.toGridPos(Game.drill.x) + 1) +' y'+ -(Game.toGridPos(Game.drill.y) - Game.skyHeight);
-    else if(item === 'fuel') text += Game.fuel.toFixed(1);
-    else if(item === 'credits') text += Game.credits.toFixed(1);
-    else if(item === 'hull') text += Game.hull.space.toFixed(1);
+    if(item === 'position_dbg') statusText += 'x'+ Game.toGridPos(Game.drill.x) +' y'+ Game.toGridPos(Game.drill.y);
+    else if(item === 'position') statusText += 'x'+ (Game.toGridPos(Game.drill.x) + 1) +' y'+ -(Game.toGridPos(Game.drill.y) - Game.skyHeight);
+    else if(item === 'fuel') statusText += Game.fuel.toFixed(1);
+    else if(item === 'credits') statusText += Game.credits.toFixed(1);
+    else if(item === 'hull') statusText += Game.hull.space.toFixed(1);
     else{
-      if(item.startsWith('mineral') && Game.hull[item]) text += Game.hull[item];
+      if(item.startsWith('mineral') && Game.hull[item]) statusText += Game.hull[item];
     }
-
-    // console.log('setting: ', 'hudLine'+ (x + 1), ' to: ', text);
-
-    Game['hudLine'+ (x + 1)].setText(text);
   }
+
+  Game.hud.statusText.setText(statusText);
 };
 
 Game.entities.hud.open = function(){
@@ -58,7 +66,5 @@ Game.entities.hud.close = function(){
 };
 
 Game.entities.hud.clear = function(){
-  for(var x = 0; x < Game.hudItemCount; x++){
-    Game['hudLine'+ (x + 1)].setText('');
-  }
+  Game.hud.statusText.setText('');
 };
