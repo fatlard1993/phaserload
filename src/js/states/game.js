@@ -13,27 +13,25 @@ Game.states.game.prototype.create = function(){
   Game.teleporter.anchor.setTo(0.5, 0.5);
   Game.teleporter.fixedToCamera = true;  
   
+  var spacecoX = Game.rand(3, Game.width - 3);
   
-  var spacecoX = Game.rand(2, Game.config.maxBlockWidth - 2);
-  
-  Game.spaceco = Game.entities.spaceco.create(this.game, Game.toPx(spacecoX), Game.toPx(Game.config.playerStartPos.y));
-  
-  
+  Game.spaceco = Game.entities.spaceco.create(this.game, Game.toPx(spacecoX), Game.toPx(Game.skyHeight));
+
   Game.monsters = this.game.add.group();
   Game.minerals = this.game.add.group();
   
-  Game.generateMap(Game.modes[Game.mode].levels[Game.modes[Game.mode].level]);
+  Game.generateMap();
+  
+  Game.entities.player.create();
   
   Game.game.camera.bounds = null;
-  Game.game.camera.x = Math.max(0, Math.min((Game.config.maxBlockWidth * 64) - Game.config.width, Game.toPx(Game.config.playerStartPos.x) - Game.config.width / 2));
+  Game.game.camera.x = Math.max(0, Math.min((Game.width * 64) - Game.viewWidth, Game.toPx(Game.drill.x) - Game.viewWidth / 2));
   
-  Game.drawView(Game.toGridPos(Game.game.camera.x) - Game.viewBufferSize, Game.config.skyHeight + 1, Game.toGridPos(Game.game.camera.x + Game.config.width) + Game.viewBufferSize, Game.toGridPos(Game.config.height) + Game.viewBufferSize);
-  
-  Game.entities.player.create(this.game, Game.toPx(Game.config.playerStartPos.x), Game.toPx(Game.config.playerStartPos.y));
+  Game.drawView(Game.toGridPos(Game.game.camera.x) - Game.viewBufferSize, Game.skyHeight + 1, Game.toGridPos(Game.game.camera.x + Game.viewWidth) + Game.viewBufferSize, Game.toGridPos(Game.viewHeight) + Game.viewBufferSize);
   
   Game.hud = Game.entities.hud.create(0, 0);
   
-  var hudItemCount = Game.hudItemCount = Object.keys(Game.config.hudContents[Game.config.mode]).length;
+  var hudItemCount = Game.hudItemCount = Object.keys(Game.modes[Game.mode].hudLayout).length;
   
   if(hudItemCount > 0){
     Game.hudLine1 = this.game.add.text(15, 10, '', { font: '40px '+ Game.config.font, fill: Game.config.hudTextColor });
@@ -89,7 +87,7 @@ Game.states.game.prototype.create = function(){
         else if(pointer.x > 345 && pointer.x < 420) Game.entities.spaceco.revoke();
       }
 
-      // if(this.game.math.distance(pointer.x, pointer.y, monster.x, monster.y) < Game.config.blockSize/2)
+      // if(this.game.math.distance(pointer.x, pointer.y, monster.x, monster.y) < Game.blockPx/2)
 
       return;
     }
@@ -137,9 +135,8 @@ Game.states.game.prototype.create = function(){
   Game.hull = {};
   Game.hull.space = 10;
 
-  Game.depth = 0;
   Game.credits = 0;
-  Game.fuel = Game.config.mode === 'normal' ? 5 : 0;
+  Game.fuel = Game.mode === 'normal' ? 5 : 0;
   
   Game.hull.mineral_green = 0;
   Game.hull.mineral_red = 0;
@@ -149,7 +146,7 @@ Game.states.game.prototype.create = function(){
 };
 
 Game.states.game.prototype.update = function(){
-  if(Game.config.mode === 'normal' && Game.fuel < 0){
+  if(Game.mode === 'normal' && Game.fuel < 0){
     Game.loseReason = 'fuel';
     return this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);
   }
@@ -204,26 +201,26 @@ Game.states.game.prototype.update = function(){
   Game.lava.forEachAlive(function(lava){
     if(!lava.lethal) return;
 
-    if(!Game.drill.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(Game.drill.x, Game.drill.y, lava.x, lava.y) < Game.config.blockSize/2){
+    if(!Game.drill.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(Game.drill.x, Game.drill.y, lava.x, lava.y) < Game.blockPx/2){
       Game.drill.kill();
       Game.loseReason = 'lava';
       
       this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);
     }
 
-    if(this.game.math.distance(Game.spaceco.x, Game.spaceco.y, lava.x, lava.y) < Game.config.blockSize){
+    if(this.game.math.distance(Game.spaceco.x, Game.spaceco.y, lava.x, lava.y) < Game.blockPx){
       Game.spaceco.kill();
     }
 
     Game.monsters.forEachAlive(function(monster){
-      if(this.game.math.distance(monster.x, monster.y, lava.x, lava.y) < Game.config.blockSize){
+      if(this.game.math.distance(monster.x, monster.y, lava.x, lava.y) < Game.blockPx){
         monster.kill();
       }
     }, this);
   }, this);
 
   Game.monsters.forEachAlive(function(monster){
-    if(this.game.math.distance(Game.drill.x, Game.drill.y, monster.x, monster.y) < Game.config.blockSize/2){
+    if(this.game.math.distance(Game.drill.x, Game.drill.y, monster.x, monster.y) < Game.blockPx/2){
       Game.drill.kill();
       Game.loseReason = 'monster';
       
@@ -238,13 +235,13 @@ Game.states.game.prototype.update = function(){
     };
 
     var spacecoGroundBase = {
-      bottomRight: Game.map[gridPos.x + 1][gridPos.y + 1],
+      bottomRight: gridPos.x + 1 < Game.width ? Game.map[gridPos.x + 1][gridPos.y + 1] : -1,
       bottom: Game.map[gridPos.x][gridPos.y + 1],
-      bottomLeft: Game.map[gridPos.x - 1][gridPos.y + 1]
+      bottomLeft: gridPos.x - 1 >= 0 ? Game.map[gridPos.x - 1][gridPos.y + 1] : -1
     };
 
     if(spacecoGroundBase.bottomRight < 3 && spacecoGroundBase.bottom < 3 && spacecoGroundBase.bottomLeft < 3){
-      Game.game.add.tween(Game.spaceco).to({ y: Game.spaceco.y + Game.config.blockSize }, 500, Phaser.Easing.Sinusoidal.InOut, true);
+      Game.game.add.tween(Game.spaceco).to({ y: Game.spaceco.y + Game.blockPx }, 500, Phaser.Easing.Sinusoidal.InOut, true);
 
       Game.spaceco.damage++;
 

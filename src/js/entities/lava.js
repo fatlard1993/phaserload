@@ -24,21 +24,21 @@ Game.entities.lava = function(game, x, y){
     }
 
     var spread = {
-      left: this.x > Game.config.blockSize / 2 && Game.map[gridPos.x - 1][gridPos.y] < 3 ? 1 : 0,
-      right: this.x < this.game.width - Game.config.blockSize / 2 && Game.map[gridPos.x + 1][gridPos.y] < 3 ? 1 : 0,
+      left: this.x > Game.blockPx / 2 && Game.map[gridPos.x - 1][gridPos.y] < 3 ? 1 : 0,
+      right: this.x < this.game.width - Game.blockPx / 2 && Game.map[gridPos.x + 1][gridPos.y] < 3 ? 1 : 0,
       down: Game.map[gridPos.x][gridPos.y + 1] < 3 ? 1 : 0
     };
 
     if(spread.left){
-      Game.entities.lava.create(this.game, this.x - Game.config.blockSize, this.y);
+      Game.entities.lava.create(this.game, this.x - Game.blockPx, this.y);
     }
 
     if(spread.right){
-      Game.entities.lava.create(this.game, this.x + Game.config.blockSize, this.y);
+      Game.entities.lava.create(this.game, this.x + Game.blockPx, this.y);
     }
 
     if(spread.down){
-      Game.entities.lava.create(this.game, this.x, this.y + Game.config.blockSize);
+      Game.entities.lava.create(this.game, this.x, this.y + Game.blockPx);
     }
   }, this);
   this.animations.add('full', [3, 4, 5], 10, true);

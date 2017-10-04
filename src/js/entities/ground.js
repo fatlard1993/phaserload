@@ -6,7 +6,7 @@ Game.entities.ground = function(game, x, y, type){
   this.anchor.setTo(0.5, 0.5);
 
   if(!type){
-    type = Game.weightedChance(Game.config.groundDistribution[Game.config.mode]);
+    type = Game.weightedChance(Game.modes[Game.mode].levels[Game.modes[Game.mode].level]);
     Game.map[Game.toGridPos(x)][Game.toGridPos(y)] = Game.mapNames.indexOf(type);
     Game.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)] = Game.mapNames.indexOf(type);
   }
@@ -30,7 +30,7 @@ Game.entities.ground.prototype.constructor = Game.entities.ground;
 Game.entities.ground.types = ['white', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink', 'red', 'black'];
 
 Game.entities.ground.create = function(game, x, y, type){
-  return Game.ground.add(new Game.entities.ground(game, x, y, type))
+  return Game.ground.add(new Game.entities.ground(game, x, y, type));
 };
 
 
@@ -40,7 +40,7 @@ Game.entities.ground.crush = function(pos){
 
   Game.ground.forEachAlive(function(ground){
     if(ground.x === pos.x && ground.y === pos.y && !ground.animations.getAnimation('crush_'+ ground.ground_type).isPlaying){
-      ground.tween = Game.game.add.tween(ground).to({ alpha: 0 }, Game.config.digTime[Game.config.mode][groundType], Phaser.Easing.Cubic.In, true);
+      ground.tween = Game.game.add.tween(ground).to({ alpha: 0 }, Game.modes[Game.mode].digTime[groundType], Phaser.Easing.Cubic.In, true);
       ground.animations.play('crush_'+ ground.ground_type);
 
       Game.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)] = -1;
@@ -56,16 +56,15 @@ Game.entities.ground.dig = function(pos){
   if(!type) return;
   
   Game.entities.ground.crush(pos);
-  
-  if(Game.config.blockBehavior[Game.config.mode] && Game.config.blockBehavior[Game.config.mode][type] && Game.entities.ground.behaviors[Game.config.blockBehavior[Game.config.mode][type].split(':~:')[0]]){
-    Game.entities.ground.applyBehavior(Game.config.blockBehavior[Game.config.mode][type].split(':~:')[0], Game.config.blockBehavior[Game.config.mode][type].split(':~:')[1], pos);
-  }
-
-  if(type === 'ground_red') return;
 
   type = type.replace('ground_', '');
-
-  if(Game.hull.space < 0) return;  
+  
+  var blockBehavior = Game.modes[Game.mode].blockBehavior[type];
+  if(blockBehavior && Game.entities.ground.behaviors[blockBehavior.split(':~:')[0]]){
+    Game.entities.ground.applyBehavior(blockBehavior.split(':~:')[0], blockBehavior.split(':~:')[1], pos);
+  }
+  
+  if(type === 'red' || Game.hull.space < 0) return;  
 
   Game.hull.space -= 0.13;
 
@@ -83,8 +82,8 @@ Game.entities.ground.behaviors = {
     }
   },
   lavaRelease: function(){
-    for(var x = Game.config.blockSize / 2; x < Game.game.width; x += Game.config.blockSize){
-      for(var y = Game.groundDepth - Game.config.height; y < Game.groundDepth; y += Game.config.blockSize){
+    for(var x = Game.blockPx / 2; x < Game.game.width; x += Game.blockPx){
+      for(var y = Game.groundDepth - Game.viewHeight; y < Game.groundDepth; y += Game.blockPx){
         if(Game.chance(90) && Game.groundAt(x, y) === 'ground_red'){
           Game.entities.ground.crush({ x: x, y: y });
           Game.entities.lava.create(Game.game, x, y);
@@ -95,7 +94,7 @@ Game.entities.ground.behaviors = {
   },
   lavaSolidify: function(radius){
     Game.lava.forEachAlive(function(lava){
-      if(Game.game.math.distance(Game.drill.x, Game.drill.y, lava.x, lava.y) < Game.config.blockSize * (radius || 4)){
+      if(Game.game.math.distance(Game.drill.x, Game.drill.y, lava.x, lava.y) < Game.blockPx * (radius || 4)){
         Game.entities.ground.create(Game.game, lava.x, lava.y);
         lava.kill();
       }

@@ -22,20 +22,20 @@ Game.entities.monster.prototype.update = function(){
     var canMoveUp = true;
 
     Game.ground.forEachAlive(function(ground){
-      if(ground.y === this.y && ground.x === this.x + Game.config.blockSize) canMoveRight = false;
-      if(ground.y === this.y && ground.x === this.x - Game.config.blockSize) canMoveLeft = false;
-      if(ground.x === this.x && ground.y === this.y + Game.config.blockSize) canMoveDown = false;
-      if(ground.x === this.x && ground.y === this.y - Game.config.blockSize) canMoveUp = false;
+      if(ground.y === this.y && ground.x === this.x + Game.blockPx) canMoveRight = false;
+      if(ground.y === this.y && ground.x === this.x - Game.blockPx) canMoveLeft = false;
+      if(ground.x === this.x && ground.y === this.y + Game.blockPx) canMoveDown = false;
+      if(ground.x === this.x && ground.y === this.y - Game.blockPx) canMoveUp = false;
     }, this);
 
     Game.lava.forEachAlive(function(lava){
-      if(lava.y === this.y && lava.x === this.x + Game.config.blockSize) canMoveRight = false;
-      if(lava.y === this.y && lava.x === this.x - Game.config.blockSize) canMoveLeft = false;
-      if(lava.x === this.x && lava.y === this.y + Game.config.blockSize) canMoveDown = false;
-      if(lava.x === this.x && lava.y === this.y - Game.config.blockSize) canMoveUp = false;
+      if(lava.y === this.y && lava.x === this.x + Game.blockPx) canMoveRight = false;
+      if(lava.y === this.y && lava.x === this.x - Game.blockPx) canMoveLeft = false;
+      if(lava.x === this.x && lava.y === this.y + Game.blockPx) canMoveDown = false;
+      if(lava.x === this.x && lava.y === this.y - Game.blockPx) canMoveUp = false;
     }, this);
 
-    if(this.y <= Game.config.blockSize * 3.5) canMoveUp = false; // So many magic numbers!
+    if(this.y <= Game.blockPx * 3.5) canMoveUp = false; // So many magic numbers!
 
     if(Game.drill.y < this.y){
       canMoveDown = false;
@@ -59,23 +59,27 @@ Game.entities.monster.prototype.update = function(){
     }
 
     var moved = false;
-    var delay = Game.config.monsterStepDelay;
-    if(this.firstMove) delay += Game.config.monsterWakeupDelay;
+    var wakeupDelay = 600;
+    var stepDelay = 300;
+    var moveSpeed = 400;
 
-    if(canMoveRight && this.x < this.game.width - Game.config.blockSize/2){
-      this.game.add.tween(this).to({ x: this.x + Game.config.blockSize }, Game.config.monsterMoveSpeed, Phaser.Easing.Sinusoidal.InOut, true, delay);
+    var delay = stepDelay;
+    if(this.firstMove) delay += wakeupDelay;
+
+    if(canMoveRight && this.x < this.game.width - Game.blockPx/2){
+      this.game.add.tween(this).to({ x: this.x + Game.blockPx }, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, delay);
       moved = true;
     }
-    else if(canMoveLeft && this.x > Game.config.blockSize/2){
-      this.game.add.tween(this).to({ x: this.x - Game.config.blockSize }, Game.config.monsterMoveSpeed, Phaser.Easing.Sinusoidal.InOut, true, delay);
+    else if(canMoveLeft && this.x > Game.blockPx/2){
+      this.game.add.tween(this).to({ x: this.x - Game.blockPx }, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, delay);
       moved = true;
     }
     else if(canMoveDown && this.y < this.game.camera.y + this.game.camera.height){
-      this.game.add.tween(this).to({ y: this.y + Game.config.blockSize }, Game.config.monsterMoveSpeed, Phaser.Easing.Sinusoidal.InOut, true, delay);
+      this.game.add.tween(this).to({ y: this.y + Game.blockPx }, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, delay);
       moved = true;
     }
     else if(canMoveUp && this.y > this.game.camera.y){
-      this.game.add.tween(this).to({ y: this.y - Game.config.blockSize }, Game.config.monsterMoveSpeed, Phaser.Easing.Sinusoidal.InOut, true, delay);
+      this.game.add.tween(this).to({ y: this.y - Game.blockPx }, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, delay);
       moved = true;
     }
 

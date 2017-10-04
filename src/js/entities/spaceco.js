@@ -45,15 +45,15 @@ Game.entities.spaceco.open = function(){
 
   Game.entities.spaceco.setView('rates');
 
-  if(Game.config.mode === 'normal'){
+  if(Game.mode === 'normal'){
     delete Game.hull.space;
 
     var mineralNames = Object.keys(Game.hull);
 
     for(var x = 0; x < mineralNames.length; x++){
-      if(mineralNames[x].startsWith('ground')) Game.credits += Game.hull[mineralNames[x]] * Game.config.groundDistribution[Game.config.mode][mineralNames[x].replace('ground_', '')]
+      if(mineralNames[x].startsWith('ground')) Game.credits += Game.hull[mineralNames[x]] * (100 / Game.modes[Game.mode].digTime[mineralNames[x].replace('ground_', '')]);
       else if(mineralNames[x].startsWith('mineral')){
-        Game.credits += Game.hull[mineralNames[x]] * Game.config.spacecoMineralPrices[Game.config.mode][mineralNames[x].replace('mineral_', '')];
+        Game.credits += Game.hull[mineralNames[x]] * Game.modes[Game.mode].mineralValues[mineralNames[x].replace('mineral_', '')];
       }
     }
 

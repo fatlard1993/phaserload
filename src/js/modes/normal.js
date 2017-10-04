@@ -28,13 +28,16 @@ Game.modes.normal = {
     red: 350,
     black: 1100
   },
-  level: 2,
-  levels: [//decending difficulty increases
+  level: 0,
+  levels: [
     {
       size: {
-        width: [10, 14],
+        width: [13, 16],
         depth: [100, 200]
       },
+      groundChance: 0.2,
+      lavaChance: 0.2,
+      monsterChance: 0.2,
       mineralRareity: {
         green: 50,
         red: 35,
@@ -51,6 +54,9 @@ Game.modes.normal = {
         width: [24, 32],
         depth: [200, 300]
       },
+      groundChance: 0.2,
+      lavaChance: 0.4,
+      monsterChance: 0.2,
       mineralRareity: {
         green: 35,
         red: 15,
@@ -67,6 +73,9 @@ Game.modes.normal = {
         width: [45, 52],
         depth: [250, 400]
       },
+      groundChance: 0.1,
+      lavaChance: 0.1,
+      monsterChance: 0.3,
       mineralRareity: {
         green: 5,
         red: 75,

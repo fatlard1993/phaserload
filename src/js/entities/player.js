@@ -2,8 +2,10 @@
 
 Game.entities.player = function(){};
 
-Game.entities.player.create = function(game, x, y){
-  Game.drill = game.add.sprite(x, y, 'drill', 15);
+Game.entities.player.create = function(){
+  var playerX = Game.rand(1, Game.width - 1);
+  
+  Game.drill = Game.game.add.sprite(Game.toPx(playerX), Game.toPx(Game.skyHeight), 'drill', 15);
   
   Game.drill.anchor.setTo(0.5, 0.5);
 
@@ -22,14 +24,14 @@ Game.entities.player.create = function(game, x, y){
 
 Game.entities.player.getSurrounds = function(){
   return {
-    left: Game.groundAt(Game.drill.x - Game.config.blockSize, Game.drill.y),
-    topLeft: Game.groundAt(Game.drill.x - Game.config.blockSize, Game.drill.y - Game.config.blockSize),
-    top: Game.groundAt(Game.drill.x, Game.drill.y - Game.config.blockSize),
-    topRight: Game.groundAt(Game.drill.x + Game.config.blockSize, Game.drill.y - Game.config.blockSize),
-    right: Game.groundAt(Game.drill.x + Game.config.blockSize, Game.drill.y),
-    bottomRight: Game.groundAt(Game.drill.x + Game.config.blockSize, Game.drill.y + Game.config.blockSize),
-    bottom: Game.groundAt(Game.drill.x, Game.drill.y + Game.config.blockSize),
-    bottomLeft: Game.groundAt(Game.drill.x - Game.config.blockSize, Game.drill.y + Game.config.blockSize)
+    left: Game.groundAt(Game.drill.x - Game.blockPx, Game.drill.y),
+    topLeft: Game.groundAt(Game.drill.x - Game.blockPx, Game.drill.y - Game.blockPx),
+    top: Game.groundAt(Game.drill.x, Game.drill.y - Game.blockPx),
+    topRight: Game.groundAt(Game.drill.x + Game.blockPx, Game.drill.y - Game.blockPx),
+    right: Game.groundAt(Game.drill.x + Game.blockPx, Game.drill.y),
+    bottomRight: Game.groundAt(Game.drill.x + Game.blockPx, Game.drill.y + Game.blockPx),
+    bottom: Game.groundAt(Game.drill.x, Game.drill.y + Game.blockPx),
+    bottomLeft: Game.groundAt(Game.drill.x - Game.blockPx, Game.drill.y + Game.blockPx)
   };
 };
 
@@ -48,10 +50,10 @@ Game.entities.player.move = function(game, direction){
 
   var surrounds = Game.entities.player.getSurrounds();
 
-  if(direction === 'left' && (Game.drill.x <= Game.config.blockSize/2 || (!surrounds.bottomLeft && !surrounds.bottom))){
+  if(direction === 'left' && (Game.drill.x <= Game.blockPx/2 || (!surrounds.bottomLeft && !surrounds.bottom))){
     return;
   }
-  else if(direction === 'right' && (Game.drill.x >= (Game.config.maxBlockWidth * 64) - 32 || (!surrounds.bottomRight && !surrounds.bottom))){
+  else if(direction === 'right' && (Game.drill.x >= (Game.width * 64) - 32 || (!surrounds.bottomRight && !surrounds.bottom))){
     return;
   }
   else if(direction === 'down'){
@@ -73,11 +75,12 @@ Game.entities.player.move = function(game, direction){
   }
   
   var newPosition = {
-    x: Game.drill.x + (direction === 'left' ? -Game.config.blockSize : direction === 'right' ? Game.config.blockSize : 0),
-    y: Game.drill.y + (direction === 'up' ? -Game.config.blockSize : direction === 'down' ? Game.config.blockSize : 0)
+    x: Game.drill.x + (direction === 'left' ? -Game.blockPx : direction === 'right' ? Game.blockPx : 0),
+    y: Game.drill.y + (direction === 'up' ? -Game.blockPx : direction === 'down' ? Game.blockPx : 0)
   }, newCameraPosition;
+
   var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
-  var moveTime = targetGroundType ? Game.config.digTime[Game.config.mode][targetGroundType.replace('ground_', '')] ? Game.config.digTime[Game.config.mode][targetGroundType.replace('ground_', '')] : Game.config.drillMoveTime[Game.config.mode] : Game.config.drillMoveTime[Game.config.mode];
+  var moveTime = targetGroundType ? Game.modes[Game.mode].digTime[targetGroundType.replace('ground_', '')] ? Game.modes[Game.mode].digTime[targetGroundType.replace('ground_', '')] : Game.modes[Game.mode].baseDrillMoveTime : Game.modes[Game.mode].baseDrillMoveTime;
 
   if(direction === 'teleport'){
     Game.cleanupView(1);
@@ -92,28 +95,28 @@ Game.entities.player.move = function(game, direction){
       Game.entities.spaceco.offer();
     }, 200 + moveTime);
 
-    newCameraPosition = { x: Game.spaceco.x - Game.config.width / 2, y: 0 };    
+    newCameraPosition = { x: Game.spaceco.x - Game.viewWidth / 2, y: 0 };    
 
     newPosition.x = Game.spaceco.x;
     newPosition.y = Game.spaceco.y;
   }
   else if(direction === 'up'){
-    newCameraPosition = { x: game.camera.x, y: game.camera.y - Game.config.blockSize };
+    newCameraPosition = { x: game.camera.x, y: game.camera.y - Game.blockPx };
   }
   else if(direction === 'down'){
-    newCameraPosition = { x: game.camera.x, y: game.camera.y + Game.config.blockSize };
+    newCameraPosition = { x: game.camera.x, y: game.camera.y + Game.blockPx };
   }
-  else if(direction === 'left' && Math.abs((game.camera.x + Game.config.width) - Game.drill.x) > Game.config.width / 2){
-    newCameraPosition = { x: Math.max(0, game.camera.x - Game.config.blockSize), y: game.camera.y };
+  else if(direction === 'left' && Math.abs((game.camera.x + Game.viewWidth) - Game.drill.x) > Game.viewWidth / 2){
+    newCameraPosition = { x: Math.max(0, game.camera.x - Game.blockPx), y: game.camera.y };
   }
-  else if(direction === 'right' && Math.abs(game.camera.x - Game.drill.x) > Game.config.width / 2){
-    newCameraPosition = { x: Math.min((Game.config.maxBlockWidth * 64) - (Game.config.width), game.camera.x + Game.config.blockSize), y: game.camera.y };
+  else if(direction === 'right' && Math.abs(game.camera.x - Game.drill.x) > Game.viewWidth / 2){
+    newCameraPosition = { x: Math.min((Game.width * 64) - (Game.viewWidth), game.camera.x + Game.blockPx), y: game.camera.y };
   }
 
   if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime);
 
   if(targetGroundType){
-    console.log('Drill: Im diggin here! ', targetGroundType, newPosition);
+    // console.log('Drill: Im diggin here! ', targetGroundType, newPosition);
 
     if(targetGroundType.startsWith('mineral') && Game.hull.space > 0){
       Game.minerals.forEachAlive(function(mineral){
@@ -163,14 +166,14 @@ Game.entities.player.move = function(game, direction){
   var invertTexture = false;
 
   if(direction === 'up'){
-    if(surrounds.left){//&& (!surrounds.left || Game.entities.player.lastMoveInvert)
+    if(surrounds.left){
       invertTexture = true;
       Game.drill.angle = 90;
     }
     else Game.drill.angle = -90;
   }
   else if(direction === 'down'){
-    if(surrounds.right){//&& !surrounds.left || Game.entities.player.lastMoveInvert || Game.entities.player.lastMove === 'left')
+    if(surrounds.right){
       invertTexture = true;
       Game.drill.angle = -90;
     }
@@ -185,13 +188,8 @@ Game.entities.player.move = function(game, direction){
   }
 
 
-  if(invertTexture){
-    // console.log('Drill: Inverting texture!');
-    Game.drill.scale.x = -Game.drillScaleX;
-  }
-  else{
-    Game.drill.scale.x = Game.drillScaleX;   
-  }
+  if(invertTexture) Game.drill.scale.x = -Game.drillScaleX;
+  else Game.drill.scale.x = Game.drillScaleX;   
 
   Game.entities.player.lastMoveInvert = invertTexture;
   Game.entities.player.lastMove = direction;
@@ -202,17 +200,15 @@ Game.entities.player.move = function(game, direction){
   Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)] = Game.mapNames.indexOf('player1');
   Game.viewBufferMap[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)] = -1;
   Game.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)] = Game.mapNames.indexOf('player1');
-  
-  Game.depth = (newPosition.y - Game.config.blockMiddle) / Game.config.blockSize;
 
-  if(!Game.spacecoOffered && Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.config.blockSize + 10){
+  if(!Game.spacecoOffered && Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10){
     Game.entities.spaceco.offer();
   }
-  else if(Game.spacecoOffered && Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) > Game.config.blockSize - 10){
+  else if(Game.spacecoOffered && Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) > Game.blockPx - 10){
     Game.entities.spaceco.revoke();
   }
 
-  if(Game.config.mode === 'normal'){
+  if(Game.mode === 'normal'){
     Game.fuel -= 0.1;
   }
 
