@@ -36,7 +36,7 @@ Game.modes.normal = {
   levels: [
     {
       size: {
-        width: [13, 16],
+        width: [32, 45],
         depth: [100, 200]
       },
       groundChance: 0.2,
@@ -55,7 +55,7 @@ Game.modes.normal = {
     },
     {
       size: {
-        width: [24, 32],
+        width: [45, 60],
         depth: [200, 300]
       },
       groundChance: 0.2,
@@ -74,7 +74,7 @@ Game.modes.normal = {
     },
     {
       size: {
-        width: [45, 52],
+        width: [60, 70],
         depth: [250, 400]
       },
       groundChance: 0.1,
@@ -86,7 +86,6 @@ Game.modes.normal = {
         blue: 20
       },
       levels: [
-        { red: 90, black: 10 },
         { white: 90, orange: 10 },
         { orange: 90, yellow: 10 },
         { yellow: 90, green: 10 },
@@ -95,6 +94,50 @@ Game.modes.normal = {
         { blue: 90, purple: 10 },
         { purple: 90, pink: 10 },
         { pink: 90, red: 10 },
+        { red: 90, black: 10 }
+      ]
+    },
+    {
+      size: {
+        width: [32, 64],
+        depth: [100, 400]
+      },
+      groundChance: 0.05,
+      lavaChance: 0.4,
+      monsterChance: 0.2,
+      mineralRareity: {
+        green: 5,
+        red: 75,
+        blue: 20
+      },
+      levels: [
+        { red: 90, black: 10 },
+        { pink: 90, red: 10 },
+        { purple: 90, pink: 10 },
+        { blue: 90, purple: 10 },
+        { teal: 90, blue: 10 },
+        { green: 90, teal: 10 },
+        { yellow: 90, green: 10 },
+        { orange: 90, yellow: 10 },
+        { white: 90, orange: 10 },
+        { red: 90, black: 10 },
+        { pink: 90, red: 10 },
+        { purple: 90, pink: 10 },
+        { blue: 90, purple: 10 },
+        { teal: 90, blue: 10 },
+        { green: 90, teal: 10 },
+        { yellow: 90, green: 10 },
+        { orange: 90, yellow: 10 },
+        { white: 90, orange: 10 },
+        { red: 90, black: 10 },
+        { pink: 90, red: 10 },
+        { purple: 90, pink: 10 },
+        { blue: 90, purple: 10 },
+        { teal: 90, blue: 10 },
+        { green: 90, teal: 10 },
+        { yellow: 90, green: 10 },
+        { orange: 90, yellow: 10 },
+        { white: 90, orange: 10 }
       ]
     }
   ]
