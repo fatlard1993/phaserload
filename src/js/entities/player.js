@@ -87,7 +87,7 @@ Game.entities.player.move = function(game, direction){
   var moveTime = targetGroundType ? Game.modes[Game.mode].digTime[targetGroundType.replace('ground_', '')] ? Game.modes[Game.mode].digTime[targetGroundType.replace('ground_', '')] : Game.modes[Game.mode].baseDrillMoveTime : Game.modes[Game.mode].baseDrillMoveTime;
 
   if(direction === 'teleport'){
-    Game.cleanupView(1);
+    // Game.cleanupView(1);
 
     Game.drill.animations.play('teleporting');
 
