@@ -16,7 +16,7 @@ gulp.task('default', ['compile']);
 
 gulp.task('compile', ['compile-js', 'compile-css']);
 
-gulp.task('develop', function() {
+gulp.task('develop', ['compile'], function() {
   browserSync.init({
       server: {
           baseDir: "public"
