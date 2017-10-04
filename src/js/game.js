@@ -381,15 +381,25 @@ var Game = {
 window.onload = function(){
   console.log('onload');
 
-  if(Game.config.width === 'auto') Game.config.width = Math.max(10, Math.min(20, Math.floor(document.body.clientWidth / 64))) * 64;
-  if(Game.config.height === 'auto'){
-    Game.config.height = Math.max(4, Math.min(13, Math.floor(document.body.clientHeight / 64))) * 64;
-    
-    document.getElementById('game').style.marginTop = (document.body.clientHeight > Game.config.height ? (document.body.clientHeight - Game.config.height) / 5 : 0) +'px';
+  let blockSizePx = Game.config.blockSize;
+  let clientHeight = document.body.clientHeight;
+  let clientWidth = document.body.clientWidth;
 
-    if(Game.config.height <= 460){
-      Game.config.skyHeight = Game.config.playerStartPos.y = 2;
-    }
+  if(Game.config.width === 'auto'){
+    Game.config.width = clientWidth - (clientWidth % blockSizePx);
+  }
+
+  if(Game.config.height === 'auto'){
+    Game.config.height = clientHeight - (clientHeight % blockSizePx);
+  }
+
+  if(Game.config.height <= 460){
+    Game.config.skyHeight = Game.config.playerStartPos.y = 2;
+  }
+
+  if(clientHeight > Game.config.height){
+    let marginTop = (clientHeight - Game.config.height) / 2;
+    document.getElementById('game').style.marginTop = marginTop + 'px';
   }
   
   Game.game = new Phaser.Game(Game.config.width, Game.config.height, Phaser.AUTO, 'game');
