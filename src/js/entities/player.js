@@ -17,7 +17,7 @@ Game.entities.player.create = function(game, x, y){
 
   Game.map[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)] = Game.mapNames.indexOf('player1');
 
-  Game.drillScaleX = Game.drill.scale.x;  
+  Game.drillScaleX = Game.drill.scale.x;
 };
 
 Game.entities.player.getSurrounds = function(){
@@ -141,17 +141,16 @@ Game.entities.player.move = function(game, direction){
     else if(targetGroundType.startsWith('ground')){
       Game.drill.emitter = Game.game.add.emitter(0, 0, 100);
       Game.drill.addChild(Game.drill.emitter);
-  
+
       var frameMod = Game.entities.ground.types.indexOf(targetGroundType.replace('ground_', '')) * 4;
     
       Game.drill.emitter.makeParticles('ground', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod]);
     
-      // Game.drill.emitter.x = Game.drill.x;
-      // Game.drill.emitter.y = Game.drill.y;
+      Game.drill.emitter.x = 32;
 
-      Game.drill.emitter.setScale(0.2, 0.4, 0.2, 0.4);
+      Game.drill.emitter.setScale(0.1, 0.3, 0.1, 0.3);
     
-      Game.drill.emitter.start(true, 1000, null, 4);
+      Game.drill.emitter.start(true, moveTime + 100, null, Math.round(Game.rand(3, 7)));
 
       Game.entities.ground.dig(newPosition);
     }
@@ -220,9 +219,9 @@ Game.entities.player.move = function(game, direction){
   setTimeout(function(){
     Game.entities.hud.update();
     
-    // if(Game.drill.emitter){
-    //   Game.drill.emitter.destroy();
-    //   Game.drill.emitter = null;
-    // }
+    if(Game.drill.emitter){
+      Game.drill.emitter.destroy();
+      Game.drill.emitter = null;
+    }
   }, moveTime + 150);
 };

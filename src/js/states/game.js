@@ -154,6 +154,12 @@ Game.states.game.prototype.update = function(){
     return this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);
   }
 
+  if(Game.drill.emitter){
+    Game.drill.emitter.forEachAlive(function(particle){
+      particle.alpha = Math.max(0, Math.min(1, (particle.lifespan / Game.drill.emitter.lifespan) * 2));
+    });
+  }
+
   var moving;
 
   if(!this.game.tweens.isTweening(Game.drill)){
