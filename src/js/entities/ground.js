@@ -59,9 +59,9 @@ Game.entities.ground.dig = function(pos){
 
   type = type.replace('ground_', '');
   
-  var blockBehavior = Game.modes[Game.mode].blockBehavior[type];
-  if(blockBehavior && Game.entities.ground.behaviors[blockBehavior.split(':~:')[0]]){
-    Game.entities.ground.applyBehavior(blockBehavior.split(':~:')[0], blockBehavior.split(':~:')[1], pos);
+  var blockAction = Game.modes[Game.mode].blockBehavior[type];
+  if(blockAction && Game.effects[blockAction.split(':~:')[0]]){
+    Game.entities.ground.applyBehavior(blockAction.split(':~:')[0], blockAction.split(':~:')[1], pos);
   }
   
   if(type === 'red' || Game.hull.space < 0) return;  
@@ -73,50 +73,6 @@ Game.entities.ground.dig = function(pos){
   Game.hull['ground_'+ type]++;
 };
 
-
-Game.entities.ground.behaviors = {
-  lava: function(chance, pos){
-    if(Game.chance(chance)){
-      Game.entities.lava.create(Game.game, pos.x, pos.y);
-      Game.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)] = Game.mapNames.indexOf('lava');
-    }
-  },
-  lavaRelease: function(){
-    for(var x = Game.blockPx / 2; x < Game.game.width; x += Game.blockPx){
-      for(var y = Game.groundDepth - Game.viewHeight; y < Game.groundDepth; y += Game.blockPx){
-        if(Game.chance(90) && Game.groundAt(x, y) === 'ground_red'){
-          Game.entities.ground.crush({ x: x, y: y });
-          Game.entities.lava.create(Game.game, x, y);
-          Game.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)] = Game.mapNames.indexOf('lava');
-        }
-      }
-    }
-  },
-  lavaSolidify: function(radius){
-    Game.lava.forEachAlive(function(lava){
-      if(Game.game.math.distance(Game.drill.x, Game.drill.y, lava.x, lava.y) < Game.blockPx * (radius || 4)){
-        Game.entities.ground.create(Game.game, lava.x, lava.y);
-        lava.kill();
-      }
-    }, this);
-  },
-  save: function(chance, offChanceFunc){
-    if(Game.chance(chance)){
-      Game.lava.forEachAlive(function(lava){
-        if(Game.chance(85)) lava.kill();
-        Game.viewBufferMap[Game.toGridPos(lava.x)][Game.toGridPos(lava.y)] = -1;
-      }, this);
-  
-      Game.monsters.forEachAlive(function(monster){
-        if(Game.chance(85)) monster.kill();
-        Game.viewBufferMap[Game.toGridPos(monster.x)][Game.toGridPos(monster.y)] = -1;
-      }, this);
-    }
-
-    else if(offChanceFunc) Game.entities.ground.applyBehavior(offChanceFunc);
-  }
-};
-
 Game.entities.ground.applyBehavior = function(name, options, pos){
   if(options) options = options.split(',');
 
@@ -125,5 +81,5 @@ Game.entities.ground.applyBehavior = function(name, options, pos){
     else options.push(pos);
   }
 
-  if(Game.entities.ground.behaviors[name]) Game.entities.ground.behaviors[name].apply(null, options);
+  if(Game.effects[name]) Game.effects[name].apply(null, options);
 };

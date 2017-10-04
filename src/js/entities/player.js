@@ -20,6 +20,9 @@ Game.entities.player.create = function(){
   Game.map[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)] = Game.mapNames.indexOf('player1');
 
   Game.drillScaleX = Game.drill.scale.x;
+
+  // Game.drawView(Game.toGridPos(Game.game.camera.x), Game.toGridPos(Game.game.camera.y), Game.toGridPos(Game.drill.x + Game.viewWidth), Game.toGridPos(Game.drill.y + Game.viewHeight));
+  Game.adjustViewPosition(Game.drill.x - Game.viewWidth / 2, Game.drill.y - Game.viewHeight / 2, Math.ceil(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.game.camera.x / 2, Game.game.camera.y / 2)));
 };
 
 Game.entities.player.getSurrounds = function(){
@@ -113,7 +116,7 @@ Game.entities.player.move = function(game, direction){
     newCameraPosition = { x: Math.min((Game.width * 64) - (Game.viewWidth), game.camera.x + Game.blockPx), y: game.camera.y };
   }
 
-  if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime);
+  if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime, direction);
 
   if(targetGroundType){
     // console.log('Drill: Im diggin here! ', targetGroundType, newPosition);

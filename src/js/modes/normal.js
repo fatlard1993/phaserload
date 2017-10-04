@@ -14,7 +14,7 @@ Game.modes.normal = {
     blue: 8
   },
   blockBehavior: {
-    red: 'lava:~:35' //- ground_
+    red: 'lava:~:35'
   },
   digTime: {
     white: 400,
@@ -28,7 +28,7 @@ Game.modes.normal = {
     red: 350,
     black: 1100
   },
-  level: 0,
+  level: 2,
   levels: [
     {
       size: {
@@ -82,6 +82,7 @@ Game.modes.normal = {
         blue: 20
       },
       levels: [
+        { red: 90, black: 10 },
         { white: 90, orange: 10 },
         { orange: 90, yellow: 10 },
         { yellow: 90, green: 10 },
@@ -90,7 +91,6 @@ Game.modes.normal = {
         { blue: 90, purple: 10 },
         { purple: 90, pink: 10 },
         { pink: 90, red: 10 },
-        { red: 90, black: 10 }
       ]
     }
   ]

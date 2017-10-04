@@ -4,7 +4,6 @@ Game.states.play = function(game){};
 
 Game.states.play.prototype.create = function(){
   console.log('play');
-
   
   Game.ground = this.game.add.group();
   Game.lava = this.game.add.group();
@@ -25,9 +24,6 @@ Game.states.play.prototype.create = function(){
   Game.entities.player.create();
   
   Game.game.camera.bounds = null;
-  Game.game.camera.x = Math.max(0, Math.min((Game.width * 64) - Game.viewWidth, Game.toPx(Game.drill.x) - Game.viewWidth / 2));
-  
-  Game.drawView(Game.toGridPos(Game.game.camera.x) - Game.viewBufferSize, Game.skyHeight + 1, Game.toGridPos(Game.game.camera.x + Game.viewWidth) + Game.viewBufferSize, Game.toGridPos(Game.viewHeight) + Game.viewBufferSize);
   
   Game.hud = Game.entities.hud.create(0, 0);
   
