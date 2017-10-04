@@ -28,7 +28,11 @@ Game.modes.normal = {
     red: 350,
     black: 1100
   },
-  level: 2,
+  level: -1,
+  nextLevel: function(){
+    Game.modes[Game.mode].level++;
+    if(Game.modes[Game.mode].level >= Game.modes[Game.mode].levels.length) Game.modes[Game.mode].level = 0;  
+  },
   levels: [
     {
       size: {

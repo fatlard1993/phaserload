@@ -4,6 +4,8 @@ Game.states.play = function(game){};
 
 Game.states.play.prototype.create = function(){
   console.log('play');
+
+  Game.modes[Game.mode].nextLevel();
   
   Game.ground = this.game.add.group();
   Game.lava = this.game.add.group();
@@ -121,7 +123,6 @@ Game.states.play.prototype.create = function(){
   Game.entities.hud.open();
 
   var heading = '           PHASERLOAD\n';
-  
   var motive = '    Your job here is simple,\n         you need money,\n     and we need resources.\n';
   var instructions = '     To control your drill,\n       use the arrow keys\n      or tap on the screen';
 
