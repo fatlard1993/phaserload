@@ -29,12 +29,18 @@ Game.modes.normal = {
     black: 1100
   },
   level: -1,
-  nextLevel: function(){
-    Game.modes[Game.mode].level++;
-    if(Game.modes[Game.mode].level >= Game.modes[Game.mode].levels.length) Game.modes[Game.mode].level = 0;  
+  nextLevel: function(inc){
+    if(inc){
+      Game.modes[Game.mode].level++;
+      if(Game.modes[Game.mode].level >= Game.modes[Game.mode].levels.length) Game.modes[Game.mode].level = 0;  
+    }
+    else{
+      Game.modes[Game.mode].level = Game.rand(0, Game.modes[Game.mode].levels.length);
+    }
   },
   levels: [
     {
+      missionText: 'Welcome to asteroid AE02A-809'+ Game.rand(100, 999) +'.\n',
       size: {
         width: [32, 45],
         depth: [100, 200]
@@ -54,6 +60,7 @@ Game.modes.normal = {
       ]
     },
     {
+      missionText: 'Welcome to asteroid ZPQ6D-N02'+ Game.rand(100, 999) +'.\n',
       size: {
         width: [45, 60],
         depth: [200, 300]
@@ -73,6 +80,7 @@ Game.modes.normal = {
       ]
     },
     {
+      missionText: 'Welcome to moon D83R-W110'+ Game.rand(100, 999) +'.\n',
       size: {
         width: [60, 70],
         depth: [250, 400]
@@ -98,6 +106,7 @@ Game.modes.normal = {
       ]
     },
     {
+      missionText: 'Welcome to metoerite AE02A-809'+ Game.rand(100, 999) +'.\n',
       size: {
         width: [32, 64],
         depth: [100, 400]
