@@ -87,8 +87,6 @@ Game.entities.player.move = function(game, direction){
   var moveTime = targetGroundType ? Game.modes[Game.mode].digTime[targetGroundType.replace('ground_', '')] ? Game.modes[Game.mode].digTime[targetGroundType.replace('ground_', '')] : Game.modes[Game.mode].baseDrillMoveTime : Game.modes[Game.mode].baseDrillMoveTime;
 
   if(direction === 'teleport'){
-    // Game.cleanupView(1);
-
     Game.drill.animations.play('teleporting');
 
     moveTime = Math.ceil(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y));
@@ -99,22 +97,22 @@ Game.entities.player.move = function(game, direction){
       Game.entities.spaceco.offer();
     }, 200 + moveTime);
 
-    newCameraPosition = { x: Game.spaceco.x - Game.viewWidth / 2, y: 0 };    
+    newCameraPosition = { x: Game.spaceco.x - Game.viewWidth / 2, y: Game.spaceco.y - Game.viewHeight / 2 };    
 
     newPosition.x = Game.spaceco.x;
     newPosition.y = Game.spaceco.y;
   }
-  else if(direction === 'up'){
+  else if(direction === 'up' && Math.abs((game.camera.y + Game.viewHeight) - Game.drill.y) > Game.viewHeight / 2){
     newCameraPosition = { x: game.camera.x, y: game.camera.y - Game.blockPx };
   }
-  else if(direction === 'down'){
+  else if(direction === 'down' && Math.abs(game.camera.y - Game.drill.y) > Game.viewHeight / 2){
     newCameraPosition = { x: game.camera.x, y: game.camera.y + Game.blockPx };
   }
   else if(direction === 'left' && Math.abs((game.camera.x + Game.viewWidth) - Game.drill.x) > Game.viewWidth / 2){
-    newCameraPosition = { x: Math.max(0, game.camera.x - Game.blockPx), y: game.camera.y };
+    newCameraPosition = { x: game.camera.x - Game.blockPx, y: game.camera.y };
   }
   else if(direction === 'right' && Math.abs(game.camera.x - Game.drill.x) > Game.viewWidth / 2){
-    newCameraPosition = { x: Math.min((Game.width * 64) - (Game.viewWidth), game.camera.x + Game.blockPx), y: game.camera.y };
+    newCameraPosition = { x: game.camera.x + Game.blockPx, y: game.camera.y };
   }
 
   if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime, direction);
