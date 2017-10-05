@@ -18,26 +18,31 @@ gulp.task('compile', ['compile-js', 'compile-css']);
 
 gulp.task('develop', ['compile'], function() {
   browserSync.init({
-      server: {
-          baseDir: "public"
-      }
+    server: {
+      baseDir: 'public'
+    }
   });
-  gulp.watch("src/js/**/*.js", ['compile-js']);
-  gulp.watch("src/scss/*.scss", ['compile-css']);
-  gulp.watch("public/**/*.html").on('change', browserSync.reload);
+
+  gulp.watch('src/js/**/*.js', ['compile-js']);
+  gulp.watch('src/scss/*.scss', ['compile-css']);
+  gulp.watch('public/**/*.html').on('change', browserSync.reload);
 });
 
-gulp.task('watch', ['compile'], function(){
+gulp.task('dev2', ['compile'], function() {
+  browserSync.init({
+    server: {
+      baseDir: 'public'
+    }
+  });
+  
   gulp.watch('gulpfile.js', ['gulp-reload']);
-  
-  gulp.watch('src/js/*.js', ['compile-js']);
   gulp.watch('src/js/**/*.js', ['compile-js']);
-  
   gulp.watch('src/scss/*.scss', ['compile-css']);
+  gulp.watch('public/**/*.html').on('change', browserSync.reload);
 });
 
 gulp.task('gulp-reload', function(){
-  spawn('gulp', ['watch'], { stdio: 'inherit' });
+  spawn('gulp', ['dev2'], { stdio: 'inherit' });
 
   process.exit();
 });
