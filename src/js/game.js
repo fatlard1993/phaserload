@@ -199,9 +199,9 @@ var Game = {
     var oldX = Game.game.camera.x;
     var oldY = Game.game.camera.y;
     
-    var left = Game.toGridPos(oldX > newX ? newX : oldX) - Game.viewBufferSize;
+    var left = Math.max(0, Game.toGridPos(oldX > newX ? newX : oldX) - Game.viewBufferSize);
     var top = Game.toGridPos(oldY > newY ? newY : oldY) - Game.viewBufferSize;
-    var right = Game.toGridPos((oldX < newX ? newX : oldX) + Game.viewWidth) + Game.viewBufferSize;
+    var right = Math.min(Game.width, Game.toGridPos((oldX < newX ? newX : oldX) + Game.viewWidth) + Game.viewBufferSize);
     var bottom = Game.toGridPos((oldY < newY ? newY : oldY) + Game.viewHeight) + Game.viewBufferSize;
     
     left = Math.max(0, Math.min(Game.toPx(Game.width) - Game.viewWidth - 32, left));
