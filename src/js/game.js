@@ -184,6 +184,15 @@ var Game = {
 
     return found;
   },
+  showMissionText: function(){
+    Game.missionTextOpen = true;
+    
+    Game.entities.hud.open();
+  
+    var heading = '           PHASERLOAD\n';
+  
+    Game.hud.interfaceText.setText(heading + Game.modes[Game.mode].levels[Game.modes[Game.mode].level].missionText);
+  },
   viewBufferMap: [],
   viewBufferSize: 3,
   adjustViewPosition: function(newX, newY, time, direction){
