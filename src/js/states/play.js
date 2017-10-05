@@ -97,19 +97,8 @@ Game.states.play.prototype.create = function(){
   };
 
   this.game.input.onDown.add(handleTouchRegions);
-  this.game.input.onHold.add(handleTouchRegions);
 
-
-  Game.missionTextOpen = true;
-
-  Game.entities.hud.open();
-
-  var heading = '           PHASERLOAD\n';
-  var motive = '    Your job here is simple,\n         you need money,\n     and we need resources.\n';
-  var instructions = '     To control your drill,\n       use the arrow keys\n      or tap on the screen';
-
-  Game.hud.interfaceText.setText(heading + motive + instructions);
-
+  Game.showMissionText();
 
   Game.hull = {};
   Game.hull.space = 10;
@@ -199,7 +188,7 @@ Game.states.play.prototype.update = function(){
   }, this);
 
   Game.monsters.forEachAlive(function(monster){
-    if(this.game.math.distance(Game.drill.x, Game.drill.y, monster.x, monster.y) < Game.blockPx/2){
+    if(!Game.drill.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(Game.drill.x, Game.drill.y, monster.x, monster.y) < Game.blockPx/2){
       Game.drill.kill();
       Game.loseReason = 'monster';
       
