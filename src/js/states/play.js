@@ -6,47 +6,45 @@ Game.states.play.prototype.create = function(){
   console.log('play');
 
   Game.modes[Game.mode].nextLevel();
+  Game.generateMap();
+  
+  Game.game.camera.bounds = null;
 
   Game.ground = this.game.add.group();
   Game.lava = this.game.add.group();
+  Game.minerals = this.game.add.group();
+  
+  Game.spaceco = Game.entities.spaceco.create();
+
+  Game.monsters = this.game.add.group();
+  
+  Game.drill = Game.entities.player.create();
+
+  Game.infoLine = this.game.add.text(5, 110, '', { font: '25px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
+  Game.infoLine.fixedToCamera = true; 
 
   Game.teleporter = Game.game.add.sprite(150, 20, 'teleporter');
   Game.teleporter.anchor.setTo(0.5, 0.5);
   Game.teleporter.fixedToCamera = true;
   
-  Game.spaceco = Game.entities.spaceco.create();
-
-  Game.monsters = this.game.add.group();
-  Game.minerals = this.game.add.group();
-  
-  Game.generateMap();
-  
-  Game.drill = Game.entities.player.create();
-  
-  Game.game.camera.bounds = null;
-  
   Game.hud = Game.entities.hud.create(0, 0);
   
-  Game.infoLine = this.game.add.text(5, 110, '', { font: '25px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
-  Game.infoLine.fixedToCamera = true;  
+  // this.game.input.keyboard.addKeyCapture([
+  //   Phaser.Keyboard.LEFT,
+  //   Phaser.Keyboard.RIGHT,
+  //   Phaser.Keyboard.UP,
+  //   Phaser.Keyboard.DOWN,
+  //   Phaser.Keyboard.ONE,
+  //   Phaser.Keyboard.TWO
+  // ]);
   
-  this.game.input.keyboard.addKeyCapture([
-    Phaser.Keyboard.LEFT,
-    Phaser.Keyboard.RIGHT,
-    Phaser.Keyboard.UP,
-    Phaser.Keyboard.DOWN,
-    Phaser.Keyboard.Z,
-    Phaser.Keyboard.X
-  ]);
-  
-  var upperQuarter = new Phaser.Rectangle(0, 0, this.game.width, this.game.height / 4);
-  var middleLeftQuarter = new Phaser.Rectangle(0, this.game.height / 4, this.game.width / 2, (this.game.height / 4) * 3);
-  var middleRightQuarter = new Phaser.Rectangle(this.game.width / 2, this.game.height / 4, this.game.width, (this.game.height / 4) * 3);
-  var lowerQuarter = new Phaser.Rectangle(0, (this.game.height / 4) * 3, this.game.width, this.game.height);
+  // var upperQuarter = new Phaser.Rectangle(0, 0, this.game.width, this.game.height / 4);
+  // var middleLeftQuarter = new Phaser.Rectangle(0, this.game.height / 4, this.game.width / 2, (this.game.height / 4) * 3);
+  // var middleRightQuarter = new Phaser.Rectangle(this.game.width / 2, this.game.height / 4, this.game.width, (this.game.height / 4) * 3);
+  // var lowerQuarter = new Phaser.Rectangle(0, (this.game.height / 4) * 3, this.game.width, this.game.height);
 
   var handleTouchRegions = function(pointer){
     if(Game.inSpaceco){
-      
       console.log(pointer, pointer.x, pointer.y);
 
       if(pointer.y > 65 && pointer.y < 92){
@@ -65,20 +63,31 @@ Game.states.play.prototype.create = function(){
     if(Game.game.tweens.isTweening(Game.drill)) return;
     var moving;
 
-    if(Game.game.math.distance(pointer.x, pointer.y, 150, 20) < 32){
+    if(Game.game.math.distance(pointer.x, pointer.y, 150, 20) < 32){ // teleporter icon
       moving = 'teleport';
     }
-    else if(upperQuarter.contains(pointer.x, pointer.y)){
-      moving = 'up';
-    }
-    else if(lowerQuarter.contains(pointer.x, pointer.y)){
-      moving = 'down';
-    }
-    else if(middleLeftQuarter.contains(pointer.x, pointer.y)){
-      moving = 'left';
-    }
-    else if(middleRightQuarter.contains(pointer.x, pointer.y)){
-      moving = 'right';
+    // else if(upperQuarter.contains(pointer.x, pointer.y)){
+    //   moving = 'up';
+    // }
+    // else if(lowerQuarter.contains(pointer.x, pointer.y)){
+    //   moving = 'down';
+    // }
+    // else if(middleLeftQuarter.contains(pointer.x, pointer.y)){
+    //   moving = 'left';
+    // }
+    // else if(middleRightQuarter.contains(pointer.x, pointer.y)){
+    //   moving = 'right';
+    // }
+    else{
+      var xDiff = Game.drill.x - pointer.x - Game.game.camera.x;
+      var yDiff = Game.drill.y - pointer.y - Game.game.camera.y;
+
+      var xDirection = xDiff > 0 ? 'left' : 'right';
+      var yDirection = yDiff > 0 ? 'up' : 'down';
+
+      moving = Math.abs(xDiff) > Math.abs(yDiff) ? xDirection : yDirection;
+      
+      // console.log(xDiff, yDiff, xDirection, yDirection, moving);
     }
     
     if(moving){
@@ -88,6 +97,7 @@ Game.states.play.prototype.create = function(){
   };
 
   this.game.input.onDown.add(handleTouchRegions);
+  this.game.input.onHold.add(handleTouchRegions);
 
 
   Game.missionTextOpen = true;
