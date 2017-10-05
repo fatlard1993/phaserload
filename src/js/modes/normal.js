@@ -35,7 +35,7 @@ Game.modes.normal = {
       if(Game.modes[Game.mode].level >= Game.modes[Game.mode].levels.length) Game.modes[Game.mode].level = 0;  
     }
     else{
-      Game.modes[Game.mode].level = Game.rand(0, Game.modes[Game.mode].levels.length);
+      Game.modes[Game.mode].level = Game.rand(0, Game.modes[Game.mode].levels.length - 1);
     }
   },
   levels: [
