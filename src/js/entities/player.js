@@ -212,6 +212,7 @@ Game.entities.player.move = function(game, direction){
 
   if(direction !== 'teleport' && Game.mode === 'normal'){
     Game.fuel -= 0.1;
+    if(Game.fuel < 1.5) Game.infoLine.setText(' Your fuel is running low ');    
   }
 
   setTimeout(function(){
