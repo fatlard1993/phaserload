@@ -210,7 +210,7 @@ Game.entities.player.move = function(game, direction){
     Game.entities.spaceco.revoke();
   }
 
-  if(Game.mode === 'normal'){
+  if(direction !== 'teleport' && Game.mode === 'normal'){
     Game.fuel -= 0.1;
   }
 
