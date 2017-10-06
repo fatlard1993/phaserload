@@ -51,9 +51,11 @@ gulp.task('compile-js', function(){
   gulp.src([
     'src/js/lib/phaser.js',
     'src/js/_polyfill.js',
-    'src/js/_log.js',
+    // 'src/js/_log.js',
     'src/js/game.js',
+
     'src/js/modes/normal.js',
+    
     'src/js/entities/player.js',
     'src/js/entities/hud.js',
     'src/js/entities/spaceco.js',
@@ -61,7 +63,7 @@ gulp.task('compile-js', function(){
     'src/js/entities/ground.js',
     'src/js/entities/lava.js',
     'src/js/entities/monster.js',
-    'src/js/states/boot.js',
+    
     'src/js/states/load.js',
     'src/js/states/lobby.js',
     'src/js/states/play.js',

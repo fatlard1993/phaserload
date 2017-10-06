@@ -319,7 +319,6 @@ window.onload = function(){
   
   Game.game = new Phaser.Game(Game.viewWidth, Game.viewHeight, Phaser.AUTO, 'game');
   
-  Game.game.state.add('boot', Game.states.boot);
   Game.game.state.add('load', Game.states.load);
   Game.game.state.add('lobby', Game.states.lobby);
   Game.game.state.add('play', Game.states.play);
@@ -327,5 +326,5 @@ window.onload = function(){
 
   console.log('states added');
 
-  Game.game.state.start('boot');
+  Game.game.state.start('load');
 };
