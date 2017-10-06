@@ -29,20 +29,6 @@ Game.states.play.prototype.create = function(){
   
   Game.hud = Game.entities.hud.create(0, 0);
   
-  // this.game.input.keyboard.addKeyCapture([
-  //   Phaser.Keyboard.LEFT,
-  //   Phaser.Keyboard.RIGHT,
-  //   Phaser.Keyboard.UP,
-  //   Phaser.Keyboard.DOWN,
-  //   Phaser.Keyboard.ONE,
-  //   Phaser.Keyboard.TWO
-  // ]);
-  
-  // var upperQuarter = new Phaser.Rectangle(0, 0, this.game.width, this.game.height / 4);
-  // var middleLeftQuarter = new Phaser.Rectangle(0, this.game.height / 4, this.game.width / 2, (this.game.height / 4) * 3);
-  // var middleRightQuarter = new Phaser.Rectangle(this.game.width / 2, this.game.height / 4, this.game.width, (this.game.height / 4) * 3);
-  // var lowerQuarter = new Phaser.Rectangle(0, (this.game.height / 4) * 3, this.game.width, this.game.height);
-
   var handleTouchRegions = function(pointer){
     if(Game.inSpaceco){
       console.log(pointer, pointer.x, pointer.y);
@@ -55,8 +41,6 @@ Game.states.play.prototype.create = function(){
         else if(pointer.x > 345 && pointer.x < 420) Game.entities.spaceco.revoke();
       }
 
-      // if(this.game.math.distance(pointer.x, pointer.y, monster.x, monster.y) < Game.blockPx/2)
-
       return;
     }
 
@@ -66,18 +50,6 @@ Game.states.play.prototype.create = function(){
     if(Game.game.math.distance(pointer.x, pointer.y, 150, 20) < 32){ // teleporter icon
       moving = 'teleport';
     }
-    // else if(upperQuarter.contains(pointer.x, pointer.y)){
-    //   moving = 'up';
-    // }
-    // else if(lowerQuarter.contains(pointer.x, pointer.y)){
-    //   moving = 'down';
-    // }
-    // else if(middleLeftQuarter.contains(pointer.x, pointer.y)){
-    //   moving = 'left';
-    // }
-    // else if(middleRightQuarter.contains(pointer.x, pointer.y)){
-    //   moving = 'right';
-    // }
     else{
       var xDiff = Game.drill.x - pointer.x - Game.game.camera.x;
       var yDiff = Game.drill.y - pointer.y - Game.game.camera.y;
@@ -86,8 +58,6 @@ Game.states.play.prototype.create = function(){
       var yDirection = yDiff > 0 ? 'up' : 'down';
 
       moving = Math.abs(xDiff) > Math.abs(yDiff) ? xDirection : yDirection;
-      
-      // console.log(xDiff, yDiff, xDirection, yDirection, moving);
     }
     
     if(moving){
