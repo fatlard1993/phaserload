@@ -29,17 +29,12 @@ Game.states.play.prototype.create = function(){
   
   Game.hud = Game.entities.hud.create(0, 0);
   
-  var handleTouchRegions = function(pointer){
-    if(Game.inSpaceco){
-      console.log(pointer, pointer.x, pointer.y);
-
-      if(pointer.y > 65 && pointer.y < 92){
-        //menu
-        if(pointer.x > 42 && pointer.x < 134) Game.entities.spaceco.setView('rates');
-        else if(pointer.x > 142 && pointer.x < 250) Game.entities.spaceco.setView('fuel');
-        else if(pointer.x > 255 && pointer.x < 335) Game.entities.spaceco.setView('shop');
-        else if(pointer.x > 345 && pointer.x < 420) Game.entities.spaceco.revoke();
-      }
+  var handlePointer = function(pointer){
+    console.log(pointer, pointer.x, pointer.y);
+    if(Game.hud.isOpen){
+      if(Game.entities[Game.hud.isOpen] && Game.entities[Game.hud.isOpen].handlePointer) Game.entities[Game.hud.isOpen].handlePointer(pointer);
+      
+      else Game.entities.hud.close();
 
       return;
     }
@@ -66,19 +61,24 @@ Game.states.play.prototype.create = function(){
     }
   };
 
-  this.game.input.onDown.add(handleTouchRegions);
+  this.game.input.onDown.add(handlePointer);
 
   Game.showMissionText();
 
-  Game.hull = {};
-  Game.hull.space = 10;
-
-  Game.credits = 0;
-  Game.fuel = Game.mode === 'normal' ? 5 : 0;
+  if(Game.purchasedTransport){
+    Game.purchasedTransport = false;
+  }
+  else{
+    Game.hull = {};
+    Game.hull.space = 10;
   
-  Game.hull.mineral_green = 0;
-  Game.hull.mineral_red = 0;
-  Game.hull.mineral_blue = 0;
+    Game.credits = 0;
+    Game.fuel = Game.mode === 'normal' ? 5 : 0;
+    
+    Game.hull.mineral_green = 0;
+    Game.hull.mineral_red = 0;
+    Game.hull.mineral_blue = 0;
+  }
 
   Game.entities.hud.update();
 };

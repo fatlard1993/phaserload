@@ -40,7 +40,7 @@ Game.modes.normal = {
   },
   levels: [
     {
-      missionText: 'Welcome to asteroid TR982-420'+ Game.rand(100, 999) +'.\n',
+      missionText: '\n\n Welcome to asteroid TR982-420'+ Game.rand(100, 999),
       size: {
         width: [50, 70],
         depth: [100, 200]
@@ -61,7 +61,7 @@ Game.modes.normal = {
       ]
     },
     {
-      missionText: 'Welcome to asteroid AE02A-809'+ Game.rand(100, 999) +'.\n',
+      missionText: '\n\n Welcome to asteroid AE02A-809'+ Game.rand(100, 999),
       size: {
         width: [32, 45],
         depth: [100, 200]
@@ -81,7 +81,7 @@ Game.modes.normal = {
       ]
     },
     {
-      missionText: 'Welcome to asteroid ZPQ6D-N02'+ Game.rand(100, 999) +'.\n',
+      missionText: '\n\n Welcome to asteroid ZPQ6D-N02'+ Game.rand(100, 999),
       size: {
         width: [45, 60],
         depth: [200, 300]
@@ -101,7 +101,7 @@ Game.modes.normal = {
       ]
     },
     {
-      missionText: 'Welcome to moon D83R-W110'+ Game.rand(100, 999) +'.\n',
+      missionText: '\n\n   Welcome to moon D83R-W110'+ Game.rand(100, 999),
       size: {
         width: [60, 70],
         depth: [250, 400]
@@ -127,7 +127,7 @@ Game.modes.normal = {
       ]
     },
     {
-      missionText: 'Welcome to metoerite AE02A-809'+ Game.rand(100, 999) +'.\n',
+      missionText: '\n\nWelcome to metoerite AE02A-809'+ Game.rand(100, 999),
       size: {
         width: [32, 64],
         depth: [100, 400]

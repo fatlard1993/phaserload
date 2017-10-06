@@ -16,6 +16,10 @@ Game.entities.hud.create = function(x, y){
 
   hud.interfaceText = Game.game.add.text(20, 20, '', { font: '14px '+ Game.config.font, fill: '#fff', fontWeight: 'bold' });
   hud.addChild(hud.interfaceText);
+
+  hud.bottomLine = Game.game.add.text(20, 205, '', { font: '14px '+ Game.config.font, fill: Game.config.hudTextColor });
+  // hud.bottomLine.lineSpacing = -6;
+  hud.addChild(hud.bottomLine);
   
   return hud;
 };
@@ -45,10 +49,10 @@ Game.entities.hud.update = function(){
   Game.hud.statusText.setText(statusText);
 };
 
-Game.entities.hud.open = function(){
+Game.entities.hud.open = function(name){
   Game.entities.hud.clear();
   
-  Game.hud.isOpen = true;
+  Game.hud.isOpen = name || 'unnamed';
 
   var scale = { x: 1.79, y: 1.79 };
   
@@ -57,6 +61,14 @@ Game.entities.hud.open = function(){
 
 Game.entities.hud.close = function(){
   Game.hud.isOpen = false;
+
+  if(Game.hud.emitter){
+    Game.hud.emitter.destroy();
+    Game.hud.emitter = null;
+  }
+
+  Game.hud.interfaceText.setText('');
+  Game.hud.bottomLine.setText('');
   
   Game.game.add.tween(Game.hud.scale).to({ x: 0.4, y: 0.4 }, 600, Phaser.Easing.Circular.Out, true);
 

@@ -10,9 +10,9 @@ Game.entities.player.create = function(){
   player.anchor.setTo(0.5, 0.5);
 
   player.animations.add('normal', [0, 1, 2], 10, true);
-  player.animations.add('upgraded', [3, 4, 5], 10, true);
-  player.animations.add('upgradedx2', [6, 7, 8], 10, true);
-  player.animations.add('upgradedx3', [9, 10, 11], 10, true);
+  player.animations.add('upgrade_1', [3, 4, 5], 10, true);
+  player.animations.add('upgrade_2', [6, 7, 8], 10, true);
+  player.animations.add('upgrade_3', [9, 10, 11], 10, true);
   player.animations.add('teleporting', [12, 13, 14], 10, true);
   
   player.animations.play('normal');
@@ -41,12 +41,6 @@ Game.entities.player.getSurrounds = function(){
 
 Game.entities.player.move = function(game, direction){
   // console.log('Drill: On the move, goin: ', direction);
-
-  if(Game.missionTextOpen){
-    Game.hud.interfaceText.setText('');
-    Game.entities.hud.close();
-    Game.missionTextOpen = false;
-  }
 
   if(direction === 'up' && Game.spacecoOffered){
     return Game.entities.spaceco.open();

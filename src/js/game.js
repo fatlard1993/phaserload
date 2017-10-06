@@ -185,9 +185,7 @@ var Game = {
     return found;
   },
   showMissionText: function(){
-    Game.missionTextOpen = true;
-    
-    Game.entities.hud.open();
+    Game.entities.hud.open('missionText');
   
     var heading = '           PHASERLOAD\n';
   
