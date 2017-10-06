@@ -52,7 +52,7 @@ Game.entities.hud.open = function(){
 
   var scale = { x: 1.5, y: 1.5 };
 
-  if(Game.viewHeight <= 460) scale = { x: 1.2, y: 1.2 };
+  // if(Game.viewHeight <= 460) scale = { x: 1.2, y: 1.2 };
   
   Game.game.add.tween(Game.hud.scale).to(scale, 600, Phaser.Easing.Circular.Out, true);
 };

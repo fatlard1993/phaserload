@@ -307,12 +307,13 @@ window.onload = function(){
 
   let clientHeight = document.body.clientHeight;
   let clientWidth = document.body.clientWidth;
+  let availibleWidth = clientWidth - (clientWidth % Game.blockPx);
 
-  Game.viewWidth = clientWidth - (clientWidth % Game.blockPx);
-  Game.viewHeight = clientHeight - (clientHeight % Game.blockPx);
+  Game.viewWidth = Math.max(9 * Game.blockPx, availibleWidth);
+  Game.viewHeight = (clientHeight - (clientHeight % Game.blockPx)) * (Game.viewWidth > availibleWidth ? (9 * Game.blockPx) / availibleWidth : 1);
 
-  if(clientHeight > Game.viewHeight){
-    let marginTop = (clientHeight - Game.viewHeight) / 2;
+  if(clientHeight > (Game.viewHeight / (Game.viewWidth > availibleWidth ? (9 * Game.blockPx) / availibleWidth : 1))){
+    let marginTop = ((clientHeight - (Game.viewHeight / (Game.viewWidth > availibleWidth ? (9 * Game.blockPx) / availibleWidth : 1))) / 2);
     document.getElementById('game').style.marginTop = marginTop + 'px';
   }
   
