@@ -308,12 +308,17 @@ window.onload = function(){
   let clientHeight = document.body.clientHeight;
   let clientWidth = document.body.clientWidth;
   let availibleWidth = clientWidth - (clientWidth % Game.blockPx);
-
+  var availibleHeight = clientHeight - (clientHeight % Game.blockPx);
+  
   Game.viewWidth = Math.max(9 * Game.blockPx, availibleWidth);
-  Game.viewHeight = (clientHeight - (clientHeight % Game.blockPx)) * (Game.viewWidth > availibleWidth ? (9 * Game.blockPx) / availibleWidth : 1);
 
-  if(clientHeight > (Game.viewHeight / (Game.viewWidth > availibleWidth ? (9 * Game.blockPx) / availibleWidth : 1))){
-    let marginTop = ((clientHeight - (Game.viewHeight / (Game.viewWidth > availibleWidth ? (9 * Game.blockPx) / availibleWidth : 1))) / 2);
+  var scale = (Game.viewWidth > availibleWidth ? (9 * Game.blockPx) / availibleWidth : 1);
+  
+  Game.viewHeight = availibleHeight * scale;
+  Game.viewHeight = Game.viewHeight - (Game.viewHeight & Game.blockPx);
+
+  if(clientHeight > ((Game.viewHeight / scale) + Game.blockPx)){
+    let marginTop = ((clientHeight - (Game.viewHeight / scale)) / 2);
     document.getElementById('game').style.marginTop = marginTop + 'px';
   }
   
@@ -324,7 +329,7 @@ window.onload = function(){
   Game.game.state.add('play', Game.states.play);
   Game.game.state.add('end', Game.states.end);
 
-  console.log('states added');
+  console.log('states added', clientHeight, (Game.viewHeight / scale) + Game.blockPx);
 
   Game.game.state.start('load');
 };
