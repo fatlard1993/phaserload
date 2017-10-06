@@ -40,6 +40,27 @@ Game.modes.normal = {
   },
   levels: [
     {
+      missionText: 'Welcome to asteroid TR982-420'+ Game.rand(100, 999) +'.\n',
+      size: {
+        width: [50, 70],
+        depth: [100, 200]
+      },
+      groundChance: 0.1,
+      lavaChance: 0.4,
+      monsterChance: 0.4,
+      mineralRareity: {
+        green: 50,
+        blue: 50
+      },
+      levels: [
+        { blue: 40, purple: 60 },
+        { blue: 40, red: 60 },
+        { green: 50, white: 50 },
+        { pink: 34, black: 32, green: 32 },
+        { blue: 40, purple: 60 }
+      ]
+    },
+    {
       missionText: 'Welcome to asteroid AE02A-809'+ Game.rand(100, 999) +'.\n',
       size: {
         width: [32, 45],
