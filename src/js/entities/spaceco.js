@@ -146,7 +146,7 @@ Game.entities.spaceco.setView = function(view){
 
 Game.entities.spaceco.updateBottomLine = function(){
   var credits = ' credits: '+ Game.credits.toFixed(1);
-  var fuel = '          fuel: '+ Game.fuel.toFixed(1);
+  var fuel = '       fuel: '+ Game.fuel.toFixed(1);
 
   Game.hud.bottomLine.setText(credits + fuel);
 };
