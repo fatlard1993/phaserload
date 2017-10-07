@@ -91,7 +91,7 @@ Game.entities.spaceco.open = function(){
       }
   
       Game.hull = {};
-      Game.hull.space = 10;
+      Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);
   
       if(Game.credits === 0){
         Game.entities.spaceco.getOut_TO = setTimeout(Game.entities.spaceco.boot, 30*1000);
@@ -282,6 +282,8 @@ Game.entities.spaceco.handlePointer = function(pointer){
       Game.drill.upgrade++;
 
       Game.drill.animations.play('upgrade_'+ Game.drill.upgrade);
+
+      Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);      
     }
     else if(Game.spacecoView === 'shop_p2'){
       console.log('remote freeze charge');

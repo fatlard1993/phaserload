@@ -76,7 +76,7 @@ Game.states.play.prototype.create = function(){
   else{
     Game.inventory = {};
     Game.hull = {};
-    Game.hull.space = 10;
+    Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);
   
     Game.credits = 0;
     Game.fuel = Game.mode === 'normal' ? 5 : 0;

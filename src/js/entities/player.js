@@ -157,7 +157,7 @@ Game.entities.player.move = function(game, direction){
   
   if(Game.hull.space < 0) moveTime += 250;
 
-  game.add.tween(Game.drill).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
+  game.add.tween(Game.drill).to(newPosition, moveTime - (((Game.drill.upgrade || 0) + 1) * 50), Phaser.Easing.Sinusoidal.InOut, true);
 
   var invertTexture = false;
 
@@ -206,7 +206,7 @@ Game.entities.player.move = function(game, direction){
 
   if(direction !== 'teleport' && Game.mode === 'normal'){
     Game.fuel -= 0.1;
-    if(Game.fuel < 1.5) Game.infoLine.setText(' Your fuel is running low ');    
+    if(Game.fuel < 1.5) Game.infoLine.setText(' Your fuel is running low ');
   }
 
   setTimeout(function(){
