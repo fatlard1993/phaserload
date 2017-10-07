@@ -3,7 +3,7 @@
 Game.modes.normal = {
   baseDrillMoveTime: 300,
   hudLayout: {
-    position: '*',
+    position: 'GPS',
     credits: '$',
     fuel: 'Fuel',
     hull: 'Hull'
@@ -13,20 +13,21 @@ Game.modes.normal = {
     red: 4.5,
     blue: 8
   },
+  baseGroundPrice: 0.18,
   blockBehavior: {
     red: 'lava:~:35'
   },
   digTime: {
     white: 400,
-    orange: 450,
-    yellow: 480,
-    green: 500,
-    teal: 620,
-    blue: 560,
-    purple: 580,
-    pink: 600,
-    red: 350,
-    black: 1100
+    orange: 500,
+    yellow: 540,
+    green: 580,
+    teal: 640,
+    blue: 700,
+    purple: 730,
+    pink: 750,
+    red: 300,
+    black: 800
   },
   level: -1,
   nextLevel: function(inc){
@@ -95,9 +96,13 @@ Game.modes.normal = {
         blue: 50
       },
       levels: [
-        { blue: 50, black: 50 },
-        { blue: 40, red: 60 },
-        { blue: 30, yellow: 70 }
+        { blue: 70, yellow: 15, orange: 10, black: 5 },
+        { blue: 60, yellow: 20, orange: 10, black: 10 },
+        { blue: 40, yellow: 10, orange: 30, black: 20 },
+        { blue: 50, yellow: 15, orange: 20, black: 15 },
+        { blue: 30, yellow: 5, orange: 60, black: 5 },
+        { blue: 14, yellow: 25, orange: 60, black: 1 },
+        { blue: 1, yellow: 1, orange: 97, black: 1 }
       ]
     },
     {

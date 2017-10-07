@@ -29,18 +29,21 @@ Game.entities.hud.update = function(){
   
   var hudItemNames = Object.keys(Game.modes[Game.mode].hudLayout), hudItemCount = hudItemNames.length;
   var statusText;
+  var shortestLength = 1;
+  var space = 4;
 
   for(var x = 0; x < hudItemCount; x++){
     var item = hudItemNames[x];
     var value = Game.modes[Game.mode].hudLayout[hudItemNames[x]].split(':~:');
-    if(statusText) statusText += '\n'+ value[0] +': ';
-    else statusText = value[0] +': ';
+    var spacer = (' '.repeat(value[0].length > shortestLength ? space - (value[0].length - shortestLength) : space));
+    if(statusText) statusText += '\n'+ value[0] + spacer;
+    else statusText = value[0] + spacer;
     
     if(item === 'position_dbg') statusText += 'x'+ Game.toGridPos(Game.drill.x) +' y'+ Game.toGridPos(Game.drill.y);
     else if(item === 'position') statusText += 'x'+ (Game.toGridPos(Game.drill.x) + 1) +' y'+ -(Game.toGridPos(Game.drill.y) - Game.skyHeight);
-    else if(item === 'fuel') statusText += Game.fuel.toFixed(1);
-    else if(item === 'credits') statusText += Game.credits.toFixed(1);
-    else if(item === 'hull') statusText += Game.hull.space.toFixed(1);
+    else if(item === 'fuel') statusText += Game.fuel.toFixed(2);
+    else if(item === 'credits') statusText += Game.credits.toFixed(2);
+    else if(item === 'hull') statusText += Game.hull.space.toFixed(2);
     else{
       if(item.startsWith('mineral') && Game.hull[item]) statusText += Game.hull[item];
     }
@@ -93,6 +96,8 @@ Game.entities.hud.setView = function(view){
 
   var menu = '';
   var items = '';
+  var shortestLength = 5;
+  var space = 24;
   
   if(view === 'inventory'){
     menu = ' [Inventory] Hull      Exit\n';
@@ -100,25 +105,34 @@ Game.entities.hud.setView = function(view){
     var itemNames = Object.keys(Game.inventory);
     
     for(var x = 0; x < itemNames.length; x++){
-      items += itemNames[x] +': '+ Game.hull[itemNames[x]] +'\n';
+      items += itemNames[x] + (' '.repeat(itemNames[x].length > shortestLength ? space - (itemNames[x].length - shortestLength) : space)) + Game.hull[itemNames[x]] +'\n';
     }
   }
   if(view === 'hull'){
     menu = '  Inventory [ p1 ]     Exit\n';
 
-    var mineralNames = ['ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue'];
+    var mineralNames = ['space', 'mineral_green', 'mineral_blue', 'mineral_red'];
     
     for(var x = 0; x < mineralNames.length; x++){
-      items += mineralNames[x] +': '+ (Game.hull[mineralNames[x]] || 0) +'\n';
+      items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + (Game.hull[mineralNames[x]] || 0) +'\n';
     }
   }
   else if(view === 'hull_p2'){
     menu = '  Inventory [ p2 ]     Exit\n';
 
-    var mineralNames = ['ground_purple', 'ground_pink', 'ground_black', 'mineral_green', 'mineral_blue', 'mineral_red'];
+    var mineralNames = ['ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue'];
     
     for(var x = 0; x < mineralNames.length; x++){
-      items += mineralNames[x] +': '+ (Game.hull[mineralNames[x]] || 0) +'\n';
+      items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + (Game.hull[mineralNames[x]] || 0) +'\n';
+    }
+  }
+  else if(view === 'hull_p3'){
+    menu = '  Inventory [ p3 ]     Exit\n';
+
+    var mineralNames = ['ground_purple', 'ground_pink', 'ground_black'];
+    
+    for(var x = 0; x < mineralNames.length; x++){
+      items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + (Game.hull[mineralNames[x]] || 0) +'\n';
     }
   }
 
@@ -136,6 +150,7 @@ Game.entities.hud.handlePointer = function(pointer){
     else if(pointer.x > 220 && pointer.x < 300){
       console.log('hull');      
       if(Game.hudView === 'hull') Game.entities.hud.setView('hull_p2');
+      else if(Game.hudView === 'hull_p2') Game.entities.hud.setView('hull_p3');
       else Game.entities.hud.setView('hull');
     }
     else if(pointer.x > 360 && pointer.x < 500){
