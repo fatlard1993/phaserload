@@ -16,17 +16,17 @@ Game.entities.lava = function(game, x, y){
       y: Game.toGridPos(this.y)
     };
 
-    var slotId = Game.map[gridPos.x][gridPos.y];
+    var slotId = Game.map[gridPos.x][gridPos.y][0];
   
     if(slotId < 3){
-      Game.viewBufferMap[gridPos.x][gridPos.y] = Game.mapNames.indexOf('lava');
-      Game.map[gridPos.x][gridPos.y] = Game.mapNames.indexOf('lava');
+      Game.viewBufferMap[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('lava');
+      Game.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('lava');
     }
 
     var spread = {
-      left: this.x > Game.blockPx / 2 && Game.map[gridPos.x - 1][gridPos.y] < 3 ? 1 : 0,
-      right: this.x < this.game.width - Game.blockPx / 2 && Game.map[gridPos.x + 1][gridPos.y] < 3 ? 1 : 0,
-      down: Game.map[gridPos.x][gridPos.y + 1] < 3 ? 1 : 0
+      left: this.x > Game.blockPx / 2 && Game.map[gridPos.x - 1][gridPos.y][0] < 3 ? 1 : 0,
+      right: this.x < this.game.width - Game.blockPx / 2 && Game.map[gridPos.x + 1][gridPos.y][0] < 3 ? 1 : 0,
+      down: Game.map[gridPos.x][gridPos.y + 1][0] < 3 ? 1 : 0
     };
 
     if(spread.left){

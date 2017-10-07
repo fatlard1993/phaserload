@@ -179,9 +179,9 @@ Game.states.play.prototype.update = function(){
     };
 
     var spacecoGroundBase = {
-      bottomRight: gridPos.x + 1 < Game.width ? Game.map[gridPos.x + 1][gridPos.y + 1] : -1,
-      bottom: Game.map[gridPos.x][gridPos.y + 1],
-      bottomLeft: gridPos.x - 1 >= 0 ? Game.map[gridPos.x - 1][gridPos.y + 1] : -1
+      bottomRight: gridPos.x + 1 < Game.width ? Game.map[gridPos.x + 1][gridPos.y + 1][0] : -1,
+      bottom: Game.map[gridPos.x][gridPos.y + 1][0],
+      bottomLeft: gridPos.x - 1 >= 0 ? Game.map[gridPos.x - 1][gridPos.y + 1][0] : -1
     };
 
     if(spacecoGroundBase.bottomRight < 3 && spacecoGroundBase.bottom < 3 && spacecoGroundBase.bottomLeft < 3){

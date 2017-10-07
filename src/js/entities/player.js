@@ -17,7 +17,7 @@ Game.entities.player.create = function(){
   
   player.animations.play('normal');
 
-  Game.map[Game.toGridPos(player.x)][Game.toGridPos(player.y)] = Game.mapNames.indexOf('player1');
+  Game.map[Game.toGridPos(player.x)][Game.toGridPos(player.y)][0] = Game.mapNames.indexOf('player1');
 
   Game.drillScaleX = player.scale.x;
 
@@ -112,7 +112,24 @@ Game.entities.player.move = function(game, direction){
   if(targetGroundType){
     // console.log('Drill: Im diggin here! ', targetGroundType, newPosition);
 
-    if(targetGroundType.startsWith('mineral') && Game.hull.space > 0){
+    if(targetGroundType.startsWith('ground')){
+      Game.drill.emitter = Game.game.add.emitter(0, 0, 100);
+      Game.drill.addChild(Game.drill.emitter);
+
+      var frameMod = Game.entities.ground.types.indexOf(targetGroundType.replace('ground_', '')) * 4;
+    
+      Game.drill.emitter.makeParticles('ground', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod]);
+    
+      Game.drill.emitter.x = 32;
+
+      Game.drill.emitter.setScale(0.1, 0.3, 0.1, 0.3);
+    
+      Game.drill.emitter.start(true, moveTime + 100, null, Math.round(Game.rand(3, 7)));
+
+      Game.entities.ground.dig(newPosition);
+    }
+
+    if(Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] && Game.hull.space > 0){
       Game.minerals.forEachAlive(function(mineral){
         if(mineral.x === newPosition.x && mineral.y === newPosition.y){
           Game.hull[mineral.type] = Game.hull[mineral.type] !== undefined ? Game.hull[mineral.type] : 0;
@@ -128,28 +145,11 @@ Game.entities.player.move = function(game, direction){
   
             mineral.kill();
       
-            Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)] = -1;
-            Game.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)] = -1;
+            Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] = -1;
+            Game.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] = -1;
           }, animationTime);
         }
       });
-    }
-
-    else if(targetGroundType.startsWith('ground')){
-      Game.drill.emitter = Game.game.add.emitter(0, 0, 100);
-      Game.drill.addChild(Game.drill.emitter);
-
-      var frameMod = Game.entities.ground.types.indexOf(targetGroundType.replace('ground_', '')) * 4;
-    
-      Game.drill.emitter.makeParticles('ground', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod]);
-    
-      Game.drill.emitter.x = 32;
-
-      Game.drill.emitter.setScale(0.1, 0.3, 0.1, 0.3);
-    
-      Game.drill.emitter.start(true, moveTime + 100, null, Math.round(Game.rand(3, 7)));
-
-      Game.entities.ground.dig(newPosition);
     }
   }
   
@@ -194,10 +194,10 @@ Game.entities.player.move = function(game, direction){
 
   Game.entities.player.lastPosition = newPosition;
   
-  Game.map[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)] = -1;
-  Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)] = Game.mapNames.indexOf('player1');
-  Game.viewBufferMap[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)] = -1;
-  Game.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)] = Game.mapNames.indexOf('player1');
+  Game.map[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)][0] = -1;
+  Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
+  Game.viewBufferMap[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)][0] = -1;
+  Game.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
 
   if(!Game.spacecoOffered && Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10){
     Game.entities.spaceco.offer();

@@ -9,11 +9,11 @@ Game.modes.normal = {
     hull: 'Hull'
   },
   mineralValues: {
-    green: 3,
-    red: 4.5,
-    blue: 8
+    green: 2.5,
+    red: 3.75,
+    blue: 5
   },
-  baseGroundPrice: 0.18,
+  baseGroundPrice: 0.08,
   blockBehavior: {
     red: 'lava:~:35'
   },
@@ -49,6 +49,7 @@ Game.modes.normal = {
       groundChance: 0.1,
       lavaChance: 0.4,
       monsterChance: 0.4,
+      mineralChance: 0.042,
       mineralRareity: {
         green: 50,
         blue: 50
@@ -70,6 +71,7 @@ Game.modes.normal = {
       groundChance: 0.2,
       lavaChance: 0.2,
       monsterChance: 0.2,
+      mineralChance: 0.05,
       mineralRareity: {
         green: 50,
         red: 35,
@@ -90,6 +92,7 @@ Game.modes.normal = {
       groundChance: 0.2,
       lavaChance: 0.4,
       monsterChance: 0.2,
+      mineralChance: 0.07,
       mineralRareity: {
         green: 35,
         red: 15,
@@ -114,9 +117,10 @@ Game.modes.normal = {
       groundChance: 0.1,
       lavaChance: 0.1,
       monsterChance: 0.3,
+      mineralChance: 0.1,
       mineralRareity: {
-        green: 5,
-        red: 75,
+        green: 75,
+        red: 5,
         blue: 20
       },
       levels: [
@@ -137,6 +141,7 @@ Game.modes.normal = {
       groundChance: 0.05,
       lavaChance: 0.5,
       monsterChance: 0.6,
+      mineralChance: 0.08,
       mineralRareity: {
         green: 50,
         blue: 50
@@ -162,6 +167,7 @@ Game.modes.normal = {
       groundChance: 0.02,
       lavaChance: 0.6,
       monsterChance: 0.8,
+      mineralChance: 0.15,
       mineralRareity: {
         red: 99,
         blue: 1

@@ -97,7 +97,7 @@ Game.entities.hud.setView = function(view){
   var menu = '';
   var items = '';
   var shortestLength = 5;
-  var space = 24;
+  var space = 23;
   
   if(view === 'inventory'){
     var itemNames = Object.keys(Game.inventory), itemCount = itemNames.length;
@@ -120,7 +120,9 @@ Game.entities.hud.setView = function(view){
   else if(view === 'hull'){
     menu = '  Inventory [ p1 ]     Exit\n';
 
-    var mineralNames = ['space', 'mineral_green', 'mineral_blue', 'mineral_red'];
+    items += 'Hull Space                  '+ Game.hull.space.toFixed(2) +'\n';
+
+    var mineralNames = ['mineral_green', 'mineral_blue', 'mineral_red'];
     
     for(var x = 0; x < mineralNames.length; x++){
       items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + (Game.hull[mineralNames[x]] || 0) +'\n';

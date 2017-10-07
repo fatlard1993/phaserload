@@ -16,16 +16,16 @@ var Game = {
     lava: function(chance, pos){
       if(Game.chance(chance)){
         Game.entities.lava.create(Game.game, pos.x, pos.y);
-        Game.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)] = Game.mapNames.indexOf('lava');
+        Game.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('lava');
       }
     },
     lavaRelease: function(){
       for(var x = Game.blockPx / 2; x < Game.game.width; x += Game.blockPx){
         for(var y = Game.groundDepth - Game.viewHeight; y < Game.groundDepth; y += Game.blockPx){
-          if(Game.chance(90) && Game.groundAt(x, y) === 'ground_red'){
+          if(Game.chance(90) && Game.mapPos(x, y) === 'ground_red'){
             Game.entities.ground.crush({ x: x, y: y });
             Game.entities.lava.create(Game.game, x, y);
-            Game.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)] = Game.mapNames.indexOf('lava');
+            Game.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf('lava');
           }
         }
       }
@@ -42,12 +42,12 @@ var Game = {
       if(Game.chance(chance)){
         Game.lava.forEachAlive(function(lava){
           if(Game.chance(85)) lava.kill();
-          Game.viewBufferMap[Game.toGridPos(lava.x)][Game.toGridPos(lava.y)] = -1;
+          Game.viewBufferMap[Game.toGridPos(lava.x)][Game.toGridPos(lava.y)][0] = -1;
         }, this);
     
         Game.monsters.forEachAlive(function(monster){
           if(Game.chance(85)) monster.kill();
-          Game.viewBufferMap[Game.toGridPos(monster.x)][Game.toGridPos(monster.y)] = -1;
+          Game.viewBufferMap[Game.toGridPos(monster.x)][Game.toGridPos(monster.y)][0] = -1;
         }, this);
       }
   
@@ -110,14 +110,21 @@ var Game = {
 
     return { x: x, y: y };
   },
-  groundAt: function(x, y, dontconvert){
-    if(!dontconvert){
-      x = Game.toGridPos(x);
-      y = Game.toGridPos(y);
-    }
-    var element = Game.map[x] !== undefined ? (Game.map[x][y] !== undefined ? Game.mapNames[Game.map[x][y]] : 0) : 0;
-    
-    return element === 'hole' ? 0 : element;
+  mapPos: function(x, y){
+    return Game.map[x] !== undefined ? (Game.map[x][y] !== undefined ? Game.map[x][y] : [-1, -1]) : [-1, -1];
+  },
+  viewBufferPos: function(x, y){
+    return Game.viewBufferMap[x] !== undefined ? (Game.viewBufferMap[x][y] !== undefined ? Game.viewBufferMap[x][y] : [-1, -1]) : [-1, -1];
+  },
+  groundAt(pxX, pxY){
+    return Game.mapNames[Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0]];
+  },
+  mapNames: ['hole', 'monster', 'player1', 'lava', 'mineral_green', 'mineral_red', 'mineral_blue', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
+  toId: function(name){
+    return Game.mapNames.indexOf(name);
+  },
+  toName: function(id){
+    return Game.mapNames[id];
   },
   hull: {},
   toGridPos: function(px){
@@ -126,7 +133,6 @@ var Game = {
   toPx: function(gridPos){
     return (gridPos * 64) + 32;
   },
-  mapNames: ['hole', 'monster', 'player1', 'lava', 'mineral_green', 'mineral_red', 'mineral_blue', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
   generateMap: function(){
     var settings = Game.modes[Game.mode].levels[Game.modes[Game.mode].level];
 
@@ -139,35 +145,35 @@ var Game = {
     
     for(var x = 0; x < Game.width; x++){
       for(var y = 0; y < Game.depth; y++){
-        var groundChance = 100 - (y * (settings.groundChance || 0.2));
-        var mineralChance = y;
-        var lavaChance = y * (settings.lavaChance || 0.2);
-        var monsterChance = y * (settings.monsterChance || 0.1);
+        var groundChance = 100 - (y * settings.groundChance);
+        var mineralChance = y * settings.mineralChance;
+        var lavaChance = y * settings.lavaChance;
+        var monsterChance = y * settings.monsterChance;
 
         var groundRareity = settings.levels[Math.ceil(settings.levels.length * (y / Game.depth)) - 1];
   
         Game.map[x] = Game.map[x] || [];
         Game.viewBufferMap[x] = Game.viewBufferMap[x] || [];
-        Game.viewBufferMap[x][y] = -1;
+        Game.viewBufferMap[x][y] = [-1, -1];
   
         if(y > 1 && Game.chance(groundChance)){
-          Game.map[x][y] = Game.mapNames.indexOf('ground_'+ Game.weightedChance(groundRareity));
-        }
+          Game.map[x][y] = [Game.mapNames.indexOf('ground_'+ Game.weightedChance(groundRareity)), -1];
 
-        else if(y > 3 && Game.chance(mineralChance)){      
-          Game.map[x][y] = Game.mapNames.indexOf(Game.weightedChance(mineralRareity));
+          if(y > 5 && Game.chance(mineralChance)){      
+            Game.map[x][y][1] = Game.mapNames.indexOf('mineral_'+ Game.weightedChance(mineralRareity));
+          }
         }
         
-        else if(y > 5 && Game.chance(lavaChance)){
-          Game.map[x][y] = Game.mapNames.indexOf('lava');
+        else if(y > 8 && Game.chance(lavaChance)){
+          Game.map[x][y] = [Game.mapNames.indexOf('lava'), -1];
         }
   
-        else if(y > 5 && Game.chance(monsterChance)){
-          Game.map[x][y] = Game.mapNames.indexOf('monster');
+        else if(y > 8 && Game.chance(monsterChance)){
+          Game.map[x][y] = [Game.mapNames.indexOf('monster'), -1];
         }
   
         else{
-          Game.map[x][y] = 0;
+          Game.map[x][y] = [0, -1];
         }
       }
     }
@@ -238,31 +244,30 @@ var Game = {
 
     for(var x = left; x <= right; x++){
       for(var y = top; y <= bottom; y++){
-        var element = Game.groundAt(x, y, 1);
-
-        if(!element) continue;
-        if(Game.viewBufferMap[x][y] >= 0){
-          // console.log('alerady rendered ', x, y, Game.viewBufferMap[x][y], element);
-          continue;
-        }
+        var mapPos = Game.mapPos(x, y);
+        var viewBufferPos = Game.viewBufferPos(x, y);
         
-        Game.viewBufferMap[x][y] = Game.mapNames.indexOf(element);
+        if(viewBufferPos[0] >= 0 || mapPos[0] <= 0) continue;
+        
+        Game.viewBufferMap[x][y] = mapPos;
+
+        var mapPos_0_name = Game.toName(mapPos[0]);
 
         // console.log(x, y, Game.viewBufferMap[x][y], element);
         
-        if(element.startsWith('ground')){
-          Game.entities.ground.create(Game.game, Game.toPx(x), Game.toPx(y), element);
-        }
+        if(mapPos_0_name.startsWith('ground')){
+          Game.entities.ground.create(Game.game, Game.toPx(x), Game.toPx(y), mapPos_0_name);
 
-        else if(element.startsWith('mineral')){
-          Game.entities.mineral.create(Game.game, Game.toPx(x), Game.toPx(y), element);
+          if(mapPos[1] > 0){
+            Game.entities.mineral.create(Game.game, Game.toPx(x), Game.toPx(y), Game.toName(mapPos[1]));
+          }
         }
         
-        else if(element === 'lava'){
+        else if(mapPos_0_name === 'lava'){
           Game.entities.lava.create(this.game, Game.toPx(x), Game.toPx(y));
         }
   
-        else if(element === 'monster'){
+        else if(mapPos_0_name === 'monster'){
           Game.entities.monster.create(this.game, Game.toPx(x), Game.toPx(y));        
         }
       }
@@ -288,7 +293,7 @@ var Game = {
       }
 
       if(clean){
-        Game.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)] = -1;
+        Game.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)] = [-1, -1];
         entity.kill();
       }
     }

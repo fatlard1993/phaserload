@@ -7,8 +7,8 @@ Game.entities.ground = function(game, x, y, type){
 
   if(!type){
     type = Game.weightedChance(Game.modes[Game.mode].levels[Game.modes[Game.mode].level]);
-    Game.map[Game.toGridPos(x)][Game.toGridPos(y)] = Game.mapNames.indexOf(type);
-    Game.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)] = Game.mapNames.indexOf(type);
+    Game.map[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf(type);
+    Game.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf(type);
   }
 
   type = type.replace('ground_', '');
@@ -43,8 +43,8 @@ Game.entities.ground.crush = function(pos){
       ground.tween = Game.game.add.tween(ground).to({ alpha: 0 }, Game.modes[Game.mode].digTime[groundType], Phaser.Easing.Cubic.In, true);
       ground.animations.play('crush_'+ ground.ground_type);
 
-      Game.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)] = -1;
-      Game.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)] = -1;
+      Game.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
+      Game.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
     }
   });
 };
