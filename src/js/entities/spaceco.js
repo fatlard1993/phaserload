@@ -192,20 +192,26 @@ Game.entities.spaceco.handlePointer = function(pointer){
     else if(Game.spacecoView === 'shop'){
       console.log('teleporter');
 
-      var teleporterPrice = 1;
+      var teleporterPrice = 5;
 
       if(Game.credits < teleporterPrice) return;
 
       Game.credits -= teleporterPrice;
+
+      Game.inventory.teleporter = Game.inventory.teleporter || 0;
+      Game.inventory.teleporter++;
     }
     else if(Game.spacecoView === 'shop_p2'){
       console.log('timed explosive');
 
-      var explosivePrice = 1;
+      var explosivePrice = 5;
 
       if(Game.credits < explosivePrice) return;
 
       Game.credits -= explosivePrice;
+      
+      Game.inventory.timed_explosive = Game.inventory.timed_explosive || 0;
+      Game.inventory.timed_explosive++;
     }
   }
 
@@ -224,20 +230,26 @@ Game.entities.spaceco.handlePointer = function(pointer){
     else if(Game.spacecoView === 'shop'){
       console.log('responder teleporter');
 
-      var teleporterPrice = 1;
+      var teleporterPrice = 10;
 
       if(Game.credits < teleporterPrice) return;
 
       Game.credits -= teleporterPrice;
+
+      Game.inventory.responder_teleporter = Game.inventory.responder_teleporter || 0;
+      Game.inventory.responder_teleporter++;
     }
     else if(Game.spacecoView === 'shop_p2'){
       console.log('remote explosive');
 
-      var explosivePrice = 1;
+      var explosivePrice = 10;
 
       if(Game.credits < explosivePrice) return;
 
       Game.credits -= explosivePrice;
+
+      Game.inventory.remote_explosive = Game.inventory.remote_explosive || 0;
+      Game.inventory.remote_explosive++;
     }
   }
   else if(pointer.y > 210 && pointer.y < 240){
@@ -255,7 +267,7 @@ Game.entities.spaceco.handlePointer = function(pointer){
     else if(Game.spacecoView === 'shop'){
       console.log('repair');
 
-      var repairPrice = 1;
+      var repairPrice = 4;
 
       if(Game.credits < repairPrice) return;
 
@@ -264,11 +276,14 @@ Game.entities.spaceco.handlePointer = function(pointer){
     else if(Game.spacecoView === 'shop_p2'){
       console.log('timed freeze charge');
 
-      var explosivePrice = 1;
+      var explosivePrice = 10;
 
       if(Game.credits < explosivePrice) return;
 
       Game.credits -= explosivePrice;
+
+      Game.inventory.timed_freeze_charge = Game.inventory.timed_freeze_charge || 0;
+      Game.inventory.timed_freeze_charge++;
     }
   }
 
@@ -292,11 +307,14 @@ Game.entities.spaceco.handlePointer = function(pointer){
     else if(Game.spacecoView === 'shop_p2'){
       console.log('remote freeze charge');
 
-      var explosivePrice = 1;
+      var explosivePrice = 15;
 
       if(Game.credits < explosivePrice) return;
 
       Game.credits -= explosivePrice;
+      
+      Game.inventory.remote_freeze_charge = Game.inventory.remote_freeze_charge || 0;
+      Game.inventory.remote_freeze_charge++;
     }
   }
 
@@ -317,7 +335,7 @@ Game.entities.spaceco.handlePointer = function(pointer){
 
   
   if(purchase){
-    //todo animate a sprite of the purchased thing going from the top to the bottom (from spaceco to the player)
+    //idea::todo animate a sprite of the purchased thing going from the top to the bottom (from spaceco to the player)
   }
 
   Game.entities.spaceco.updateBottomLine();  

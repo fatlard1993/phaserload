@@ -100,15 +100,24 @@ Game.entities.hud.setView = function(view){
   var space = 24;
   
   if(view === 'inventory'){
-    menu = ' [Inventory] Hull      Exit\n';
+    var itemNames = Object.keys(Game.inventory), itemCount = itemNames.length;
+
+    menu = ' ['+ (itemCount > 6 ? '   pg1   ' : 'Inventory') +'] Hull      Exit\n';
     
-    var itemNames = Object.keys(Game.inventory);
-    
-    for(var x = 0; x < itemNames.length; x++){
-      items += itemNames[x] + (' '.repeat(itemNames[x].length > shortestLength ? space - (itemNames[x].length - shortestLength) : space)) + Game.hull[itemNames[x]] +'\n';
+    for(var x = 0; x < Math.min(6, itemCount); x++){
+      items += itemNames[x] + (' '.repeat(itemNames[x].length > shortestLength ? space - (itemNames[x].length - shortestLength) : space)) + Game.inventory[itemNames[x]] +'\n';
     }
   }
-  if(view === 'hull'){
+  else if(view === 'inventory_pg2'){
+    var itemNames = Object.keys(Game.inventory), itemCount = itemNames.length;
+
+    menu = ' [   pg2   ] Hull      Exit\n';
+    
+    for(var x = 6; x < itemCount; x++){
+      items += itemNames[x] + (' '.repeat(itemNames[x].length > shortestLength ? space - (itemNames[x].length - shortestLength) : space)) + Game.inventory[itemNames[x]] +'\n';
+    }
+  }
+  else if(view === 'hull'){
     menu = '  Inventory [ p1 ]     Exit\n';
 
     var mineralNames = ['space', 'mineral_green', 'mineral_blue', 'mineral_red'];
@@ -145,7 +154,8 @@ Game.entities.hud.handlePointer = function(pointer){
   if(pointer.y > 70 && pointer.y < 110){// menu
     if(pointer.x > 50 && pointer.x < 210){
       console.log('inventory');
-      Game.entities.hud.setView('inventory');
+      if(Game.hudView === 'inventory' && Object.keys(Game.inventory).length > 6) Game.entities.hud.setView('inventory_pg2');      
+      else Game.entities.hud.setView('inventory');
     }
     else if(pointer.x > 220 && pointer.x < 300){
       console.log('hull');      
