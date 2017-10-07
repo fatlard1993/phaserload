@@ -115,15 +115,12 @@ Game.modes.normal = {
         blue: 20
       },
       levels: [
-        { white: 90, orange: 10 },
-        { orange: 90, yellow: 10 },
-        { yellow: 90, green: 10 },
-        { green: 90, teal: 10 },
-        { teal: 90, blue: 10 },
-        { blue: 90, purple: 10 },
-        { purple: 90, pink: 10 },
-        { pink: 90, red: 10 },
-        { red: 90, black: 10 }
+        { white: 60, orange: 10, yellow: 10, teal: 10, black: 10 },
+        { white: 50, orange: 20, yellow: 10, teal: 10, black: 10 },
+        { white: 50, orange: 10, yellow: 10, teal: 15, black: 15 },
+        { white: 20, orange: 10, yellow: 10, teal: 30, black: 30 },
+        { white: 60, orange: 10, yellow: 10, teal: 10, black: 10 },
+        { white: 80, orange: 5, yellow: 5, teal: 5, black: 5 },
       ]
     },
     {
@@ -133,41 +130,53 @@ Game.modes.normal = {
         depth: [100, 400]
       },
       groundChance: 0.05,
-      lavaChance: 0.4,
-      monsterChance: 0.2,
+      lavaChance: 0.5,
+      monsterChance: 0.6,
       mineralRareity: {
-        green: 5,
-        red: 75,
-        blue: 20
+        green: 50,
+        blue: 50
       },
       levels: [
-        { red: 90, black: 10 },
-        { pink: 90, red: 10 },
-        { purple: 90, pink: 10 },
-        { blue: 90, purple: 10 },
-        { teal: 90, blue: 10 },
-        { green: 90, teal: 10 },
         { yellow: 90, green: 10 },
-        { orange: 90, yellow: 10 },
-        { white: 90, orange: 10 },
-        { red: 90, black: 10 },
-        { pink: 90, red: 10 },
-        { purple: 90, pink: 10 },
-        { blue: 90, purple: 10 },
-        { teal: 90, blue: 10 },
-        { green: 90, teal: 10 },
-        { yellow: 90, green: 10 },
-        { orange: 90, yellow: 10 },
-        { white: 90, orange: 10 },
-        { red: 90, black: 10 },
-        { pink: 90, red: 10 },
-        { purple: 90, pink: 10 },
-        { blue: 90, purple: 10 },
-        { teal: 90, blue: 10 },
-        { green: 90, teal: 10 },
-        { yellow: 90, green: 10 },
-        { orange: 90, yellow: 10 },
-        { white: 90, orange: 10 }
+        { yellow: 80, green: 10, teal: 10 },
+        { yellow: 70, green: 30 },
+        { yellow: 60, green: 30, orange: 10 },
+        { yellow: 40, green: 40, orange: 20 },
+        { yellow: 10, green: 30, orange: 50, white: 10 },
+        { yellow: 5, green: 25, orange: 60, white: 10 },
+        { green: 10, orange: 50, white: 40 },
+        { orange: 20, white: 60, black: 20 },
+      ]
+    },
+    {
+      missionText: '\n\nWelcome to metoerite SP43N-72D'+ Game.rand(100, 999),
+      size: {
+        width: [32, 64],
+        depth: [100, 400]
+      },
+      groundChance: 0.02,
+      lavaChance: 0.6,
+      monsterChance: 0.8,
+      mineralRareity: {
+        red: 99,
+        blue: 1
+      },
+      levels: [
+        { red: 80, pink: 20 },
+        { red: 60, pink: 40 },
+        { red: 50, pink: 50 },
+        { red: 40, pink: 50, purple: 10 },
+        { red: 30, pink: 40, purple: 30 },
+        { red: 20, pink: 30, purple: 50 },
+        { red: 10, pink: 20, purple: 70 },
+        { pink: 10, purple: 80, blue: 10 },
+        { purple: 70, blue: 30 },
+        { purple: 50, blue: 50 },
+        { purple: 40, blue: 70, black: 10 },
+        { purple: 30, blue: 50, black: 20 },
+        { purple: 20, blue: 40, black: 40 },
+        { purple: 10, blue: 20, black: 70 },
+        { black: 100 }
       ]
     }
   ]
