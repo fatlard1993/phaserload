@@ -155,7 +155,7 @@ Game.entities.player.move = function(game, direction){
   
   if(Game.hull.space < 0) moveTime += 250;
 
-  moveTime = moveTime - (((Game.drill.upgrade || 0) + 1) * 50);
+  moveTime = Math.max(Game.modes[Game.mode].baseDrillMoveTime, moveTime - (((Game.drill.upgrade || 0) + 1) * 50));
 
   game.add.tween(Game.drill).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
   
