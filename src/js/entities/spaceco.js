@@ -274,7 +274,7 @@ Game.entities.spaceco.handlePointer = function(pointer){
 
       var upgradePrice = 10;
 
-      if(Game.credits < upgradePrice && Game.drill.upgrade < 2) return;
+      if(Game.credits < upgradePrice || Game.drill.upgrade >= 2) return;
 
       Game.credits -= upgradePrice;
 
