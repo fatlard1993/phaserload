@@ -63,10 +63,12 @@ Game.entities.ground.dig = function(pos){
   if(blockAction && Game.effects[blockAction.split(':~:')[0]]){
     Game.entities.ground.applyBehavior(blockAction.split(':~:')[0], blockAction.split(':~:')[1], pos);
   }
-  
-  if(type === 'red' || Game.hull.space < 0) return;  
 
-  Game.hull.space -= 0.13;
+  var groundWeight = 0.07 + (Game.modes[Game.mode].digTime[type] * 0.0001);
+  
+  if(type === 'red' || Game.hull.space < groundWeight) return;  
+
+  Game.hull.space -= groundWeight;
 
   Game.hull['ground_'+ type] = Game.hull['ground_'+ type] !== undefined ? Game.hull['ground_'+ type] : 0;
 
