@@ -109,8 +109,6 @@ Game.entities.player.move = function(game, direction){
     newCameraPosition = { x: game.camera.x + Game.blockPx, y: game.camera.y };
   }
 
-  if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime, direction);
-
   if(targetGroundType){
     // console.log('Drill: Im diggin here! ', targetGroundType, newPosition);
 
@@ -157,7 +155,11 @@ Game.entities.player.move = function(game, direction){
   
   if(Game.hull.space < 0) moveTime += 250;
 
-  game.add.tween(Game.drill).to(newPosition, moveTime - (((Game.drill.upgrade || 0) + 1) * 50), Phaser.Easing.Sinusoidal.InOut, true);
+  moveTime = moveTime - (((Game.drill.upgrade || 0) + 1) * 50);
+
+  game.add.tween(Game.drill).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
+  
+  if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime, direction);
 
   var invertTexture = false;
 
@@ -203,6 +205,7 @@ Game.entities.player.move = function(game, direction){
   else if(Game.spacecoOffered && Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) > Game.blockPx - 10){
     Game.entities.spaceco.revoke();
   }
+  else if(Game.hud.isOpen) Game.entities.hud.close();
 
   if(direction !== 'teleport' && Game.mode === 'normal'){
     Game.fuel -= 0.1;
