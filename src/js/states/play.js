@@ -75,17 +75,13 @@ Game.states.play.prototype.create = function(){
   }
   else{
     Game.entities.spaceco.resourceBay = {};
-    
+
     Game.inventory = {};
     Game.hull = {};
     Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);
   
     Game.credits = 0;
     Game.fuel = Game.mode === 'normal' ? 5 : 0;
-    
-    Game.hull.mineral_green = 0;
-    Game.hull.mineral_red = 0;
-    Game.hull.mineral_blue = 0;
   }
 
   Game.entities.hud.update();
