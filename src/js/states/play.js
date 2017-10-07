@@ -32,7 +32,9 @@ Game.states.play.prototype.create = function(){
   var handlePointer = function(pointer){
     console.log(pointer, pointer.x, pointer.y);
     if(Game.hud.isOpen){
-      if(Game.entities[Game.hud.isOpen] && Game.entities[Game.hud.isOpen].handlePointer) Game.entities[Game.hud.isOpen].handlePointer(pointer);
+      if(pointer.x > 575 || pointer.y > 460) Game.entities.hud.close();
+
+      else if(Game.entities[Game.hud.isOpen] && Game.entities[Game.hud.isOpen].handlePointer) Game.entities[Game.hud.isOpen].handlePointer(pointer);
       
       else Game.entities.hud.close();
 
@@ -44,6 +46,9 @@ Game.states.play.prototype.create = function(){
 
     if(Game.game.math.distance(pointer.x, pointer.y, 150, 20) < 32){ // teleporter icon
       moving = 'teleport';
+    }
+    else if(Game.game.math.distance(pointer.x, pointer.y, 60, 40) < 64){ // hud console
+      Game.entities.hud.open('hud');
     }
     else{
       var xDiff = Game.drill.x - pointer.x - Game.game.camera.x;
@@ -69,6 +74,7 @@ Game.states.play.prototype.create = function(){
     Game.purchasedTransport = false;
   }
   else{
+    Game.inventory = {};
     Game.hull = {};
     Game.hull.space = 10;
   

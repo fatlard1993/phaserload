@@ -75,7 +75,7 @@ Game.entities.spaceco.open = function(){
   Game.infoLine.setText('');
 
   Game.entities.spaceco.welcome(function(){
-    Game.entities.spaceco.setInterfaceText('  Rates Fuel  Shop     Exit\n');
+    Game.entities.spaceco.setInterfaceText('   Rates  Fuel  Shop     Exit\n');
     Game.entities.spaceco.updateBottomLine();
     
     if(Game.mode === 'normal'){

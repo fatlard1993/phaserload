@@ -50,6 +50,8 @@ Game.entities.hud.update = function(){
 };
 
 Game.entities.hud.open = function(name){
+  if(name === 'hud') Game.entities.hud.openHud();
+
   Game.entities.hud.clear();
   
   Game.hud.isOpen = name || 'unnamed';
@@ -77,4 +79,98 @@ Game.entities.hud.close = function(){
 
 Game.entities.hud.clear = function(){
   Game.hud.statusText.setText('');
+};
+
+
+Game.entities.hud.openHud = function(){
+  Game.infoLine.setText('');
+
+  Game.hud.interfaceText.setText('            CONSOLE\n'+'  Inventory  Hull      Exit\n');
+};
+
+Game.entities.hud.setView = function(view){
+  Game.hudView = view;
+
+  var menu = '';
+  var items = '';
+  
+  if(view === 'inventory'){
+    menu = ' [Inventory] Hull      Exit\n';
+    
+    var itemNames = Object.keys(Game.inventory);
+    
+    for(var x = 0; x < itemNames.length; x++){
+      items += itemNames[x] +': '+ Game.hull[itemNames[x]] +'\n';
+    }
+  }
+  if(view === 'hull'){
+    menu = '  Inventory [ p1 ]     Exit\n';
+
+    var mineralNames = ['ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue'];
+    
+    for(var x = 0; x < mineralNames.length; x++){
+      items += mineralNames[x] +': '+ (Game.hull[mineralNames[x]] || 0) +'\n';
+    }
+  }
+  else if(view === 'hull_p2'){
+    menu = '  Inventory [ p2 ]     Exit\n';
+
+    var mineralNames = ['ground_purple', 'ground_pink', 'ground_black', 'mineral_green', 'mineral_blue', 'mineral_red'];
+    
+    for(var x = 0; x < mineralNames.length; x++){
+      items += mineralNames[x] +': '+ (Game.hull[mineralNames[x]] || 0) +'\n';
+    }
+  }
+
+  Game.hud.interfaceText.setText('            CONSOLE\n'+ menu + items);
+};
+
+Game.entities.hud.handlePointer = function(pointer){
+  if(Game.hud.isOpen !== 'hud') return;
+
+  if(pointer.y > 70 && pointer.y < 110){// menu
+    if(pointer.x > 50 && pointer.x < 210){
+      console.log('inventory');
+      Game.entities.hud.setView('inventory');
+    }
+    else if(pointer.x > 220 && pointer.x < 300){
+      console.log('hull');      
+      if(Game.hudView === 'hull') Game.entities.hud.setView('hull_p2');
+      else Game.entities.hud.setView('hull');
+    }
+    else if(pointer.x > 360 && pointer.x < 500){
+      console.log('exit');
+      Game.entities.hud.close();
+    }
+  }
+
+  else if(pointer.y > 120 && pointer.y < 150){
+    if(Game.hudView === 'inventory'){
+      console.log('inventory slot #1');
+    }
+  }
+
+  else if(pointer.y > 160 && pointer.y < 200){
+    if(Game.hudView === 'inventory'){
+      console.log('inventory slot #2');
+    }
+  }
+
+  else if(pointer.y > 210 && pointer.y < 240){
+    if(Game.hudView === 'inventory'){
+      console.log('inventory slot #3');
+    }
+  }
+
+  else if(pointer.y > 250 && pointer.y < 280){
+    if(Game.hudView === 'inventory'){
+      console.log('inventory slot #4');
+    }
+  }
+
+  else if(pointer.y > 290 && pointer.y < 320){
+    if(Game.hudView === 'inventory'){
+      console.log('inventory slot #5');
+    }
+  }
 };
