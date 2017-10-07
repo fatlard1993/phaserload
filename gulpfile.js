@@ -51,7 +51,7 @@ gulp.task('compile-js', function(){
   gulp.src([
     'src/js/lib/phaser.js',
     'src/js/_polyfill.js',
-    // 'src/js/_log.js',
+    'src/js/_log.js',
     'src/js/game.js',
 
     'src/js/modes/normal.js',

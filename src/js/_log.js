@@ -11,4 +11,12 @@ function ConsoleWrap(method){
   };
 }
 
-var Log = new Proxy(ConsoleWrap('log'), { get(target, method){ return ConsoleWrap(method); } });
+var Log, Proxy = Proxy || null;
+
+if(Proxy) Log = new Proxy(ConsoleWrap('log'), { get(target, method){ return ConsoleWrap(method); } });
+else{
+  // limited non ES6 support
+  Log = ConsoleWrap('log');
+  Log.warn = ConsoleWrap('warn');
+  Log.error = ConsoleWrap('error');
+}
