@@ -45,7 +45,18 @@ Game.states.play.prototype.create = function(){
     var moving;
 
     if(Game.game.math.distance(pointer.x, pointer.y, 150, 20) < 32){ // teleporter icon
-      moving = 'teleport';
+      if(!Game.inventory.teleporter){
+        Game.infoLine.setText(' you have no teleporters left ');
+
+        setTimeout(function(){
+          Game.infoLine.setText('');
+        }, 2000);
+      }
+      else{
+        Game.inventory.teleporter--;
+
+        moving = 'teleport';
+      }
     }
     else if(Game.game.math.distance(pointer.x, pointer.y, 60, 40) < 64){ // hud console
       Game.entities.hud.open('hud');
