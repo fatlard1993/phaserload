@@ -129,7 +129,9 @@ Game.entities.player.move = function(game, direction){
       Game.entities.ground.dig(newPosition);
     }
 
-    if(Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] && Game.hull.space > 0){
+    var mineralWeight = 0.08;
+
+    if(Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] && Game.hull.space > mineralWeight){
       Game.minerals.forEachAlive(function(mineral){
         if(mineral.x === newPosition.x && mineral.y === newPosition.y){
           Game.hull[mineral.type] = Game.hull[mineral.type] !== undefined ? Game.hull[mineral.type] : 0;
@@ -141,7 +143,7 @@ Game.entities.player.move = function(game, direction){
           game.add.tween(mineral).to({ x: game.camera.x, y: game.camera.y }, animationTime, Phaser.Easing.Quadratic.Out, true);
   
           setTimeout(function(){
-            Game.hull.space -= 0.5;
+            Game.hull.space -= mineralWeight;
   
             mineral.kill();
       
@@ -208,7 +210,7 @@ Game.entities.player.move = function(game, direction){
   else if(Game.hud.isOpen) Game.entities.hud.close();
 
   if(direction !== 'teleport' && Game.mode === 'normal'){
-    Game.fuel -= 0.1;
+    Game.fuel -= moveTime * 0.0001;
     if(Game.fuel < 1.5) Game.infoLine.setText(' Your fuel is running low ');
   }
 
