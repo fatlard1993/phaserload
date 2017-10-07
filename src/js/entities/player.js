@@ -5,7 +5,7 @@ Game.entities.player = function(){};
 Game.entities.player.create = function(){
   var playerX = Game.rand(1, Game.width - 1);
   
-  var player = Game.game.add.sprite(Game.toPx(playerX), Game.toPx(Game.skyHeight), 'drill', 15);
+  var player = Game.game.add.sprite(Game.toPx(playerX), Game.toPx(1), 'drill', 15);
   
   player.anchor.setTo(0.5, 0.5);
 

@@ -40,7 +40,7 @@ Game.entities.hud.update = function(){
     else statusText = value[0] + spacer;
     
     if(item === 'position_dbg') statusText += 'x'+ Game.toGridPos(Game.drill.x) +' y'+ Game.toGridPos(Game.drill.y);
-    else if(item === 'position') statusText += 'x'+ (Game.toGridPos(Game.drill.x) + 1) +' y'+ -(Game.toGridPos(Game.drill.y) - Game.skyHeight);
+    else if(item === 'position') statusText += 'x'+ (Game.toGridPos(Game.drill.x) + 1) +' y'+ -(Game.toGridPos(Game.drill.y) - 1);
     else if(item === 'fuel') statusText += Game.fuel.toFixed(2);
     else if(item === 'credits') statusText += Game.credits.toFixed(2);
     else if(item === 'hull') statusText += Game.hull.space.toFixed(2);

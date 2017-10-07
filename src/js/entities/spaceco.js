@@ -7,7 +7,7 @@ Game.entities.spaceco.headingText = '             SPACECO\n';
 Game.entities.spaceco.create = function(){
   var spacecoX = Game.rand(3, Game.width - 3);
 
-  var spaceco = Game.game.add.sprite(Game.toPx(spacecoX), Game.toPx(Game.skyHeight), 'spaceco', 10);
+  var spaceco = Game.game.add.sprite(Game.toPx(spacecoX), Game.toPx(1), 'spaceco', 10);
 
   spaceco.frame = spaceco.damage = 0;
 

@@ -4,7 +4,6 @@ var Game = {
   mode: 'normal',
   modes: {},
   blockPx: 64,
-  skyHeight: 4,
   config: {
     backgroundColor: '#333',
     font: 'monospace',
@@ -151,19 +150,19 @@ var Game = {
         Game.viewBufferMap[x] = Game.viewBufferMap[x] || [];
         Game.viewBufferMap[x][y] = -1;
   
-        if(y > Game.skyHeight && Game.chance(groundChance)){
+        if(y > 1 && Game.chance(groundChance)){
           Game.map[x][y] = Game.mapNames.indexOf('ground_'+ Game.weightedChance(groundRareity));
         }
 
-        else if(y > Game.skyHeight + 3 && Game.chance(mineralChance)){      
+        else if(y > 3 && Game.chance(mineralChance)){      
           Game.map[x][y] = Game.mapNames.indexOf(Game.weightedChance(mineralRareity));
         }
         
-        else if(y > Game.skyHeight + 5 && Game.chance(lavaChance)){
+        else if(y > 5 && Game.chance(lavaChance)){
           Game.map[x][y] = Game.mapNames.indexOf('lava');
         }
   
-        else if(y > Game.skyHeight + 5 && Game.chance(monsterChance)){
+        else if(y > 5 && Game.chance(monsterChance)){
           Game.map[x][y] = Game.mapNames.indexOf('monster');
         }
   
