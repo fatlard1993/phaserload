@@ -60,6 +60,13 @@ Game.entities.player.move = function(game, direction){
   else if(direction === 'up' && (!surrounds.left && !surrounds.right)){
     return;
   }
+  else if(direction === 'teleport' && !Game.inventory.teleporter){
+    Game.infoLine.setText(' you have no teleporters left ');
+
+    setTimeout(function(){
+      Game.infoLine.setText('');
+    }, 2000);
+  }
 
   if(Game.entities.player.justMoved_TO){
     clearTimeout(Game.entities.player.justMoved_TO);
@@ -81,6 +88,8 @@ Game.entities.player.move = function(game, direction){
   var moveTime = targetGroundType ? Game.modes[Game.mode].digTime[targetGroundType.replace('ground_', '')] ? Game.modes[Game.mode].digTime[targetGroundType.replace('ground_', '')] : Game.modes[Game.mode].baseDrillMoveTime : Game.modes[Game.mode].baseDrillMoveTime;
 
   if(direction === 'teleport'){
+    Game.inventory.teleporter--;
+    
     Game.drill.animations.play('teleporting');
 
     moveTime = Math.ceil(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y));

@@ -45,18 +45,7 @@ Game.states.play.prototype.create = function(){
     var moving;
 
     if(Game.game.math.distance(pointer.x, pointer.y, 150, 20) < 32){ // teleporter icon
-      if(!Game.inventory.teleporter){
-        Game.infoLine.setText(' you have no teleporters left ');
-
-        setTimeout(function(){
-          Game.infoLine.setText('');
-        }, 2000);
-      }
-      else{
-        Game.inventory.teleporter--;
-
-        moving = 'teleport';
-      }
+      moving = 'teleport';
     }
     else if(Game.game.math.distance(pointer.x, pointer.y, 60, 40) < 64){ // hud console
       Game.entities.hud.open('hud');
@@ -129,7 +118,19 @@ Game.states.play.prototype.update = function(){
     else if(this.input.keyboard.isDown(Phaser.Keyboard.UP)){
       moving = 'up';
     }
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.ONE)){
+      // Item slot #1, temporarily just teleport
+      moving = 'teleport';      
+    }
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.TWO)){
+      // Item slot #2
+    }
+
+
     else if(this.input.keyboard.isDown(Phaser.Keyboard.X)){
+      Game.inventory.teleporter = Game.inventory.teleporter || 0;
+      Game.inventory.teleporter++;
+      
       moving = 'teleport';
     }
 
