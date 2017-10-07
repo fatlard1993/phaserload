@@ -74,6 +74,8 @@ Game.states.play.prototype.create = function(){
     Game.purchasedTransport = false;
   }
   else{
+    Game.entities.spaceco.resourceBay = {};
+    
     Game.inventory = {};
     Game.hull = {};
     Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);
@@ -130,7 +132,7 @@ Game.states.play.prototype.update = function(){
     else if(this.input.keyboard.isDown(Phaser.Keyboard.X)){
       Game.inventory.teleporter = Game.inventory.teleporter || 0;
       Game.inventory.teleporter++;
-      
+
       moving = 'teleport';
     }
 
