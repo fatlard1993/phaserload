@@ -20,7 +20,7 @@ Game.states.play.prototype.create = function(){
   
   Game.drill = Game.entities.player.create();
 
-  Game.infoLine = this.game.add.text(5, 110, '', { font: '25px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
+  Game.infoLine = this.game.add.text(5, 135, '', { font: '25px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
   Game.infoLine.fixedToCamera = true; 
   
   Game.hud = Game.entities.hud.create(0, 0);
