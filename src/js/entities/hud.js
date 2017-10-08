@@ -157,6 +157,8 @@ Game.entities.hud.setView = function(view){
 Game.entities.hud.handlePointer = function(pointer){
   if(Game.hud.isOpen !== 'hud') return;
 
+  var selectedItem;
+
   if(pointer.y > 70 && pointer.y < 110){// menu
     if(pointer.x > 50 && pointer.x < 210){
       console.log('inventory');
@@ -179,95 +181,69 @@ Game.entities.hud.handlePointer = function(pointer){
     if(Game.hudView === 'inventory'){
       var name = Game.entities.hud.inventoryItemNames[0];
       console.log('inventory slot #1', name);
-
-      var slot = Game.itemSlot1.item === name ? 2 : Game.itemSlot2.item === name ? -1 : 1;
-
-      if(Game.itemSlot1.item === name) Game.entities.itemSlot.setItem(1, '');
-      if(Game.itemSlot2.item === name) Game.entities.itemSlot.setItem(2, '');
       
-      if(slot > 0) Game.entities.itemSlot.setItem(slot, name);
-
-      Game.entities.hud.setView('inventory');
+      selectedItem = name;
     }
   }
 
   else if(pointer.y > 160 && pointer.y < 200){
     if(Game.hudView === 'inventory'){
-      var name = Game.entities.hud.inventoryItemNames[0];
+      var name = Game.entities.hud.inventoryItemNames[1];
       console.log('inventory slot #2', name);
       
-      var slot = Game.itemSlot1.item === name ? 2 : Game.itemSlot2.item === name ? -1 : 1;
-
-      if(Game.itemSlot1.item === name) Game.entities.itemSlot.setItem(1, '');
-      if(Game.itemSlot2.item === name) Game.entities.itemSlot.setItem(2, '');
-      
-      if(slot > 0) Game.entities.itemSlot.setItem(slot, name);
-
-      Game.entities.hud.setView('inventory');
+      selectedItem = name;
     }
   }
 
   else if(pointer.y > 210 && pointer.y < 240){
     if(Game.hudView === 'inventory'){
-      var name = Game.entities.hud.inventoryItemNames[0];
+      var name = Game.entities.hud.inventoryItemNames[2];
       console.log('inventory slot #3', name);
       
-      var slot = Game.itemSlot1.item === name ? 2 : Game.itemSlot2.item === name ? -1 : 1;
-
-      if(Game.itemSlot1.item === name) Game.entities.itemSlot.setItem(1, '');
-      if(Game.itemSlot2.item === name) Game.entities.itemSlot.setItem(2, '');
-      
-      if(slot > 0) Game.entities.itemSlot.setItem(slot, name);
-
-      Game.entities.hud.setView('inventory');
+      selectedItem = name;
     }
   }
 
   else if(pointer.y > 250 && pointer.y < 280){
     if(Game.hudView === 'inventory'){
-      var name = Game.entities.hud.inventoryItemNames[0];
+      var name = Game.entities.hud.inventoryItemNames[3];
       console.log('inventory slot #4', name);
       
-      var slot = Game.itemSlot1.item === name ? 2 : Game.itemSlot2.item === name ? -1 : 1;
-
-      if(Game.itemSlot1.item === name) Game.entities.itemSlot.setItem(1, '');
-      if(Game.itemSlot2.item === name) Game.entities.itemSlot.setItem(2, '');
-      
-      if(slot > 0) Game.entities.itemSlot.setItem(slot, name);
-
-      Game.entities.hud.setView('inventory');
+      selectedItem = name;
     }
   }
 
   else if(pointer.y > 290 && pointer.y < 320){
     if(Game.hudView === 'inventory'){
-      var name = Game.entities.hud.inventoryItemNames[0];
+      var name = Game.entities.hud.inventoryItemNames[4];
       console.log('inventory slot #5', name);
       
-      var slot = Game.itemSlot1.item === name ? 2 : Game.itemSlot2.item === name ? -1 : 1;
-
-      if(Game.itemSlot1.item === name) Game.entities.itemSlot.setItem(1, '');
-      if(Game.itemSlot2.item === name) Game.entities.itemSlot.setItem(2, '');
-      
-      if(slot > 0) Game.entities.itemSlot.setItem(slot, name);
-
-      Game.entities.hud.setView('inventory');
+      selectedItem = name;
     }
   }
 
   else if(pointer.y > 330 && pointer.y < 360){
     if(Game.hudView === 'inventory'){
-      var name = Game.entities.hud.inventoryItemNames[0];
+      var name = Game.entities.hud.inventoryItemNames[5];
       console.log('inventory slot #6', name);
       
-      var slot = Game.itemSlot1.item === name ? 2 : Game.itemSlot2.item === name ? -1 : 1;
-
-      if(Game.itemSlot1.item === name) Game.entities.itemSlot.setItem(1, '');
-      if(Game.itemSlot2.item === name) Game.entities.itemSlot.setItem(2, '');
-      
-      if(slot > 0) Game.entities.itemSlot.setItem(slot, name);
-
-      Game.entities.hud.setView('inventory');
+      selectedItem = name;
     }
+  }
+
+  if(selectedItem){
+    var slot = Game.itemSlot1.item === selectedItem ? 2 : Game.itemSlot2.item === selectedItem ? -1 : 1;
+    
+    if(Game.itemSlot1.item === selectedItem) Game.entities.itemSlot.setItem(1, '');
+    if(Game.itemSlot2.item === selectedItem) Game.entities.itemSlot.setItem(2, '');
+    
+    if(slot > 0){
+      if(Game['itemSlot'+ slot].item && !Game['itemSlot'+ (slot === 1 ? 2 : 1)].item) slot = slot === 1 ? 2 : 1;
+      else if(Game['itemSlot'+ slot].item) Game.entities.itemSlot.setItem(slot, '');
+
+      Game.entities.itemSlot.setItem(slot, selectedItem);
+    }
+
+    Game.entities.hud.setView('inventory');
   }
 };
