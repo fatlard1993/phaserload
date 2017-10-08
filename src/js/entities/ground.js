@@ -6,7 +6,7 @@ Game.entities.ground = function(game, x, y, type){
   this.anchor.setTo(0.5, 0.5);
 
   if(!type){
-    type = Game.weightedChance(Game.modes[Game.mode].levels[Game.modes[Game.mode].level]);
+    type = Game.weightedChance(Game.modes[Game.mode].levels[Game.modes[Game.mode].level].layers[Math.ceil(Game.modes[Game.mode].levels[Game.modes[Game.mode].level].layers.length * (Game.toGridPos(y) / Game.depth)) - 1]);
     Game.map[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf(type);
     Game.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf(type);
   }
