@@ -66,6 +66,8 @@ Game.entities.player.move = function(game, direction){
     setTimeout(function(){
       Game.infoLine.setText('');
     }, 2000);
+
+    return;
   }
 
   if(Game.entities.player.justMoved_TO){
@@ -231,4 +233,13 @@ Game.entities.player.move = function(game, direction){
       Game.drill.emitter = null;
     }
   }, moveTime + 150);
+};
+
+Game.entities.player.useItem = function(slotNum, item){
+  if(item === 'teleporter'){
+    Game.entities.player.move(Game.game, 'teleport');    
+  }
+  else{
+    console.log(item, ' not yet implemented use func');
+  }
 };

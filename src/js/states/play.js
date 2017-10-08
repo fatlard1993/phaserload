@@ -23,11 +23,14 @@ Game.states.play.prototype.create = function(){
   Game.infoLine = this.game.add.text(5, 110, '', { font: '25px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
   Game.infoLine.fixedToCamera = true; 
 
-  Game.teleporter = Game.game.add.sprite(150, 20, 'teleporter');
-  Game.teleporter.anchor.setTo(0.5, 0.5);
-  Game.teleporter.fixedToCamera = true;
+  // Game.teleporter = Game.game.add.sprite(Game.viewWidth - 32, 32, 'teleporter');
+  // Game.teleporter.anchor.setTo(0.5, 0.5);
+  // Game.teleporter.fixedToCamera = true;
   
   Game.hud = Game.entities.hud.create(0, 0);
+
+  Game.itemSlot1 = Game.entities.itemSlot.create(Game.viewWidth - 32, 32);
+  Game.itemSlot2 = Game.entities.itemSlot.create(Game.viewWidth - 32, 106);
   
   var handlePointer = function(pointer){
     console.log(pointer, pointer.x, pointer.y);
@@ -44,8 +47,15 @@ Game.states.play.prototype.create = function(){
     if(Game.game.tweens.isTweening(Game.drill)) return;
     var moving;
 
-    if(Game.game.math.distance(pointer.x, pointer.y, 150, 20) < 32){ // teleporter icon
-      moving = 'teleport';
+    if(Game.game.math.distance(pointer.x, pointer.y, Game.viewWidth - 32, 32) < 32){
+      console.log('item slot #1', Game.itemSlot1.item);
+
+      Game.entities.player.useItem(1, Game.itemSlot1.item);
+    }
+    else if(Game.game.math.distance(pointer.x, pointer.y, Game.viewWidth - 32, 106) < 32){
+      console.log('item slot #2', Game.itemSlot2.item);
+      
+      Game.entities.player.useItem(2, Game.itemSlot2.item);
     }
     else if(Game.game.math.distance(pointer.x, pointer.y, 60, 40) < 64){ // hud console
       Game.entities.hud.open('hud');

@@ -58,6 +58,7 @@ gulp.task('compile-js', function(){
     
     'src/js/entities/player.js',
     'src/js/entities/hud.js',
+    'src/js/entities/itemSlot.js',
     'src/js/entities/spaceco.js',
     'src/js/entities/mineral.js',
     'src/js/entities/ground.js',
