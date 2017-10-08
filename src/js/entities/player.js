@@ -17,7 +17,7 @@ Game.entities.player.create = function(){
   
   player.animations.play('normal');
 
-  Game.map[Game.toGridPos(player.x)][Game.toGridPos(player.y)][0] = Game.mapNames.indexOf('player1');
+  Game.map[playerX][1][0] = Game.mapNames.indexOf('player1');
 
   Game.drillScaleX = player.scale.x;
 

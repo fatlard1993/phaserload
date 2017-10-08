@@ -119,7 +119,7 @@ var Game = {
   groundAt(pxX, pxY){
     return Game.mapNames[Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0]];
   },
-  mapNames: ['hole', 'monster', 'player1', 'lava', 'mineral_green', 'mineral_red', 'mineral_blue', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
+  mapNames: ['monster', 'player1', 'lava', 'mineral_green', 'mineral_red', 'mineral_blue', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
   toId: function(name){
     return Game.mapNames.indexOf(name);
   },
@@ -153,6 +153,8 @@ var Game = {
         var groundRareity = settings.levels[Math.ceil(settings.levels.length * (y / Game.depth)) - 1];
   
         Game.map[x] = Game.map[x] || [];
+        Game.map[x][y] = [-1, -1];
+
         Game.viewBufferMap[x] = Game.viewBufferMap[x] || [];
         Game.viewBufferMap[x][y] = [-1, -1];
   
@@ -170,10 +172,6 @@ var Game = {
   
         else if(y > 8 && Game.chance(monsterChance)){
           Game.map[x][y] = [Game.mapNames.indexOf('monster'), -1];
-        }
-  
-        else{
-          Game.map[x][y] = [0, -1];
         }
       }
     }
@@ -247,7 +245,7 @@ var Game = {
         var mapPos = Game.mapPos(x, y);
         var viewBufferPos = Game.viewBufferPos(x, y);
         
-        if(viewBufferPos[0] >= 0 || mapPos[0] <= 0) continue;
+        if(viewBufferPos[0] >= 0 || mapPos[0] < 0) continue;
         
         Game.viewBufferMap[x][y] = mapPos;
 
