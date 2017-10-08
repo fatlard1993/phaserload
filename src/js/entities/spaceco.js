@@ -346,7 +346,7 @@ Game.entities.spaceco.handlePointer = function(pointer){
 };
 
 Game.entities.spaceco.hurt = function(ammount){
-  ammount = ammount || 1;
+  ammount = ammount ? parseInt(ammount) : 1;
 
   Game.spaceco.damage += ammount;
   

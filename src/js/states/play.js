@@ -183,7 +183,7 @@ Game.states.play.prototype.update = function(){
     }
   }, this);
 
-  if(Game.spaceco.damage < 10 && !this.game.tweens.isTweening(Game.spaceco)){
+  if(Game.spaceco.damage <= 10 && !this.game.tweens.isTweening(Game.spaceco)){
     var gridPos = {
       x: Game.toGridPos(Game.spaceco.x),
       y: Game.toGridPos(Game.spaceco.y)
