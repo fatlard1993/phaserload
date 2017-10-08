@@ -12,7 +12,7 @@ Game.states.load.prototype.preload = function(){
   this.game.load.spritesheet('repair', '/assets/repair.png', 32, 32);
   this.game.load.spritesheet('tombstone', '/assets/tombstone.png', 32, 32);
   this.game.load.spritesheet('detonator', '/assets/detonator.png', 32, 32);
-  this.game.load.spritesheet('explosives', '/assets/explosives.png', 32, 32);
+  this.game.load.spritesheet('explosive', '/assets/explosives.png', 32, 32);
   this.game.load.spritesheet('fuel', '/assets/fuel.png', 32, 32);
   this.game.load.spritesheet('upgrade', '/assets/upgrades.png', 32, 32);
   this.game.load.spritesheet('mineral', '/assets/minerals.png', 32, 32);

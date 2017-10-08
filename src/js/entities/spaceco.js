@@ -132,7 +132,7 @@ Game.entities.spaceco.setView = function(view){
   }
   else if(view === 'fuel'){
     menu = '   Rates [Fuel] Shop     Exit\n';
-    items = 'Gas                            $1\nEnergy Charge                  $2\nSuper Oxygen Liquid Nitrogen   $3';
+    items = 'Gas                            $1\nEnergy                         $2\nSuper Oxygen Liquid Nitrogen   $3';
   }
   else if(view === 'shop'){
     menu = '   Rates  Fuel [ p1 ]    Exit\n';
@@ -140,7 +140,7 @@ Game.entities.spaceco.setView = function(view){
   }
   else if(view === 'shop_p2'){
     menu = '   Rates  Fuel [ p2 ]    Exit\n';
-    items = 'Timed Explosive                $5\nRemote Explosive              $10\nTimed Freeze Charge           $10\nRemote Freeze Charge          $15';
+    items = 'Timed Charge                   $5\nRemote Charge                 $10\nTimed Freeze Charge           $10\nRemote Freeze Charge          $15';
   }
   Game.entities.spaceco.spacecoFuel = '';
   Game.entities.spaceco.spacecoProducts = '';
@@ -202,7 +202,7 @@ Game.entities.spaceco.handlePointer = function(pointer){
       Game.inventory.teleporter++;
     }
     else if(Game.spacecoView === 'shop_p2'){
-      console.log('timed explosive');
+      console.log('timed charge');
 
       var explosivePrice = 5;
 
@@ -210,14 +210,14 @@ Game.entities.spaceco.handlePointer = function(pointer){
 
       Game.credits -= explosivePrice;
       
-      Game.inventory.timed_explosive = Game.inventory.timed_explosive || 0;
-      Game.inventory.timed_explosive++;
+      Game.inventory.timed_charge = Game.inventory.timed_charge || 0;
+      Game.inventory.timed_charge++;
     }
   }
 
   else if(pointer.y > 160 && pointer.y < 200){
     if(Game.spacecoView === 'fuel'){
-      console.log('energy charge');
+      console.log('energy');
 
       var energyPrice = 2;
       var fuelValue = 2;      
@@ -240,7 +240,7 @@ Game.entities.spaceco.handlePointer = function(pointer){
       Game.inventory.responder_teleporter++;
     }
     else if(Game.spacecoView === 'shop_p2'){
-      console.log('remote explosive');
+      console.log('remote charge');
 
       var explosivePrice = 10;
 
@@ -248,8 +248,8 @@ Game.entities.spaceco.handlePointer = function(pointer){
 
       Game.credits -= explosivePrice;
 
-      Game.inventory.remote_explosive = Game.inventory.remote_explosive || 0;
-      Game.inventory.remote_explosive++;
+      Game.inventory.remote_charge = Game.inventory.remote_charge || 0;
+      Game.inventory.remote_charge++;
     }
   }
   else if(pointer.y > 210 && pointer.y < 240){
