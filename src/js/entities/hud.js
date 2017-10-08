@@ -123,7 +123,7 @@ Game.entities.hud.setView = function(view){
   else if(view === 'hull'){
     menu = '  Inventory [ p1 ]     Exit\n';
 
-    items += 'Hull Space                  '+ Game.hull.space.toFixed(2) +'\n';
+    items += 'Hull Space               '+ Game.hull.space.toFixed(2) +'\n';
 
     var mineralNames = ['mineral_green', 'mineral_blue', 'mineral_red'];
     
