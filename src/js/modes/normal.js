@@ -54,7 +54,7 @@ Game.modes.normal = {
         green: 50,
         blue: 50
       },
-      levels: [
+      layers: [
         { blue: 40, purple: 60 },
         { blue: 40, red: 60 },
         { green: 50, white: 50 },
@@ -76,7 +76,7 @@ Game.modes.normal = {
         red: 75,
         blue: 25
       },
-      levels: [
+      layers: [
         { blue: 75, pink: 10, teal: 10, purple: 5 },
         { blue: 60, pink: 10, teal: 15, purple: 15 },
         { blue: 40, pink: 25, teal: 15, purple: 20 },
@@ -99,7 +99,7 @@ Game.modes.normal = {
         red: 15,
         blue: 50
       },
-      levels: [
+      layers: [
         { blue: 70, yellow: 15, orange: 10, black: 5 },
         { blue: 60, yellow: 20, orange: 10, black: 10 },
         { blue: 40, yellow: 10, orange: 30, black: 20 },
@@ -124,7 +124,7 @@ Game.modes.normal = {
         red: 5,
         blue: 20
       },
-      levels: [
+      layers: [
         { white: 60, orange: 10, yellow: 10, teal: 10, black: 10 },
         { white: 50, orange: 20, yellow: 10, teal: 10, black: 10 },
         { white: 50, orange: 10, yellow: 10, teal: 15, black: 15 },
@@ -147,7 +147,7 @@ Game.modes.normal = {
         green: 50,
         blue: 50
       },
-      levels: [
+      layers: [
         { yellow: 85, green: 10, teal: 5 },
         { yellow: 80, green: 10, teal: 10 },
         { yellow: 40, green: 30, teal: 30 },
@@ -173,7 +173,7 @@ Game.modes.normal = {
         red: 99,
         blue: 1
       },
-      levels: [
+      layers: [
         { red: 75, pink: 20, black: 5 },
         { red: 50, pink: 40, black: 10 },
         { red: 40, pink: 50, purple: 10 },

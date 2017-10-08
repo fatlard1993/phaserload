@@ -344,3 +344,12 @@ Game.entities.spaceco.handlePointer = function(pointer){
 
   Game.entities.spaceco.updateBottomLine();  
 };
+
+Game.entities.spaceco.hurt = function(ammount){
+  ammount = ammount || 1;
+
+  Game.spaceco.damage += ammount;
+  
+  if(Game.spaceco.damage === 10) setTimeout(Game.spaceco.kill, 400);
+  else Game.spaceco.frame = Game.spaceco.damage;
+};

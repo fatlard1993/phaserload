@@ -111,25 +111,21 @@ Game.entities.player.move = function(game, direction){
     newCameraPosition = { x: game.camera.x + Game.blockPx, y: game.camera.y };
   }
 
-  if(targetGroundType){
-    // console.log('Drill: Im diggin here! ', targetGroundType, newPosition);
+  if(targetGroundType && targetGroundType.startsWith('ground')){
+    Game.drill.emitter = Game.game.add.emitter(0, 0, 100);
+    Game.drill.addChild(Game.drill.emitter);
 
-    if(targetGroundType.startsWith('ground')){
-      Game.drill.emitter = Game.game.add.emitter(0, 0, 100);
-      Game.drill.addChild(Game.drill.emitter);
+    var frameMod = Game.entities.ground.types.indexOf(targetGroundType.replace('ground_', '')) * 4;
+  
+    Game.drill.emitter.makeParticles('ground', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod]);
+  
+    Game.drill.emitter.x = 32;
 
-      var frameMod = Game.entities.ground.types.indexOf(targetGroundType.replace('ground_', '')) * 4;
-    
-      Game.drill.emitter.makeParticles('ground', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod]);
-    
-      Game.drill.emitter.x = 32;
+    Game.drill.emitter.setScale(0.1, 0.3, 0.1, 0.3);
+  
+    Game.drill.emitter.start(true, moveTime + 100, null, Math.round(Game.rand(3, 7)));
 
-      Game.drill.emitter.setScale(0.1, 0.3, 0.1, 0.3);
-    
-      Game.drill.emitter.start(true, moveTime + 100, null, Math.round(Game.rand(3, 7)));
-
-      Game.entities.ground.dig(newPosition);
-    }
+    Game.entities.ground.dig(newPosition);
   }
 
   var mineralWeight = 0.08;
@@ -160,6 +156,8 @@ Game.entities.player.move = function(game, direction){
   if(Game.hull.space < 0) moveTime += 250;
 
   moveTime = Math.max(Game.modes[Game.mode].baseDrillMoveTime, moveTime - (((Game.drill.upgrade || 0) + 1) * 50));
+
+  if(targetGroundType && targetGroundType.startsWith('ground')) Game.game.camera.shake(0.0005, moveTime);
 
   game.add.tween(Game.drill).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
   
@@ -227,7 +225,18 @@ Game.entities.player.move = function(game, direction){
 };
 
 Game.entities.player.useItem = function(slotNum, item){
-  if(!Game['itemSlot'+ slotNum].item || Game['itemSlot'+ slotNum].item === '') return;
+  if(Game.entities.player.justUsedItem || !Game['itemSlot'+ slotNum].item || Game['itemSlot'+ slotNum].item === '') return;
+
+  if(Game.entities.player.justUsedItem_TO){
+    clearTimeout(Game.entities.player.justUsedItem_TO);
+    Game.entities.player.justUsedItem_TO = null;
+  }
+  if(!Game.entities.player.justUsedItem_TO){
+    Game.entities.player.justUsedItem = true;
+    Game.entities.player.justUsedItem_TO = setTimeout(function(){
+      Game.entities.player.justUsedItem = false;
+    }, 500);
+  }
 
   if(item === 'teleporter'){
     Game.entities.player.move(Game.game, 'teleport');
@@ -257,8 +266,10 @@ Game.entities.player.useItem = function(slotNum, item){
       Game.drill.charge_TO = setTimeout(function(){
         Game.drill.activeCharge.frame++;
 
-        if(!item.includes('freeze')) Game.effects.explode({ x: Game.drill.activeCharge.x, y: Game.drill.activeCharge.y }, 3);
-
+        Game.effects[Game.drill.activeChargeType.includes('freeze') ? 'freeze' : 'explode']({ x: Game.drill.activeCharge.x, y: Game.drill.activeCharge.y }, Game.drill.activeChargeType.includes('remote') ? 5 : 3);
+        
+        Game.game.camera.shake(Game.drill.activeChargeType.includes('remote') ? 0.05 : 0.03, 1000);
+        
         setTimeout(function(){
           Game.drill.activeCharge.destroy();
           Game.drill.activeCharge = null;
@@ -279,7 +290,9 @@ Game.entities.player.useItem = function(slotNum, item){
     Game.drill.charge_TO = setTimeout(function(){
       Game.drill.activeCharge.frame++;
 
-      if(!Game.drill.activeChargeType.includes('freeze')) Game.effects.explode({ x: Game.drill.activeCharge.x, y: Game.drill.activeCharge.y }, 3);
+      Game.effects[Game.drill.activeChargeType.includes('freeze') ? 'freeze' : 'explode']({ x: Game.drill.activeCharge.x, y: Game.drill.activeCharge.y }, Game.drill.activeChargeType.includes('remote') ? 5 : 3);
+
+      Game.game.camera.shake(Game.drill.activeChargeType.includes('remote') ? 0.05 : 0.03, 1000);
 
       setTimeout(function(){
         Game.entities.itemSlot.setItem(slotNum, '');
@@ -318,7 +331,7 @@ Game.entities.player.useItem = function(slotNum, item){
 
     if(!Game.inventory[item]){
       delete Game.inventory[item];
-      Game.entities.itemSlot.setItem(slotNum, '');
+      if(!item.includes('remote')) Game.entities.itemSlot.setItem(slotNum, '');
     }
   }
 };

@@ -78,7 +78,7 @@ Game.states.play.handlePointer = function(pointer){
     
     Game.entities.player.useItem(2, Game.itemSlot2.item);
   }
-  else if(Game.game.math.distance(pointer.x, pointer.y, 60, 40) < 64){ // hud console
+  else if(Game.game.math.distance(pointer.x, pointer.y, 70, 50) < 128){ // hud console
     Game.entities.hud.open('hud');
   }
   else{
@@ -198,10 +198,7 @@ Game.states.play.prototype.update = function(){
     if(spacecoGroundBase.bottomRight < 3 && spacecoGroundBase.bottom < 3 && spacecoGroundBase.bottomLeft < 3){
       Game.game.add.tween(Game.spaceco).to({ y: Game.spaceco.y + Game.blockPx }, 500, Phaser.Easing.Sinusoidal.InOut, true);
 
-      Game.spaceco.damage++;
-
-      if(Game.spaceco.damage === 10) setTimeout(Game.spaceco.kill, 400);
-      else Game.spaceco.frame = Game.spaceco.damage;
+      Game.entities.spaceco.hurt();
     }  
   }
 };
