@@ -158,7 +158,7 @@ var Game = {
     
     for(var x = 0; x < Game.width; x++){
       for(var y = 0; y < Game.depth; y++){
-        var groundChance = 100 - (y * settings.groundChance);
+        var holeChance = y * settings.holeChance;
         var mineralChance = y * settings.mineralChance;
         var lavaChance = y * settings.lavaChance;
         var monsterChance = y * settings.monsterChance;
@@ -171,7 +171,7 @@ var Game = {
         Game.viewBufferMap[x] = Game.viewBufferMap[x] || [];
         Game.viewBufferMap[x][y] = [-1, -1];
   
-        if(y > 1 && Game.chance(groundChance)){
+        if(y > 1 && !Game.chance(holeChance)){
           Game.map[x][y] = [Game.mapNames.indexOf('ground_'+ Game.weightedChance(groundRareity)), -1];
 
           if(y > 5 && Game.chance(mineralChance)){      

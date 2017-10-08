@@ -133,11 +133,6 @@ Game.states.play.prototype.update = function(){
       Game.entities.player.useItem(2, Game.itemSlot2.item);
     }
 
-
-    else if(this.input.keyboard.isDown(Phaser.Keyboard.X)){
-      moving = 'teleport';
-    }
-
     if(moving){
       Game.entities.player.move(this.game, moving);
     }

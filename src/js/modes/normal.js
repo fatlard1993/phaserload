@@ -46,7 +46,7 @@ Game.modes.normal = {
         width: [50, 70],
         depth: [100, 200]
       },
-      groundChance: 0.1,
+      holeChance: 0.1,
       lavaChance: 0.4,
       monsterChance: 0.4,
       mineralChance: 0.042,
@@ -68,19 +68,20 @@ Game.modes.normal = {
         width: [32, 45],
         depth: [100, 200]
       },
-      groundChance: 0.2,
+      holeChance: 0.2,
       lavaChance: 0.2,
       monsterChance: 0.2,
       mineralChance: 0.05,
       mineralRareity: {
-        green: 50,
-        red: 35,
-        blue: 15
+        red: 75,
+        blue: 25
       },
       levels: [
-        { white: 50, black: 50 },
-        { orange: 50, yellow: 50 },
-        { blue: 50, purple: 50 }
+        { blue: 75, pink: 10, teal: 10, purple: 5 },
+        { blue: 60, pink: 10, teal: 15, purple: 15 },
+        { blue: 40, pink: 25, teal: 15, purple: 20 },
+        { blue: 20, pink: 15, teal: 25, purple: 40 },
+        { blue: 5, pink: 45, teal: 5, purple: 45 },
       ]
     },
     {
@@ -89,7 +90,7 @@ Game.modes.normal = {
         width: [45, 60],
         depth: [200, 300]
       },
-      groundChance: 0.2,
+      holeChance: 0.2,
       lavaChance: 0.4,
       monsterChance: 0.2,
       mineralChance: 0.07,
@@ -114,7 +115,7 @@ Game.modes.normal = {
         width: [60, 70],
         depth: [250, 400]
       },
-      groundChance: 0.1,
+      holeChance: 0.1,
       lavaChance: 0.1,
       monsterChance: 0.3,
       mineralChance: 0.1,
@@ -138,7 +139,7 @@ Game.modes.normal = {
         width: [32, 64],
         depth: [100, 400]
       },
-      groundChance: 0.05,
+      holeChance: 0.05,
       lavaChance: 0.5,
       monsterChance: 0.6,
       mineralChance: 0.08,
@@ -147,11 +148,11 @@ Game.modes.normal = {
         blue: 50
       },
       levels: [
-        { yellow: 90, green: 10 },
+        { yellow: 85, green: 10, teal: 5 },
         { yellow: 80, green: 10, teal: 10 },
-        { yellow: 70, green: 30 },
-        { yellow: 60, green: 30, orange: 10 },
-        { yellow: 40, green: 40, orange: 20 },
+        { yellow: 40, green: 30, teal: 30 },
+        { yellow: 50, green: 30, orange: 10, teal: 10 },
+        { yellow: 35, green: 40, orange: 20, teal: 5 },
         { yellow: 10, green: 30, orange: 50, white: 10 },
         { yellow: 5, green: 25, orange: 60, white: 10 },
         { green: 10, orange: 50, white: 40 },
@@ -164,7 +165,7 @@ Game.modes.normal = {
         width: [32, 64],
         depth: [100, 400]
       },
-      groundChance: 0.02,
+      holeChance: 0.02,
       lavaChance: 0.6,
       monsterChance: 0.8,
       mineralChance: 0.15,
@@ -173,21 +174,20 @@ Game.modes.normal = {
         blue: 1
       },
       levels: [
-        { red: 80, pink: 20 },
-        { red: 60, pink: 40 },
-        { red: 50, pink: 50 },
+        { red: 75, pink: 20, black: 5 },
+        { red: 50, pink: 40, black: 10 },
         { red: 40, pink: 50, purple: 10 },
         { red: 30, pink: 40, purple: 30 },
         { red: 20, pink: 30, purple: 50 },
         { red: 10, pink: 20, purple: 70 },
-        { pink: 10, purple: 80, blue: 10 },
-        { purple: 70, blue: 30 },
-        { purple: 50, blue: 50 },
-        { purple: 40, blue: 70, black: 10 },
-        { purple: 30, blue: 50, black: 20 },
-        { purple: 20, blue: 40, black: 40 },
-        { purple: 10, blue: 20, black: 70 },
-        { black: 100 }
+        { pink: 10, purple: 80, orange: 10 },
+        { purple: 65, orange: 30, black: 5 },
+        { purple: 45, orange: 45, black: 10 },
+        { purple: 40, orange: 70, teal: 10 },
+        { purple: 30, orange: 50, teal: 20 },
+        { purple: 20, orange: 40, teal: 40 },
+        { purple: 10, orange: 20, teal: 70 },
+        { teal: 100 }
       ]
     }
   ]
