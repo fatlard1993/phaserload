@@ -130,31 +130,31 @@ Game.entities.player.move = function(game, direction){
 
       Game.entities.ground.dig(newPosition);
     }
+  }
 
-    var mineralWeight = 0.08;
-
-    if(Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] && Game.hull.space > mineralWeight){
-      Game.minerals.forEachAlive(function(mineral){
-        if(mineral.x === newPosition.x && mineral.y === newPosition.y){
-          Game.hull[mineral.type] = Game.hull[mineral.type] !== undefined ? Game.hull[mineral.type] : 0;
-          
-          Game.hull[mineral.type]++;
-
-          var animationTime = 200 + Math.ceil(Game.game.math.distance(game.camera.x, game.camera.y, mineral.x, mineral.y));
-
-          game.add.tween(mineral).to({ x: game.camera.x, y: game.camera.y }, animationTime, Phaser.Easing.Quadratic.Out, true);
+  var mineralWeight = 0.08;
   
-          setTimeout(function(){
-            Game.hull.space -= mineralWeight;
-  
-            mineral.kill();
-      
-            Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] = -1;
-            Game.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] = -1;
-          }, animationTime);
-        }
-      });
-    }
+  if(Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] && Game.hull.space > mineralWeight){
+    Game.minerals.forEachAlive(function(mineral){
+      if(mineral.x === newPosition.x && mineral.y === newPosition.y){
+        Game.hull[mineral.type] = Game.hull[mineral.type] !== undefined ? Game.hull[mineral.type] : 0;
+        
+        Game.hull[mineral.type]++;
+
+        var animationTime = 200 + Math.ceil(Game.game.math.distance(game.camera.x, game.camera.y, mineral.x, mineral.y));
+
+        game.add.tween(mineral).to({ x: game.camera.x, y: game.camera.y }, animationTime, Phaser.Easing.Quadratic.Out, true);
+
+        setTimeout(function(){
+          Game.hull.space -= mineralWeight;
+
+          mineral.kill();
+    
+          Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] = -1;
+          Game.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] = -1;
+        }, animationTime);
+      }
+    });
   }
   
   if(Game.hull.space < 0) moveTime += 250;
@@ -309,7 +309,9 @@ Game.entities.player.useItem = function(slotNum, item){
     console.log(item, ' not yet implemented use func');
   }
 
-  if(item !== 'detonator' && !item.includes('remote') && !Game.drill.responder){
+  if(item !== 'detonator'){
+    if(item === 'responder_teleporter' && Game.drill.responder) return;
+
     Game.inventory[item]--;
 
     if(!Game.inventory[item]) Game.entities.itemSlot.setItem(slotNum, '');
