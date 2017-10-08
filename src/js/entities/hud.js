@@ -195,6 +195,15 @@ Game.entities.hud.handlePointer = function(pointer){
     if(Game.hudView === 'inventory'){
       var name = Game.entities.hud.inventoryItemNames[0];
       console.log('inventory slot #2', name);
+      
+      var slot = Game.itemSlot1.item === name ? 2 : Game.itemSlot2.item === name ? -1 : 1;
+
+      if(Game.itemSlot1.item === name) Game.entities.itemSlot.setItem(1, '');
+      if(Game.itemSlot2.item === name) Game.entities.itemSlot.setItem(2, '');
+      
+      if(slot > 0) Game.entities.itemSlot.setItem(slot, name);
+
+      Game.entities.hud.setView('inventory');
     }
   }
 
@@ -202,6 +211,15 @@ Game.entities.hud.handlePointer = function(pointer){
     if(Game.hudView === 'inventory'){
       var name = Game.entities.hud.inventoryItemNames[0];
       console.log('inventory slot #3', name);
+      
+      var slot = Game.itemSlot1.item === name ? 2 : Game.itemSlot2.item === name ? -1 : 1;
+
+      if(Game.itemSlot1.item === name) Game.entities.itemSlot.setItem(1, '');
+      if(Game.itemSlot2.item === name) Game.entities.itemSlot.setItem(2, '');
+      
+      if(slot > 0) Game.entities.itemSlot.setItem(slot, name);
+
+      Game.entities.hud.setView('inventory');
     }
   }
 
@@ -209,6 +227,15 @@ Game.entities.hud.handlePointer = function(pointer){
     if(Game.hudView === 'inventory'){
       var name = Game.entities.hud.inventoryItemNames[0];
       console.log('inventory slot #4', name);
+      
+      var slot = Game.itemSlot1.item === name ? 2 : Game.itemSlot2.item === name ? -1 : 1;
+
+      if(Game.itemSlot1.item === name) Game.entities.itemSlot.setItem(1, '');
+      if(Game.itemSlot2.item === name) Game.entities.itemSlot.setItem(2, '');
+      
+      if(slot > 0) Game.entities.itemSlot.setItem(slot, name);
+
+      Game.entities.hud.setView('inventory');
     }
   }
 
@@ -216,6 +243,15 @@ Game.entities.hud.handlePointer = function(pointer){
     if(Game.hudView === 'inventory'){
       var name = Game.entities.hud.inventoryItemNames[0];
       console.log('inventory slot #5', name);
+      
+      var slot = Game.itemSlot1.item === name ? 2 : Game.itemSlot2.item === name ? -1 : 1;
+
+      if(Game.itemSlot1.item === name) Game.entities.itemSlot.setItem(1, '');
+      if(Game.itemSlot2.item === name) Game.entities.itemSlot.setItem(2, '');
+      
+      if(slot > 0) Game.entities.itemSlot.setItem(slot, name);
+
+      Game.entities.hud.setView('inventory');
     }
   }
 
@@ -223,6 +259,15 @@ Game.entities.hud.handlePointer = function(pointer){
     if(Game.hudView === 'inventory'){
       var name = Game.entities.hud.inventoryItemNames[0];
       console.log('inventory slot #6', name);
+      
+      var slot = Game.itemSlot1.item === name ? 2 : Game.itemSlot2.item === name ? -1 : 1;
+
+      if(Game.itemSlot1.item === name) Game.entities.itemSlot.setItem(1, '');
+      if(Game.itemSlot2.item === name) Game.entities.itemSlot.setItem(2, '');
+      
+      if(slot > 0) Game.entities.itemSlot.setItem(slot, name);
+
+      Game.entities.hud.setView('inventory');
     }
   }
 };
