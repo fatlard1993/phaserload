@@ -74,7 +74,7 @@ Game.entities.hud.close = function(){
   Game.hud.interfaceText.setText('');
   Game.hud.bottomLine.setText('');
   
-  Game.game.add.tween(Game.hud.scale).to({ x: 0.4, y: 0.4 }, 600, Phaser.Easing.Circular.Out, true);
+  Game.game.add.tween(Game.hud.scale).to({ x: 0.5, y: 0.5 }, 600, Phaser.Easing.Circular.Out, true);
 
   Game.entities.hud.update();
 };
