@@ -39,11 +39,15 @@ Game.states.play.prototype.create = function(){
     Game.entities.spaceco.resourceBay = {};
 
     Game.inventory = {};
+    Game.inventory.teleporter = 1;
+
+    Game.entities.itemSlot.setItem(1, 'teleporter');
+
     Game.hull = {};
-    Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);
+    Game.hull.space = 10;
   
     Game.credits = 0;
-    Game.fuel = Game.mode === 'normal' ? 5 : 0;
+    Game.fuel = 5;
   }
 
   Game.entities.hud.update();
