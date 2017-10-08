@@ -22,61 +22,13 @@ Game.states.play.prototype.create = function(){
 
   Game.infoLine = this.game.add.text(5, 110, '', { font: '25px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
   Game.infoLine.fixedToCamera = true; 
-
-  // Game.teleporter = Game.game.add.sprite(Game.viewWidth - 32, 32, 'teleporter');
-  // Game.teleporter.anchor.setTo(0.5, 0.5);
-  // Game.teleporter.fixedToCamera = true;
   
   Game.hud = Game.entities.hud.create(0, 0);
 
   Game.itemSlot1 = Game.entities.itemSlot.create(Game.viewWidth - 32, 32);
   Game.itemSlot2 = Game.entities.itemSlot.create(Game.viewWidth - 32, 106);
-  
-  var handlePointer = function(pointer){
-    console.log(pointer, pointer.x, pointer.y);
-    if(Game.hud.isOpen){
-      if(pointer.x > 575 || pointer.y > 460) Game.entities.hud.close();
 
-      else if(Game.entities[Game.hud.isOpen] && Game.entities[Game.hud.isOpen].handlePointer) Game.entities[Game.hud.isOpen].handlePointer(pointer);
-      
-      else Game.entities.hud.close();
-
-      return;
-    }
-
-    if(Game.game.tweens.isTweening(Game.drill)) return;
-    var moving;
-
-    if(Game.game.math.distance(pointer.x, pointer.y, Game.viewWidth - 32, 32) < 32){
-      console.log('item slot #1', Game.itemSlot1.item);
-
-      Game.entities.player.useItem(1, Game.itemSlot1.item);
-    }
-    else if(Game.game.math.distance(pointer.x, pointer.y, Game.viewWidth - 32, 106) < 32){
-      console.log('item slot #2', Game.itemSlot2.item);
-      
-      Game.entities.player.useItem(2, Game.itemSlot2.item);
-    }
-    else if(Game.game.math.distance(pointer.x, pointer.y, 60, 40) < 64){ // hud console
-      Game.entities.hud.open('hud');
-    }
-    else{
-      var xDiff = Game.drill.x - pointer.x - Game.game.camera.x;
-      var yDiff = Game.drill.y - pointer.y - Game.game.camera.y;
-
-      var xDirection = xDiff > 0 ? 'left' : 'right';
-      var yDirection = yDiff > 0 ? 'up' : 'down';
-
-      moving = Math.abs(xDiff) > Math.abs(yDiff) ? xDirection : yDirection;
-    }
-    
-    if(moving){
-      console.log(moving);
-      Game.entities.player.move(Game.game, moving);
-    }
-  };
-
-  this.game.input.onDown.add(handlePointer);
+  this.game.input.onDown.add(Game.states.play.handlePointer);
 
   Game.showMissionText();
 
@@ -95,6 +47,50 @@ Game.states.play.prototype.create = function(){
   }
 
   Game.entities.hud.update();
+};
+
+Game.states.play.handlePointer = function(pointer){
+  console.log(pointer, pointer.x, pointer.y);
+  if(Game.hud.isOpen){
+    if(pointer.x > 575 || pointer.y > 460) Game.entities.hud.close();
+
+    else if(Game.entities[Game.hud.isOpen] && Game.entities[Game.hud.isOpen].handlePointer) Game.entities[Game.hud.isOpen].handlePointer(pointer);
+    
+    else Game.entities.hud.close();
+
+    return;
+  }
+
+  if(Game.game.tweens.isTweening(Game.drill)) return;
+  var moving;
+
+  if(Game.game.math.distance(pointer.x, pointer.y, Game.viewWidth - 32, 32) < 32){
+    console.log('item slot #1', Game.itemSlot1.item);
+
+    Game.entities.player.useItem(1, Game.itemSlot1.item);
+  }
+  else if(Game.game.math.distance(pointer.x, pointer.y, Game.viewWidth - 32, 106) < 32){
+    console.log('item slot #2', Game.itemSlot2.item);
+    
+    Game.entities.player.useItem(2, Game.itemSlot2.item);
+  }
+  else if(Game.game.math.distance(pointer.x, pointer.y, 60, 40) < 64){ // hud console
+    Game.entities.hud.open('hud');
+  }
+  else{
+    var xDiff = Game.drill.x - pointer.x - Game.game.camera.x;
+    var yDiff = Game.drill.y - pointer.y - Game.game.camera.y;
+
+    var xDirection = xDiff > 0 ? 'left' : 'right';
+    var yDirection = yDiff > 0 ? 'up' : 'down';
+
+    moving = Math.abs(xDiff) > Math.abs(yDiff) ? xDirection : yDirection;
+  }
+  
+  if(moving){
+    console.log(moving);
+    Game.entities.player.move(Game.game, moving);
+  }
 };
 
 Game.states.play.prototype.update = function(){
@@ -127,18 +123,14 @@ Game.states.play.prototype.update = function(){
       moving = 'up';
     }
     else if(this.input.keyboard.isDown(Phaser.Keyboard.ONE)){
-      // Item slot #1, temporarily just teleport
-      moving = 'teleport';      
+      Game.entities.player.useItem(1, Game.itemSlot1.item);
     }
     else if(this.input.keyboard.isDown(Phaser.Keyboard.TWO)){
-      // Item slot #2
+      Game.entities.player.useItem(2, Game.itemSlot2.item);
     }
 
 
     else if(this.input.keyboard.isDown(Phaser.Keyboard.X)){
-      Game.inventory.teleporter = Game.inventory.teleporter || 0;
-      Game.inventory.teleporter++;
-
       moving = 'teleport';
     }
 

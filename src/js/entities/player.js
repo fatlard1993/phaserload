@@ -227,6 +227,8 @@ Game.entities.player.move = function(game, direction){
 };
 
 Game.entities.player.useItem = function(slotNum, item){
+  if(!Game['itemSlot'+ slotNum].item || Game['itemSlot'+ slotNum].item === '') return;
+
   if(item === 'teleporter'){
     Game.entities.player.move(Game.game, 'teleport');
   }
@@ -314,6 +316,9 @@ Game.entities.player.useItem = function(slotNum, item){
 
     Game.inventory[item]--;
 
-    if(!Game.inventory[item]) Game.entities.itemSlot.setItem(slotNum, '');
+    if(!Game.inventory[item]){
+      delete Game.inventory[item];
+      Game.entities.itemSlot.setItem(slotNum, '');
+    }
   }
 };
