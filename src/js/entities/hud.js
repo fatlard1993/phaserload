@@ -18,7 +18,6 @@ Game.entities.hud.create = function(x, y){
   hud.addChild(hud.interfaceText);
 
   hud.bottomLine = Game.game.add.text(20, 205, '', { font: '14px '+ Game.config.font, fill: Game.config.hudTextColor });
-  // hud.bottomLine.lineSpacing = -6;
   hud.addChild(hud.bottomLine);
   
   return hud;

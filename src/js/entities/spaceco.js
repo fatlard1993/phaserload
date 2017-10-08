@@ -103,6 +103,8 @@ Game.entities.spaceco.open = function(){
 };
 
 Game.entities.spaceco.setView = function(view){
+  if(Game.hud.isOpen !== 'spaceco') return;
+  
   Game.spacecoView = view;
 
   Game.entities.spaceco.updateBottomLine();
@@ -149,6 +151,8 @@ Game.entities.spaceco.setView = function(view){
 };
 
 Game.entities.spaceco.updateBottomLine = function(){
+  if(Game.hud.isOpen !== 'spaceco') return;
+  
   var credits = ' Credits: '+ Game.credits.toFixed(2);
   var fuel = '   Fuel: '+ Game.fuel.toFixed(2);
 
