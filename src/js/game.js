@@ -13,6 +13,19 @@ var Game = {
   states: {},
   entities: {},
   effects: {
+    explode: function(pos, radius){
+      Game.ground.forEachAlive(function(ground){
+        if(Game.game.math.distance(pos.x, pos.y, ground.x, ground.y) < Game.blockPx * (radius || 4)){
+          Game.entities.ground.crush({ x: ground.x, y: ground.y });
+        }
+      }, this);
+
+      Game.monsters.forEachAlive(function(monster){
+        if(Game.game.math.distance(pos.x, pos.y, monster.x, monster.y) < Game.blockPx * (radius || 4)){
+          monster.kill();
+        }
+      }, this);
+    },
     lava: function(chance, pos){
       if(Game.chance(chance)){
         Game.entities.lava.create(Game.game, pos.x, pos.y);

@@ -60,15 +60,6 @@ Game.entities.player.move = function(game, direction){
   else if(direction === 'up' && (!surrounds.left && !surrounds.right)){
     return;
   }
-  else if(direction === 'teleport' && !Game.inventory.teleporter){
-    Game.infoLine.setText(' you have no teleporters left ');
-
-    setTimeout(function(){
-      Game.infoLine.setText('');
-    }, 2000);
-
-    return;
-  }
 
   if(Game.entities.player.justMoved_TO){
     clearTimeout(Game.entities.player.justMoved_TO);
@@ -89,23 +80,23 @@ Game.entities.player.move = function(game, direction){
   var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
   var moveTime = targetGroundType ? Game.modes[Game.mode].digTime[targetGroundType.replace('ground_', '')] ? Game.modes[Game.mode].digTime[targetGroundType.replace('ground_', '')] : Game.modes[Game.mode].baseDrillMoveTime : Game.modes[Game.mode].baseDrillMoveTime;
 
-  if(direction === 'teleport'){
-    Game.inventory.teleporter--;
-    
+  if(direction.includes('teleport')){
     Game.drill.animations.play('teleporting');
 
-    moveTime = Math.ceil(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y));
+    var teleportPos = direction.includes('responder') ? { x: Game.drill.responder.x, y: Game.drill.responder.y } : { x: Game.spaceco.x, y: Game.spaceco.y };
+
+    moveTime = Math.ceil(Game.game.math.distance(Game.drill.x, Game.drill.y, teleportPos.x, teleportPos.y));
 
     setTimeout(function(){
-      Game.drawCurrentView();
-      Game.drill.animations.play('normal');
-      Game.entities.spaceco.offer();
+      // Game.drawCurrentView();
+      Game.drill.animations.play(Game.drill.upgrade > 0 ? 'upgrade_'+ Game.drill.upgrade : 'normal');
+      if(!direction.includes('responder')) Game.entities.spaceco.offer();
     }, 200 + moveTime);
 
-    newCameraPosition = { x: Game.spaceco.x - Game.viewWidth / 2, y: Game.spaceco.y - Game.viewHeight / 2 };    
+    newCameraPosition = { x: teleportPos.x - Game.viewWidth / 2, y: teleportPos.y - Game.viewHeight / 2 };    
 
-    newPosition.x = Game.spaceco.x;
-    newPosition.y = Game.spaceco.y;
+    newPosition.x = teleportPos.x;
+    newPosition.y = teleportPos.y;
   }
   else if(direction === 'up' && Math.abs((game.camera.y + Game.viewHeight) - Game.drill.y) > Game.viewHeight / 2){
     newCameraPosition = { x: game.camera.x, y: game.camera.y - Game.blockPx };
@@ -220,7 +211,7 @@ Game.entities.player.move = function(game, direction){
   }
   else if(Game.hud.isOpen) Game.entities.hud.close();
 
-  if(direction !== 'teleport' && Game.mode === 'normal'){
+  if(!direction.includes('teleport') && Game.mode === 'normal'){
     Game.fuel -= moveTime * 0.0001;
     if(Game.fuel < 1.5) Game.infoLine.setText(' Your fuel is running low ');
   }
@@ -237,9 +228,90 @@ Game.entities.player.move = function(game, direction){
 
 Game.entities.player.useItem = function(slotNum, item){
   if(item === 'teleporter'){
-    Game.entities.player.move(Game.game, 'teleport');    
+    Game.entities.player.move(Game.game, 'teleport');
+  }
+  else if(item.includes('charge')){
+    if(Game.drill.activeCharge){
+      Game.infoLine.setText(' you have already placed a charge ');
+      
+      setTimeout(function(){
+        Game.infoLine.setText('');
+      }, 2000);
+
+      return;
+    }
+
+    var frame = 0;
+    
+    if(item.includes('freeze')) frame += 4;
+
+    if(item.includes('remote')){
+      frame += 2;
+
+      Game.entities.itemSlot.setItem(slotNum, '');
+      Game.entities.itemSlot.setItem(slotNum, 'detonator');
+    }
+    else{
+      Game.drill.charge_TO = setTimeout(function(){
+        Game.drill.activeCharge.frame++;
+
+        if(!item.includes('freeze')) Game.effects.explode({ x: Game.drill.activeCharge.x, y: Game.drill.activeCharge.y }, 3);
+
+        setTimeout(function(){
+          Game.drill.activeCharge.destroy();
+          Game.drill.activeCharge = null;
+          Game.drill.activeChargeType = null;
+        }, 1000);
+      }, 3*1000);
+    }
+
+    Game.drill.activeChargeType = item;
+
+    Game.drill.activeCharge = Game.game.add.sprite(Game.drill.x, Game.drill.y, 'explosive');
+    Game.drill.activeCharge.anchor.setTo(0.5, 0);
+    Game.drill.activeCharge.frame = frame;
+  }
+  else if(item === 'detonator'){
+    Game['itemSlot'+ slotNum].itemSprite.animations.play('use');
+
+    Game.drill.charge_TO = setTimeout(function(){
+      Game.drill.activeCharge.frame++;
+
+      if(!Game.drill.activeChargeType.includes('freeze')) Game.effects.explode({ x: Game.drill.activeCharge.x, y: Game.drill.activeCharge.y }, 3);
+
+      setTimeout(function(){
+        Game.entities.itemSlot.setItem(slotNum, '');
+        if(Game.inventory[Game.drill.activeChargeType] > 0) Game.entities.itemSlot.setItem(slotNum, Game.drill.activeChargeType);
+        
+        Game.drill.activeCharge.destroy();
+        Game.drill.activeCharge = null;
+        Game.drill.activeChargeType = null;
+      }, 1000);
+    }, 1000);
+  }
+  else if(item === 'responder_teleporter'){
+    if(!Game.drill.responder){
+      Game.drill.responder = Game.game.add.sprite(Game.drill.x, Game.drill.y, 'responder');
+      Game.drill.responder.anchor.setTo(0.5, 0);
+      Game.drill.responder.animations.add('active', [0, 1], 5, true);
+      Game.drill.responder.animations.play('active');
+      
+      Game.entities.player.move(Game.game, 'teleport');
+    }
+    else{
+      Game.entities.player.move(Game.game, 'responder_teleport');
+
+      Game.drill.responder.destroy();
+      Game.drill.responder = null;
+    }
   }
   else{
     console.log(item, ' not yet implemented use func');
+  }
+
+  if(item !== 'detonator' && !item.includes('remote') && !Game.drill.responder){
+    Game.inventory[item]--;
+
+    if(!Game.inventory[item]) Game.entities.itemSlot.setItem(slotNum, '');
   }
 };

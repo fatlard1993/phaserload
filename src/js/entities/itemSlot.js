@@ -24,19 +24,21 @@ Game.entities.itemSlot.setItem = function(slotNum, item){
     if(Game['itemSlot'+ slotNum].itemSprite) Game['itemSlot'+ slotNum].itemSprite.destroy();
   }
   else{
+    var frame = 0;
+
     Game['itemSlot'+ slotNum].itemSprite = Game.game.add.sprite(0, 0, item.includes('charge') ? 'explosive' : item);
     Game['itemSlot'+ slotNum].itemSprite.anchor.setTo(0.5, 0.5);
   
     Game['itemSlot'+ slotNum].addChild(Game['itemSlot'+ slotNum].itemSprite);
 
     if(item.includes('charge')){
-      var frame = 0;
-
       if(item.includes('freeze')) frame += 4;
-
       if(item.includes('remote')) frame += 2;
-
-      Game['itemSlot'+ slotNum].itemSprite.frame = frame;
     }
+    else if(item === 'detonator'){
+      Game['itemSlot'+ slotNum].itemSprite.animations.add('use', [1, 2, 3], 3, false);
+    }
+
+    Game['itemSlot'+ slotNum].itemSprite.frame = frame;
   }
 };
