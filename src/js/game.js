@@ -323,9 +323,9 @@ window.onload = function(){
   let availibleWidth = clientWidth - (clientWidth % Game.blockPx);
   var availibleHeight = clientHeight - (clientHeight % Game.blockPx);
   
-  Game.viewWidth = Math.max(9 * Game.blockPx, availibleWidth);
+  Game.viewWidth = Math.max(10 * Game.blockPx, availibleWidth);
 
-  var scale = (Game.viewWidth > availibleWidth ? (9 * Game.blockPx) / availibleWidth : 1);
+  var scale = (Game.viewWidth > availibleWidth ? (10 * Game.blockPx) / availibleWidth : 1);
   
   Game.viewHeight = availibleHeight * scale;
   Game.viewHeight = Game.viewHeight - (Game.viewHeight & Game.blockPx);
