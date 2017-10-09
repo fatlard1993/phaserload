@@ -18,7 +18,7 @@ Game.states.end.prototype.create = function(){
   this.game.add.tween(text).to({ alpha: 1 }, tweenTime, Phaser.Easing.Sinusoidal.InOut, true, delay);
   delay += delayIncrement;
 
-  text = this.game.add.text(0, -100, Game.loseReason === 'fuel' ? 'Ran out of fuel' : 'Killed by: '+ Game.loseReason, { font: '40px ' + Game.config.font, fill: Game.config.textColor, stroke: Game.config.backgroundColor, strokeThickness: 10 });
+  text = this.game.add.text(0, -100, Game.loseReason === 'fuel' ? 'Ran out of fuel' : 'Killed by '+ Game.loseReason, { font: '40px ' + Game.config.font, fill: Game.config.textColor, stroke: Game.config.backgroundColor, strokeThickness: 10 });
   text.updateTransform();
   text.x = this.game.width/2 - text.getBounds().width/2;
   text.alpha = 0;
