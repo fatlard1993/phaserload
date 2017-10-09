@@ -153,6 +153,10 @@ Game.states.play.prototype.update = function(){
     }
   }
 
+  if(this.input.keyboard.isDown(Phaser.Keyboard.ESC)){
+    Game.entities.hud.close();
+  }
+
   Game.lava.forEachAlive(function(lava){
     if(!lava.lethal) return;
 
