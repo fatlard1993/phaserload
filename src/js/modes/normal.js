@@ -160,6 +160,29 @@ Game.modes.normal = {
       ]
     },
     {
+      missionText: '\n\n   Welcome to moon CM12W-I13'+ Game.rand(100, 999),
+      size: {
+        width: [30, 70],
+        depth: [100, 300]
+      },
+      holeChance: 0.12,
+      lavaChance: 0.25,
+      monsterChance: 0.18,
+      mineralChance: 0.1,
+      mineralRareity: {
+        green: 10,
+        red: 75,
+        blue: 15
+      },
+      layers: [
+        { teal: 50, white: 20, green: 30 },
+        { teal: 50, white: 5, green: 35, pink: 10 },
+        { teal: 40, green: 35, pink: 15, purple: 5 },
+        { teal: 30, green: 25, pink: 15, purple: 30 },
+        { teal: 30, green: 40, blue: 30 }
+      ]
+    },
+    {
       missionText: '\n\nWelcome to metoerite SP43N-72D'+ Game.rand(100, 999),
       size: {
         width: [32, 64],
