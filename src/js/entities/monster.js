@@ -66,20 +66,64 @@ Game.entities.monster.prototype.update = function(){
     var delay = stepDelay;
     if(this.firstMove) delay += wakeupDelay;
 
+    var gridPos = {
+      x: Game.toGridPos(this.x),
+      y: Game.toGridPos(this.y)
+    };
+
+    Game.viewBufferMap[gridPos.x][gridPos.y][0] = -1;
+    Game.map[gridPos.x][gridPos.y][0] = -1;
+
     if(canMoveRight && this.x < this.game.width - Game.blockPx/2){
       this.game.add.tween(this).to({ x: this.x + Game.blockPx }, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, delay);
+
+      var newGridPos = {
+        x: Game.toGridPos(this.x + Game.blockPx),
+        y: Game.toGridPos(this.y)
+      };
+
+      Game.viewBufferMap[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('monster');
+      Game.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('monster');
+
       moved = true;
     }
     else if(canMoveLeft && this.x > Game.blockPx/2){
       this.game.add.tween(this).to({ x: this.x - Game.blockPx }, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, delay);
+      
+      var newGridPos = {
+        x: Game.toGridPos(this.x - Game.blockPx),
+        y: Game.toGridPos(this.y)
+      };
+
+      Game.viewBufferMap[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('monster');
+      Game.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('monster');
+
       moved = true;
     }
     else if(canMoveDown && this.y < this.game.camera.y + this.game.camera.height){
       this.game.add.tween(this).to({ y: this.y + Game.blockPx }, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, delay);
+
+      var newGridPos = {
+        x: Game.toGridPos(this.x),
+        y: Game.toGridPos(this.y + Game.blockPx)
+      };
+
+      Game.viewBufferMap[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('monster');
+      Game.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('monster');
+
       moved = true;
     }
     else if(canMoveUp && this.y > this.game.camera.y){
       this.game.add.tween(this).to({ y: this.y - Game.blockPx }, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, delay);
+
+      var newGridPos = {
+        x: Game.toGridPos(this.x),
+        y: Game.toGridPos(this.y - Game.blockPx)
+      };
+
+      Game.viewBufferMap[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('monster');
+      Game.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('monster');
+
       moved = true;
     }
 
