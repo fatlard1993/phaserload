@@ -8,11 +8,6 @@ Game.states.lobby.prototype.create = function(){
   this.addTitles();
 
   this.game.input.onDown.add(function(){ this.game.state.start('play'); }, this);
-  this.game.input.keyboard.onDownCallback = function(evt){
-    if(this.game.input.keyboard.event.keyCode === Phaser.Keyboard.ENTER){
-      this.game.state.start('play');
-    }
-  };
 };
 
 Game.states.lobby.prototype.addTitles = function(){
@@ -23,7 +18,7 @@ Game.states.lobby.prototype.addTitles = function(){
   title.x = this.game.width/2 - title.getBounds().width/2;
   title.alpha = 0;
 
-  var text = this.game.add.text(0, this.game.height, '[enter] or tap to begin', { font: '40px '+ Game.config.font, fill: Game.config.textColor });
+  var text = this.game.add.text(0, this.game.height, 'Tap to begin', { font: '40px '+ Game.config.font, fill: Game.config.textColor });
   text.x = this.game.width/2 - text.getBounds().width/2;
   text.alpha = 0;
 
