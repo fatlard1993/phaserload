@@ -154,7 +154,8 @@ Game.states.play.prototype.update = function(){
   }
 
   if(this.input.keyboard.isDown(Phaser.Keyboard.ESC)){
-    Game.entities.hud.close();
+    if(Game.entities.hud.isOpen) Game.entities.hud.close();
+    else Game.entities.hud.open('hud');
   }
 
   Game.lava.forEachAlive(function(lava){

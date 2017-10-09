@@ -45,7 +45,7 @@ var Game = {
     },
     lava: function(chance, pos){
       if(Game.chance(chance)){
-        Game.entities.lava.create(Game.game, pos.x, pos.y);
+        Game.entities.lava.create(pos.x, pos.y, 1);
         Game.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('lava');
       }
     },
@@ -54,7 +54,7 @@ var Game = {
         for(var y = Game.groundDepth - Game.viewHeight; y < Game.groundDepth; y += Game.blockPx){
           if(Game.chance(90) && Game.mapPos(x, y) === 'ground_red'){
             Game.entities.ground.crush({ x: x, y: y });
-            Game.entities.lava.create(Game.game, x, y);
+            Game.entities.lava.create(x, y, 1);
             Game.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf('lava');
           }
         }
@@ -124,9 +124,9 @@ var Game = {
     return Game.viewBufferMap[x] !== undefined ? (Game.viewBufferMap[x][y] !== undefined ? Game.viewBufferMap[x][y] : [-1, -1]) : [-1, -1];
   },
   groundAt(pxX, pxY){
-    return Game.mapNames[Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0]];
+    return Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0] > 2 ? Game.mapNames[Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0]] : undefined;
   },
-  mapNames: ['monster', 'player1', 'lava', 'mineral_green', 'mineral_red', 'mineral_blue', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
+  mapNames: ['monster', 'lava', 'gas', 'player1', 'mineral_green', 'mineral_red', 'mineral_blue', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
   toId: function(name){
     return Game.mapNames.indexOf(name);
   },
@@ -188,7 +188,7 @@ var Game = {
 
     for(var x = 0; x < Game.width; x++){
       for(var y = 0; y < Game.depth; y++){
-        if(Game.map[x][y] === id) found.push({ x: x, y: y });
+        if(Game.map[x][y][0] === id || Game.map[x][y][1] === id) found.push({ x: x, y: y });
       }
     }
 
@@ -269,7 +269,7 @@ var Game = {
         }
         
         else if(mapPos_0_name === 'lava'){
-          Game.entities.lava.create(this.game, Game.toPx(x), Game.toPx(y));
+          Game.entities.lava.create(Game.toPx(x), Game.toPx(y));
         }
   
         else if(mapPos_0_name === 'monster'){
