@@ -286,7 +286,7 @@ var Game = {
         }
   
         else if(mapPos_0_name === 'monster'){
-          Game.entities.monster.create(this.game, Game.toPx(x), Game.toPx(y));        
+          Game.entities.monster.create(Game.toPx(x), Game.toPx(y));        
         }
       }
     }

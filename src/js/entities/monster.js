@@ -1,153 +1,106 @@
 /* global Phaser, Game */
 
-Game.entities.monster = function(game, x, y){
-  Phaser.Sprite.call(this, game, x, y, 'monster');
+Game.entities.monster = function(x, y){
+  Phaser.Sprite.call(this, Game.game, x, y, 'monster');
 
   this.anchor.setTo(0.5, 0.5);
 
-  this.animations.add('default', [0, 1, 2], 10, true);
-  this.animations.play('default');
+  this.animations.add('moving', [0, 1, 2], 10, true);
 };
 
 Game.entities.monster.prototype = Object.create(Phaser.Sprite.prototype);
 Game.entities.monster.prototype.constructor = Game.entities.monster;
 
 Game.entities.monster.prototype.update = function(){
-  if(!this.alive) return;
+  if(!this.alive || this.game.tweens.isTweening(this)) return;
 
-  if(!this.game.tweens.isTweening(this)){
-    var canMoveRight = true;
-    var canMoveLeft = true;
-    var canMoveDown = true;
-    var canMoveUp = true;
+  var gridPos = {
+    x: Game.toGridPos(this.x),
+    y: Game.toGridPos(this.y)
+  };
 
-    Game.ground.forEachAlive(function(ground){
-      if(ground.y === this.y && ground.x === this.x + Game.blockPx) canMoveRight = false;
-      if(ground.y === this.y && ground.x === this.x - Game.blockPx) canMoveLeft = false;
-      if(ground.x === this.x && ground.y === this.y + Game.blockPx) canMoveDown = false;
-      if(ground.x === this.x && ground.y === this.y - Game.blockPx) canMoveUp = false;
-    }, this);
+  var moving;
 
-    Game.lava.forEachAlive(function(lava){
-      if(lava.y === this.y && lava.x === this.x + Game.blockPx) canMoveRight = false;
-      if(lava.y === this.y && lava.x === this.x - Game.blockPx) canMoveLeft = false;
-      if(lava.x === this.x && lava.y === this.y + Game.blockPx) canMoveDown = false;
-      if(lava.x === this.x && lava.y === this.y - Game.blockPx) canMoveUp = false;
-    }, this);
+  var xDiff = this.x - Game.drill.x;
+  var yDiff = this.y - Game.drill.y;
 
-    if(this.y <= Game.blockPx * 3.5) canMoveUp = false; // So many magic numbers!
+  var xDirection = xDiff > 0 ? 'left' : 'right';
+  var yDirection = yDiff > 0 ? 'up' : 'down';
 
-    if(Game.drill.y < this.y){
-      canMoveDown = false;
-    }
-    else if(Game.drill.y > this.y){
-      canMoveUp = false;
-    }
-    else if(Game.drill.y === this.y){
-      canMoveUp = false;
-      canMoveDown = false;
-    }
-    if(Game.drill.x < this.x){
-      canMoveRight = false;
-    }
-    else if(Game.drill.x > this.x){
-      canMoveLeft = false;
-    }
-    else{
-      canMoveRight = false;
-      canMoveLeft = false;
-    }
-
-    var moved = false;
-    var wakeupDelay = 600;
-    var stepDelay = 300;
-    var moveSpeed = 400;
-
-    var delay = stepDelay;
-    if(this.firstMove) delay += wakeupDelay;
-
-    var gridPos = {
-      x: Game.toGridPos(this.x),
-      y: Game.toGridPos(this.y)
-    };
-
-    Game.viewBufferMap[gridPos.x][gridPos.y][0] = -1;
-    Game.map[gridPos.x][gridPos.y][0] = -1;
-
-    if(canMoveRight && this.x < this.game.width - Game.blockPx/2){
-      this.game.add.tween(this).to({ x: this.x + Game.blockPx }, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, delay);
-
-      var newGridPos = {
-        x: Game.toGridPos(this.x + Game.blockPx),
-        y: Game.toGridPos(this.y)
-      };
-
-      Game.viewBufferMap[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('monster');
-      Game.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('monster');
-
-      moved = true;
-    }
-    else if(canMoveLeft && this.x > Game.blockPx/2){
-      this.game.add.tween(this).to({ x: this.x - Game.blockPx }, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, delay);
-      
-      var newGridPos = {
-        x: Game.toGridPos(this.x - Game.blockPx),
-        y: Game.toGridPos(this.y)
-      };
-
-      Game.viewBufferMap[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('monster');
-      Game.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('monster');
-
-      moved = true;
-    }
-    else if(canMoveDown && this.y < this.game.camera.y + this.game.camera.height){
-      this.game.add.tween(this).to({ y: this.y + Game.blockPx }, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, delay);
-
-      var newGridPos = {
-        x: Game.toGridPos(this.x),
-        y: Game.toGridPos(this.y + Game.blockPx)
-      };
-
-      Game.viewBufferMap[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('monster');
-      Game.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('monster');
-
-      moved = true;
-    }
-    else if(canMoveUp && this.y > this.game.camera.y){
-      this.game.add.tween(this).to({ y: this.y - Game.blockPx }, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, delay);
-
-      var newGridPos = {
-        x: Game.toGridPos(this.x),
-        y: Game.toGridPos(this.y - Game.blockPx)
-      };
-
-      Game.viewBufferMap[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('monster');
-      Game.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('monster');
-
-      moved = true;
-    }
-
-    if(moved){
-      if(this.firstMove){
-      }
-      this.firstMove = false;
-    }
-  }
-};
-
-Game.entities.monster.create = function(game, x, y){
-  var monster;
-  monster = Game.monsters.getFirstDead();
-
-  if(monster === null){
-    monster = Game.monsters.add(new Game.entities.monster(game, x, y));
+  var wantToMove = Math.abs(xDiff) > Math.abs(yDiff) ? xDirection : yDirection;
+  
+  var canMove = {};
+  
+  if(gridPos.x - 1 > 0 && (!Game.mapPosName(gridPos.x - 1, gridPos.y) || ['player1', 'lava', 'gas'].includes(Game.mapPosName(gridPos.x - 1, gridPos.y)))){
+    canMove.left = 1;
   }
   
-  monster.reset(x, y);
-  monster.revive();
-  monster.firstMove = true;
+  if(gridPos.x + 1 < Game.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'lava', 'gas'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
+    canMove.right = 1;
+  }
 
-  monster.animations.play('default');
+  if(gridPos.y - 1 > 0 && (!Game.mapPosName(gridPos.x, gridPos.y - 1) || ['player1', 'lava', 'gas'].includes(Game.mapPosName(gridPos.x, gridPos.y - 1)))){
+    canMove.up = 1;
+  }
+
+  if(gridPos.y + 1 > 0 && (!Game.mapPosName(gridPos.x, gridPos.y + 1) || ['player1', 'lava', 'gas'].includes(Game.mapPosName(gridPos.x, gridPos.y + 1)))){
+    canMove.down = 1;
+  }
+
+  if(yDiff !== 0 && yDirection === 'up' && canMove.up){
+    moving = { x: this.x, y: this.y - Game.blockPx };
+  }
+
+  else if(yDiff !== 0 && yDirection === 'down' && canMove.down){
+    moving = { x: this.x, y: this.y + Game.blockPx };
+  }
+
+  else if(xDirection === 'left' && canMove.left){
+    moving = { x: this.x - Game.blockPx, y: this.y };
+  }
+
+  else if(xDirection === 'right' && canMove.right){
+    moving = { x: this.x + Game.blockPx, y: this.y };
+  }
+
+  if(!moving) return;
+
+  this.justMoved = this.x !== moving.x ? (this.x - moving.x > 0 ? 'left' : 'right') : this.y !== moving.y > 0 ? 'up' : 'down';
+
+  var moveDelay = 300;
+  var moveSpeed = 400;
+
+  if(!this.hadFirstMove){
+    this.hadFirstMove = 1;
+    moveDelay += 1000;
+  }
+
+  this.game.add.tween(this).to(moving, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, moveDelay);
+
+  var newGridPos = {
+    x: Game.toGridPos(moving.x),
+    y: Game.toGridPos(moving.y)
+  };
+
+  Game.viewBufferMap[gridPos.x][gridPos.y][0] = -1;
+  Game.map[gridPos.x][gridPos.y][0] = -1;
+  
+  Game.viewBufferMap[newGridPos.x][newGridPos.y][0] = Game.mapNames.indexOf('monster');
+  Game.map[newGridPos.x][newGridPos.y][0] = Game.mapNames.indexOf('monster');
+};
+
+Game.entities.monster.create = function(x, y){
+  var monster = Game.monsters.getFirstDead();
+
+  if(monster === null){
+    monster = Game.monsters.add(new Game.entities.monster(x, y));
+  }
+  else{
+    monster.reset(x, y);
+    monster.revive();
+  }
+
+  monster.animations.play('moving');
 
   return monster;
 };
