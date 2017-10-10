@@ -81,7 +81,7 @@ Game.entities.ground.releaseSurrounds = function(ground, surrounds, delay){
     if(['gas'].includes(surrounds.bottom)){
       Game.entities.gas.spread(ground.x, ground.y + Game.blockPx);
     }
-  }, delay);
+  }, delay + 1000);
 };
 
 Game.entities.ground.dig = function(pos){
