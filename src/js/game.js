@@ -46,7 +46,17 @@ var Game = {
     lava: function(chance, pos){
       if(Game.chance(chance)){
         Game.entities.lava.create(pos.x, pos.y, 1);
+
+        Game.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('lava');
         Game.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('lava');
+      }
+    },
+    gas: function(chance, pos){
+      if(Game.chance(chance)){
+        Game.entities.gas.create(pos.x, pos.y, 1);
+        
+        Game.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('gas');
+        Game.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('gas');
       }
     },
     lavaRelease: function(){
@@ -55,6 +65,8 @@ var Game = {
           if(Game.chance(90) && Game.mapPos(x, y) === 'ground_red'){
             Game.entities.ground.crush({ x: x, y: y });
             Game.entities.lava.create(x, y, 1);
+
+            Game.map[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf('lava');
             Game.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf('lava');
           }
         }
@@ -134,6 +146,10 @@ var Game = {
     Game.notify_TO = setTimeout(function(){
       Game.infoLine.setText('');
     }, timeout * 1000);
+  },
+  playLevel: function(level){
+    Game.desiredLevel = level;
+    Game.game.state.start('play');
   },
   mapPos: function(x, y){
     return Game.map[x] !== undefined ? (Game.map[x][y] !== undefined ? Game.map[x][y] : [-1, -1]) : [-1, -1];

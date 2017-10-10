@@ -30,7 +30,8 @@ Game.modes.normal = {
     remote_freeze_charge: 15
   },
   blockBehavior: {
-    red: 'lava:~:35'
+    red: 'lava:~:35',
+    green: 'gas:~:15'
   },
   digTime: {
     white: 400,
@@ -55,6 +56,56 @@ Game.modes.normal = {
     }
   },
   levels: [
+    {
+      briefing: '\n\n Welcome to asteroid ML876-L01'+ Game.rand(100, 999),
+      size: {
+        width: [40, 80],
+        depth: [100, 200]
+      },
+      holeChance: 0.15,
+      lavaChance: 0.6,
+      gasChance: 0.2,
+      monsterChance: 0.8,
+      mineralChance: 0.05,
+      mineralRareity: {
+        red: 98,
+        blue: 2
+      },
+      layers: [
+        { white: 60, purple: 30, red: 10 },
+        { white: 60, purple: 20, red: 20 },
+        { white: 50, purple: 20, red: 30 },
+        { white: 30, purple: 20, red: 30, black: 15, teal: 5 },
+        { white: 20, red: 20, black: 30, teal: 30 },
+        { white: 20, red: 30, black: 20, teal: 20, blue: 10 },
+        { white: 10, red: 20, black: 10, teal: 30, blue: 30 }
+      ]
+    },
+    {
+      briefing: '\n\n Welcome to asteroid GS340-20S'+ Game.rand(100, 999),
+      size: {
+        width: [80, 140],
+        depth: [100, 300]
+      },
+      holeChance: 0.2,
+      lavaChance: 0.01,
+      gasChance: 0.6,
+      monsterChance: 0.01,
+      mineralChance: 0.05,
+      mineralRareity: {
+        green: 95,
+        blue: 5
+      },
+      layers: [
+        { green: 60, purple: 30, orange: 10 },
+        { green: 60, purple: 20, orange: 20 },
+        { green: 50, purple: 20, orange: 30 },
+        { green: 30, purple: 20, orange: 30, black: 15, yellow: 5 },
+        { green: 20, orange: 20, black: 30, yellow: 30 },
+        { green: 20, orange: 30, black: 20, yellow: 20, blue: 10 },
+        { green: 10, orange: 20, black: 10, yellow: 30, blue: 30 }
+      ]
+    },
     {
       briefing: '\n\n Welcome to asteroid TR982-420'+ Game.rand(100, 999),
       size: {

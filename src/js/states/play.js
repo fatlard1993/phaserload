@@ -7,7 +7,14 @@ Game.states.play.prototype.create = function(){
 
   Game.entities.spaceco.prices = Game.modes[Game.mode].spacecoPrices || Game.entities.spaceco.defaultPrices;
 
-  Game.modes[Game.mode].nextLevel();
+  if(Game.desiredLevel !== undefined){
+    Game.modes[Game.mode].level = Game.desiredLevel;
+    Game.desiredLevel = undefined;
+  }
+  else{
+    Game.modes[Game.mode].nextLevel();
+  }
+
   Game.generateMap();
   
   Game.game.camera.bounds = null;
@@ -106,7 +113,7 @@ Game.states.play.prototype.update = function(){
     }
     
     if(!gas.full) return;
-    
+
     Game.monsters.forEachAlive(function(monster){
       if(this.game.math.distance(monster.x, monster.y, gas.x, gas.y) < Game.blockPx){
         monster.kill();
