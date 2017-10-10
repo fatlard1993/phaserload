@@ -1,7 +1,7 @@
 /* global Phaser, Game */
 
 Game.entities.gas = function(x, y){
-  Phaser.Sprite.call(this, Game.game, x, y, 'lava');
+  Phaser.Sprite.call(this, Game.game, x, y, 'gas');
 
   this.anchor.setTo(0.5, 0.5);
 
