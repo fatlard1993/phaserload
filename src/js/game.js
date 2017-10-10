@@ -322,6 +322,8 @@ var Game = {
   }
 };
 
+document.oncontextmenu = function(evt) { evt.preventDefault(); };
+
 window.onload = function(){
   console.log('onload');
 
