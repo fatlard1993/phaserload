@@ -5,6 +5,7 @@ Game.modes.normal = {
   hudLayout: {
     position: 'GPS',
     credits: '$',
+    health: 'Health',
     fuel: 'Fuel',
     hull: 'Hull'
   },
@@ -20,7 +21,7 @@ Game.modes.normal = {
     super_oxygen_liquid_nitrogen: 3,
     teleporter: 5,
     responder_teleporter: 10,
-    repair: 4,
+    repair: 40,
     upgrade: 10,
     transport: 100,
     timed_charge: 5,

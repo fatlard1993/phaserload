@@ -336,3 +336,22 @@ Game.entities.player.useItem = function(slotNum, item){
     }
   }
 };
+
+Game.entities.player.hurt = function(amount, by){
+  if(Game.drill.justHurt) return;
+  Game.drill.justHurt = true;
+  Game.drill.justHurt_TO = setTimeout(function(){ Game.drill.justHurt = false; }, 500);
+
+  Game.health -= amount;
+  
+  if(Game.health <= 0){
+    Game.drill.kill();
+    Game.loseReason = by;
+    Game.game.time.events.add(200, function(){ Game.game.state.start('end'); });
+  }
+  else if(Game.health <= 10){
+    Game.notify('Your health is running low', 2);
+  }
+
+  Game.entities.hud.update();
+};

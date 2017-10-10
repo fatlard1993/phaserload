@@ -10,7 +10,7 @@ Game.entities.spaceco.defaultPrices = {
   super_oxygen_liquid_nitrogen: 3,
   teleporter: 5,
   responder_teleporter: 10,
-  repair: 4,
+  repair: 40,
   upgrade: 10,
   transport: 100,
   timed_charge: 5,
@@ -268,7 +268,7 @@ Game.entities.spaceco.selectItem = function(item){
     Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);
   }
   else if(item === 'repair'){
-    //todo repair
+    Game.health = 100 + (20 * ((Game.drill.upgrade || 0) + 1));
   }
   else{
     Game.inventory[item] = Game.inventory[item] || 0;

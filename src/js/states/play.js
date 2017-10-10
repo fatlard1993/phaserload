@@ -49,6 +49,7 @@ Game.states.play.prototype.create = function(){
     Game.hull = {};
     Game.hull.space = 10;
   
+    Game.health = 100;
     Game.credits = 0;
     Game.fuel = 5;
   }
@@ -58,6 +59,7 @@ Game.states.play.prototype.create = function(){
 
 Game.states.play.prototype.update = function(){
   if(Game.mode === 'normal' && Game.fuel < 0){
+    Game.drill.kill();
     Game.loseReason = 'fuel';
     return this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);
   }
@@ -84,10 +86,7 @@ Game.states.play.prototype.update = function(){
     if(!lava.lethal) return;
 
     if(!Game.drill.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(Game.drill.x, Game.drill.y, lava.x, lava.y) < Game.blockPx/2){
-      Game.drill.kill();
-      Game.loseReason = 'lava';
-      
-      this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);
+      Game.entities.player.hurt(6 + Game.randFloat(1, 3), 'lava');
     }
 
     if(this.game.math.distance(Game.spaceco.x, Game.spaceco.y, lava.x, lava.y) < Game.blockPx){
@@ -103,10 +102,7 @@ Game.states.play.prototype.update = function(){
 
   Game.monsters.forEachAlive(function(monster){
     if(!Game.drill.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(Game.drill.x, Game.drill.y, monster.x, monster.y) < Game.blockPx/2){
-      Game.drill.kill();
-      Game.loseReason = 'monster';
-      
-      this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);
+      Game.entities.player.hurt(4 + Game.randFloat(1, 2), 'monster');
     }
   }, this);
 

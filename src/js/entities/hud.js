@@ -10,7 +10,7 @@ Game.entities.hud.create = function(x, y){
 
   hud.isOpen = false;
 
-  hud.statusText = Game.game.add.text(20, 15, '', { font: '35px '+ Game.config.font, fill: Game.config.hudTextColor });
+  hud.statusText = Game.game.add.text(20, 15, '', { font: '26px '+ Game.config.font, fill: Game.config.hudTextColor });
   hud.statusText.lineSpacing = -8;
   hud.addChild(hud.statusText);
 
@@ -25,21 +25,25 @@ Game.entities.hud.create = function(x, y){
 
 Game.entities.hud.update = function(){
   if(Game.hud.isOpen) return;
+
+  Game.hud.interfaceText.setText('');
+  Game.hud.bottomLine.setText('');
   
   var hudItemNames = Object.keys(Game.modes[Game.mode].hudLayout), hudItemCount = hudItemNames.length;
   var statusText;
   var shortestLength = 1;
-  var space = 4;
+  var longestLength = 6;
 
   for(var x = 0; x < hudItemCount; x++){
     var item = hudItemNames[x];
     var value = Game.modes[Game.mode].hudLayout[hudItemNames[x]].split(':~:');
-    var spacer = (' '.repeat(value[0].length > shortestLength ? space - (value[0].length - shortestLength) : space));
+    var spacer = (' '.repeat(value[0].length > shortestLength ? longestLength - (value[0].length - shortestLength) : longestLength));
     if(statusText) statusText += '\n'+ value[0] + spacer;
     else statusText = value[0] + spacer;
     
     if(item === 'position_dbg') statusText += 'x'+ Game.toGridPos(Game.drill.x) +' y'+ Game.toGridPos(Game.drill.y);
     else if(item === 'position') statusText += 'x'+ (Game.toGridPos(Game.drill.x) + 1) +' y'+ -(Game.toGridPos(Game.drill.y) - 1);
+    else if(item === 'health') statusText += Game.health.toFixed(2);
     else if(item === 'fuel') statusText += Game.fuel.toFixed(2);
     else if(item === 'credits') statusText += Game.credits.toFixed(2);
     else if(item === 'hull') statusText += Game.hull.space.toFixed(2);
