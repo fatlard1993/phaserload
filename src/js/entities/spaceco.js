@@ -359,7 +359,9 @@ Game.entities.spaceco.selectItem = function(item){
   else if(item === 'repair'){
     //todo repair
   }
-  
+  else{
+    
+  }
 };
 
 Game.entities.spaceco.hurt = function(ammount){
