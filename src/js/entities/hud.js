@@ -128,7 +128,7 @@ Game.entities.hud.setView = function(view){
   if(view === 'help'){
     menu = '  Location  [Help]     Exit\n';
     
-    items = 'Tap the HUD to open your CONSOLE interface\nTap the Item Slots in the top right,\nor use the [1] and [2] number keys\nto use the items assigned to them';
+    items = 'Tap the HUD to open the CONSOLE\nThe two boxes (top,right) are Item Slots';
   }
 
   if(view === 'inventory'){
