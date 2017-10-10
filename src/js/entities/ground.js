@@ -46,23 +46,32 @@ Game.entities.ground.crush = function(pos){
       Game.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
       Game.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
 
-      var surrounds = {
-        left: Game.groundAt(ground.x - Game.blockPx, ground.y),
-        top: Game.groundAt(ground.x, ground.y - Game.blockPx),
-        right: Game.groundAt(ground.x + Game.blockPx, ground.y)
-      };
-
-      if(!surrounds.left){
-        Game.entities.lava.spread(ground.x - Game.blockPx, ground.y);
-      }
-
-      if(!surrounds.top){
-        Game.entities.lava.spread(ground.x, ground.y - Game.blockPx);
-      }
-
-      if(!surrounds.right){
-        Game.entities.lava.spread(ground.x + Game.blockPx, ground.y);
-      }
+      setTimeout(function(){
+        var surrounds = {
+          left: Game.groundAt(ground.x - Game.blockPx, ground.y),
+          top: Game.groundAt(ground.x, ground.y - Game.blockPx),
+          right: Game.groundAt(ground.x + Game.blockPx, ground.y),
+          bottom: Game.groundAt(ground.x, ground.y - Game.blockPx)
+        };
+  
+        if(!surrounds.left){
+          Game.entities.lava.spread(ground.x - Game.blockPx, ground.y);
+          Game.entities.gas.spread(ground.x - Game.blockPx, ground.y);
+        }
+  
+        if(!surrounds.top){
+          Game.entities.lava.spread(ground.x, ground.y - Game.blockPx);
+        }
+  
+        if(!surrounds.right){
+          Game.entities.lava.spread(ground.x + Game.blockPx, ground.y);
+          Game.entities.gas.spread(ground.x + Game.blockPx, ground.y);
+        }
+  
+        if(!surrounds.bottom){
+          Game.entities.gas.spread(ground.x, ground.y + Game.blockPx);
+        }
+      }, Game.modes[Game.mode].digTime[groundType]);
     }
   });
 };

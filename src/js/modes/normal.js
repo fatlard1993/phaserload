@@ -48,6 +48,7 @@ Game.modes.normal = {
       },
       holeChance: 0.1,
       lavaChance: 0.4,
+      gasChance: 0.4,
       monsterChance: 0.4,
       mineralChance: 0.042,
       mineralRareity: {
@@ -70,6 +71,7 @@ Game.modes.normal = {
       },
       holeChance: 0.2,
       lavaChance: 0.2,
+      gasChance: 0.2,
       monsterChance: 0.2,
       mineralChance: 0.05,
       mineralRareity: {
@@ -92,6 +94,7 @@ Game.modes.normal = {
       },
       holeChance: 0.2,
       lavaChance: 0.4,
+      gasChance: 0.4,
       monsterChance: 0.2,
       mineralChance: 0.07,
       mineralRareity: {
@@ -117,6 +120,7 @@ Game.modes.normal = {
       },
       holeChance: 0.1,
       lavaChance: 0.1,
+      gasChance: 0.1,
       monsterChance: 0.3,
       mineralChance: 0.1,
       mineralRareity: {
@@ -141,6 +145,7 @@ Game.modes.normal = {
       },
       holeChance: 0.05,
       lavaChance: 0.5,
+      gasChance: 0.5,
       monsterChance: 0.6,
       mineralChance: 0.08,
       mineralRareity: {
@@ -167,6 +172,7 @@ Game.modes.normal = {
       },
       holeChance: 0.12,
       lavaChance: 0.25,
+      gasChance: 0.25,
       monsterChance: 0.18,
       mineralChance: 0.1,
       mineralRareity: {
@@ -190,6 +196,7 @@ Game.modes.normal = {
       },
       holeChance: 0.02,
       lavaChance: 0.6,
+      gasChance: 0.6,
       monsterChance: 0.8,
       mineralChance: 0.15,
       mineralRareity: {

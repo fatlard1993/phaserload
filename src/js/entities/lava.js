@@ -15,16 +15,16 @@ Game.entities.lava = function(x, y){
       x: Game.toGridPos(this.x),
       y: Game.toGridPos(this.y)
     };
-
-    if(Game.map[gridPos.x - 1] && Game.map[gridPos.x - 1][gridPos.y][0] < 2){
+    
+    if(gridPos.x - 1 > 0 && (!Game.mapPosName(gridPos.x - 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x - 1, gridPos.y)))){
       Game.entities.lava.create(this.x - Game.blockPx, this.y, 1);
     }
     
-    if(Game.map[gridPos.x + 1] && Game.map[gridPos.x + 1][gridPos.y][0] < 2){
+    if(gridPos.x + 1 < Game.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
       Game.entities.lava.create(this.x + Game.blockPx, this.y, 1);
     }
 
-    if(Game.map[gridPos.x][gridPos.y + 1] && Game.map[gridPos.x][gridPos.y + 1][0] < 2){
+    if(gridPos.y + 1 > 0 && (!Game.mapPosName(gridPos.x, gridPos.y + 1) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x, gridPos.y + 1)))){
       Game.entities.lava.create(this.x, this.y + Game.blockPx, 1);
     }
   }, this);
@@ -76,17 +76,17 @@ Game.entities.lava.spread = function(x, y){
         x: Game.toGridPos(lava.x),
         y: Game.toGridPos(lava.y)
       };
-  
-      if(Game.map[gridPos.x - 1] && Game.map[gridPos.x - 1][gridPos.y][0] < 2){
-        Game.entities.lava.create(lava.x - Game.blockPx, lava.y, 1);
+
+      if(gridPos.x - 1 > 0 && (!Game.mapPosName(gridPos.x - 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x - 1, gridPos.y)))){
+        Game.entities.lava.create(x - Game.blockPx, y, 1);
       }
       
-      if(Game.map[gridPos.x + 1] && Game.map[gridPos.x + 1][gridPos.y][0] < 2){
-        Game.entities.lava.create(lava.x + Game.blockPx, lava.y, 1);
+      if(gridPos.x + 1 < Game.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
+        Game.entities.lava.create(x + Game.blockPx, y, 1);
       }
   
-      if(Game.map[gridPos.x][gridPos.y + 1] && Game.map[gridPos.x][gridPos.y + 1][0] < 2){
-        Game.entities.lava.create(lava.x, lava.y + Game.blockPx, 1);
+      if(gridPos.y + 1 > 0 && (!Game.mapPosName(gridPos.x, gridPos.y + 1) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x, gridPos.y + 1)))){
+        Game.entities.lava.create(x, y + Game.blockPx, 1);
       }
     }
   });

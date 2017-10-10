@@ -12,6 +12,7 @@ Game.states.play.prototype.create = function(){
 
   Game.ground = this.game.add.group();
   Game.lava = this.game.add.group();
+  Game.gas = this.game.add.group();
   Game.minerals = this.game.add.group();
   
   Game.spaceco = Game.entities.spaceco.create();

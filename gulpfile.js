@@ -63,6 +63,7 @@ gulp.task('compile-js', function(){
     'src/js/entities/mineral.js',
     'src/js/entities/ground.js',
     'src/js/entities/lava.js',
+    'src/js/entities/gas.js',
     'src/js/entities/monster.js',
     
     'src/js/states/load.js',

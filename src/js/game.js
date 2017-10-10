@@ -120,11 +120,14 @@ var Game = {
   mapPos: function(x, y){
     return Game.map[x] !== undefined ? (Game.map[x][y] !== undefined ? Game.map[x][y] : [-1, -1]) : [-1, -1];
   },
+  mapPosName: function(x, y){
+    return Game.mapNames[Game.mapPos(x, y)[0]];
+  },
   viewBufferPos: function(x, y){
     return Game.viewBufferMap[x] !== undefined ? (Game.viewBufferMap[x][y] !== undefined ? Game.viewBufferMap[x][y] : [-1, -1]) : [-1, -1];
   },
   groundAt(pxX, pxY){
-    return Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0] > 2 ? Game.mapNames[Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0]] : undefined;
+    return Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0] > 3 ? Game.mapNames[Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0]] : undefined;
   },
   mapNames: ['monster', 'lava', 'gas', 'player1', 'mineral_green', 'mineral_red', 'mineral_blue', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
   toId: function(name){
@@ -155,6 +158,7 @@ var Game = {
         var holeChance = y * settings.holeChance;
         var mineralChance = y * settings.mineralChance;
         var lavaChance = y * settings.lavaChance;
+        var gasChance = y * settings.gasChance;
         var monsterChance = y * settings.monsterChance;
 
         var groundRareity = settings.layers[Math.ceil(settings.layers.length * (y / Game.depth)) - 1];
@@ -173,8 +177,13 @@ var Game = {
           }
         }
         
+        
         else if(y > 8 && Game.chance(lavaChance)){
           Game.map[x][y] = [Game.mapNames.indexOf('lava'), -1];
+        }
+
+        else if(y > 8 && Game.chance(gasChance)){
+          Game.map[x][y] = [Game.mapNames.indexOf('gas'), -1];
         }
   
         else if(y > 8 && Game.chance(monsterChance)){
@@ -270,6 +279,10 @@ var Game = {
         
         else if(mapPos_0_name === 'lava'){
           Game.entities.lava.create(Game.toPx(x), Game.toPx(y));
+        }
+
+        else if(mapPos_0_name === 'gas'){
+          Game.entities.gas.create(Game.toPx(x), Game.toPx(y));
         }
   
         else if(mapPos_0_name === 'monster'){
