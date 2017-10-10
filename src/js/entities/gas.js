@@ -9,7 +9,7 @@ Game.entities.gas = function(x, y){
   fillingAnim.onComplete.add(function(){
     this.play('full');
 
-    this.lethal = true;
+    this.full = true;
 
     var gridPos = {
       x: Game.toGridPos(this.x),
@@ -66,12 +66,12 @@ Game.entities.gas.create = function(x, y, isNew){
     Game.viewBufferMap[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('gas');
     Game.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('gas');
     
-    gas.lethal = false;
+    gas.full = false;
 
     gas.animations.play('filling');
   }
   else{
-    gas.lethal = true;
+    gas.full = true;
     
     gas.animations.play('full');
   }

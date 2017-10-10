@@ -9,7 +9,7 @@ Game.entities.lava = function(x, y){
   fillingAnim.onComplete.add(function(){
     this.play('full');
 
-    this.lethal = true;
+    this.full = true;
 
     var gridPos = {
       x: Game.toGridPos(this.x),
@@ -56,12 +56,12 @@ Game.entities.lava.create = function(x, y, isNew){
     Game.viewBufferMap[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('lava');
     Game.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('lava');
     
-    lava.lethal = false;
+    lava.full = false;
 
     lava.animations.play('filling');
   }
   else{
-    lava.lethal = true;
+    lava.full = true;
     
     lava.animations.play('full');
   }

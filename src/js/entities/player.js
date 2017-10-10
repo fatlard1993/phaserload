@@ -349,7 +349,7 @@ Game.entities.player.hurt = function(amount, by){
     Game.loseReason = by;
     Game.game.time.events.add(200, function(){ Game.game.state.start('end'); });
   }
-  else if(Game.health <= 10){
+  else if(Game.health <= 25){
     Game.notify('Your health is running low', 2);
   }
 
