@@ -53,6 +53,11 @@ Game.entities.hud.update = function(){
 
 Game.entities.hud.open = function(name){
   if(name === 'hud') Game.entities.hud.openHud();
+  else if(name === 'briefing'){
+    name = 'hud';
+
+    Game.entities.hud.openBriefing();
+  }
 
   Game.entities.hud.clear();
   
@@ -65,6 +70,8 @@ Game.entities.hud.open = function(name){
 
 Game.entities.hud.close = function(){
   Game.hud.isOpen = false;
+
+  if(Game.entities.hud.briefingOpen) Game.entities.hud.briefingOpen = false;
 
   if(Game.hud.emitter){
     Game.hud.emitter.destroy();
@@ -90,7 +97,19 @@ Game.entities.hud.openHud = function(){
   Game.hud.interfaceText.setText('            CONSOLE\n'+'  Inventory  Hull      Exit\n');
 };
 
+Game.entities.hud.openBriefing = function(){
+  Game.entities.hud.briefingOpen = true;
+
+  Game.infoLine.setText('');
+  
+  Game.hud.interfaceText.setText('            CONSOLE\n'+'  Location   Help      Exit\n');
+};
+
 Game.entities.hud.setView = function(view){
+  if(Game.hud.justSetView) return;
+  Game.hud.justSetView = true;
+  Game.hud.justSetView_TO = setTimeout(function(){ Game.hud.justSetView = false; }, 400);
+
   Game.hudView = view;
 
   var menu = '';
@@ -100,6 +119,18 @@ Game.entities.hud.setView = function(view){
 
   var inventoryItemNames = Game.entities.hud.inventoryItemNames = Object.keys(Game.inventory), inventoryItemCount = inventoryItemNames.length;
   
+  if(view === 'location'){
+    menu = ' [Location]  Help      Exit\n';
+    
+    items = Game.modes[Game.mode].levels[Game.modes[Game.mode].level].missionText;
+  }
+
+  if(view === 'help'){
+    menu = '  Location  [Help]     Exit\n';
+    
+    items = 'Tap the HUD to open your CONSOLE interface\nTap the Item Slots in the top right,\nor use the [1] and [2] number keys\nto use the items assigned to them';
+  }
+
   if(view === 'inventory'){
     menu = ' ['+ (inventoryItemCount > 6 ? '   pg1   ' : 'Inventory') +'] Hull      Exit\n';
     
@@ -155,28 +186,44 @@ Game.entities.hud.setView = function(view){
 
 Game.entities.hud.handlePointer = function(pointer){
   if(Game.hud.isOpen !== 'hud') return;
-
-  var selectedItem;
-
+  
   if(pointer.y > 70 && pointer.y < 110){// menu
     if(pointer.x > 50 && pointer.x < 210){
-      console.log('inventory');
-      if(Game.hudView === 'inventory' && Object.keys(Game.inventory).length > 6) Game.entities.hud.setView('inventory_pg2');      
-      else Game.entities.hud.setView('inventory');
+      if(Game.entities.hud.briefingOpen){
+        console.log('location');
+        Game.entities.hud.setView('location');
+      }
+      else{
+        console.log('inventory');
+        if(Game.hudView === 'inventory' && Object.keys(Game.inventory).length > 6) Game.entities.hud.setView('inventory_pg2');      
+        else Game.entities.hud.setView('inventory');
+      }
     }
     else if(pointer.x > 220 && pointer.x < 300){
-      console.log('hull');      
-      if(Game.hudView === 'hull') Game.entities.hud.setView('hull_p2');
-      else if(Game.hudView === 'hull_p2') Game.entities.hud.setView('hull_p3');
-      else Game.entities.hud.setView('hull');
+      if(Game.entities.hud.briefingOpen){
+        console.log('help');
+        Game.entities.hud.setView('help');
+      }
+      else{
+        console.log('hull');      
+        if(Game.hudView === 'hull') Game.entities.hud.setView('hull_p2');
+        else if(Game.hudView === 'hull_p2') Game.entities.hud.setView('hull_p3');
+        else Game.entities.hud.setView('hull');
+      }
     }
     else if(pointer.x > 360 && pointer.x < 500){
       console.log('exit');
       Game.entities.hud.close();
     }
   }
+  
+  if(Game.hud.justSelectedItem) return;
+  Game.hud.justSelectedItem = true;
+  Game.hud.justSelectedItem_TO = setTimeout(function(){ Game.hud.justSelectedItem = false; }, 400);
+  
+  var selectedItem;
 
-  else if(pointer.y > 120 && pointer.y < 150){
+  if(pointer.y > 120 && pointer.y < 150){
     if(Game.hudView === 'inventory'){
       var name = Game.entities.hud.inventoryItemNames[0];
       console.log('inventory slot #1', name);

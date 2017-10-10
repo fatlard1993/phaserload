@@ -29,7 +29,9 @@ Game.states.play.prototype.create = function(){
   Game.itemSlot1 = Game.entities.itemSlot.create(Game.viewWidth - 32, 32);
   Game.itemSlot2 = Game.entities.itemSlot.create(Game.viewWidth - 32, 106);
 
-  Game.showMissionText();
+  // Game.showMissionText();
+
+  Game.entities.hud.open('briefing');
 
   if(Game.purchasedTransport){
     Game.purchasedTransport = false;

@@ -104,6 +104,10 @@ Game.entities.spaceco.open = function(){
 
 Game.entities.spaceco.setView = function(view){
   if(Game.hud.isOpen !== 'spaceco') return;
+
+  if(Game.hud.justSetView) return;
+  Game.hud.justSetView = true;
+  Game.hud.justSetView_TO = setTimeout(function(){ Game.hud.justSetView = false; }, 400);
   
   Game.spacecoView = view;
 
@@ -181,7 +185,12 @@ Game.entities.spaceco.handlePointer = function(pointer){
     }
   }
 
-  else if(pointer.y > 120 && pointer.y < 150){
+
+  if(Game.hud.justSelectedItem) return;
+  Game.hud.justSelectedItem = true;
+  Game.hud.justSelectedItem_TO = setTimeout(function(){ Game.hud.justSelectedItem = false; }, 400);
+
+  if(pointer.y > 120 && pointer.y < 150){
     if(Game.spacecoView === 'fuel'){
       console.log('gas');
 
@@ -336,7 +345,6 @@ Game.entities.spaceco.handlePointer = function(pointer){
       Game.game.state.start('play');
     }
   }
-
   
   if(purchase){
     //idea::todo animate a sprite of the purchased thing going from the top to the bottom (from spaceco to the player)
