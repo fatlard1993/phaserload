@@ -92,17 +92,13 @@ Game.entities.hud.clear = function(){
 
 
 Game.entities.hud.openHud = function(){
-  Game.infoLine.setText('');
-
   Game.hud.interfaceText.setText('            CONSOLE\n'+'  Inventory  Hull      Exit\n');
 };
 
 Game.entities.hud.openBriefing = function(){
   Game.entities.hud.briefingOpen = true;
 
-  Game.infoLine.setText('');
-  
-  Game.hud.interfaceText.setText('            CONSOLE\n'+'  Location   Help      Exit\n');
+  Game.hud.interfaceText.setText('            CONSOLE\n'+'  Briefing   Help      Exit\n');
 };
 
 Game.entities.hud.setView = function(view){
@@ -110,7 +106,7 @@ Game.entities.hud.setView = function(view){
   Game.hud.justSetView = true;
   Game.hud.justSetView_TO = setTimeout(function(){ Game.hud.justSetView = false; }, 400);
 
-  Game.hudView = view;
+  Game.hud.view = view;
 
   var menu = '';
   var items = '';
@@ -119,16 +115,16 @@ Game.entities.hud.setView = function(view){
 
   var inventoryItemNames = Game.entities.hud.inventoryItemNames = Object.keys(Game.inventory), inventoryItemCount = inventoryItemNames.length;
   
-  if(view === 'location'){
-    menu = ' [Location]  Help      Exit\n';
+  if(view === 'briefing'){
+    menu = ' [Briefing]  Help      Exit\n';
     
-    items = Game.modes[Game.mode].levels[Game.modes[Game.mode].level].missionText;
+    items = Game.modes[Game.mode].levels[Game.modes[Game.mode].level].briefing;
   }
 
   if(view === 'help'){
-    menu = '  Location  [Help]     Exit\n';
+    menu = '  Briefing  [Help]     Exit\n';
     
-    items = 'Tap the HUD to open the CONSOLE\nThe two boxes (top,right) are Item Slots';
+    items = ' Tap the HUD to open the CONSOLE\n   Tap Item Slots to use items';
   }
 
   if(view === 'inventory'){
@@ -190,12 +186,12 @@ Game.entities.hud.handlePointer = function(pointer){
   if(pointer.y > 70 && pointer.y < 110){// menu
     if(pointer.x > 50 && pointer.x < 210){
       if(Game.entities.hud.briefingOpen){
-        console.log('location');
-        Game.entities.hud.setView('location');
+        console.log('briefing');
+        Game.entities.hud.setView('briefing');
       }
       else{
         console.log('inventory');
-        if(Game.hudView === 'inventory' && Object.keys(Game.inventory).length > 6) Game.entities.hud.setView('inventory_pg2');      
+        if(Game.hud.view === 'inventory' && Object.keys(Game.inventory).length > 6) Game.entities.hud.setView('inventory_pg2');      
         else Game.entities.hud.setView('inventory');
       }
     }
@@ -206,8 +202,8 @@ Game.entities.hud.handlePointer = function(pointer){
       }
       else{
         console.log('hull');      
-        if(Game.hudView === 'hull') Game.entities.hud.setView('hull_p2');
-        else if(Game.hudView === 'hull_p2') Game.entities.hud.setView('hull_p3');
+        if(Game.hud.view === 'hull') Game.entities.hud.setView('hull_p2');
+        else if(Game.hud.view === 'hull_p2') Game.entities.hud.setView('hull_p3');
         else Game.entities.hud.setView('hull');
       }
     }
@@ -217,63 +213,41 @@ Game.entities.hud.handlePointer = function(pointer){
     }
   }
   
-  if(Game.hud.justSelectedItem) return;
-  Game.hud.justSelectedItem = true;
-  Game.hud.justSelectedItem_TO = setTimeout(function(){ Game.hud.justSelectedItem = false; }, 400);
-  
   var selectedItem;
 
   if(pointer.y > 120 && pointer.y < 150){
-    if(Game.hudView === 'inventory'){
-      var name = Game.entities.hud.inventoryItemNames[0];
-      console.log('inventory slot #1', name);
-      
-      selectedItem = name;
+    if(Game.hud.view === 'inventory'){
+      selectedItem = Game.entities.hud.inventoryItemNames[0];
     }
   }
 
   else if(pointer.y > 160 && pointer.y < 200){
-    if(Game.hudView === 'inventory'){
-      var name = Game.entities.hud.inventoryItemNames[1];
-      console.log('inventory slot #2', name);
-      
-      selectedItem = name;
+    if(Game.hud.view === 'inventory'){
+      selectedItem = Game.entities.hud.inventoryItemNames[1];
     }
   }
 
   else if(pointer.y > 210 && pointer.y < 240){
-    if(Game.hudView === 'inventory'){
-      var name = Game.entities.hud.inventoryItemNames[2];
-      console.log('inventory slot #3', name);
-      
-      selectedItem = name;
+    if(Game.hud.view === 'inventory'){
+      selectedItem = Game.entities.hud.inventoryItemNames[2];
     }
   }
 
   else if(pointer.y > 250 && pointer.y < 280){
-    if(Game.hudView === 'inventory'){
-      var name = Game.entities.hud.inventoryItemNames[3];
-      console.log('inventory slot #4', name);
-      
-      selectedItem = name;
+    if(Game.hud.view === 'inventory'){
+      selectedItem = Game.entities.hud.inventoryItemNames[3];
     }
   }
 
   else if(pointer.y > 290 && pointer.y < 320){
-    if(Game.hudView === 'inventory'){
-      var name = Game.entities.hud.inventoryItemNames[4];
-      console.log('inventory slot #5', name);
-      
-      selectedItem = name;
+    if(Game.hud.view === 'inventory'){
+      selectedItem = Game.entities.hud.inventoryItemNames[4];
     }
   }
 
   else if(pointer.y > 330 && pointer.y < 360){
-    if(Game.hudView === 'inventory'){
-      var name = Game.entities.hud.inventoryItemNames[5];
-      console.log('inventory slot #6', name);
-      
-      selectedItem = name;
+    if(Game.hud.view === 'inventory'){
+      selectedItem = Game.entities.hud.inventoryItemNames[5];
     }
   }
 
@@ -282,6 +256,10 @@ Game.entities.hud.handlePointer = function(pointer){
 
 Game.entities.hud.selectItem = function(item){
   if(!item) return;
+
+  if(Game.hud.justSelectedItem) return;
+  Game.hud.justSelectedItem = true;
+  Game.hud.justSelectedItem_TO = setTimeout(function(){ Game.hud.justSelectedItem = false; }, 400);
 
   var slot = Game.itemSlot1.item === item ? 2 : Game.itemSlot2.item === item ? -1 : 1;
   

@@ -42,10 +42,6 @@ Game.entities.player.getSurrounds = function(){
 Game.entities.player.move = function(game, direction){
   // console.log('Drill: On the move, goin: ', direction);
 
-  if(direction === 'up' && Game.spacecoOffered){
-    return Game.entities.spaceco.open();
-  }
-
   var surrounds = Game.entities.player.getSurrounds();
 
   if(direction === 'left' && (Game.drill.x <= Game.blockPx/2 || (!surrounds.bottomLeft && !surrounds.bottom && !surrounds.left))){
@@ -90,7 +86,7 @@ Game.entities.player.move = function(game, direction){
     setTimeout(function(){
       // Game.drawCurrentView();
       Game.drill.animations.play(Game.drill.upgrade > 0 ? 'upgrade_'+ Game.drill.upgrade : 'normal');
-      if(!direction.includes('responder')) Game.entities.spaceco.offer();
+      if(!direction.includes('responder')) Game.notify('Open HUD to connect to Spaceco', 2);
     }, 200 + moveTime);
 
     newCameraPosition = { x: teleportPos.x - Game.viewWidth / 2, y: teleportPos.y - Game.viewHeight / 2 };    
@@ -200,18 +196,27 @@ Game.entities.player.move = function(game, direction){
   Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
   Game.viewBufferMap[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)][0] = -1;
   Game.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
-
-  if(!Game.spacecoOffered && Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10){
-    Game.entities.spaceco.offer();
+  
+  if(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10){
+    Game.notify('Open HUD to connect to Spaceco', 2);
   }
-  else if(Game.spacecoOffered && Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) > Game.blockPx - 10){
-    Game.entities.spaceco.revoke();
+  else if(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) > Game.blockPx - 10){
+    Game.infoLine.setText('');
   }
   else if(Game.hud.isOpen) Game.entities.hud.close();
 
   if(!direction.includes('teleport') && Game.mode === 'normal'){
     Game.fuel -= moveTime * 0.0001;
-    if(Game.fuel < 1.5) Game.infoLine.setText(' Your fuel is running low ');
+
+    if(Game.fuel < 1.5) Game.notify('Your fuel is running low', 2);
+  }
+
+  if(Game.hull.space < 1.5){
+    if(!Game.hullWarning_TO){
+      Game.hullWarning_TO = setTimeout(function(){
+        Game.notify('Your Hull is almost full', 2);
+      }, 2000);
+    }
   }
 
   setTimeout(function(){
@@ -243,11 +248,7 @@ Game.entities.player.useItem = function(slotNum, item){
   }
   else if(item.includes('charge')){
     if(Game.drill.activeCharge){
-      Game.infoLine.setText(' you have already placed a charge ');
-      
-      setTimeout(function(){
-        Game.infoLine.setText('');
-      }, 2000);
+      Game.notify('You have already placed a charge', 2);
 
       return;
     }

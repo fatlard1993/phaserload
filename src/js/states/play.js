@@ -5,6 +5,8 @@ Game.states.play = function(game){};
 Game.states.play.prototype.create = function(){
   console.log('play');
 
+  Game.entities.spaceco.prices = Game.modes[Game.mode].spacecoPrices || Game.entities.spaceco.defaultPrices;
+
   Game.modes[Game.mode].nextLevel();
   Game.generateMap();
   
@@ -71,7 +73,11 @@ Game.states.play.prototype.update = function(){
     Game.justPressedEsc_TO = setTimeout(function(){ Game.justPressedEsc = false; }, 1000);
     
     if(Game.hud.isOpen) Game.entities.hud.close();
-    else Game.entities.hud.open('hud');
+    else{
+      if(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10) Game.entities.spaceco.open();
+      else Game.entities.hud.open('hud');
+      return; 
+    }
   }
 
   Game.lava.forEachAlive(function(lava){
@@ -135,24 +141,158 @@ Game.states.play.prototype.update = function(){
     }
 
     else if(Game.game.math.distance(this.input.activePointer.x, this.input.activePointer.y, Game.viewWidth - 32, 32) < 32){
-      return Game.entities.player.useItem(1, Game.itemSlot1.item);
+      if(Game.hud.justUsedItemSlot) return;
+      Game.hud.justUsedItemSlot = true;
+      Game.hud.justUsedItemSlot_TO = setTimeout(function(){ Game.hud.justUsedItemSlot = false; }, 500);
+      
+      if(!Game.itemSlot1.item) Game.entities.hud.open('hud');
+      else Game.entities.player.useItem(1, Game.itemSlot1.item);
+      return;
     }
 
     else if(Game.game.math.distance(this.input.activePointer.x, this.input.activePointer.y, Game.viewWidth - 32, 106) < 32){
-      return Game.entities.player.useItem(2, Game.itemSlot2.item);
+      if(Game.hud.justUsedItemSlot) return;
+      Game.hud.justUsedItemSlot = true;
+      Game.hud.justUsedItemSlot_TO = setTimeout(function(){ Game.hud.justUsedItemSlot = false; }, 500);
+
+      if(!Game.itemSlot2.item) Game.entities.hud.open('hud');
+      else Game.entities.player.useItem(2, Game.itemSlot2.item);
+      return;
     }
 
     else if(Game.game.math.distance(this.input.activePointer.x, this.input.activePointer.y, 70, 50) < 128){
-      return Game.entities.hud.open('hud');
+      if(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10) Game.entities.spaceco.open();
+      else Game.entities.hud.open('hud');
+      return;
     }
   }
 
-  if(Game.hud.isOpen && !Game.hud.justSelectedItem){
-    if(this.input.keyboard.isDown(Phaser.Keyboard.ONE)){
+  if(Game.hud.isOpen){
+    var selectedItem, selectedMenu;
+
+    if(this.input.keyboard.isDown(Phaser.Keyboard.I) && Game.hud.isOpen === 'hud' && !Game.hud.briefingOpen){
+      if(Game.hud.view === 'inventory' && Object.keys(Game.inventory).length > 6) selectedMenu = 'inventory_pg2'; 
+      else selectedMenu = 'inventory';
+    }
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.H) && Game.hud.isOpen === 'hud' && !Game.hud.briefingOpen){
+      if(Game.hud.view === 'hull') selectedMenu = 'hull_p2';
+      else if(Game.hud.view === 'hull_p2') selectedMenu = 'hull_p3';
+      else selectedMenu = 'hull';
+    }
+
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.R) && Game.hud.isOpen === 'spaceco'){
+      if(Game.hud.view === 'rates') selectedMenu = 'rates_pg2';
+      else selectedMenu = 'rates';
+    }
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.F) && Game.hud.isOpen === 'spaceco'){
+      selectedMenu = 'fuel';
+    }
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.S) && Game.hud.isOpen === 'spaceco'){
+      if(Game.hud.view === 'shop') Game.entities.spaceco.setView('shop_p2');
+      else selectedMenu = 'shop';
+    }
+
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.ONE)){
       if(Game.hud.isOpen === 'hud'){
-        
+        if(Game.hud.view === 'inventory'){
+          selectedItem = Game.entities.hud.inventoryItemNames[0];
+        }
+      }
+      else if(Game.hud.isOpen === 'spaceco'){
+        if(Game.hud.view === 'fuel'){
+          selectedItem = 'gas';
+        }
+        else if(Game.hud.view === 'shop'){
+          selectedItem = 'teleporter';
+        }
+        else if(Game.hud.view === 'shop_p2'){
+          selectedItem = 'timed_charge';
+        }
       }
     }
+  
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.TWO)){
+      if(Game.hud.isOpen === 'hud'){
+        if(Game.hud.view === 'inventory'){
+          selectedItem = Game.entities.hud.inventoryItemNames[1];
+        }
+      }
+      else if(Game.hud.isOpen === 'spaceco'){
+        if(Game.hud.view === 'fuel'){
+          selectedItem = 'energy';
+        }
+        else if(Game.hud.view === 'shop'){
+          selectedItem = 'responder_teleporter';
+        }
+        else if(Game.hud.view === 'shop_p2'){
+          selectedItem = 'remote_charge';
+      }
+      }
+    }
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.THREE)){
+      if(Game.hud.isOpen === 'hud'){
+        if(Game.hud.view === 'inventory'){
+          selectedItem = Game.entities.hud.inventoryItemNames[2];
+        }
+      }
+      else if(Game.hud.isOpen === 'spaceco'){
+        if(Game.hud.view === 'fuel'){
+          selectedItem = 'super_oxygen_liquid_nitrogen';
+        }
+        else if(Game.hud.view === 'shop'){
+          selectedItem = 'repair';
+        }
+        else if(Game.hud.view === 'shop_p2'){
+          selectedItem = 'timed_freeze_charge';
+        }
+      }
+    }
+  
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.FOUR)){
+      if(Game.hud.isOpen === 'hud'){
+        if(Game.hud.view === 'inventory'){
+          selectedItem = Game.entities.hud.inventoryItemNames[3];
+        }
+      }
+      else if(Game.hud.isOpen === 'spaceco'){
+        if(Game.hud.view === 'shop'){
+          selectedItem = 'upgrade';
+        }
+        else if(Game.hud.view === 'shop_p2'){
+          selectedItem = 'remote_freeze_charge';
+        }
+      }
+    }
+  
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.FIVE)){
+      if(Game.hud.isOpen === 'hud'){
+        if(Game.hud.view === 'inventory'){
+          selectedItem = Game.entities.hud.inventoryItemNames[4];
+        }
+      }
+      else if(Game.hud.isOpen === 'spaceco'){
+        if(Game.hud.view === 'shop'){
+          selectedItem = 'transport';
+        }
+      }
+    }
+
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.SIX)){
+      if(Game.hud.isOpen === 'hud'){
+        if(Game.hud.view === 'inventory'){
+          selectedItem = Game.entities.hud.inventoryItemNames[5];
+        }
+      }
+    }
+    
+    if(selectedItem && Game.entities[Game.hud.isOpen] && Game.entities[Game.hud.isOpen].selectItem){
+      Game.entities[Game.hud.isOpen].selectItem(selectedItem);
+    }
+    else if(selectedMenu){
+      Game.entities[Game.hud.isOpen].setView(selectedMenu);
+    }
+
+    return;
   }
 
   var moving;

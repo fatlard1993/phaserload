@@ -13,7 +13,21 @@ Game.modes.normal = {
     red: 3.75,
     blue: 5
   },
-  baseGroundPrice: 0.08,
+  baseGroundValue: 0.08,
+  spacecoPrices: {
+    gas: 1,
+    energy: 2,
+    super_oxygen_liquid_nitrogen: 3,
+    teleporter: 5,
+    responder_teleporter: 10,
+    repair: 4,
+    upgrade: 10,
+    transport: 100,
+    timed_charge: 5,
+    remote_charge: 10,
+    timed_freeze_charge: 10,
+    remote_freeze_charge: 15
+  },
   blockBehavior: {
     red: 'lava:~:35'
   },
@@ -41,7 +55,7 @@ Game.modes.normal = {
   },
   levels: [
     {
-      missionText: '\n\n Welcome to asteroid TR982-420'+ Game.rand(100, 999),
+      briefing: '\n\n Welcome to asteroid TR982-420'+ Game.rand(100, 999),
       size: {
         width: [50, 70],
         depth: [100, 200]
@@ -64,7 +78,7 @@ Game.modes.normal = {
       ]
     },
     {
-      missionText: '\n\n Welcome to asteroid AE02A-809'+ Game.rand(100, 999),
+      briefing: '\n\n Welcome to asteroid AE02A-809'+ Game.rand(100, 999),
       size: {
         width: [32, 45],
         depth: [100, 200]
@@ -87,7 +101,7 @@ Game.modes.normal = {
       ]
     },
     {
-      missionText: '\n\n Welcome to asteroid ZPQ6D-N02'+ Game.rand(100, 999),
+      briefing: '\n\n Welcome to asteroid ZPQ6D-N02'+ Game.rand(100, 999),
       size: {
         width: [45, 60],
         depth: [200, 300]
@@ -113,7 +127,7 @@ Game.modes.normal = {
       ]
     },
     {
-      missionText: '\n\n   Welcome to moon D83R-W110'+ Game.rand(100, 999),
+      briefing: '\n\n   Welcome to moon D83R-W110'+ Game.rand(100, 999),
       size: {
         width: [60, 70],
         depth: [250, 400]
@@ -138,7 +152,7 @@ Game.modes.normal = {
       ]
     },
     {
-      missionText: '\n\nWelcome to metoerite AE02A-809'+ Game.rand(100, 999),
+      briefing: '\n\nWelcome to metoerite AE02A-809'+ Game.rand(100, 999),
       size: {
         width: [32, 64],
         depth: [100, 400]
@@ -165,7 +179,7 @@ Game.modes.normal = {
       ]
     },
     {
-      missionText: '\n\n   Welcome to moon CM12W-I13'+ Game.rand(100, 999),
+      briefing: '\n\n   Welcome to moon CM12W-I13'+ Game.rand(100, 999),
       size: {
         width: [30, 70],
         depth: [100, 300]
@@ -189,7 +203,7 @@ Game.modes.normal = {
       ]
     },
     {
-      missionText: '\n\nWelcome to metoerite SP43N-72D'+ Game.rand(100, 999),
+      briefing: '\n\nWelcome to metoerite SP43N-72D'+ Game.rand(100, 999),
       size: {
         width: [32, 64],
         depth: [100, 400]
