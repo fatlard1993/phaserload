@@ -154,8 +154,11 @@ Game.states.play.prototype.update = function(){
     }
   }
 
-  if(this.input.keyboard.isDown(Phaser.Keyboard.ESC)){
-    if(Game.entities.hud.isOpen) Game.entities.hud.close();
+  if(this.input.keyboard.isDown(Phaser.Keyboard.ESC) && !Game.justPressedEsc){
+    Game.justPressedEsc = true;
+    Game.justPressedEsc_TO = setTimeout(function(){ Game.justPressedEsc = false; }, 1000);
+    
+    if(Game.hud.isOpen) Game.entities.hud.close();
     else Game.entities.hud.open('hud');
   }
 
