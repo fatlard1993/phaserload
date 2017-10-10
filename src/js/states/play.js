@@ -162,16 +162,16 @@ Game.states.play.prototype.update = function(){
       moving = Math.abs(xDiff) > Math.abs(yDiff) ? xDirection : yDirection;
     }
 
-    if(this.input.keyboard.isDown(Phaser.Keyboard.LEFT)){
+    if(this.input.keyboard.isDown(Phaser.Keyboard.LEFT) || this.input.keyboard.isDown(Phaser.Keyboard.A)){
       moving = 'left';
     }
-    else if(this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)){
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || this.input.keyboard.isDown(Phaser.Keyboard.D)){
       moving = 'right';
     }
-    else if(this.input.keyboard.isDown(Phaser.Keyboard.DOWN)){
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.DOWN) || this.input.keyboard.isDown(Phaser.Keyboard.S)){
       moving = 'down';
     }
-    else if(this.input.keyboard.isDown(Phaser.Keyboard.UP)){
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.UP) || this.input.keyboard.isDown(Phaser.Keyboard.W)){
       moving = 'up';
     }
     else if(this.input.keyboard.isDown(Phaser.Keyboard.ONE)){
