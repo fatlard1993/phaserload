@@ -147,7 +147,7 @@ Game.states.play.prototype.update = function(){
   }
 
   if(this.input.activePointer.isDown){
-    if(Game.hud.isOpen){
+    if(Game.hud.isOpen && !Game.hud.justUsedItemSlot){
       if(this.input.activePointer.x > 575 || this.input.activePointer.y > 460) Game.entities.hud.close();
   
       else if(Game.entities[Game.hud.isOpen] && Game.entities[Game.hud.isOpen].handlePointer) Game.entities[Game.hud.isOpen].handlePointer(this.input.activePointer);
@@ -158,28 +158,31 @@ Game.states.play.prototype.update = function(){
     }
 
     else if(Game.game.math.distance(this.input.activePointer.x, this.input.activePointer.y, Game.viewWidth - 32, 32) < 32){
-      if(Game.hud.justUsedItemSlot) return;
+      if(Game.hud.justUsedItemSlot || Game.hud.isOpen) return;
       Game.hud.justUsedItemSlot = true;
       Game.hud.justUsedItemSlot_TO = setTimeout(function(){ Game.hud.justUsedItemSlot = false; }, 500);
       
       if(!Game.itemSlot1.item) Game.entities.hud.open('hud');
       else Game.entities.player.useItem(1, Game.itemSlot1.item);
+
       return;
     }
 
     else if(Game.game.math.distance(this.input.activePointer.x, this.input.activePointer.y, Game.viewWidth - 32, 106) < 32){
-      if(Game.hud.justUsedItemSlot) return;
+      if(Game.hud.justUsedItemSlot || Game.hud.isOpen) return;
       Game.hud.justUsedItemSlot = true;
       Game.hud.justUsedItemSlot_TO = setTimeout(function(){ Game.hud.justUsedItemSlot = false; }, 500);
 
       if(!Game.itemSlot2.item) Game.entities.hud.open('hud');
       else Game.entities.player.useItem(2, Game.itemSlot2.item);
+
       return;
     }
 
     else if(Game.game.math.distance(this.input.activePointer.x, this.input.activePointer.y, 70, 50) < 128){
       if(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10) Game.entities.spaceco.open();
       else Game.entities.hud.open('hud');
+      
       return;
     }
   }
@@ -304,12 +307,14 @@ Game.states.play.prototype.update = function(){
     
     if(selectedItem && Game.entities[Game.hud.isOpen] && Game.entities[Game.hud.isOpen].selectItem){
       Game.entities[Game.hud.isOpen].selectItem(selectedItem);
+
+      return;
     }
     else if(selectedMenu){
       Game.entities[Game.hud.isOpen].setView(selectedMenu);
+      
+      return;
     }
-
-    return;
   }
 
   var moving;
