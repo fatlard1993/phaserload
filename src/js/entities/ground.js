@@ -33,7 +33,6 @@ Game.entities.ground.create = function(game, x, y, type){
   return Game.ground.add(new Game.entities.ground(game, x, y, type));
 };
 
-
 Game.entities.ground.crush = function(pos){
   var groundType = Game.groundAt(pos.x, pos.y).replace('ground_', '');
   // console.log('crush: ', groundType, pos);
@@ -46,34 +45,43 @@ Game.entities.ground.crush = function(pos){
       Game.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
       Game.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
 
-      setTimeout(function(){
-        var surrounds = {
-          left: Game.groundAt(ground.x - Game.blockPx, ground.y),
-          top: Game.groundAt(ground.x, ground.y - Game.blockPx),
-          right: Game.groundAt(ground.x + Game.blockPx, ground.y),
-          bottom: Game.groundAt(ground.x, ground.y - Game.blockPx)
-        };
-  
-        if(!surrounds.left){
-          Game.entities.lava.spread(ground.x - Game.blockPx, ground.y);
-          Game.entities.gas.spread(ground.x - Game.blockPx, ground.y);
-        }
-  
-        if(!surrounds.top){
-          Game.entities.lava.spread(ground.x, ground.y - Game.blockPx);
-        }
-  
-        if(!surrounds.right){
-          Game.entities.lava.spread(ground.x + Game.blockPx, ground.y);
-          Game.entities.gas.spread(ground.x + Game.blockPx, ground.y);
-        }
-  
-        if(!surrounds.bottom){
-          Game.entities.gas.spread(ground.x, ground.y + Game.blockPx);
-        }
-      }, Game.modes[Game.mode].digTime[groundType]);
+      var gridPos = {
+        x: Game.toGridPos(ground.x),
+        y: Game.toGridPos(ground.y)
+      };
+
+      var surrounds = {
+        left: Game.mapPosName(gridPos.x - 1, gridPos.y),
+        top: Game.mapPosName(gridPos.x, gridPos.y - 1),
+        right: Game.mapPosName(gridPos.x + 1, gridPos.y),
+        bottom: Game.mapPosName(gridPos.x, gridPos.y + 1)
+      };
+
+      Game.entities.ground.releaseSurrounds(ground, surrounds, Game.modes[Game.mode].digTime[groundType]);
     }
   });
+};
+
+Game.entities.ground.releaseSurrounds = function(ground, surrounds, delay){
+  setTimeout(function(){
+    if(['gas', 'lava'].includes(surrounds.left)){
+      Game.entities.lava.spread(ground.x - Game.blockPx, ground.y);
+      Game.entities.gas.spread(ground.x - Game.blockPx, ground.y);
+    }
+  
+    if(['lava'].includes(surrounds.top)){
+      Game.entities.lava.spread(ground.x, ground.y - Game.blockPx);
+    }
+  
+    if(['gas', 'lava'].includes(surrounds.right)){
+      Game.entities.lava.spread(ground.x + Game.blockPx, ground.y);
+      Game.entities.gas.spread(ground.x + Game.blockPx, ground.y);
+    }
+  
+    if(['gas'].includes(surrounds.bottom)){
+      Game.entities.gas.spread(ground.x, ground.y + Game.blockPx);
+    }
+  }, delay);
 };
 
 Game.entities.ground.dig = function(pos){

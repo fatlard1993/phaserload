@@ -120,7 +120,7 @@ var Game = {
   notify: function(text, timeout){
     if(Game.notify_TO){
       clearTimeout(Game.notify_TO);
-      
+
       Game.infoLine.setText('');
     }
 
@@ -185,11 +185,10 @@ var Game = {
         if(y > 1 && !Game.chance(holeChance)){
           Game.map[x][y] = [Game.mapNames.indexOf('ground_'+ Game.weightedChance(groundRareity)), -1];
 
-          if(y > 5 && Game.chance(mineralChance)){      
+          if(y > 5 && Game.chance(mineralChance)){
             Game.map[x][y][1] = Game.mapNames.indexOf('mineral_'+ Game.weightedChance(mineralRareity));
           }
         }
-        
         
         else if(y > 8 && Game.chance(lavaChance)){
           Game.map[x][y] = [Game.mapNames.indexOf('lava'), -1];
