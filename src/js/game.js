@@ -70,6 +70,11 @@ var Game = {
 
     return num;
   },
+  randFloat: function(min, max){
+    var num = Math.random() * (max - min) + min;
+
+    return num;
+  },
   chance: function(chance){
     if(chance === undefined){ chance = 50; }
     return chance > 0 && (Math.random() * 100 <= chance);
