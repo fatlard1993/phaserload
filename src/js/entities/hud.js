@@ -277,19 +277,23 @@ Game.entities.hud.handlePointer = function(pointer){
     }
   }
 
-  if(selectedItem){
-    var slot = Game.itemSlot1.item === selectedItem ? 2 : Game.itemSlot2.item === selectedItem ? -1 : 1;
-    
-    if(Game.itemSlot1.item === selectedItem) Game.entities.itemSlot.setItem(1, '');
-    if(Game.itemSlot2.item === selectedItem) Game.entities.itemSlot.setItem(2, '');
-    
-    if(slot > 0){
-      if(Game['itemSlot'+ slot].item && !Game['itemSlot'+ (slot === 1 ? 2 : 1)].item) slot = slot === 1 ? 2 : 1;
-      else if(Game['itemSlot'+ slot].item) Game.entities.itemSlot.setItem(slot, '');
+  Game.entities.hud.selectItem(selectedItem);
+};
 
-      Game.entities.itemSlot.setItem(slot, selectedItem);
-    }
+Game.entities.hud.selectItem = function(item){
+  if(!item) return;
 
-    Game.entities.hud.setView('inventory');
+  var slot = Game.itemSlot1.item === item ? 2 : Game.itemSlot2.item === item ? -1 : 1;
+  
+  if(Game.itemSlot1.item === item) Game.entities.itemSlot.setItem(1, '');
+  if(Game.itemSlot2.item === item) Game.entities.itemSlot.setItem(2, '');
+  
+  if(slot > 0){
+    if(Game['itemSlot'+ slot].item && !Game['itemSlot'+ (slot === 1 ? 2 : 1)].item) slot = slot === 1 ? 2 : 1;
+    else if(Game['itemSlot'+ slot].item) Game.entities.itemSlot.setItem(slot, '');
+
+    Game.entities.itemSlot.setItem(slot, item);
   }
+
+  Game.entities.hud.setView('inventory');
 };

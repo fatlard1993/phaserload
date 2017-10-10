@@ -147,6 +147,14 @@ Game.states.play.prototype.update = function(){
     }
   }
 
+  if(Game.hud.isOpen && !Game.hud.justSelectedItem){
+    if(this.input.keyboard.isDown(Phaser.Keyboard.ONE)){
+      if(Game.hud.isOpen === 'hud'){
+        
+      }
+    }
+  }
+
   var moving;
 
   if(!this.game.tweens.isTweening(Game.drill)){

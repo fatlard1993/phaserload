@@ -185,7 +185,6 @@ Game.entities.spaceco.handlePointer = function(pointer){
     }
   }
 
-
   if(Game.hud.justSelectedItem) return;
   Game.hud.justSelectedItem = true;
   Game.hud.justSelectedItem_TO = setTimeout(function(){ Game.hud.justSelectedItem = false; }, 400);
@@ -279,12 +278,6 @@ Game.entities.spaceco.handlePointer = function(pointer){
     }
     else if(Game.spacecoView === 'shop'){
       console.log('repair');
-
-      var repairPrice = 4;
-
-      if(Game.credits < repairPrice) return;
-
-      Game.credits -= repairPrice;
     }
     else if(Game.spacecoView === 'shop_p2'){
       console.log('timed freeze charge');
@@ -303,19 +296,6 @@ Game.entities.spaceco.handlePointer = function(pointer){
   else if(pointer.y > 250 && pointer.y < 280){
     if(Game.spacecoView === 'shop'){
       console.log('upgrade');
-
-      var upgradePrice = 10;
-
-      if(Game.credits < upgradePrice || Game.drill.upgrade >= 2) return;
-
-      Game.credits -= upgradePrice;
-
-      Game.drill.upgrade = Game.drill.upgrade || 0;
-      Game.drill.upgrade++;
-
-      Game.drill.animations.play('upgrade_'+ Game.drill.upgrade);
-
-      Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);      
     }
     else if(Game.spacecoView === 'shop_p2'){
       console.log('remote freeze charge');
@@ -334,15 +314,6 @@ Game.entities.spaceco.handlePointer = function(pointer){
   else if(pointer.y > 290 && pointer.y < 320){
     if(Game.spacecoView === 'shop'){
       console.log('transport');
-
-      var transportPrice = 100;
-
-      if(Game.credits < transportPrice) return;
-
-      Game.credits -= transportPrice;
-
-      Game.purchasedTransport = true;
-      Game.game.state.start('play');
     }
   }
   
@@ -351,6 +322,44 @@ Game.entities.spaceco.handlePointer = function(pointer){
   }
 
   Game.entities.spaceco.updateBottomLine();  
+};
+
+Game.entities.spaceco.selectItem = function(item){
+  if(!item) return;
+
+  var prices = {
+    teleporter: 1,
+    responder_teleporter: 1,
+    repair: 1,
+    upgrade: 10,
+    transport: 100,
+    timed_charge: 1,
+    remote_charge: 1,
+    timed_freeze_charge: 1,
+    remote_freeze_charge: 1,
+  };
+
+  if(Game.credits  < prices[item]) return;
+
+  Game.credits -= prices[item];
+
+  if(item === 'transport'){
+    Game.purchasedTransport = true;
+    Game.game.state.start('play');
+  }
+  else if(item === 'upgrade'){
+    if(Game.drill.upgrade === 3) return;
+
+    Game.drill.upgrade++;
+    
+    Game.drill.animations.play('upgrade_'+ Game.drill.upgrade);
+
+    Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);
+  }
+  else if(item === 'repair'){
+    //todo repair
+  }
+  
 };
 
 Game.entities.spaceco.hurt = function(ammount){
