@@ -117,6 +117,19 @@ var Game = {
 
     return { x: x, y: y };
   },
+  notify: function(text, timeout){
+    if(Game.notify_TO){
+      clearTimeout(Game.notify_TO);
+      
+      Game.infoLine.setText('');
+    }
+
+    Game.infoLine.setText(' '+ text +' ');
+    
+    Game.notify_TO = setTimeout(function(){
+      Game.infoLine.setText('');
+    }, timeout * 1000);
+  },
   mapPos: function(x, y){
     return Game.map[x] !== undefined ? (Game.map[x][y] !== undefined ? Game.map[x][y] : [-1, -1]) : [-1, -1];
   },
