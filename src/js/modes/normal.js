@@ -57,6 +57,32 @@ Game.modes.normal = {
   },
   levels: [
     {
+      briefing: '\n\n Welcome to asteroid FR153-34R'+ Game.rand(100, 999),
+      size: {
+        width: [100, 140],
+        depth: [200, 250]
+      },
+      holeChance: 0.3,
+      lavaChance: 0.6,
+      gasChance: 0.001,
+      monsterChance: 0.1,
+      mineralChance: 0.1,
+      mineralRareity: {
+        red: 100
+      },
+      layers: [
+        { white: 65, orange: 25, yellow: 5, red: 5 },
+        { white: 50, orange: 30, yellow: 10, red: 10 },
+        { white: 40, orange: 35, yellow: 15, red: 5 },
+        { white: 30, orange: 40, yellow: 20, red: 10 },
+        { white: 20, orange: 40, yellow: 30, red: 10 },
+        { white: 10, orange: 35, yellow: 35, red: 20 },
+        { white: 5, orange: 30, yellow: 45, red: 20 },
+        { white: 5, orange: 20, yellow: 45, red: 30 },
+        { white: 5, orange: 10, yellow: 35, red: 50 },
+      ]
+    },
+    {
       briefing: '\n\n Welcome to asteroid ZT546-3T1'+ Game.rand(100, 999),
       size: {
         width: [100, 140],
@@ -246,10 +272,10 @@ Game.modes.normal = {
         blue: 50
       },
       layers: [
-        { yellow: 85, green: 10, teal: 5 },
-        { yellow: 80, green: 10, teal: 10 },
-        { yellow: 40, green: 30, teal: 30 },
-        { yellow: 50, green: 30, orange: 10, teal: 10 },
+        { yellow: 80, green: 10, teal: 5, red: 5 },
+        { yellow: 75, green: 10, teal: 10, red: 5 },
+        { yellow: 30, green: 30, teal: 30, red: 10 },
+        { yellow: 30, green: 30, orange: 10, teal: 10, red: 20 },
         { yellow: 35, green: 40, orange: 20, teal: 5 },
         { yellow: 10, green: 30, orange: 50, white: 10 },
         { yellow: 5, green: 25, orange: 60, white: 10 },
@@ -297,13 +323,13 @@ Game.modes.normal = {
         blue: 1
       },
       layers: [
-        { red: 75, pink: 20, black: 5 },
-        { red: 50, pink: 40, black: 10 },
-        { red: 40, pink: 50, purple: 10 },
-        { red: 30, pink: 40, purple: 30 },
-        { red: 20, pink: 30, purple: 50 },
-        { red: 10, pink: 20, purple: 70 },
-        { pink: 10, purple: 80, orange: 10 },
+        { red: 75, yellow: 20, black: 5 },
+        { red: 50, yellow: 40, black: 10 },
+        { red: 40, yellow: 50, purple: 10 },
+        { red: 30, yellow: 40, purple: 30 },
+        { red: 20, yellow: 30, purple: 50 },
+        { red: 10, yellow: 20, purple: 70 },
+        { yellow: 10, purple: 80, orange: 10 },
         { purple: 65, orange: 30, black: 5 },
         { purple: 45, orange: 45, black: 10 },
         { purple: 40, orange: 70, teal: 10 },
