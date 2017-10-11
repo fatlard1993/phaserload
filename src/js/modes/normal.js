@@ -37,7 +37,7 @@ Game.modes.normal = {
     white: 400,
     orange: 500,
     yellow: 540,
-    green: 580,
+    green: 700,
     teal: 640,
     blue: 700,
     purple: 730,
