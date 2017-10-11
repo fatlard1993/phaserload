@@ -128,7 +128,7 @@ Game.entities.hud.setView = function(view){
   if(view === 'help'){
     menu = '  Briefing  [Help]     Exit\n';
     
-    items = ' Tap the HUD to open the CONSOLE\n   Tap Item Slots to use items';
+    items = ' Tap the HUD to open the CONSOLE\n   Tap Item Slots to use items\n   Dig until your hull is full\n Then take your load to spaceco\nWhile you\'re there buy some stuff';
   }
 
   if(view === 'inventory'){
