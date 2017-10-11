@@ -315,6 +315,8 @@ Game.states.play.prototype.update = function(){
       
       return;
     }
+
+    return;
   }
 
   var moving;
@@ -332,7 +334,7 @@ Game.states.play.prototype.update = function(){
       moving = Math.abs(xDiff) > Math.abs(yDiff) ? xDirection : yDirection;
     }
 
-    if(this.input.keyboard.isDown(Phaser.Keyboard.LEFT) || this.input.keyboard.isDown(Phaser.Keyboard.A)){
+    else if(this.input.keyboard.isDown(Phaser.Keyboard.LEFT) || this.input.keyboard.isDown(Phaser.Keyboard.A)){
       moving = 'left';
     }
     else if(this.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || this.input.keyboard.isDown(Phaser.Keyboard.D)){
