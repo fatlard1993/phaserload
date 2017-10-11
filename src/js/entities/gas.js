@@ -20,7 +20,7 @@ Game.entities.gas = function(x, y){
       Game.entities.gas.create(this.x - Game.blockPx, this.y, 1);
     }
     
-    if(gridPos.x + 1 < Game.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
+    else if(gridPos.x + 1 < Game.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
       Game.entities.gas.create(this.x + Game.blockPx, this.y, 1);
     }
 
@@ -94,7 +94,7 @@ Game.entities.gas.spread = function(x, y){
         spread = 1;
       }
       
-      if(gridPos.x + 1 < Game.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
+      else if(gridPos.x + 1 < Game.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
         Game.entities.gas.create(x + Game.blockPx, y, 1);
         spread = 1;
       }
