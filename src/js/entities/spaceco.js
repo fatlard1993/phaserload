@@ -58,6 +58,8 @@ Game.entities.spaceco.getValue = function(name){
   
   if(name.startsWith('ground')){
     value = Game.modes[Game.mode].baseGroundValue + (((Game.modes[Game.mode].digTime[name.replace('ground_', '')] / 2) - (Game.entities.spaceco.resourceBay[name] || 0)) / 1000)
+    
+    if(name === 'ground_green' && Game.mode === 'normal') value = value * 2;
   }
   else if(name.startsWith('mineral')){
     value = Game.modes[Game.mode].mineralValues[name.replace('mineral_', '')] - ((Game.entities.spaceco.resourceBay[name] || 0) / 40);
