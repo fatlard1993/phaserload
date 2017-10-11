@@ -87,24 +87,19 @@ Game.entities.gas.spread = function(x, y){
         y: Game.toGridPos(gas.y)
       };
 
-      var spread;
-
       if(gridPos.x - 1 > 0 && (!Game.mapPosName(gridPos.x - 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x - 1, gridPos.y)))){
         Game.entities.gas.create(x - Game.blockPx, y, 1);
-        spread = 1;
       }
       
       else if(gridPos.x + 1 < Game.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
         Game.entities.gas.create(x + Game.blockPx, y, 1);
-        spread = 1;
       }
   
       if(gridPos.y - 1 > 0 && (!Game.mapPosName(gridPos.x, gridPos.y - 1) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x, gridPos.y - 1)))){
         Game.entities.gas.create(x, y - Game.blockPx, 1);
-        spread = 1;
       }
-
-      if(spread) gas.play('dissipate');
+      
+      gas.play('dissipate');
     }
   });
 };
