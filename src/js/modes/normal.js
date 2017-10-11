@@ -57,6 +57,33 @@ Game.modes.normal = {
   },
   levels: [
     {
+      briefing: '\n\n Welcome to asteroid ZT546-3T1'+ Game.rand(100, 999),
+      size: {
+        width: [100, 140],
+        depth: [200, 250]
+      },
+      holeChance: 0.5,
+      lavaChance: 0.6,
+      gasChance: 0.6,
+      monsterChance: 0.6,
+      mineralChance: 0.1,
+      mineralRareity: {
+        green: 25,
+        red: 35,
+        blue: 40
+      },
+      layers: [
+        { white: 70, red: 15, black: 5 },
+        { white: 60, red: 20, black: 10 },
+        { white: 40, red: 30, black: 30 },
+        { white: 20, red: 40, black: 40 },
+        { white: 5, red: 55, black: 40 },
+        { green: 20, red: 40, black: 40 },
+        { green: 20, red: 30, black: 50 },
+        { green: 30, red: 30, black: 40 }
+      ]
+    },
+    {
       briefing: '\n\n Welcome to asteroid ML876-L01'+ Game.rand(100, 999),
       size: {
         width: [40, 80],
