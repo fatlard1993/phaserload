@@ -15,8 +15,11 @@ var Game = {
   effects: {
     explode: function(pos, radius){
       if(Game.game.math.distance(pos.x, pos.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx * (radius + 1)){
-        console.log('hurt: ', (radius + 1) - (Game.game.math.distance(pos.x, pos.y, Game.spaceco.x, Game.spaceco.y) / Game.blockPx));
         Game.entities.spaceco.hurt((radius + 1) - (Game.game.math.distance(pos.x, pos.y, Game.spaceco.x, Game.spaceco.y) / Game.blockPx));
+      }
+
+      if(Game.game.math.distance(pos.x, pos.y, Game.drill.x, Game.drill.y) < Game.blockPx * radius){
+        Game.entities.player.hurt(Game.randFloat(1, radius) * (radius - (Game.game.math.distance(pos.x, pos.y, Game.drill.x, Game.drill.y) / Game.blockPx)), 'explosion');
       }
 
       Game.ground.forEachAlive(function(ground){

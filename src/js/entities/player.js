@@ -338,7 +338,7 @@ Game.entities.player.useItem = function(slotNum, item){
 };
 
 Game.entities.player.hurt = function(amount, by){
-  if(Game.drill.justHurt) return;
+  if(Game.drill.justHurt) return; //todo make this depend on what the damage is from
   Game.drill.justHurt = true;
   Game.drill.justHurt_TO = setTimeout(function(){ Game.drill.justHurt = false; }, 500);
 

@@ -364,7 +364,11 @@ Game.states.play.prototype.update = function(){
         if(Game.entities.player.lastMove === 'up' && (surrounds.bottomLeft || surrounds.bottomRight)){
           direction = surrounds.bottomLeft && !surrounds.bottomRight ? 'left' : (surrounds.bottomLeft && surrounds.bottomRight ? (Game.entities.player.lastMoveInvert ? 'left' : 'right') : 'right');
         }
-        else direction = 'down';
+        else{
+          direction = 'down';
+          
+          Game.entities.spaceco.hurt(Game.randFloat(1, 3), 'falling');
+        }
 
         console.log('Automove from: '+ Game.entities.player.lastMove +' to: '+ direction, surrounds);
 
