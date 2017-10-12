@@ -1,27 +1,9 @@
 /* global Phaser, Game */
 
-Game.entities.ground = function(game, x, y, type){
-  Phaser.Sprite.call(this, game, x, y, 'ground');
+Game.entities.ground = function(x, y){
+  Phaser.Sprite.call(this, Game.game, x, y, 'ground');
 
   this.anchor.setTo(0.5, 0.5);
-
-  if(!type){
-    type = Game.weightedChance(Game.modes[Game.mode].levels[Game.modes[Game.mode].level].layers[Math.ceil(Game.modes[Game.mode].levels[Game.modes[Game.mode].level].layers.length * (Game.toGridPos(y) / Game.depth)) - 1]);
-    Game.map[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf(type);
-    Game.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf(type);
-  }
-
-  type = type.replace('ground_', '');
-
-  this.ground_type = type;
-  this.ground_type_ID = Game.entities.ground.types.indexOf(type);
-
-  var frameMod = this.ground_type_ID * 4;
-
-  this.frame = 0 + frameMod;
-  
-  var animation = this.animations.add('crush_'+ type, [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod], 10, false);
-  animation.killOnComplete = true;
 };
 
 Game.entities.ground.prototype = Object.create(Phaser.Sprite.prototype);
@@ -29,8 +11,36 @@ Game.entities.ground.prototype.constructor = Game.entities.ground;
 
 Game.entities.ground.types = ['white', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink', 'red', 'black'];
 
-Game.entities.ground.create = function(game, x, y, type){
-  return Game.ground.add(new Game.entities.ground(game, x, y, type));
+Game.entities.ground.create = function(x, y, type){
+  var ground = Game.ground.getFirstDead();
+  
+  if(ground === null){
+    ground = Game.ground.add(new Game.entities.ground(x, y));
+  }
+  else{
+    ground.reset(x, y);
+    ground.revive();
+  }
+
+  if(!type){
+    type = Game.weightedChance(Game.modes[Game.mode].levels[Game.modes[Game.mode].level].layers[Math.ceil(Game.modes[Game.mode].levels[Game.modes[Game.mode].level].layers.length * (Game.toGridPos(y) / Game.depth)) - 1]);
+    Game.map[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf('ground_'+ type);
+    Game.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf('ground_'+ type);
+  }
+
+  type = type.replace('ground_', '');
+  
+  ground.ground_type = type;
+  ground.ground_type_ID = Game.entities.ground.types.indexOf(type);
+
+  var frameMod = ground.ground_type_ID * 4;
+
+  ground.frame = 0 + frameMod;
+  
+  var animation = ground.animations.add('crush_'+ type, [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod], 10, false);
+  animation.killOnComplete = true;
+
+  return ground;
 };
 
 Game.entities.ground.crush = function(pos){

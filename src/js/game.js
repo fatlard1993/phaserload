@@ -39,7 +39,7 @@ var Game = {
         if(Game.game.math.distance(pos.x, pos.y, lava.x, lava.y) < Game.blockPx * radius){
           lava.kill();
 
-          Game.entities.ground.create(Game.game, lava.x, lava.y);
+          Game.entities.ground.create(lava.x, lava.y);
         }
       });
     },
@@ -303,7 +303,7 @@ var Game = {
         // console.log(x, y, Game.viewBufferMap[x][y], element);
         
         if(mapPos_0_name.startsWith('ground')){
-          Game.entities.ground.create(Game.game, Game.toPx(x), Game.toPx(y), mapPos_0_name);
+          Game.entities.ground.create(Game.toPx(x), Game.toPx(y), mapPos_0_name);
 
           if(mapPos[1] > 0){
             Game.entities.mineral.create(Game.game, Game.toPx(x), Game.toPx(y), Game.toName(mapPos[1]));
