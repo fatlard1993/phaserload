@@ -12,7 +12,7 @@ Game.entities.ground.prototype.constructor = Game.entities.ground;
 Game.entities.ground.types = ['white', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink', 'red', 'black'];
 
 Game.entities.ground.create = function(x, y, type){
-  var ground = Game.ground.getFirstDead();
+  var ground = null;//Game.ground.getFirstDead();//causes issues
   
   if(ground === null){
     ground = Game.ground.add(new Game.entities.ground(x, y));
