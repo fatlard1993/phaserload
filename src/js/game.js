@@ -166,7 +166,7 @@ var Game = {
   groundAt(pxX, pxY){
     return Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0] > 3 ? Game.mapNames[Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0]] : undefined;
   },
-  mapNames: ['monster', 'lava', 'gas', 'player1', 'mineral_green', 'mineral_red', 'mineral_blue', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
+  mapNames: ['monster', 'lava', 'gas', 'player1', 'mineral_green', 'mineral_red', 'mineral_blue', 'mineral_purple', 'mineral_teal', 'mineral_???', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
   toId: function(name){
     return Game.mapNames.indexOf(name);
   },
@@ -309,7 +309,7 @@ var Game = {
           Game.entities.ground.create(Game.toPx(x), Game.toPx(y), mapPos_0_name);
 
           if(mapPos[1] > 0){
-            Game.entities.mineral.create(Game.game, Game.toPx(x), Game.toPx(y), Game.toName(mapPos[1]));
+            Game.entities.mineral.create(Game.toPx(x), Game.toPx(y), Game.toName(mapPos[1]));
           }
         }
         

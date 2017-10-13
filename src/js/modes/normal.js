@@ -12,7 +12,10 @@ Game.modes.normal = {
   mineralValues: {
     green: 2.5,
     red: 3.75,
-    blue: 5
+    blue: 5,
+    purple: 6,
+    teal: 7.5,
+    '???': 9
   },
   baseGroundValue: 0.08,
   spacecoPrices: {
@@ -66,9 +69,10 @@ Game.modes.normal = {
       lavaChance: 0.6,
       gasChance: 0.001,
       monsterChance: 0.1,
-      mineralChance: 0.1,
+      mineralChance: 0.15,
       mineralRareity: {
-        red: 100
+        red: 99,
+        '???': 1
       },
       layers: [
         { white: 65, orange: 25, yellow: 5, red: 5 },
@@ -94,9 +98,12 @@ Game.modes.normal = {
       monsterChance: 0.6,
       mineralChance: 0.1,
       mineralRareity: {
-        green: 25,
-        red: 35,
-        blue: 40
+        green: 20,
+        red: 30,
+        blue: 30,
+        purple: 10,
+        teal: 9,
+        '???': 1
       },
       layers: [
         { white: 70, red: 15, black: 5 },
@@ -121,8 +128,11 @@ Game.modes.normal = {
       monsterChance: 0.8,
       mineralChance: 0.05,
       mineralRareity: {
-        red: 98,
-        blue: 2
+        red: 84,
+        blue: 5,
+        purple: 5,
+        teal: 5,
+        '???': 1
       },
       layers: [
         { white: 60, purple: 30, red: 10 },
@@ -146,8 +156,10 @@ Game.modes.normal = {
       monsterChance: 0.01,
       mineralChance: 0.05,
       mineralRareity: {
-        green: 95,
-        blue: 5
+        green: 80,
+        blue: 5,
+        purple: 4,
+        '???': 1
       },
       layers: [
         { green: 60, purple: 30, orange: 10 },
@@ -171,8 +183,11 @@ Game.modes.normal = {
       monsterChance: 0.4,
       mineralChance: 0.042,
       mineralRareity: {
-        green: 50,
-        blue: 50
+        green: 30,
+        blue: 30,
+        purple: 30,
+        teal: 8,
+        '???': 2
       },
       layers: [
         { blue: 40, purple: 60 },
@@ -194,8 +209,10 @@ Game.modes.normal = {
       monsterChance: 0.2,
       mineralChance: 0.05,
       mineralRareity: {
-        red: 75,
-        blue: 25
+        red: 65,
+        blue: 23,
+        teal: 10,
+        '???': 2
       },
       layers: [
         { blue: 75, pink: 10, teal: 10, purple: 5 },
@@ -217,9 +234,10 @@ Game.modes.normal = {
       monsterChance: 0.2,
       mineralChance: 0.07,
       mineralRareity: {
-        green: 35,
-        red: 15,
-        blue: 50
+        blue: 45,
+        purple: 30,
+        teal: 20,
+        '???': 5
       },
       layers: [
         { blue: 70, yellow: 15, orange: 10, black: 5 },
@@ -243,9 +261,12 @@ Game.modes.normal = {
       monsterChance: 0.3,
       mineralChance: 0.1,
       mineralRareity: {
-        green: 75,
+        green: 72,
         red: 5,
-        blue: 20
+        blue: 20,
+        purple: 1,
+        teal: 1,
+        '???': 1
       },
       layers: [
         { white: 60, orange: 10, yellow: 10, teal: 10, black: 10 },
@@ -268,8 +289,10 @@ Game.modes.normal = {
       monsterChance: 0.6,
       mineralChance: 0.08,
       mineralRareity: {
-        green: 50,
-        blue: 50
+        green: 39,
+        blue: 30,
+        teal: 30,
+        '???': 1
       },
       layers: [
         { yellow: 80, green: 10, teal: 5, red: 5 },
@@ -296,8 +319,11 @@ Game.modes.normal = {
       mineralChance: 0.1,
       mineralRareity: {
         green: 10,
-        red: 75,
-        blue: 15
+        red: 30,
+        blue: 15,
+        purple: 15,
+        teal: 25,
+        '???': 5
       },
       layers: [
         { teal: 50, white: 20, green: 30 },
@@ -319,8 +345,10 @@ Game.modes.normal = {
       monsterChance: 0.8,
       mineralChance: 0.15,
       mineralRareity: {
-        red: 99,
-        blue: 1
+        red: 80,
+        blue: 3,
+        purple: 2,
+        '???': 15
       },
       layers: [
         { red: 75, yellow: 20, black: 5 },
