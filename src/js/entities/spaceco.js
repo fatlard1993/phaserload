@@ -281,6 +281,8 @@ Game.entities.spaceco.selectItem = function(item){
     Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);
   }
   else if(item === 'repair'){
+    if(Game.health === 100 + (20 * ((Game.drill.upgrade || 0) + 1))) return;
+    
     Game.health = 100 + (20 * ((Game.drill.upgrade || 0) + 1));
   }
   else{
