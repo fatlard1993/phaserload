@@ -253,7 +253,13 @@ Game.entities.spaceco.selectItem = function(item){
   Game.hud.justSelectedItem = true;
   Game.hud.justSelectedItem_TO = setTimeout(function(){ Game.hud.justSelectedItem = false; }, 400);
 
-  if(Game.credits  < Game.entities.spaceco.prices[item]) return;
+  if(Game.credits < Game.entities.spaceco.prices[item]) return;
+
+  if(item === 'repair' && Game.health === 100 + (20 * ((Game.drill.upgrade || 0) + 1))) return;
+  if(item === 'upgrade' && Game.drill.upgrade === 3) return;
+  if(item === 'gas' && Game.drill.upgrade !== 0) return;
+  if(item === 'energy' && Game.drill.upgrade !== 1) return;
+  if(item === 'super_oxygen_liquid_nitrogen' && Game.drill.upgrade !== 2) return;
 
   Game.credits -= Game.entities.spaceco.prices[item];
 
@@ -281,8 +287,6 @@ Game.entities.spaceco.selectItem = function(item){
     Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);
   }
   else if(item === 'repair'){
-    if(Game.health === 100 + (20 * ((Game.drill.upgrade || 0) + 1))) return;
-
     Game.health = 100 + (20 * ((Game.drill.upgrade || 0) + 1));
   }
   else{
