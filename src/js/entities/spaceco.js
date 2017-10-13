@@ -73,7 +73,6 @@ Game.entities.spaceco.open = function(){
 
   Game.entities.spaceco.welcome(function(){
     Game.entities.spaceco.setInterfaceText('   Rates  Fuel  Shop     Exit\n');
-    Game.entities.spaceco.updateBottomLine();
     
     if(Game.mode === 'normal'){
       delete Game.hull.space;
@@ -94,6 +93,8 @@ Game.entities.spaceco.open = function(){
         Game.entities.spaceco.getOut_TO = setTimeout(Game.entities.spaceco.boot, 30*1000);
       }
     }
+
+    Game.entities.spaceco.updateBottomLine();
   });
 };
 

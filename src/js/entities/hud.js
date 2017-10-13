@@ -156,7 +156,7 @@ Game.entities.hud.setView = function(view){
 
     items += 'Hull Space               '+ Game.hull.space.toFixed(2) +'\n';
 
-    var mineralNames = ['mineral_green', 'mineral_blue', 'mineral_red'];
+    var mineralNames = ['mineral_green', 'mineral_blue', 'mineral_red', 'mineral_purple', 'mineral_teal', 'mineral_???'];
     
     for(var x = 0; x < mineralNames.length; x++){
       items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + (Game.hull[mineralNames[x]] || 0) +'\n';
