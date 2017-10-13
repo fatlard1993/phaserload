@@ -60,6 +60,35 @@ Game.modes.normal = {
   },
   levels: [
     {
+      briefing: '\n\n Welcome to asteroid CR417-13F'+ Game.rand(100, 999),
+      size: {
+        width: [45, 90],
+        depth: [300, 400]
+      },
+      holeChance: 0.1,
+      lavaChance: 0.7,
+      gasChance: 0.01,
+      monsterChance: 0.2,
+      mineralChance: 0.15,
+      mineralRareity: {
+        blue: 40,
+        purple: 30,
+        teal: 20,
+        '???': 10,
+      },
+      layers: [
+        { black: 65, red: 25, purple: 5, pink: 5 },
+        { black: 50, red: 30, purple: 10, pink: 10 },
+        { black: 40, red: 35, purple: 15, pink: 5 },
+        { black: 30, red: 40, purple: 20, pink: 10 },
+        { black: 20, red: 40, purple: 30, pink: 10 },
+        { black: 10, red: 35, purple: 35, pink: 20 },
+        { black: 5, red: 30, purple: 45, pink: 20 },
+        { black: 5, red: 20, purple: 45, pink: 30 },
+        { black: 5, red: 10, purple: 35, pink: 50 },
+      ]
+    },
+    {
       briefing: '\n\n Welcome to asteroid FR153-34R'+ Game.rand(100, 999),
       size: {
         width: [100, 140],
