@@ -198,7 +198,7 @@ Game.entities.player.move = function(game, direction){
   Game.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
   
   if(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10){
-    Game.notify('Open HUD to connect to Spaceco', 2);
+    Game.notify('Open your console to connect to Spaceco', 2);
   }
   else if(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) > Game.blockPx - 10){
     Game.infoLine.setText('');
