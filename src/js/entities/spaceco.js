@@ -258,13 +258,13 @@ Game.entities.spaceco.selectItem = function(item){
   Game.credits -= Game.entities.spaceco.prices[item];
 
   if(item === 'gas'){
-    Game.fuel += 1;
+    if(Game.drill.upgrade === 0) Game.fuel += 1.5;
   }
   else if(item === 'energy'){
-    Game.fuel += 2 + (Game.drill.upgrade > 1 ? 1 + Game.drill.upgrade : Game.drill.upgrade > 0 ? 1 : 0);
+    if(Game.drill.upgrade === 1) Game.fuel += 3.2;
   }
   else if(item === 'super_oxygen_liquid_nitrogen'){
-    Game.fuel += 3 + (Game.drill.upgrade > 1 ? 2 + Game.drill.upgrade : Game.drill.upgrade > 0 ? 2 : 0);
+    if(Game.drill.upgrade === 2) Game.fuel += 6.9;
   }
   else if(item === 'transport'){
     Game.purchasedTransport = true;
@@ -282,7 +282,7 @@ Game.entities.spaceco.selectItem = function(item){
   }
   else if(item === 'repair'){
     if(Game.health === 100 + (20 * ((Game.drill.upgrade || 0) + 1))) return;
-    
+
     Game.health = 100 + (20 * ((Game.drill.upgrade || 0) + 1));
   }
   else{
