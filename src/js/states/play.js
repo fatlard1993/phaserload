@@ -91,7 +91,7 @@ Game.states.play.prototype.update = function(){
 
   Game.lava.forEachAlive(function(lava){
     if(!Game.drill.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(Game.drill.x, Game.drill.y, lava.x, lava.y) < Game.blockPx/2){
-      Game.entities.player.hurt(lava.full ? 6 + Game.randFloat(1, 6) : 3 + Game.randFloat(1, 3), 'lava');
+      Game.entities.player.hurt(lava.full ? 12 + Game.randFloat(1, 6) : 8 + Game.randFloat(1, 3), 'lava');
     }
     
     if(!lava.full) return;
@@ -109,7 +109,7 @@ Game.states.play.prototype.update = function(){
 
   Game.gas.forEachAlive(function(gas){
     if(!Game.drill.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(Game.drill.x, Game.drill.y, gas.x, gas.y) < Game.blockPx/2){
-      Game.entities.player.hurt(gas.full ? 5 + Game.randFloat(1, 5) : 2 + Game.randFloat(1, 2), 'gas');
+      Game.entities.player.hurt(gas.full ? 10 + Game.randFloat(1, 5) : 6 + Game.randFloat(1, 2), 'gas');
     }
     
     if(!gas.full) return;
@@ -123,7 +123,7 @@ Game.states.play.prototype.update = function(){
 
   Game.monsters.forEachAlive(function(monster){
     if(!Game.drill.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(Game.drill.x, Game.drill.y, monster.x, monster.y) < Game.blockPx/2){
-      Game.entities.player.hurt(4 + Game.randFloat(1, 4), 'monster');
+      Game.entities.player.hurt(5 + Game.randFloat(1, 5), 'monster');
     }
   }, this);
 

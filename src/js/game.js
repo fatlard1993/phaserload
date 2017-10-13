@@ -19,7 +19,7 @@ var Game = {
       }
 
       if(Game.game.math.distance(pos.x, pos.y, Game.drill.x, Game.drill.y) < Game.blockPx * radius){
-        Game.entities.player.hurt(Game.randFloat(1, radius) * (radius - (Game.game.math.distance(pos.x, pos.y, Game.drill.x, Game.drill.y) / Game.blockPx)), 'explosion');
+        Game.entities.player.hurt(Game.randFloat(radius, radius * 2) * (radius - (Game.game.math.distance(pos.x, pos.y, Game.drill.x, Game.drill.y) / Game.blockPx)), 'explosion');
       }
 
       Game.ground.forEachAlive(function(ground){
