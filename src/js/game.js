@@ -355,6 +355,23 @@ var Game = {
     this.ground.forEachAlive(cleanup);
     this.lava.forEachAlive(cleanup);
     this.monsters.forEachAlive(cleanup);
+  },
+  dev: function(){
+    Game.fuel = Game.health = Game.hull.space = Game.credits = 1000;
+
+    Game.drill.upgrade = 3;
+
+    Game.inventory = {
+      teleporter: 20,
+      responder_teleporter: 20,
+      timed_charge: 20,
+      remote_charge: 20,
+      timed_freeze_charge: 20,
+      remote_freeze_charge: 20
+    };
+
+    Game.entities.itemSlot.setItem(1, 'responder_teleporter');
+    Game.entities.itemSlot.setItem(2, 'timed_charge');
   }
 };
 
