@@ -16,14 +16,13 @@ Game.entities.itemSlot.create = function(x, y){
 };
 
 Game.entities.itemSlot.setItem = function(slotNum, item){
+  console.log(slotNum, item);
   Game['itemSlot'+ slotNum].item = item;
 
   Game['itemSlot'+ slotNum].frame = item === '' ? 0 : 1;
 
-  if(item === ''){
-    if(Game['itemSlot'+ slotNum].itemSprite) Game['itemSlot'+ slotNum].itemSprite.destroy();
-  }
-  else{
+  if(Game['itemSlot'+ slotNum].itemSprite) Game['itemSlot'+ slotNum].itemSprite.destroy();
+  if(item !== ''){
     var frame = 0;
 
     Game['itemSlot'+ slotNum].itemSprite = Game.game.add.sprite(0, 0, item.includes('charge') ? 'explosive' : item);
