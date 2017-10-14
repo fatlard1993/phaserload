@@ -86,7 +86,7 @@ Game.entities.player.move = function(game, direction){
     setTimeout(function(){
       // Game.drawCurrentView();
       Game.drill.animations.play(Game.drill.upgrade > 0 ? 'upgrade_'+ Game.drill.upgrade : 'normal');
-      if(!direction.includes('responder')) Game.notify('Open HUD to connect to Spaceco', 2);
+      if(!direction.includes('responder')) Game.notify('Open your console to connect to Spaceco', 2);
     }, 200 + moveTime);
 
     newCameraPosition = { x: teleportPos.x - Game.viewWidth / 2, y: teleportPos.y - Game.viewHeight / 2 };    
