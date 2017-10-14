@@ -65,7 +65,7 @@ Game.entities.spaceco.getValue = function(name){
     value = Game.modes[Game.mode].mineralValues[name.replace('mineral_', '')] - ((Game.entities.spaceco.resourceBay[name] || 0) / 40);
   }
 
-  return value;
+  return Math.max(0, value);
 };
 
 Game.entities.spaceco.open = function(){
