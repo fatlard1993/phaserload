@@ -25,12 +25,6 @@ Game.states.load.prototype.preload = function(){
 
 Game.states.load.prototype.create = function(){
   console.log('load');
-
-  this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-  this.game.scale.pageAlignHorizontally = true;
-  this.game.scale.pageAlignVertically = true;
-
-  this.game.stage.backgroundColor = Game.config.backgroundColor;
-
+  
   this.game.state.start('lobby');
 };
