@@ -29,10 +29,12 @@ Game.entities.player.create = function(){
 Game.entities.player.getSurrounds = function(){
   return {
     left: Game.groundAt(Game.drill.x - Game.blockPx, Game.drill.y),
+    farLeft: Game.groundAt(Game.drill.x - (Game.blockPx * 2), Game.drill.y),
     topLeft: Game.groundAt(Game.drill.x - Game.blockPx, Game.drill.y - Game.blockPx),
     top: Game.groundAt(Game.drill.x, Game.drill.y - Game.blockPx),
     topRight: Game.groundAt(Game.drill.x + Game.blockPx, Game.drill.y - Game.blockPx),
     right: Game.groundAt(Game.drill.x + Game.blockPx, Game.drill.y),
+    farRight: Game.groundAt(Game.drill.x + (Game.blockPx * 2), Game.drill.y),
     bottomRight: Game.groundAt(Game.drill.x + Game.blockPx, Game.drill.y + Game.blockPx),
     bottom: Game.groundAt(Game.drill.x, Game.drill.y + Game.blockPx),
     bottomLeft: Game.groundAt(Game.drill.x - Game.blockPx, Game.drill.y + Game.blockPx)
@@ -44,16 +46,16 @@ Game.entities.player.move = function(game, direction){
 
   var surrounds = Game.entities.player.getSurrounds();
 
-  if(direction === 'left' && (Game.drill.x <= Game.blockPx/2 || (!surrounds.bottomLeft && !surrounds.bottom && !surrounds.left))){
+  if(direction === 'left' && (Game.drill.x <= Game.blockPx/2 || (!surrounds.bottomLeft && !surrounds.bottom && !surrounds.farLeft))){
     return;
   }
-  else if(direction === 'right' && (Game.drill.x >= (Game.width * 64) - 32 || (!surrounds.bottomRight && !surrounds.bottom && !surrounds.right))){
+  else if(direction === 'right' && (Game.drill.x >= (Game.width * 64) - 32 || (!surrounds.bottomRight && !surrounds.bottom && !surrounds.farRight))){
     return;
   }
   else if(direction === 'down'){
     // return;
   }
-  else if(direction === 'up' && (!surrounds.left && !surrounds.right)){
+  else if(direction === 'up' && (!surrounds.left && !surrounds.right && !surrounds.topLeft && !surrounds.topRight)){
     return;
   }
 
@@ -162,14 +164,14 @@ Game.entities.player.move = function(game, direction){
   var invertTexture = false;
 
   if(direction === 'up'){
-    if(surrounds.left){
+    if(surrounds.left || surrounds.topLeft && !(surrounds.topRight && surrounds.topLeft && Game.entities.player.lastMove === 'right')){
       invertTexture = true;
       Game.drill.angle = 90;
     }
     else Game.drill.angle = -90;
   }
   else if(direction === 'down'){
-    if(surrounds.right){
+    if(surrounds.right || surrounds.bottomRight && !(surrounds.bottomRight && surrounds.bottomLeft && Game.entities.player.lastMove === 'right')){
       invertTexture = true;
       Game.drill.angle = -90;
     }
@@ -182,7 +184,6 @@ Game.entities.player.move = function(game, direction){
   if(direction === 'left'){
     invertTexture = true;
   }
-
 
   if(invertTexture) Game.drill.scale.x = -Game.drillScaleX;
   else Game.drill.scale.x = Game.drillScaleX;   
