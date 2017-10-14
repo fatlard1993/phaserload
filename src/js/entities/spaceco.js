@@ -297,11 +297,19 @@ Game.entities.spaceco.selectItem = function(item){
   Game.entities.spaceco.updateBottomLine();  
 };
 
-Game.entities.spaceco.hurt = function(amount){
-  amount = amount ? parseInt(amount) : 1;
+Game.entities.spaceco.hurt = function(amount, by){
+  if(Game.spaceco.justHurt) return; //todo make this depend on what the damage is from
+  Game.spaceco.justHurt = true;
+  Game.spaceco.justHurt_TO = setTimeout(function(){ Game.spaceco.justHurt = false; }, 500);
 
   Game.spaceco.damage += amount;
   
-  if(Game.spaceco.damage > 9) setTimeout(Game.spaceco.kill, 400);
+  if(Game.spaceco.damage > 9){
+    setTimeout(function(){
+      Game.spaceco.kill();
+
+      Game.notify('Spaceco was killed by '+ by, 3);
+    }, 400);
+  }
   else Game.spaceco.frame = Game.spaceco.damage;
 };

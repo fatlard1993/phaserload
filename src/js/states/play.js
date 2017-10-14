@@ -97,7 +97,7 @@ Game.states.play.prototype.update = function(){
     if(!lava.full) return;
     
     if(this.game.math.distance(Game.spaceco.x, Game.spaceco.y, lava.x, lava.y) < Game.blockPx){
-      Game.spaceco.kill();
+      Game.entities.spaceco.hurt(1, 'lava');
     }
 
     Game.monsters.forEachAlive(function(monster){
@@ -142,7 +142,7 @@ Game.states.play.prototype.update = function(){
     if(spacecoGroundBase.bottomRight < 3 && spacecoGroundBase.bottom < 3 && spacecoGroundBase.bottomLeft < 3){
       Game.game.add.tween(Game.spaceco).to({ y: Game.spaceco.y + Game.blockPx }, 500, Phaser.Easing.Sinusoidal.InOut, true);
 
-      Game.entities.spaceco.hurt();
+      Game.entities.spaceco.hurt(1, 'falling');
     }  
   }
 
@@ -367,7 +367,7 @@ Game.states.play.prototype.update = function(){
         else{
           direction = 'down';
           
-          Game.entities.spaceco.hurt(Game.randFloat(1, 3), 'falling');
+          Game.entities.player.hurt(Game.randFloat(1, 3), 'falling');
         }
 
         console.log('Automove from: '+ Game.entities.player.lastMove +' to: '+ direction, surrounds);
