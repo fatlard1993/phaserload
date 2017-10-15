@@ -72,29 +72,39 @@ Game.entities.spaceco.open = function(){
   Game.entities.hud.open('spaceco');
 
   Game.entities.spaceco.welcome(function(){
-    Game.entities.spaceco.setInterfaceText('   Rates  Fuel  Shop     Exit\n');
+    var menu = '   Rates  Fuel  Shop     Exit\n';
+    var contents = '';
     
     if(Game.mode === 'normal'){
       delete Game.hull.space;
-  
+      
       var mineralNames = Object.keys(Game.hull);
-  
+      var statingCredits = Game.credits;
+      
       for(var x = 0; x < mineralNames.length; x++){
         Game.entities.spaceco.resourceBay[mineralNames[x]] = Game.entities.spaceco.resourceBay[mineralNames[x]] || 0;
         Game.entities.spaceco.resourceBay[mineralNames[x]] += Game.hull[mineralNames[x]];
-  
+
+        if(Game.hull[mineralNames[x]] > 0) contents += mineralNames[x] +': '+ Game.hull[mineralNames[x]] +' * '+ Game.entities.spaceco.getValue(mineralNames[x]) +'\n';
+        
         Game.credits += Game.hull[mineralNames[x]] * Game.entities.spaceco.getValue(mineralNames[x]);
       }
-  
+
+      contents += 'Total = '+ (Game.credits - statingCredits).toFixed(2);
+      
       Game.hull = {};
       Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);
-  
+      
       if(Game.credits === 0){
         Game.entities.spaceco.getOut_TO = setTimeout(Game.entities.spaceco.boot, 30*1000);
       }
     }
 
-    Game.entities.spaceco.updateBottomLine();
+    Game.entities.spaceco.setInterfaceText(menu + contents);
+
+    setTimeout(function(){
+      Game.entities.spaceco.updateBottomLine();
+    }, 500);
   });
 };
 
