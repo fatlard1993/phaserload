@@ -126,7 +126,16 @@ Game.entities.spaceco.setView = function(view){
   else if(view === 'rates_pg2'){
     menu = '  [ pg2 ] Fuel  Shop     Exit\n';
 
-    var mineralNames = ['ground_purple', 'ground_pink', 'ground_black', 'mineral_green', 'mineral_blue', 'mineral_red'];
+    var mineralNames = ['ground_purple', 'ground_pink', 'ground_black'];
+    
+    for(var x = 0; x < mineralNames.length; x++){
+      items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + Game.entities.spaceco.getValue(mineralNames[x]).toFixed(2) +'\n';
+    }
+  }
+  else if(view === 'rates_pg3'){
+    menu = '  [ pg3 ] Fuel  Shop     Exit\n';
+
+    var mineralNames = ['mineral_green', 'mineral_blue', 'mineral_red', 'mineral_purple', 'mineral_teal', 'mineral_???'];
     
     for(var x = 0; x < mineralNames.length; x++){
       items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + Game.entities.spaceco.getValue(mineralNames[x]).toFixed(2) +'\n';
@@ -174,6 +183,7 @@ Game.entities.spaceco.handlePointer = function(pointer){
   if(pointer.y > 70 && pointer.y < 110){// menu
     if(pointer.x > 70 && pointer.x < 165){
       if(Game.hud.view === 'rates') Game.entities.spaceco.setView('rates_pg2');
+      if(Game.hud.view === 'rates_pg2') Game.entities.spaceco.setView('rates_pg3');
       else Game.entities.spaceco.setView('rates');
     }
     else if(pointer.x > 175 && pointer.x < 255){
