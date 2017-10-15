@@ -41,8 +41,7 @@ Game.entities.hud.update = function(){
     if(statusText) statusText += '\n'+ value[0] + spacer;
     else statusText = value[0] + spacer;
     
-    if(item === 'position_dbg') statusText += 'x'+ Game.toGridPos(Game.drill.x) +' y'+ Game.toGridPos(Game.drill.y);
-    else if(item === 'position') statusText += 'x'+ (Game.toGridPos(Game.drill.x) + 1) +' y'+ -(Game.toGridPos(Game.drill.y) - 1);
+    if(item === 'position') statusText += 'x'+ Game.toGridPos(Game.drill.x) +' y'+ Game.toGridPos(Game.drill.y);
     else if(item === 'health') statusText += Game.health.toFixed(2);
     else if(item === 'fuel') statusText += Game.fuel.toFixed(2);
     else if(item === 'credits') statusText += Game.credits.toFixed(2);
