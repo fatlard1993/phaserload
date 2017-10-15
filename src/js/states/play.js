@@ -367,7 +367,7 @@ Game.states.play.prototype.update = function(){
         else{
           direction = 'down';
           
-          Game.entities.player.hurt(Game.randFloat(1, 3), 'falling');
+          if(Game.entities.player.lastMove === 'down') Game.entities.player.hurt(Game.randFloat(1, 3), 'falling');
         }
 
         console.log('Automove from: '+ Game.entities.player.lastMove +' to: '+ direction, surrounds);
