@@ -52,8 +52,8 @@ Game.entities.player.move = function(game, direction){
   else if(direction === 'right' && (Game.drill.x >= (Game.width * 64) - 32 || (!surrounds.bottomRight && !surrounds.bottom && !surrounds.farRight))){
     return;
   }
-  else if(direction === 'down'){
-    // return;
+  else if(direction === 'down' && Game.drill.y === Game.toPx(Game.depth - 2)){
+    return;
   }
   else if(direction === 'up' && (!surrounds.left && !surrounds.right && !surrounds.topLeft && !surrounds.topRight)){
     return;
