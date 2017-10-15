@@ -87,7 +87,7 @@ Game.entities.gas.spread = function(x, y){
         y: Game.toGridPos(gas.y)
       };
 
-      if(gridPos.x - 1 > 0 && (!Game.mapPosName(gridPos.x - 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x - 1, gridPos.y)))){
+      if(gridPos.x - 1 >= 0 && (!Game.mapPosName(gridPos.x - 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x - 1, gridPos.y)))){
         Game.entities.gas.create(x - Game.blockPx, y, 1);
       }
       
