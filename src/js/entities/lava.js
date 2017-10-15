@@ -85,7 +85,7 @@ Game.entities.lava.spread = function(x, y){
         Game.entities.lava.create(x + Game.blockPx, y, 1);
       }
   
-      if(gridPos.y + 1 > 0 && (!Game.mapPosName(gridPos.x, gridPos.y + 1) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x, gridPos.y + 1)))){
+      if(gridPos.y + 1 < Game.depth - 2 && (!Game.mapPosName(gridPos.x, gridPos.y + 1) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x, gridPos.y + 1)))){
         Game.entities.lava.create(x, y + Game.blockPx, 1);
       }
     }
