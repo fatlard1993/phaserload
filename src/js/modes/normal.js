@@ -117,8 +117,8 @@ Game.modes.normal = {
     {
       briefing: '\n\n Welcome to asteroid FR153-34R'+ Game.rand(100, 999),
       size: {
-        width: [100, 140],
-        depth: [200, 250]
+        width: [70, 110],
+        depth: [200, 360]
       },
       holeChance: 0.3,
       lavaChance: 0.6,
@@ -144,8 +144,8 @@ Game.modes.normal = {
     {
       briefing: '\n\n Welcome to asteroid ZT546-3T1'+ Game.rand(100, 999),
       size: {
-        width: [100, 140],
-        depth: [200, 250]
+        width: [80, 120],
+        depth: [200, 350]
       },
       holeChance: 0.5,
       lavaChance: 0.6,
@@ -175,7 +175,7 @@ Game.modes.normal = {
       briefing: '\n\n Welcome to asteroid ML876-L01'+ Game.rand(100, 999),
       size: {
         width: [40, 80],
-        depth: [100, 200]
+        depth: [180, 300]
       },
       holeChance: 0.15,
       lavaChance: 0.6,
@@ -203,7 +203,7 @@ Game.modes.normal = {
       briefing: '\n\n Welcome to asteroid GS340-20S'+ Game.rand(100, 999),
       size: {
         width: [80, 140],
-        depth: [100, 300]
+        depth: [200, 400]
       },
       holeChance: 0.2,
       lavaChance: 0.01,
@@ -230,7 +230,7 @@ Game.modes.normal = {
       briefing: '\n\n Welcome to asteroid TR982-420'+ Game.rand(100, 999),
       size: {
         width: [50, 70],
-        depth: [100, 200]
+        depth: [210, 320]
       },
       holeChance: 0.1,
       lavaChance: 0.4,
@@ -256,7 +256,7 @@ Game.modes.normal = {
       briefing: '\n\n Welcome to asteroid AE02A-809'+ Game.rand(100, 999),
       size: {
         width: [32, 45],
-        depth: [100, 200]
+        depth: [200, 340]
       },
       holeChance: 0.2,
       lavaChance: 0.2,
@@ -336,7 +336,7 @@ Game.modes.normal = {
       briefing: '\n\nWelcome to metoerite AE02A-809'+ Game.rand(100, 999),
       size: {
         width: [32, 64],
-        depth: [100, 400]
+        depth: [220, 400]
       },
       holeChance: 0.05,
       lavaChance: 0.5,
@@ -365,7 +365,7 @@ Game.modes.normal = {
       briefing: '\n\n   Welcome to moon CM12W-I13'+ Game.rand(100, 999),
       size: {
         width: [30, 70],
-        depth: [100, 300]
+        depth: [160, 300]
       },
       holeChance: 0.12,
       lavaChance: 0.25,
@@ -392,7 +392,7 @@ Game.modes.normal = {
       briefing: '\n\nWelcome to metoerite SP43N-72D'+ Game.rand(100, 999),
       size: {
         width: [32, 64],
-        depth: [100, 400]
+        depth: [220, 400]
       },
       holeChance: 0.02,
       lavaChance: 0.6,
