@@ -16,23 +16,23 @@ Game.states.play.prototype.create = function(){
   }
 
   Game.generateMap();
-  
+
   Game.game.camera.bounds = null;
 
   Game.ground = this.game.add.group();
   Game.lava = this.game.add.group();
   Game.gas = this.game.add.group();
   Game.minerals = this.game.add.group();
-  
+
   Game.spaceco = Game.entities.spaceco.create();
 
   Game.monsters = this.game.add.group();
-  
+
   Game.drill = Game.entities.player.create();
 
   Game.infoLine = this.game.add.text(5, 135, '', { font: '25px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
-  Game.infoLine.fixedToCamera = true; 
-  
+  Game.infoLine.fixedToCamera = true;
+
   Game.hud = Game.entities.hud.create(0, 0);
 
   Game.itemSlot1 = Game.entities.itemSlot.create(Game.viewWidth - 32, 32);
@@ -55,7 +55,7 @@ Game.states.play.prototype.create = function(){
     Game.hull.space = 10;
 
     Game.drill.upgrade = 0;
-  
+
     Game.health = 100;
     Game.credits = 0;
     Game.fuel = 5;
@@ -80,12 +80,12 @@ Game.states.play.prototype.update = function(){
   if(this.input.keyboard.isDown(Phaser.Keyboard.ESC) && !Game.justPressedEsc){
     Game.justPressedEsc = true;
     Game.justPressedEsc_TO = setTimeout(function(){ Game.justPressedEsc = false; }, 1000);
-    
+
     if(Game.hud.isOpen) Game.entities.hud.close();
     else{
       if(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10) Game.entities.spaceco.open();
       else Game.entities.hud.open('hud');
-      return; 
+      return;
     }
   }
 
@@ -93,9 +93,9 @@ Game.states.play.prototype.update = function(){
     if(!Game.drill.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(Game.drill.x, Game.drill.y, lava.x, lava.y) < Game.blockPx/2){
       Game.entities.player.hurt(lava.full ? 12 + Game.randFloat(1, 6) : 8 + Game.randFloat(1, 3), 'lava');
     }
-    
+
     if(!lava.full) return;
-    
+
     if(this.game.math.distance(Game.spaceco.x, Game.spaceco.y, lava.x, lava.y) < Game.blockPx){
       Game.entities.spaceco.hurt(1, 'lava');
     }
@@ -111,7 +111,7 @@ Game.states.play.prototype.update = function(){
     if(!Game.drill.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(Game.drill.x, Game.drill.y, gas.x, gas.y) < Game.blockPx/2){
       Game.entities.player.hurt(gas.full ? 10 + Game.randFloat(1, 5) : 6 + Game.randFloat(1, 2), 'gas');
     }
-    
+
     if(!gas.full) return;
 
     Game.monsters.forEachAlive(function(monster){
@@ -143,17 +143,17 @@ Game.states.play.prototype.update = function(){
       Game.game.add.tween(Game.spaceco).to({ y: Game.spaceco.y + Game.blockPx }, 500, Phaser.Easing.Sinusoidal.InOut, true);
 
       Game.entities.spaceco.hurt(1, 'falling');
-    }  
+    }
   }
 
   if(this.input.activePointer.isDown){
-    if(Game.hud.isOpen && !Game.hud.justUsedItemSlot){
+    if(Game.hud.isOpen && !Game.hud.justUsedItemSlot && !this.game.tweens.isTweening(Game.hud.scale)){
       if(this.input.activePointer.x > 575 || this.input.activePointer.y > 460) Game.entities.hud.close();
-  
+
       else if(Game.entities[Game.hud.isOpen] && Game.entities[Game.hud.isOpen].handlePointer) Game.entities[Game.hud.isOpen].handlePointer(this.input.activePointer);
-      
+
       else Game.entities.hud.close();
-  
+
       return;
     }
 
@@ -161,7 +161,7 @@ Game.states.play.prototype.update = function(){
       if(Game.hud.justUsedItemSlot || Game.hud.isOpen) return;
       Game.hud.justUsedItemSlot = true;
       Game.hud.justUsedItemSlot_TO = setTimeout(function(){ Game.hud.justUsedItemSlot = false; }, 500);
-      
+
       if(!Game.itemSlot1.item) Game.entities.hud.open('hud');
       else Game.entities.player.useItem(1, Game.itemSlot1.item);
 
@@ -182,16 +182,16 @@ Game.states.play.prototype.update = function(){
     else if(Game.game.math.distance(this.input.activePointer.x, this.input.activePointer.y, 70, 50) < 128){
       if(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10) Game.entities.spaceco.open();
       else Game.entities.hud.open('hud');
-      
+
       return;
     }
   }
 
-  if(Game.hud.isOpen){
+  if(Game.hud.isOpen  && !this.game.tweens.isTweening(Game.hud.scale)){
     var selectedItem, selectedMenu;
 
     if(this.input.keyboard.isDown(Phaser.Keyboard.I) && Game.hud.isOpen === 'hud' && !Game.hud.briefingOpen){
-      if(Game.hud.view === 'inventory' && Object.keys(Game.inventory).length > 6) selectedMenu = 'inventory_pg2'; 
+      if(Game.hud.view === 'inventory' && Object.keys(Game.inventory).length > 6) selectedMenu = 'inventory_pg2';
       else selectedMenu = 'inventory';
     }
     else if(this.input.keyboard.isDown(Phaser.Keyboard.H) && Game.hud.isOpen === 'hud' && !Game.hud.briefingOpen){
@@ -230,7 +230,7 @@ Game.states.play.prototype.update = function(){
         }
       }
     }
-  
+
     else if(this.input.keyboard.isDown(Phaser.Keyboard.TWO)){
       if(Game.hud.isOpen === 'hud'){
         if(Game.hud.view === 'inventory'){
@@ -267,7 +267,7 @@ Game.states.play.prototype.update = function(){
         }
       }
     }
-  
+
     else if(this.input.keyboard.isDown(Phaser.Keyboard.FOUR)){
       if(Game.hud.isOpen === 'hud'){
         if(Game.hud.view === 'inventory'){
@@ -283,7 +283,7 @@ Game.states.play.prototype.update = function(){
         }
       }
     }
-  
+
     else if(this.input.keyboard.isDown(Phaser.Keyboard.FIVE)){
       if(Game.hud.isOpen === 'hud'){
         if(Game.hud.view === 'inventory'){
@@ -304,7 +304,7 @@ Game.states.play.prototype.update = function(){
         }
       }
     }
-    
+
     if(selectedItem && Game.entities[Game.hud.isOpen] && Game.entities[Game.hud.isOpen].selectItem){
       Game.entities[Game.hud.isOpen].selectItem(selectedItem);
 
@@ -312,25 +312,24 @@ Game.states.play.prototype.update = function(){
     }
     else if(selectedMenu){
       Game.entities[Game.hud.isOpen].setView(selectedMenu);
-      
+
       return;
     }
 
     return;
   }
 
-  var moving;
-
-  if(!this.game.tweens.isTweening(Game.drill)){
+  if(!this.game.tweens.isTweening(Game.drill) && !this.game.tweens.isTweening(Game.hud.scale)){
+    var moving;
     var surrounds = Game.entities.player.getSurrounds();
 
     if(this.input.activePointer.isDown){
       var xDiff = Game.drill.x - this.input.activePointer.x - Game.game.camera.x;
       var yDiff = Game.drill.y - this.input.activePointer.y - Game.game.camera.y;
-  
+
       var xDirection = xDiff > 0 ? 'left' : 'right';
       var yDirection = yDiff > 0 ? 'up' : 'down';
-  
+
       moving = Math.abs(xDiff) > Math.abs(yDiff) ? xDirection : yDirection;
     }
 
@@ -360,13 +359,13 @@ Game.states.play.prototype.update = function(){
     else if(!Game.entities.player.justMoved){
       if(!surrounds.left && !surrounds.right && !surrounds.bottom){
         var direction;
-        
+
         if(Game.entities.player.lastMove === 'up' && (surrounds.bottomLeft || surrounds.bottomRight)){
           direction = surrounds.bottomLeft && !surrounds.bottomRight ? 'left' : (surrounds.bottomLeft && surrounds.bottomRight ? (Game.entities.player.lastMoveInvert ? 'left' : 'right') : 'right');
         }
         else{
           direction = 'down';
-          
+
           if(Game.entities.player.lastMove === 'down') Game.entities.player.hurt(Game.randFloat(1, 3), 'falling');
         }
 
