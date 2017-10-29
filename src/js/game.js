@@ -1,4 +1,4 @@
-/* global Phaser */
+/* global Phaser, Log */
 
 var Game = {
   mode: 'normal',
@@ -290,7 +290,7 @@ var Game = {
     if(bottom + 3 > Game.depth) bottom = Game.depth;
     if(right + 3 > Game.width) right = Game.width;
 
-    console.log('drawing '+ (((bottom - top) + 1) * ((right - left) + 1)) +' sprites, from: x'+ left +' y'+ top +' TO x'+ right +' y'+ bottom);
+    Log()('drawing '+ (((bottom - top) + 1) * ((right - left) + 1)) +' sprites, from: x'+ left +' y'+ top +' TO x'+ right +' y'+ bottom);
 
     for(var x = left; x <= right; x++){
       for(var y = top; y <= bottom; y++){
@@ -303,7 +303,7 @@ var Game = {
 
         var mapPos_0_name = Game.toName(mapPos[0]);
 
-        // console.log(x, y, Game.viewBufferMap[x][y], element);
+        // Log()(x, y, Game.viewBufferMap[x][y], element);
 
         if(mapPos_0_name.startsWith('ground')){
           Game.entities.ground.create(Game.toPx(x), Game.toPx(y), mapPos_0_name);
@@ -373,52 +373,4 @@ var Game = {
     Game.entities.itemSlot.setItem(1, 'responder_teleporter');
     Game.entities.itemSlot.setItem(2, 'timed_charge');
   }
-};
-
-document.oncontextmenu = function(evt) { evt.preventDefault(); };
-
-window.onload = function(){
-  console.log('onload');
-
-  let clientHeight = document.body.clientHeight;
-  let clientWidth = document.body.clientWidth;
-  let minViewWidth = 10 * Game.blockPx;
-  let minViewHeight = 8 * Game.blockPx;
-  let scale = (clientWidth < minViewWidth ? minViewWidth / clientWidth : 1);
-
-  if(clientHeight - minViewHeight < clientWidth - minViewWidth) scale = (clientHeight < minViewHeight ? minViewHeight / clientHeight : 1);
-
-  Game.viewWidth = Math.max(minViewWidth, clientWidth * scale);
-  Game.viewHeight = clientHeight * scale;
-
-  Game.game = new Phaser.Game(Game.viewWidth, Game.viewHeight, null, 'game');
-
-  Game.game.state.add('load', Game.states.load);
-  Game.game.state.add('lobby', Game.states.lobby);
-  Game.game.state.add('play', Game.states.play);
-  Game.game.state.add('end', Game.states.end);
-
-  console.log('states added');
-
-  setTimeout(function(){
-    if(scale !== 1){
-      Game.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-      Game.game.scale.pageAlignHorizontally = true;
-      Game.game.scale.pageAlignVertically = true;
-
-      scale = (1 / scale);
-
-      let gameCanvas = document.getElementById('game').children[0];
-      let marginTop = (Game.viewHeight - (Game.viewHeight * scale)) / 2;
-      let marginLeft = (Game.viewWidth - (Game.viewWidth * scale)) / 2;
-
-      // gameCanvas.style.transform = 'scale('+ scale +')';
-      gameCanvas.style.marginTop = -marginTop + 'px';
-      gameCanvas.style.marginLeft = -marginLeft + 'px';
-    }
-
-    Game.game.stage.backgroundColor = Game.config.backgroundColor;
-
-    Game.game.state.start('load');
-  }, 1000);
 };

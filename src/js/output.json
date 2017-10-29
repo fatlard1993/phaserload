@@ -5,6 +5,7 @@
     "src/js/_polyfill.js",
     "src/js/_log.js",
     "src/js/game.js",
+    "src/js/main.js",
 
     "src/js/modes/normal.js",
 
