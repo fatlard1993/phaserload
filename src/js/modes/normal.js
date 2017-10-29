@@ -60,6 +60,32 @@ Game.modes.normal = {
   },
   levels: [
     {
+      briefing: '\n\n Welcome to asteroid GH734-1B2'+ Game.rand(100, 999),
+      size: {
+        width: [50, 100],
+        depth: [300, 425]
+      },
+      holeChance: 0.12,
+      lavaChance: 0.3,
+      gasChance: 0.3,
+      monsterChance: 0.6,
+      mineralChance: 0.15,
+      mineralRareity: {
+        red: 50,
+        purple: 35,
+        '???': 15,
+      },
+      layers: [
+        { teal: 5, red: 20, purple: 37.5, pink: 37.5 },
+        { white: 35, red: 15, purple: 25, pink: 25 },
+        { white: 25, red: 15, purple: 30, pink: 30 },
+        { white: 15, red: 20, purple: 35, pink: 30 },
+        { white: 5, red: 30, purple: 30, pink: 35 },
+        { white: 10, red: 20, purple: 25, pink: 35, teal: 10 },
+        { red: 20, purple: 25, pink: 25, teal: 30 },
+      ]
+    },
+    {
       briefing: '\n\n Welcome to asteroid SP425-13K'+ Game.rand(100, 999),
       size: {
         width: [50, 110],
