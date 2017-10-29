@@ -27,11 +27,11 @@ Game.entities.spaceco.create = function(){
   spaceco.frame = spaceco.damage = 0;
 
   spaceco.anchor.setTo(0.5, 0.65);
-  
+
   spaceco.scale.setTo(0.25, 0.25);
 
   Game.entities.spaceco.resourceBay = {};
-  
+
   return spaceco;
 };
 
@@ -47,7 +47,7 @@ Game.entities.spaceco.welcome = function(cb){
 
 Game.entities.spaceco.boot = function(cb){
   if(Game.hud.isOpen !== 'spaceco') return;
-  
+
   Game.entities.spaceco.setInterfaceText('\n        Im sorry, but...\n      if you have no money\n    we simply cant help you.');
 
   setTimeout(Game.entities.hud.close, 3*1000);
@@ -55,11 +55,11 @@ Game.entities.spaceco.boot = function(cb){
 
 Game.entities.spaceco.getValue = function(name){
   var value;
-  
+
   if(name.startsWith('ground')){
-    value = Game.modes[Game.mode].baseGroundValue + (((Game.modes[Game.mode].digTime[name.replace('ground_', '')] / 2) - (Game.entities.spaceco.resourceBay[name] || 0)) / 1000)
-    
-    if(name === 'ground_green' && Game.mode === 'normal') value = value * 2;
+    value = Game.modes[Game.mode].baseGroundValue + (((Game.modes[Game.mode].digTime[name.replace('ground_', '')] / 2) - (Game.entities.spaceco.resourceBay[name] || 0)) / 1000);
+
+    if(name === 'ground_green' && Game.mode === 'normal') value *= 2;
   }
   else if(name.startsWith('mineral')){
     value = Game.modes[Game.mode].mineralValues[name.replace('mineral_', '')] - ((Game.entities.spaceco.resourceBay[name] || 0) / 40);
@@ -74,27 +74,41 @@ Game.entities.spaceco.open = function(){
   Game.entities.spaceco.welcome(function(){
     var menu = '   Rates  Fuel  Shop     Exit\n';
     var contents = '';
-    
+
     if(Game.mode === 'normal'){
       delete Game.hull.space;
-      
+
       var mineralNames = Object.keys(Game.hull);
       var statingCredits = Game.credits;
-      
-      for(var x = 0; x < mineralNames.length; x++){
+      var soldItems = {};
+      var x;
+
+      for(x = 0; x < mineralNames.length; x++){
         Game.entities.spaceco.resourceBay[mineralNames[x]] = Game.entities.spaceco.resourceBay[mineralNames[x]] || 0;
         Game.entities.spaceco.resourceBay[mineralNames[x]] += Game.hull[mineralNames[x]];
 
-        if(Game.hull[mineralNames[x]] > 0) contents += mineralNames[x] +': '+ Game.hull[mineralNames[x]] +' * '+ Game.entities.spaceco.getValue(mineralNames[x]) +'\n';
-        
+        var type = mineralNames[x].replace(/_.*$/, '');
+        soldItems[type] = soldItems[type] || 0;
+        soldItems[type]++;
+
+        // if(Game.hull[mineralNames[x]] > 0) contents += mineralNames[x] +': '+ Game.hull[mineralNames[x]] +' * '+ Game.entities.spaceco.getValue(mineralNames[x]) +'\n';
+
         Game.credits += Game.hull[mineralNames[x]] * Game.entities.spaceco.getValue(mineralNames[x]);
       }
 
-      contents += 'Total = '+ (Game.credits - statingCredits).toFixed(2);
-      
+      contents += 'Sold:\n';
+
+      var soldItemNames = Object.keys(soldItems);
+
+      for(x = 0; x < soldItemNames.length; x++){
+        contents += ' '+ soldItems[soldItemNames[x]] +' x '+ soldItemNames[x] +'s\n';
+      }
+
+      contents += 'For '+ (Game.credits - statingCredits).toFixed(2) +' credits';
+
       Game.hull = {};
       Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);
-      
+
       if(Game.credits === 0){
         Game.entities.spaceco.getOut_TO = setTimeout(Game.entities.spaceco.boot, 30*1000);
       }
@@ -114,7 +128,7 @@ Game.entities.spaceco.setView = function(view){
   if(Game.hud.justSetView) return;
   Game.hud.justSetView = true;
   Game.hud.justSetView_TO = setTimeout(function(){ Game.hud.justSetView = false; }, 400);
-  
+
   Game.hud.view = view;
 
   Game.entities.spaceco.updateBottomLine();
@@ -123,31 +137,32 @@ Game.entities.spaceco.setView = function(view){
   var items = '';
   var shortestLength = 10;
   var space = 19;
-  
+  var mineralNames, x;
+
   if(view === 'rates'){
     menu = '  [ pg1 ] Fuel  Shop     Exit\n';
-  
-    var mineralNames = ['ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue'];
-    
-    for(var x = 0; x < mineralNames.length; x++){
+
+    mineralNames = ['ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue'];
+
+    for(x = 0; x < mineralNames.length; x++){
       items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + Game.entities.spaceco.getValue(mineralNames[x]).toFixed(2) +'\n';
     }
   }
   else if(view === 'rates_pg2'){
     menu = '  [ pg2 ] Fuel  Shop     Exit\n';
 
-    var mineralNames = ['ground_purple', 'ground_pink', 'ground_black'];
-    
-    for(var x = 0; x < mineralNames.length; x++){
+    mineralNames = ['ground_purple', 'ground_pink', 'ground_black'];
+
+    for(x = 0; x < mineralNames.length; x++){
       items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + Game.entities.spaceco.getValue(mineralNames[x]).toFixed(2) +'\n';
     }
   }
   else if(view === 'rates_pg3'){
     menu = '  [ pg3 ] Fuel  Shop     Exit\n';
 
-    var mineralNames = ['mineral_green', 'mineral_blue', 'mineral_red', 'mineral_purple', 'mineral_teal', 'mineral_???'];
-    
-    for(var x = 0; x < mineralNames.length; x++){
+    mineralNames = ['mineral_green', 'mineral_blue', 'mineral_red', 'mineral_purple', 'mineral_teal', 'mineral_???'];
+
+    for(x = 0; x < mineralNames.length; x++){
       items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + Game.entities.spaceco.getValue(mineralNames[x]).toFixed(2) +'\n';
     }
   }
@@ -180,7 +195,7 @@ Game.entities.spaceco.setView = function(view){
 
 Game.entities.spaceco.updateBottomLine = function(){
   if(Game.hud.isOpen !== 'spaceco') return;
-  
+
   var credits = ' Credits: '+ Game.credits.toFixed(2);
   var fuel = '   Fuel: '+ Game.fuel.toFixed(2);
 
@@ -189,7 +204,7 @@ Game.entities.spaceco.updateBottomLine = function(){
 
 Game.entities.spaceco.handlePointer = function(pointer){
   if(Game.hud.isOpen !== 'spaceco') return;
-  
+
   if(pointer.y > 70 && pointer.y < 110){// menu
     if(pointer.x > 70 && pointer.x < 165){
       if(Game.hud.view === 'rates') Game.entities.spaceco.setView('rates_pg2');
@@ -259,7 +274,7 @@ Game.entities.spaceco.handlePointer = function(pointer){
       selectedItem = 'transport';
     }
   }
-  
+
   if(selectedItem){
     Game.entities.spaceco.selectItem(selectedItem);
     //idea::todo animate a sprite of the purchased thing going from the top to the bottom (from spaceco to the player)
@@ -301,7 +316,7 @@ Game.entities.spaceco.selectItem = function(item){
     if(Game.drill.upgrade === 3) return;
 
     Game.drill.upgrade++;
-    
+
     Game.drill.animations.play('upgrade_'+ Game.drill.upgrade);
 
     Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);
@@ -314,7 +329,7 @@ Game.entities.spaceco.selectItem = function(item){
     Game.inventory[item]++;
   }
 
-  Game.entities.spaceco.updateBottomLine();  
+  Game.entities.spaceco.updateBottomLine();
 };
 
 Game.entities.spaceco.hurt = function(amount, by){
@@ -323,7 +338,7 @@ Game.entities.spaceco.hurt = function(amount, by){
   Game.spaceco.justHurt_TO = setTimeout(function(){ Game.spaceco.justHurt = false; }, 500);
 
   Game.spaceco.damage += amount;
-  
+
   if(Game.spaceco.damage > 9){
     setTimeout(function(){
       Game.spaceco.kill();
