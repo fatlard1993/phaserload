@@ -4,9 +4,9 @@ Game.entities.player = function(){};
 
 Game.entities.player.create = function(){
   var playerX = Game.rand(1, Game.width - 1);
-  
+
   var player = Game.game.add.sprite(Game.toPx(playerX), Game.toPx(1), 'drill', 15);
-  
+
   player.anchor.setTo(0.5, 0.5);
 
   player.animations.add('normal', [0, 1, 2], 10, true);
@@ -14,7 +14,7 @@ Game.entities.player.create = function(){
   player.animations.add('upgrade_2', [6, 7, 8], 10, true);
   player.animations.add('upgrade_3', [9, 10, 11], 10, true);
   player.animations.add('teleporting', [12, 13, 14], 10, true);
-  
+
   player.animations.play('normal');
 
   Game.map[playerX][1][0] = Game.mapNames.indexOf('player1');
@@ -69,7 +69,7 @@ Game.entities.player.move = function(game, direction){
       Game.entities.player.justMoved = false;
     }, 500);
   }
-  
+
   var newPosition = {
     x: Game.drill.x + (direction === 'left' ? -Game.blockPx : direction === 'right' ? Game.blockPx : 0),
     y: Game.drill.y + (direction === 'up' ? -Game.blockPx : direction === 'down' ? Game.blockPx : 0)
@@ -91,7 +91,7 @@ Game.entities.player.move = function(game, direction){
       if(!direction.includes('responder')) Game.notify('Open your console to connect to Spaceco', 2);
     }, 200 + moveTime);
 
-    newCameraPosition = { x: teleportPos.x - Game.viewWidth / 2, y: teleportPos.y - Game.viewHeight / 2 };    
+    newCameraPosition = { x: teleportPos.x - Game.viewWidth / 2, y: teleportPos.y - Game.viewHeight / 2 };
 
     newPosition.x = teleportPos.x;
     newPosition.y = teleportPos.y;
@@ -114,25 +114,25 @@ Game.entities.player.move = function(game, direction){
     Game.drill.addChild(Game.drill.emitter);
 
     var frameMod = Game.entities.ground.types.indexOf(targetGroundType.replace('ground_', '')) * 4;
-  
+
     Game.drill.emitter.makeParticles('ground', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod]);
-  
+
     Game.drill.emitter.x = 32;
 
     Game.drill.emitter.setScale(0.1, 0.3, 0.1, 0.3);
-  
+
     Game.drill.emitter.start(true, moveTime + 100, null, Math.round(Game.rand(3, 7)));
 
     Game.entities.ground.dig(newPosition);
   }
 
   var mineralWeight = 0.08;
-  
+
   if(Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] && Game.hull.space > mineralWeight){
     Game.minerals.forEachAlive(function(mineral){
       if(mineral.x === newPosition.x && mineral.y === newPosition.y){
         Game.hull[mineral.type] = Game.hull[mineral.type] !== undefined ? Game.hull[mineral.type] : 0;
-        
+
         Game.hull[mineral.type]++;
 
         var animationTime = 200 + Math.ceil(Game.game.math.distance(game.camera.x, game.camera.y, mineral.x, mineral.y));
@@ -143,22 +143,22 @@ Game.entities.player.move = function(game, direction){
           Game.hull.space -= mineralWeight;
 
           mineral.kill();
-    
+
           Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] = -1;
           Game.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] = -1;
         }, animationTime);
       }
     });
   }
-  
+
   if(Game.hull.space < 0) moveTime += 250;
 
   moveTime = Math.max(Game.modes[Game.mode].baseDrillMoveTime, moveTime - (((Game.drill.upgrade || 0) + 1) * 50));
 
-  if(targetGroundType && targetGroundType.startsWith('ground')) Game.game.camera.shake(0.0005, moveTime);
+  //if(targetGroundType && targetGroundType.startsWith('ground')) Game.game.camera.shake((moveTime * 0.00001) * 0.42, moveTime);
 
   game.add.tween(Game.drill).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
-  
+
   if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime, direction);
 
   var invertTexture = false;
@@ -178,7 +178,7 @@ Game.entities.player.move = function(game, direction){
     else Game.drill.angle = 90;
   }
   else{
-    Game.drill.angle = 0;    
+    Game.drill.angle = 0;
   }
 
   if(direction === 'left'){
@@ -186,18 +186,18 @@ Game.entities.player.move = function(game, direction){
   }
 
   if(invertTexture) Game.drill.scale.x = -Game.drillScaleX;
-  else Game.drill.scale.x = Game.drillScaleX;   
+  else Game.drill.scale.x = Game.drillScaleX;
 
   Game.entities.player.lastMoveInvert = invertTexture;
   Game.entities.player.lastMove = direction;
 
   Game.entities.player.lastPosition = newPosition;
-  
+
   Game.map[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)][0] = -1;
   Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
   Game.viewBufferMap[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)][0] = -1;
   Game.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
-  
+
   if(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10){
     Game.notify('Open your console to connect to Spaceco', 2);
   }
@@ -222,7 +222,7 @@ Game.entities.player.move = function(game, direction){
 
   setTimeout(function(){
     Game.entities.hud.update();
-    
+
     if(Game.drill.emitter){
       Game.drill.emitter.destroy();
       Game.drill.emitter = null;
@@ -255,7 +255,7 @@ Game.entities.player.useItem = function(slotNum, item){
     }
 
     var frame = 0;
-    
+
     if(item.includes('freeze')) frame += 4;
 
     if(item.includes('remote')){
@@ -269,9 +269,9 @@ Game.entities.player.useItem = function(slotNum, item){
         Game.drill.activeCharge.frame++;
 
         Game.effects[Game.drill.activeChargeType.includes('freeze') ? 'freeze' : 'explode']({ x: Game.drill.activeCharge.x, y: Game.drill.activeCharge.y }, Game.drill.activeChargeType.includes('remote') ? 5 : 3);
-        
+
         Game.game.camera.shake(Game.drill.activeChargeType.includes('remote') ? 0.05 : 0.03, 1000);
-        
+
         setTimeout(function(){
           Game.drill.activeCharge.destroy();
           Game.drill.activeCharge = null;
@@ -299,7 +299,7 @@ Game.entities.player.useItem = function(slotNum, item){
       setTimeout(function(){
         Game.entities.itemSlot.setItem(slotNum, '');
         if(Game.inventory[Game.drill.activeChargeType] > 0) Game.entities.itemSlot.setItem(slotNum, Game.drill.activeChargeType);
-        
+
         Game.drill.activeCharge.destroy();
         Game.drill.activeCharge = null;
         Game.drill.activeChargeType = null;
@@ -312,7 +312,7 @@ Game.entities.player.useItem = function(slotNum, item){
       Game.drill.responder.anchor.setTo(0.5, 0);
       Game.drill.responder.animations.add('active', [0, 1], 5, true);
       Game.drill.responder.animations.play('active');
-      
+
       Game.entities.player.move(Game.game, 'teleport');
     }
     else{
@@ -344,7 +344,7 @@ Game.entities.player.hurt = function(amount, by){
   Game.drill.justHurt_TO = setTimeout(function(){ Game.drill.justHurt = false; }, 500);
 
   Game.health -= amount;
-  
+
   if(Game.health <= 0){
     Game.drill.kill();
     Game.loseReason = by;
