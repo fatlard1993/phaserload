@@ -3,7 +3,7 @@ const HttpServer = require('http').createServer(app);
 const BodyParser = require('body-parser');
 const CookieParser = require('cookie-parser');
 
-const HTTP_PORT = process.env.NODE_ENV === 'production' ? 80 : 8080;
+const HTTP_PORT = process.env.PORT || 80;
 
 app.use(Express.static('./public'));
 
