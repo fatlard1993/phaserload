@@ -559,6 +559,12 @@ var Sockets = {
         User.joinRoom(roomName);
       });
 
+      socket.on('join_room', function(roomName){
+        console.log('join_room', roomName);
+
+        User.joinRoom(roomName);
+      });
+
       socket.on('disconnect', function(){
         if(!User || !User.username) return console.warn('socket', 'Undefined user left!');
 

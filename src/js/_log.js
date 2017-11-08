@@ -1,6 +1,8 @@
-/* global console */
+/* global console, Dom */
 
 var DBG = 0;
+
+if(Dom.location.query.get('DBG')) DBG = parseInt(Dom.location.query.get('DBG'));
 
 function ConsoleWrap(method){
   return function _log(verbosity){

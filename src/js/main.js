@@ -1,4 +1,4 @@
-/* global Phaser, screenfull, io, Log, Game */
+/* global Phaser, screenfull, io, Dom, Log, Game */
 
 var Socket;
 
@@ -10,7 +10,7 @@ window.onload = function(){
   Socket = io.connect(window.location.protocol +'//'+ window.location.hostname, { secure: true });
 
   Socket.emit('connect_request', {
-    username: 'test' + Game.rand(1, 99)
+    username: Dom.cookie.get('username') || 'test_' + Game.rand(1, 99)
   });
 
   Socket.on('welcome', function(data){
@@ -18,7 +18,7 @@ window.onload = function(){
 
     if(data.rooms.length) Socket.emit('join_room', data.rooms[0]);
     else Socket.emit('create_room', {
-      name: 'test_room',
+      name: 'test_room_' + Game.rand(1, 99),
       playerCount: 10
     });
 

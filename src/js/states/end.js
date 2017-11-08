@@ -34,5 +34,8 @@ Game.states.end.prototype.create = function(){
   this.game.add.tween(text).to({ alpha: 1 }, tweenTime, Phaser.Easing.Sinusoidal.InOut, true, delay);
   delay += delayIncrement;
 
-  this.game.input.onDown.add(function(){ this.game.state.start('play'); }, this);
+  this.game.input.onDown.add(function(){
+    window.location.reload();
+    // this.game.state.start('play');
+  }, this);
 };

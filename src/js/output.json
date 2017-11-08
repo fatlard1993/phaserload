@@ -5,6 +5,7 @@
     "src/js/lib/screenfull.js",
     "src/js/lib/socketio.js",
     "src/js/_polyfill.js",
+    "src/js/_dom.js",
     "src/js/_log.js",
     "src/js/game.js",
     "src/js/main.js",
