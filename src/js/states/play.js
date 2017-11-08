@@ -15,7 +15,7 @@ Game.states.play.prototype.create = function(){
     Game.modes[Game.mode].nextLevel();
   }
 
-  Game.generateMap();
+  // Game.generateMap();
 
   Game.game.camera.bounds = null;
 

@@ -1,4 +1,4 @@
-/* global Phaser, Log */
+/* global Phaser, screenfull, io, Log */
 
 var Game = {
   mode: 'normal',

@@ -1,44 +1,3 @@
-const Express = require('express'), app = Express();
-const HttpServer = require('http').createServer(app);
-const BodyParser = require('body-parser');
-const CookieParser = require('cookie-parser');
-
-const Sockets = require('./services/sockets.js');
-
-const HTTP_PORT = process.env.PORT || 80;
-
-app.use(Express.static('./public'));
-
-app.get('*', function redirectTrailingWak(req, res, next){
-  var queryStringIndex = req.originalUrl.indexOf('?');
-  var path = req.originalUrl.slice(0, ((queryStringIndex >= 0) ? queryStringIndex : req.originalUrl.length));
-
-  if(path.slice(-1) !== '/') return next();
-
-  var redirectPath = path.slice(0, (path.length - 1)) + ((queryStringIndex > -1) ? req.originalUrl.slice(queryStringIndex) : '');
-
-  console.log('Redirecting '+ req.originalUrl +' to '+ redirectPath);
-
-  res.redirect(301, redirectPath);
-});
-
-app.use(BodyParser.urlencoded({ extended: false }));
-app.use(BodyParser.json());
-app.use(CookieParser());
-
-app.get('*', function(req, res, next){
-  console.log('GET '+ req.path);
-
-  next();
-});
-
-app.get('/test', function(req, res, next){
-  res.send('test');
-});
-
-
-
-
 function rand(min, max, excludes){
   excludes = excludes || [];
 
@@ -335,7 +294,7 @@ var levels = [
       { blue: 50, yellow: 15, orange: 20, black: 15 },
       { blue: 30, yellow: 5, orange: 60, black: 5 },
       { blue: 14, yellow: 25, orange: 60, black: 1 },
-      { blue: 1, yellow: 1, orange: 97, black: 1 }
+      { blue: 1, orange: 97, black: 1 }
     ]
   },
   {
@@ -513,44 +472,116 @@ function generateMap(){
   return mapData;
 }
 
-app.get('/map', function(req, res, next){
-  res.json(generateMap());
-});
+var Sockets = {
+  users: {},
+  rooms: {},
+  init: function(server){
+    Sockets.io = require('socket.io').listen(server);
 
+    Sockets.io.on('connection', function(socket){
+      console.log('socket', '"Someone" connected...');
 
+      var User;
 
+      socket.on('connect_request', function(userData){
+        console.log('User connected: ', userData);
 
+        User = Sockets.users[userData.username] = Object.assign(userData, {
+          socket: socket,
+          joinRoom: function(room, roomData){
+            User.leaveRoom();
 
-app.use(function(req, res, next){
-  next({ detail: `The path ${req.path} does not exist`, status: 404 });
-});
+            if(Sockets.rooms[room]){
+              console.log('socket', room +' already exists... Adding '+ User.username +' to users list..');
 
-app.use(function(err, req, res, next){
-  console.error('Error catch!');
+              Sockets.rooms[room].users.push(User.username);
 
-  var headers = {
-    '401': '401 - Unauthorized',
-    '403': '403 - Forbidden',
-    '404': '404 - Not Found',
-    '500': '500 - Internal Server Error'
-  };
+              socket.broadcast.in(room).emit('user_connect', User.username);
+            }
+            else{
+              console.log('socket', room +' doesn\'t exist, creating room, initializing users list with '+ User.username +'..');
 
-  if(!err.status){
-    console.error('No Error Status Provided!');
+              var newRoomData = {
+                users: [User.username],
+                mapData: generateMap()
+              };
 
-    if(err instanceof Object) err.status = 500;
-    else err = { err: err, status: 500 };
+              if(roomData) newRoomData = Object.assign(newRoomData, roomData);
+
+              Sockets.rooms[room] = newRoomData;
+            }
+
+            socket.join(room);
+
+            User.room = room;
+
+            socket.emit('roomData', Sockets.rooms[room]);
+          },
+          leaveRoom: function(){
+            if(User.room && Sockets.rooms[User.room]){
+              Sockets.rooms[User.room].users.splice(Sockets.rooms[User.room].users.indexOf(User.username), 1);
+
+              if(!Sockets.rooms[User.room].users.length){
+                console.log('socket', 'Room is now empty, tearing down room..');
+
+                delete Sockets.rooms[User.room];
+              }
+              else{
+                console.log('socket', 'There are '+ Sockets.rooms[User.room].users.length +' uses left in '+ User.room);
+
+                Sockets.io.in(User.room).emit('user_disconnect', User.username);
+              }
+            }
+          },
+          disconnect: function(){
+            if(!Sockets.users[User.username]) return console.warn('socket', 'Disconnecting "'+ User.username +'"..');
+
+            delete Sockets.users[User.username];
+
+            User.leaveRoom();
+
+            User = null;
+          }
+        });
+
+        socket.emit('welcome', { rooms: Object.keys(Sockets.rooms) });
+      });
+
+      socket.on('create_room', function(roomData){
+        console.log('create_room', roomData);
+
+        User.joinRoom(roomData.name, roomData);
+      });
+
+      socket.on('join_room', function(roomName){
+        console.log('join_room', roomName);
+
+        User.joinRoom(roomName);
+      });
+
+      socket.on('disconnect', function(){
+        if(!User || !User.username) return console.warn('socket', 'Undefined user left!');
+
+        console.log('socket', User.username +' left '+ User.socketRoom);
+
+        User.disconnect();
+      });
+    });
+
+    return Sockets;
+  },
+  emitTo: function(destination, event, content){
+    console.log('socket', 'Sending '+ event +' to '+ destination);
+    if(content) console.log('socket', 'Event content: ', content);
+
+    if(destination === '*') Sockets.io.sockets.emit(event, content);
+
+    else if(Sockets.rooms[destination]) Sockets.io.sockets.in(destination).emit(event, content);
+
+    else if(Sockets.users[destination]) Sockets.users[destination].socket.emit(event, content);
+
+    else  console.warn('socket', 'Could not find '+ destination);
   }
+};
 
-  console.error(err);
-
-  var detail = err.detail || JSON.stringify(err) || 'Unknown error!';
-
-  res.status(err.status)[req.headers.accept && req.headers.accept === 'application/json' ? 'json' : 'send'](detail);
-});
-
-HttpServer.listen(HTTP_PORT, function(){
-  console.log('HTTP server is running!');
-
-  Sockets.init(HttpServer);
-});
+module.exports = Sockets;

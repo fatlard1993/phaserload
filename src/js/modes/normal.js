@@ -1,4 +1,4 @@
-/* global Phaser, Game */
+/* global Phaser, screenfull, io, Log, Game, Socket */
 
 Game.modes.normal = {
   baseDrillMoveTime: 300,

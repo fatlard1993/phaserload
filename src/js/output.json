@@ -2,6 +2,8 @@
   "name": "phaserload.js",
   "includes": [
     "src/js/lib/phaser.js",
+    "src/js/lib/screenfull.js",
+    "src/js/lib/socketio.js",
     "src/js/_polyfill.js",
     "src/js/_log.js",
     "src/js/game.js",

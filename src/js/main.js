@@ -1,9 +1,33 @@
-/* global Phaser, Game */
+/* global Phaser, screenfull, io, Log, Game */
+
+var Socket;
 
 document.oncontextmenu = function(evt) { evt.preventDefault(); };
 
 window.onload = function(){
   console.log('onload');
+
+  Socket = io.connect(window.location.protocol +'//'+ window.location.hostname, { secure: true });
+
+  Socket.emit('connect_request', {
+    username: 'test' + Game.rand(1, 99)
+  });
+
+  Socket.on('welcome', function(data){
+    console.log('rooms', data);
+
+    if(data.rooms.length) Socket.emit('join_room', data.rooms[0]);
+    else Socket.emit('create_room', {
+      name: 'test_room',
+      playerCount: 10
+    });
+
+    Socket.on('roomData', function(data){
+      console.log('roomData', data);
+
+      Game = Object.assign(Game, data.mapData);
+    });
+  });
 
   let clientHeight = document.body.clientHeight;
   let clientWidth = document.body.clientWidth;
