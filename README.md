@@ -4,15 +4,21 @@ Phaserload is a Motherload-inspired game built with [Phaser.js](https://github.c
 
 ## prerequisites
 - [Node.js](https://nodejs.org/en/) version 4 and above
-- Gulp `npm i -g gulp`
+- Gulp $ `npm i -g gulp`
 
 ## setup
 - $ `git clone https://github.com/fatlard1993/phaserload.git`
 - $ `cd phaserload`
-- $ `npm i`
+- /phaserload $ `npm i`
 
 ## run
-- $ `npm start`
+- /phaserload $ `npm start`
+- Open: [localhost:8080](http://localhost:8080)
+
+## setup dev
+- /phaserload $ `npm i --only=dev`
 
 ## develop
-- $ `npm run dev`
+- /phaserload $ `gulp dev`
+- /phaserload $ `sudo node app`
+- Open: [localhost](http://localhost)

@@ -4,9 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "gulp && node app",
-    "dev": "gulp dev"
+    "test": "echo \"Silly goose theres no easter eggs in here\" && exit 1",
+    "start": "gulp && PORT=8080 node app"
   },
   "repository": {
     "type": "git",

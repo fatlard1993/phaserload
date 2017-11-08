@@ -21,7 +21,7 @@ const browserSyncOptions = {
 gulp.task('default', ['compile']);
 
 gulp.task('dev', ['compile'], function(){
-  browserSync.init(browserSyncOptions);
+  // browserSync.init(browserSyncOptions);
 
   gulp.watch('src/js/**/*.js', ['compile-js']);
   gulp.watch('src/scss/*.scss', ['compile-css']);
