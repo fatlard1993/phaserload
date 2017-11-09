@@ -20,7 +20,7 @@ Game.entities.lava = function(x, y){
       Game.entities.lava.create(this.x - Game.blockPx, this.y, 1);
     }
     
-    if(gridPos.x + 1 < Game.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
+    if(gridPos.x + 1 < Game.config.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
       Game.entities.lava.create(this.x + Game.blockPx, this.y, 1);
     }
 
@@ -53,8 +53,8 @@ Game.entities.lava.create = function(x, y, isNew){
       y: Game.toGridPos(y)
     };
     
-    Game.viewBufferMap[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('lava');
-    Game.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('lava');
+    Game.config.viewBufferMap[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('lava');
+    Game.config.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('lava');
     
     lava.full = false;
 
@@ -81,11 +81,11 @@ Game.entities.lava.spread = function(x, y){
         Game.entities.lava.create(x - Game.blockPx, y, 1);
       }
       
-      if(gridPos.x + 1 < Game.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
+      if(gridPos.x + 1 < Game.config.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
         Game.entities.lava.create(x + Game.blockPx, y, 1);
       }
   
-      if(gridPos.y + 1 < Game.depth - 2 && (!Game.mapPosName(gridPos.x, gridPos.y + 1) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x, gridPos.y + 1)))){
+      if(gridPos.y + 1 < Game.config.depth - 2 && (!Game.mapPosName(gridPos.x, gridPos.y + 1) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x, gridPos.y + 1)))){
         Game.entities.lava.create(x, y + Game.blockPx, 1);
       }
     }

@@ -25,7 +25,7 @@ window.onload = function(){
     Socket.on('roomData', function(data){
       console.log('roomData', data);
 
-      Game = Object.assign(Game, data.mapData);
+      Game.config = Object.assign(Game.config, data);
     });
   });
 

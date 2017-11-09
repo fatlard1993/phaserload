@@ -5,17 +5,7 @@ Game.states.play = function(game){};
 Game.states.play.prototype.create = function(){
   console.log('play');
 
-  Game.entities.spaceco.prices = Game.modes[Game.mode].spacecoPrices || Game.entities.spaceco.defaultPrices;
-
-  if(Game.desiredLevel !== undefined){
-    Game.modes[Game.mode].level = Game.desiredLevel;
-    Game.desiredLevel = undefined;
-  }
-  else{
-    Game.modes[Game.mode].nextLevel();
-  }
-
-  // Game.generateMap();
+  Game.entities.spaceco.prices = Game.config.world.spacecoPrices || Game.entities.spaceco.defaultPrices;
 
   Game.game.camera.bounds = null;
 
@@ -134,9 +124,9 @@ Game.states.play.prototype.update = function(){
     };
 
     var spacecoGroundBase = {
-      bottomRight: gridPos.x + 1 < Game.width ? Game.map[gridPos.x + 1][gridPos.y + 1][0] : -1,
-      bottom: Game.map[gridPos.x][gridPos.y + 1][0],
-      bottomLeft: gridPos.x - 1 >= 0 ? Game.map[gridPos.x - 1][gridPos.y + 1][0] : -1
+      bottomRight: gridPos.x + 1 < Game.config.width ? Game.config.map[gridPos.x + 1][gridPos.y + 1][0] : -1,
+      bottom: Game.config.map[gridPos.x][gridPos.y + 1][0],
+      bottomLeft: gridPos.x - 1 >= 0 ? Game.config.map[gridPos.x - 1][gridPos.y + 1][0] : -1
     };
 
     if(spacecoGroundBase.bottomRight < 3 && spacecoGroundBase.bottom < 3 && spacecoGroundBase.bottomLeft < 3){

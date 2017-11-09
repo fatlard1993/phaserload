@@ -20,7 +20,7 @@ Game.entities.gas = function(x, y){
       Game.entities.gas.create(this.x - Game.blockPx, this.y, 1);
     }
     
-    else if(gridPos.x + 1 < Game.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
+    else if(gridPos.x + 1 < Game.config.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
       Game.entities.gas.create(this.x + Game.blockPx, this.y, 1);
     }
 
@@ -35,8 +35,8 @@ Game.entities.gas = function(x, y){
   dissipateAnim.onComplete.add(function(){
     this.kill();
 
-    Game.viewBufferMap[Game.toGridPos(this.x)][Game.toGridPos(this.y)][0] = -1;
-    Game.map[Game.toGridPos(this.x)][Game.toGridPos(this.y)][0] = -1;
+    Game.config.viewBufferMap[Game.toGridPos(this.x)][Game.toGridPos(this.y)][0] = -1;
+    Game.config.map[Game.toGridPos(this.x)][Game.toGridPos(this.y)][0] = -1;
   }, this);
 
   this.animations.add('full', [3, 4, 5], 10, true);
@@ -63,8 +63,8 @@ Game.entities.gas.create = function(x, y, isNew){
       y: Game.toGridPos(y)
     };
     
-    Game.viewBufferMap[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('gas');
-    Game.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('gas');
+    Game.config.viewBufferMap[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('gas');
+    Game.config.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('gas');
     
     gas.full = false;
 
@@ -91,7 +91,7 @@ Game.entities.gas.spread = function(x, y){
         Game.entities.gas.create(x - Game.blockPx, y, 1);
       }
       
-      else if(gridPos.x + 1 < Game.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
+      else if(gridPos.x + 1 < Game.config.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
         Game.entities.gas.create(x + Game.blockPx, y, 1);
       }
   

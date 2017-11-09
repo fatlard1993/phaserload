@@ -3,7 +3,7 @@
 Game.entities.player = function(){};
 
 Game.entities.player.create = function(){
-  var playerX = Game.rand(1, Game.width - 1);
+  var playerX = Game.rand(1, Game.config.width - 1);
 
   var player = Game.game.add.sprite(Game.toPx(playerX), Game.toPx(1), 'drill', 15);
 
@@ -17,7 +17,7 @@ Game.entities.player.create = function(){
 
   player.animations.play('normal');
 
-  Game.map[playerX][1][0] = Game.mapNames.indexOf('player1');
+  Game.config.map[playerX][1][0] = Game.mapNames.indexOf('player1');
 
   Game.drillScaleX = player.scale.x;
 
@@ -49,10 +49,10 @@ Game.entities.player.move = function(game, direction){
   if(direction === 'left' && (Game.drill.x <= Game.blockPx/2 || (!surrounds.bottomLeft && !surrounds.bottom && !surrounds.farLeft))){
     return;
   }
-  else if(direction === 'right' && (Game.drill.x >= (Game.width * 64) - 32 || (!surrounds.bottomRight && !surrounds.bottom && !surrounds.farRight))){
+  else if(direction === 'right' && (Game.drill.x >= (Game.config.width * 64) - 32 || (!surrounds.bottomRight && !surrounds.bottom && !surrounds.farRight))){
     return;
   }
-  else if(direction === 'down' && Game.drill.y === Game.toPx(Game.depth - 2)){
+  else if(direction === 'down' && Game.drill.y === Game.toPx(Game.config.depth - 2)){
     return;
   }
   else if(direction === 'up' && (!surrounds.left && !surrounds.right && !surrounds.topLeft && !surrounds.topRight)){
@@ -76,7 +76,7 @@ Game.entities.player.move = function(game, direction){
   }, newCameraPosition;
 
   var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
-  var moveTime = targetGroundType ? Game.modes[Game.mode].digTime[targetGroundType.replace('ground_', '')] ? Game.modes[Game.mode].digTime[targetGroundType.replace('ground_', '')] : Game.modes[Game.mode].baseDrillMoveTime : Game.modes[Game.mode].baseDrillMoveTime;
+  var moveTime = targetGroundType ? Game.config.digTime[targetGroundType.replace('ground_', '')] ? Game.config.digTime[targetGroundType.replace('ground_', '')] : Game.config.baseDrillMoveTime : Game.config.baseDrillMoveTime;
 
   if(direction.includes('teleport')){
     Game.drill.animations.play('teleporting');
@@ -128,7 +128,7 @@ Game.entities.player.move = function(game, direction){
 
   var mineralWeight = 0.08;
 
-  if(Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] && Game.hull.space > mineralWeight){
+  if(Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] && Game.hull.space > mineralWeight){
     Game.minerals.forEachAlive(function(mineral){
       if(mineral.x === newPosition.x && mineral.y === newPosition.y){
         Game.hull[mineral.type] = Game.hull[mineral.type] !== undefined ? Game.hull[mineral.type] : 0;
@@ -144,8 +144,8 @@ Game.entities.player.move = function(game, direction){
 
           mineral.kill();
 
-          Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] = -1;
-          Game.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] = -1;
+          Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] = -1;
+          Game.config.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] = -1;
         }, animationTime);
       }
     });
@@ -153,7 +153,7 @@ Game.entities.player.move = function(game, direction){
 
   if(Game.hull.space < 0) moveTime += 250;
 
-  moveTime = Math.max(Game.modes[Game.mode].baseDrillMoveTime, moveTime - (((Game.drill.upgrade || 0) + 1) * 50));
+  moveTime = Math.max(Game.config.baseDrillMoveTime, moveTime - (((Game.drill.upgrade || 0) + 1) * 50));
 
   //if(targetGroundType && targetGroundType.startsWith('ground')) Game.game.camera.shake((moveTime * 0.00001) * 0.42, moveTime);
 
@@ -193,10 +193,10 @@ Game.entities.player.move = function(game, direction){
 
   Game.entities.player.lastPosition = newPosition;
 
-  Game.map[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)][0] = -1;
-  Game.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
-  Game.viewBufferMap[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)][0] = -1;
-  Game.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
+  Game.config.map[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)][0] = -1;
+  Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
+  Game.config.viewBufferMap[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)][0] = -1;
+  Game.config.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
 
   if(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10){
     Game.notify('Open your console to connect to Spaceco', 2);

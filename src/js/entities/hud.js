@@ -31,14 +31,14 @@ Game.entities.hud.update = function(){
   Game.hud.interfaceText.setText('');
   Game.hud.bottomLine.setText('');
 
-  var hudItemNames = Object.keys(Game.modes[Game.mode].hudLayout), hudItemCount = hudItemNames.length;
+  var hudItemNames = Object.keys(Game.config.hudLayout), hudItemCount = hudItemNames.length;
   var statusText;
   var shortestLength = 1;
   var longestLength = 6;
 
   for(var x = 0; x < hudItemCount; x++){
     var item = hudItemNames[x];
-    var value = Game.modes[Game.mode].hudLayout[hudItemNames[x]].split(':~:');
+    var value = Game.config.hudLayout[hudItemNames[x]].split(':~:');
     var spacer = (' '.repeat(value[0].length > shortestLength ? longestLength - (value[0].length - shortestLength) : longestLength));
     if(statusText) statusText += '\n'+ value[0] + spacer;
     else statusText = value[0] + spacer;
@@ -124,7 +124,7 @@ Game.entities.hud.setView = function(view){
   if(view === 'briefing'){
     menu = ' [Briefing]  Help      Exit\n';
 
-    items = Game.modes[Game.mode].levels[Game.modes[Game.mode].level].briefing;
+    items = Game.config.world.briefing;
   }
 
   if(view === 'help'){

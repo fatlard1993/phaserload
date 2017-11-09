@@ -10,8 +10,6 @@
     "src/js/game.js",
     "src/js/main.js",
 
-    "src/js/modes/normal.js",
-
     "src/js/entities/player.js",
     "src/js/entities/hud.js",
     "src/js/entities/itemSlot.js",

@@ -1,8 +1,6 @@
 /* global Phaser, screenfull, io, Log */
 
 var Game = {
-  mode: 'normal',
-  modes: {},
   blockPx: 64,
   config: {
     backgroundColor: '#333',
@@ -32,8 +30,8 @@ var Game = {
         if(Game.game.math.distance(pos.x, pos.y, monster.x, monster.y) < Game.blockPx * radius){
           monster.kill();
 
-          Game.map[Game.toGridPos(monster.x)][Game.toGridPos(monster.y)][0] = -1;
-          Game.viewBufferMap[Game.toGridPos(monster.x)][Game.toGridPos(monster.y)][0] = -1;
+          Game.config.map[Game.toGridPos(monster.x)][Game.toGridPos(monster.y)][0] = -1;
+          Game.config.viewBufferMap[Game.toGridPos(monster.x)][Game.toGridPos(monster.y)][0] = -1;
         }
       });
     },
@@ -50,27 +48,27 @@ var Game = {
       if(Game.chance(chance)){
         Game.entities.lava.create(pos.x, pos.y, 1);
 
-        Game.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('lava');
-        Game.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('lava');
+        Game.config.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('lava');
+        Game.config.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('lava');
       }
     },
     gas: function(chance, pos){
       if(Game.chance(chance)){
         Game.entities.gas.create(pos.x, pos.y, 1);
 
-        Game.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('gas');
-        Game.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('gas');
+        Game.config.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('gas');
+        Game.config.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('gas');
       }
     },
     lavaRelease: function(){
-      for(var x = Game.blockPx / 2; x < Game.game.width; x += Game.blockPx){
+      for(var x = Game.blockPx / 2; x < Game.Game.config.width; x += Game.blockPx){
         for(var y = Game.groundDepth - Game.viewHeight; y < Game.groundDepth; y += Game.blockPx){
           if(Game.chance(90) && Game.mapPos(x, y) === 'ground_red'){
             Game.entities.ground.crush({ x: x, y: y });
             Game.entities.lava.create(x, y, 1);
 
-            Game.map[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf('lava');
-            Game.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf('lava');
+            Game.config.map[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf('lava');
+            Game.config.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf('lava');
           }
         }
       }
@@ -108,7 +106,7 @@ var Game = {
   addRectangle: function(color, width, height){
     var rect = Game.game.add.graphics(0, 0);
     rect.beginFill(color, 1);
-    rect.drawRect(0, 0, width || Game.game.width, height || Game.game.height);
+    rect.drawRect(0, 0, width || Game.Game.config.width, height || Game.game.height);
     rect.endFill();
 
     return rect;
@@ -155,13 +153,13 @@ var Game = {
     Game.game.state.start('play');
   },
   mapPos: function(x, y){
-    return Game.map[x] !== undefined ? (Game.map[x][y] !== undefined ? Game.map[x][y] : [-1, -1]) : [-1, -1];
+    return Game.config.map[x] !== undefined ? (Game.config.map[x][y] !== undefined ? Game.config.map[x][y] : [-1, -1]) : [-1, -1];
   },
   mapPosName: function(x, y){
     return Game.mapNames[Game.mapPos(x, y)[0]];
   },
   viewBufferPos: function(x, y){
-    return Game.viewBufferMap[x] !== undefined ? (Game.viewBufferMap[x][y] !== undefined ? Game.viewBufferMap[x][y] : [-1, -1]) : [-1, -1];
+    return Game.config.viewBufferMap[x] !== undefined ? (Game.config.viewBufferMap[x][y] !== undefined ? Game.config.viewBufferMap[x][y] : [-1, -1]) : [-1, -1];
   },
   groundAt(pxX, pxY){
     return Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0] > 3 ? Game.mapNames[Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0]] : undefined;
@@ -180,60 +178,12 @@ var Game = {
   toPx: function(gridPos){
     return (gridPos * 64) + 32;
   },
-  generateMap: function(){
-    var settings = Game.modes[Game.mode].levels[Game.modes[Game.mode].level];
-
-    Game.width = Game.rand(settings.size.width[0], settings.size.width[1]);
-    Game.depth = Game.rand(settings.size.depth[0], settings.size.depth[1]);
-
-    var mineralRareity = settings.mineralRareity;
-
-    Game.map = []; // todo map[x][y] = [1, 3]
-
-    for(var x = 0; x < Game.width; x++){
-      for(var y = 0; y < Game.depth; y++){
-        var holeChance = y * settings.holeChance;
-        var mineralChance = y * settings.mineralChance;
-        var lavaChance = y * settings.lavaChance;
-        var gasChance = y * settings.gasChance;
-        var monsterChance = y * settings.monsterChance;
-
-        var groundRareity = settings.layers[Math.ceil(settings.layers.length * (y / Game.depth)) - 1];
-
-        Game.map[x] = Game.map[x] || [];
-        Game.map[x][y] = [-1, -1];
-
-        Game.viewBufferMap[x] = Game.viewBufferMap[x] || [];
-        Game.viewBufferMap[x][y] = [-1, -1];
-
-        if(y > 1 && !Game.chance(holeChance)){
-          Game.map[x][y] = [Game.mapNames.indexOf('ground_'+ Game.weightedChance(groundRareity)), -1];
-
-          if(y > 5 && Game.chance(mineralChance)){
-            Game.map[x][y][1] = Game.mapNames.indexOf('mineral_'+ Game.weightedChance(mineralRareity));
-          }
-        }
-
-        else if(y > 8 && Game.chance(lavaChance)){
-          Game.map[x][y] = [Game.mapNames.indexOf('lava'), -1];
-        }
-
-        else if(y > 8 && Game.chance(gasChance)){
-          Game.map[x][y] = [Game.mapNames.indexOf('gas'), -1];
-        }
-
-        else if(y > 8 && Game.chance(monsterChance)){
-          Game.map[x][y] = [Game.mapNames.indexOf('monster'), -1];
-        }
-      }
-    }
-  },
   findInMap: function(nameOrId){
     var found = [], id = typeof nameOrId === 'string' ? Game.mapNames.indexOf(nameOrId) : nameOrId;
 
-    for(var x = 0; x < Game.width; x++){
-      for(var y = 0; y < Game.depth; y++){
-        if(Game.map[x][y][0] === id || Game.map[x][y][1] === id) found.push({ x: x, y: y });
+    for(var x = 0; x < Game.config.width; x++){
+      for(var y = 0; y < Game.config.depth; y++){
+        if(Game.config.map[x][y][0] === id || Game.config.map[x][y][1] === id) found.push({ x: x, y: y });
       }
     }
 
@@ -244,7 +194,7 @@ var Game = {
 
     var heading = '           PHASERLOAD\n';
 
-    Game.hud.interfaceText.setText(heading + Game.modes[Game.mode].levels[Game.modes[Game.mode].level].missionText);
+    Game.hud.interfaceText.setText(heading + Game.config.world.missionText);
   },
   viewBufferMap: [],
   viewBufferSize: 3,
@@ -254,11 +204,11 @@ var Game = {
 
     var left = Math.max(0, Game.toGridPos(oldX > newX ? newX : oldX) - Game.viewBufferSize);
     var top = Game.toGridPos(oldY > newY ? newY : oldY) - Game.viewBufferSize;
-    var right = Math.min(Game.width, Game.toGridPos((oldX < newX ? newX : oldX) + Game.viewWidth) + Game.viewBufferSize);
+    var right = Math.min(Game.config.width, Game.toGridPos((oldX < newX ? newX : oldX) + Game.viewWidth) + Game.viewBufferSize);
     var bottom = Game.toGridPos((oldY < newY ? newY : oldY) + Game.viewHeight) + Game.viewBufferSize;
 
-    left = Math.max(0, Math.min(Game.toPx(Game.width) - Game.viewWidth - 32, left));
-    newX = Math.max(0, Math.min(Game.toPx(Game.width) - Game.viewWidth - 32, newX));
+    left = Math.max(0, Math.min(Game.toPx(Game.config.width) - Game.viewWidth - 32, left));
+    newX = Math.max(0, Math.min(Game.toPx(Game.config.width) - Game.viewWidth - 32, newX));
 
     if(direction) Game.drawViewDirection(direction, Math.abs(oldX - newX), Math.abs(oldY - newY));
     Game.drawView(left, top, right, bottom);
@@ -287,8 +237,8 @@ var Game = {
   drawView: function(left, top, right, bottom){
     if(top - 3 < 0) top = 0;
     if(left - 3 < 0) left = 0;
-    if(bottom + 3 > Game.depth) bottom = Game.depth;
-    if(right + 3 > Game.width) right = Game.width;
+    if(bottom + 3 > Game.config.depth) bottom = Game.config.depth;
+    if(right + 3 > Game.config.width) right = Game.config.width;
 
     Log()('drawing '+ (((bottom - top) + 1) * ((right - left) + 1)) +' sprites, from: x'+ left +' y'+ top +' TO x'+ right +' y'+ bottom);
 
@@ -299,11 +249,11 @@ var Game = {
 
         if(viewBufferPos[0] >= 0 || mapPos[0] < 0) continue;
 
-        Game.viewBufferMap[x][y] = mapPos;
+        Game.config.viewBufferMap[x][y] = mapPos;
 
         var mapPos_0_name = Game.toName(mapPos[0]);
 
-        // Log()(x, y, Game.viewBufferMap[x][y], element);
+        // Log()(x, y, Game.config.viewBufferMap[x][y], element);
 
         if(mapPos_0_name.startsWith('ground')){
           Game.entities.ground.create(Game.toPx(x), Game.toPx(y), mapPos_0_name);
@@ -347,7 +297,7 @@ var Game = {
       }
 
       if(clean){
-        Game.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)] = [-1, -1];
+        Game.config.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)] = [-1, -1];
         entity.kill();
       }
     }

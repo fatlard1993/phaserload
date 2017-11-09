@@ -35,7 +35,7 @@ Game.entities.monster.prototype.update = function(){
     canMove.left = 1;
   }
   
-  if(gridPos.x + 1 < Game.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'lava', 'gas'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
+  if(gridPos.x + 1 < Game.config.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'lava', 'gas'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
     canMove.right = 1;
   }
 
@@ -82,11 +82,11 @@ Game.entities.monster.prototype.update = function(){
     y: Game.toGridPos(moving.y)
   };
 
-  Game.viewBufferMap[gridPos.x][gridPos.y][0] = -1;
-  Game.map[gridPos.x][gridPos.y][0] = -1;
+  Game.config.viewBufferMap[gridPos.x][gridPos.y][0] = -1;
+  Game.config.map[gridPos.x][gridPos.y][0] = -1;
   
-  Game.viewBufferMap[newGridPos.x][newGridPos.y][0] = Game.mapNames.indexOf('monster');
-  Game.map[newGridPos.x][newGridPos.y][0] = Game.mapNames.indexOf('monster');
+  Game.config.viewBufferMap[newGridPos.x][newGridPos.y][0] = Game.mapNames.indexOf('monster');
+  Game.config.map[newGridPos.x][newGridPos.y][0] = Game.mapNames.indexOf('monster');
 };
 
 Game.entities.monster.create = function(x, y){

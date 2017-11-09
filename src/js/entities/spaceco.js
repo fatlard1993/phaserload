@@ -20,7 +20,7 @@ Game.entities.spaceco.defaultPrices = {
 };
 
 Game.entities.spaceco.create = function(){
-  var spacecoX = Game.rand(3, Game.width - 3);
+  var spacecoX = Game.rand(3, Game.config.width - 3);
 
   var spaceco = Game.game.add.sprite(Game.toPx(spacecoX), Game.toPx(1), 'spaceco', 10);
 
@@ -57,12 +57,12 @@ Game.entities.spaceco.getValue = function(name){
   var value;
 
   if(name.startsWith('ground')){
-    value = Game.modes[Game.mode].baseGroundValue + (((Game.modes[Game.mode].digTime[name.replace('ground_', '')] / 2) - (Game.entities.spaceco.resourceBay[name] || 0)) / 1000);
+    value = Game.config.baseGroundValue + (((Game.config.digTime[name.replace('ground_', '')] / 2) - (Game.entities.spaceco.resourceBay[name] || 0)) / 1000);
 
     if(name === 'ground_green' && Game.mode === 'normal') value *= 2;
   }
   else if(name.startsWith('mineral')){
-    value = Game.modes[Game.mode].mineralValues[name.replace('mineral_', '')] - ((Game.entities.spaceco.resourceBay[name] || 0) / 40);
+    value = Game.config.mineralValues[name.replace('mineral_', '')] - ((Game.entities.spaceco.resourceBay[name] || 0) / 40);
   }
 
   return Math.max(0, value);
