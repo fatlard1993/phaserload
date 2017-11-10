@@ -69,6 +69,8 @@ Game.entities.spaceco.getValue = function(name){
 };
 
 Game.entities.spaceco.open = function(){
+  if(Game.hud.isOpen) return;
+
   Game.entities.hud.open('spaceco');
 
   Game.entities.spaceco.welcome(function(){
@@ -78,7 +80,7 @@ Game.entities.spaceco.open = function(){
     if(Game.config.mode === 'normal'){
       delete Game.hull.space;
 
-      var mineralNames = Object.keys(Game.hull);
+      var hullNames = Object.keys(Game.hull);
       var statingCredits = Game.credits;
       var soldItems = {
         ground: 0,
@@ -86,16 +88,16 @@ Game.entities.spaceco.open = function(){
       };
       var x;
 
-      for(x = 0; x < mineralNames.length; x++){
-        Game.entities.spaceco.resourceBay[mineralNames[x]] = Game.entities.spaceco.resourceBay[mineralNames[x]] || 0;
-        Game.entities.spaceco.resourceBay[mineralNames[x]] += Game.hull[mineralNames[x]];
+      for(x = 0; x < hullNames.length; x++){
+        Game.entities.spaceco.resourceBay[hullNames[x]] = Game.entities.spaceco.resourceBay[hullNames[x]] || 0;
+        Game.entities.spaceco.resourceBay[hullNames[x]] += Game.hull[hullNames[x]];
 
-        var type = mineralNames[x].replace(/_.*$/, '');
-        soldItems[type] += Game.hull[mineralNames[x]];
+        var type = hullNames[x].replace(/_.*$/, '');
+        soldItems[type] += Game.hull[hullNames[x]];
 
-        // if(Game.hull[mineralNames[x]] > 0) contents += mineralNames[x] +': '+ Game.hull[mineralNames[x]] +' * '+ Game.entities.spaceco.getValue(mineralNames[x]) +'\n';
+        // if(Game.hull[hullNames[x]] > 0) contents += hullNames[x] +': '+ Game.hull[hullNames[x]] +' * '+ Game.entities.spaceco.getValue(hullNames[x]) +'\n';
 
-        Game.credits += Game.hull[mineralNames[x]] * Game.entities.spaceco.getValue(mineralNames[x]);
+        Game.credits += Game.hull[hullNames[x]] * Game.entities.spaceco.getValue(hullNames[x]);
       }
 
       contents += 'Sold:\n';
