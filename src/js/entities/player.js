@@ -144,8 +144,7 @@ Game.entities.player.move = function(game, direction){
 
           mineral.kill();
 
-          Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] = -1;
-          Game.config.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] = -1;
+          Game.clearMapPos(newPosition);
         }, animationTime);
       }
     });

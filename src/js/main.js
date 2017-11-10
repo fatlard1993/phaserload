@@ -34,6 +34,18 @@ window.onload = function(){
       playerCount: 10
     });
 
+    Socket.active.on('crush_ground', function(pos){
+      Game.entities.ground.crush(pos);
+    });
+
+    Socket.active.on('user_connect', function(data){
+      Game.notify('user connected');
+    });
+
+    Socket.active.on('user_disconnect', function(data){
+      Game.notify('user disconnected');
+    });
+
     Socket.active.on('roomData', function(data){
       if(Game.initialized) return;
 

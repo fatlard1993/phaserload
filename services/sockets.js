@@ -92,6 +92,15 @@ var Sockets = {
         User.joinRoom(roomName);
       });
 
+      socket.on('crush_ground', function(pos){
+        console.log('crush_ground', pos);
+
+        Sockets.rooms[User.room].map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
+        Sockets.rooms[User.room].viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
+
+        Sockets.io.in(User.room).emit('crush_ground', pos);
+      });
+
       socket.on('disconnect', function(){
         if(!User || !User.username) return console.warn('socket', 'Undefined user left!');
 

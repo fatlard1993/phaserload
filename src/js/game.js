@@ -1,4 +1,4 @@
-/* global Phaser, screenfull, io, Log */
+/* global Phaser, screenfull, io, Log, Socket */
 
 var Game = {
   blockPx: 64,
@@ -30,8 +30,7 @@ var Game = {
         if(Game.game.math.distance(pos.x, pos.y, monster.x, monster.y) < Game.blockPx * radius){
           monster.kill();
 
-          Game.config.map[Game.toGridPos(monster.x)][Game.toGridPos(monster.y)][0] = -1;
-          Game.config.viewBufferMap[Game.toGridPos(monster.x)][Game.toGridPos(monster.y)][0] = -1;
+          Game.clearMapPos(monster);
         }
       });
     },
@@ -195,6 +194,11 @@ var Game = {
     var heading = '           PHASERLOAD\n';
 
     Game.hud.interfaceText.setText(heading + Game.config.world.missionText);
+  },
+  clearMapPos: function(pos){
+    console.log('clearMapPos', pos);
+    Game.config.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
+    Game.config.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
   },
   viewBufferMap: [],
   viewBufferSize: 3,

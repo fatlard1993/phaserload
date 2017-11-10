@@ -35,8 +35,7 @@ Game.entities.gas = function(x, y){
   dissipateAnim.onComplete.add(function(){
     this.kill();
 
-    Game.config.viewBufferMap[Game.toGridPos(this.x)][Game.toGridPos(this.y)][0] = -1;
-    Game.config.map[Game.toGridPos(this.x)][Game.toGridPos(this.y)][0] = -1;
+    Game.clearMapPos(this);
   }, this);
 
   this.animations.add('full', [3, 4, 5], 10, true);

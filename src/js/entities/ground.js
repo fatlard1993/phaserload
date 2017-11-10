@@ -1,4 +1,4 @@
-/* global Phaser, Game */
+/* global Phaser, Socket, Game */
 
 Game.entities.ground = function(x, y){
   Phaser.Sprite.call(this, Game.game, x, y, 'ground');
@@ -44,16 +44,16 @@ Game.entities.ground.create = function(x, y, type){
 };
 
 Game.entities.ground.crush = function(pos){
-  var groundType = Game.groundAt(pos.x, pos.y).replace('ground_', '');
   // console.log('crush: ', groundType, pos);
-
   Game.ground.forEachAlive(function(ground){
     if(ground.x === pos.x && ground.y === pos.y && !ground.animations.getAnimation('crush_'+ ground.ground_type).isPlaying){
+      var groundType = Game.groundAt(pos.x, pos.y).replace('ground_', '');
       ground.tween = Game.game.add.tween(ground).to({ alpha: 0 }, Game.config.digTime[groundType], Phaser.Easing.Cubic.In, true);
       ground.animations.play('crush_'+ ground.ground_type);
 
-      Game.config.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
-      Game.config.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
+      Socket.active.emit('crush_ground', pos);
+
+      Game.clearMapPos(pos);
 
       var gridPos = {
         x: Game.toGridPos(ground.x),
