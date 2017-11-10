@@ -1,33 +1,9 @@
-/* global Phaser, screenfull, io, Dom, Log, Game */
-
-var Socket;
+/* global Phaser, screenfull, io, Dom, Log, Game, Socket */
 
 document.oncontextmenu = function(evt) { evt.preventDefault(); };
 
 window.onload = function(){
   console.log('onload');
-
-  Socket = io.connect(window.location.protocol +'//'+ window.location.hostname, { secure: true });
-
-  Socket.emit('connect_request', {
-    username: Dom.cookie.get('username') || 'test_' + Game.rand(1, 99)
-  });
-
-  Socket.on('welcome', function(data){
-    console.log('rooms', data);
-
-    if(data.rooms.length) Socket.emit('join_room', data.rooms[0]);
-    else Socket.emit('create_room', {
-      name: 'test_room_' + Game.rand(1, 99),
-      playerCount: 10
-    });
-
-    Socket.on('roomData', function(data){
-      console.log('roomData', data);
-
-      Game.config = Object.assign(Game.config, data);
-    });
-  });
 
   let clientHeight = document.body.clientHeight;
   let clientWidth = document.body.clientWidth;
@@ -49,25 +25,43 @@ window.onload = function(){
 
   console.log('states added');
 
-  setTimeout(function(){
-    if(scale !== 1){
-      Game.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-      Game.game.scale.pageAlignHorizontally = true;
-      Game.game.scale.pageAlignVertically = true;
+  Socket.init(function(data){
+    console.log('rooms', data);
 
-      scale = (1 / scale);
+    if(data.rooms.length) Socket.active.emit('join_room', data.rooms[0]);
+    else Socket.active.emit('create_room', {
+      name: 'test_room_'+ Game.rand(1, 99),
+      playerCount: 10
+    });
 
-      let gameCanvas = document.getElementById('game').children[0];
-      let marginTop = (Game.viewHeight - (Game.viewHeight * scale)) / 2;
-      let marginLeft = (Game.viewWidth - (Game.viewWidth * scale)) / 2;
+    Socket.active.on('roomData', function(data){
+      if(Game.initialized) return;
 
-      // gameCanvas.style.transform = 'scale('+ scale +')';
-      gameCanvas.style.marginTop = -marginTop + 'px';
-      gameCanvas.style.marginLeft = -marginLeft + 'px';
-    }
+      Game.initialized = 1;
 
-    Game.game.stage.backgroundColor = Game.config.backgroundColor;
+      console.log('roomData', data);
 
-    Game.game.state.start('load');
-  }, 1000);
+      Game.config = Object.assign(Game.config, data);
+
+      if(scale !== 1){
+        Game.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        Game.game.scale.pageAlignHorizontally = true;
+        Game.game.scale.pageAlignVertically = true;
+
+        scale = (1 / scale);
+
+        let gameCanvas = document.getElementById('game').children[0];
+        let marginTop = (Game.viewHeight - (Game.viewHeight * scale)) / 2;
+        let marginLeft = (Game.viewWidth - (Game.viewWidth * scale)) / 2;
+
+        // gameCanvas.style.transform = 'scale('+ scale +')';
+        gameCanvas.style.marginTop = -marginTop + 'px';
+        gameCanvas.style.marginLeft = -marginLeft + 'px';
+      }
+
+      Game.game.stage.backgroundColor = Game.config.backgroundColor;
+
+      Game.game.state.start('load');
+    });
+  });
 };
