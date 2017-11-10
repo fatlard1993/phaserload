@@ -59,7 +59,7 @@ Game.entities.spaceco.getValue = function(name){
   if(name.startsWith('ground')){
     value = Game.config.baseGroundValue + (((Game.config.digTime[name.replace('ground_', '')] / 2) - (Game.entities.spaceco.resourceBay[name] || 0)) / 1000);
 
-    if(name === 'ground_green' && Game.mode === 'normal') value *= 2;
+    if(name === 'ground_green' && Game.config.mode === 'normal') value *= 2;
   }
   else if(name.startsWith('mineral')){
     value = Game.config.mineralValues[name.replace('mineral_', '')] - ((Game.entities.spaceco.resourceBay[name] || 0) / 40);
@@ -75,7 +75,7 @@ Game.entities.spaceco.open = function(){
     var menu = '   Rates  Fuel  Shop     Exit\n';
     var contents = '';
 
-    if(Game.mode === 'normal'){
+    if(Game.config.mode === 'normal'){
       delete Game.hull.space;
 
       var mineralNames = Object.keys(Game.hull);

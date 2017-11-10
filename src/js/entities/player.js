@@ -205,7 +205,7 @@ Game.entities.player.move = function(game, direction){
   }
   else if(Game.hud.isOpen) Game.entities.hud.close();
 
-  if(!direction.includes('teleport') && Game.mode === 'normal'){
+  if(!direction.includes('teleport') && Game.config.mode === 'normal'){
     Game.fuel -= moveTime * 0.0001;
 
     if(Game.fuel < 1.5) Game.notify('Your fuel is running low', 2);

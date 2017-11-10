@@ -55,7 +55,7 @@ Game.states.play.prototype.create = function(){
 };
 
 Game.states.play.prototype.update = function(){
-  if(Game.mode === 'normal' && Game.fuel < 0){
+  if(Game.config.mode === 'normal' && Game.fuel < 0){
     Game.drill.kill();
     Game.loseReason = 'fuel';
     return this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);

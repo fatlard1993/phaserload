@@ -63,6 +63,7 @@ var Game = {
     var settings = worlds[Game.rand(0, worlds.length)];
 
     var mapData = Object.assign(Modes[mode], {
+      mode: mode,
       world: settings,
       width: Game.rand(settings.size.width[0], settings.size.width[1]),
       depth: Game.rand(settings.size.depth[0], settings.size.depth[1]),
