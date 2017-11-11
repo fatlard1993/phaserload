@@ -1,4 +1,4 @@
-/* global Phaser, Game */
+/* global Phaser, Game, Socket */
 
 Game.states.play = function(game){};
 
@@ -12,59 +12,88 @@ Game.states.play.prototype.create = function(){
   Game.gas = this.game.add.group();
   Game.minerals = this.game.add.group();
 
-  Game.spaceco = Game.entities.spaceco.create();
+  Socket.init(function(welcomeData){
+    console.log('welcome', welcomeData);
 
-  Game.monsters = this.game.add.group();
+    Game.config.playerName = welcomeData.name;
 
-  Game.drill = Game.entities.player.create();
+    if(welcomeData.rooms.length) Socket.active.emit('join_room', welcomeData.rooms[0]);
+    else Socket.active.emit('create_room', {
+      name: 'test_room_'+ Game.rand(1, 99),
+      playerCount: 10
+    });
 
-  Game.infoLine = this.game.add.text(5, 135, '', { font: '25px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
-  Game.infoLine.fixedToCamera = true;
+    Socket.active.on('roomData', function(roomData){
+      if(Game.initialized) return;
 
-  Game.hud = Game.entities.hud.create(0, 0);
+      Game.initialized = 1;
 
-  Game.itemSlot1 = Game.entities.itemSlot.create(Game.viewWidth - 32, 32);
-  Game.itemSlot2 = Game.entities.itemSlot.create(Game.viewWidth - 32, 106);
+      console.log('roomData', roomData);
 
-  Game.entities.hud.open('briefing');
+      Game.config = Object.assign(Game.config, roomData);
 
-  if(Game.purchasedTransport){
-    Game.purchasedTransport = false;
-  }
-  else{
-    Game.entities.spaceco.resourceBay = {};
+      Game.spaceco = Game.entities.spaceco.create(Game.config.spaceco);
 
-    Game.inventory = {
-      teleporter: 1
-    };
+      Game.monsters = Game.game.add.group();
 
-    Game.entities.itemSlot.setItem(1, 'teleporter');
+      var playerNames = Object.keys(Game.config.players);
 
-    Game.hull = {
-      space: 10,
-      items: []
-    };
+      for(var x = 0; x < playerNames.length; x++){
+        if(playerNames[x] === Game.config.playerName) Game.config.players[playerNames[x]].isLocal = 1;
+        Game.config.players[playerNames[x]] = Game.entities.player.create(Game.config.players[playerNames[x]]);
+      }
 
-    Game.drill.upgrade = 0;
+      Game.infoLine = Game.game.add.text(5, 135, '', { font: '25px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
+      Game.infoLine.fixedToCamera = true;
 
-    Game.health = 100;
-    Game.credits = 0;
-    Game.fuel = 5;
-  }
+      Game.hud = Game.entities.hud.create(0, 0);
 
-  Game.entities.hud.update();
+      Game.itemSlot1 = Game.entities.itemSlot.create(Game.viewWidth - 32, 32);
+      Game.itemSlot2 = Game.entities.itemSlot.create(Game.viewWidth - 32, 106);
+
+      Game.entities.hud.open('briefing');
+
+      if(Game.purchasedTransport){
+        Game.purchasedTransport = false;
+      }
+      else{
+        Game.entities.spaceco.resourceBay = {};
+
+        Game.inventory = {
+          teleporter: 1
+        };
+
+        Game.entities.itemSlot.setItem(1, 'teleporter');
+
+        Game.hull = {
+          space: 10,
+          items: []
+        };
+
+        Game.config.players[Game.config.playerName].upgrade = 0;
+
+        Game.health = 100;
+        Game.credits = 0;
+        Game.fuel = 5;
+      }
+    });
+  });
 };
 
 Game.states.play.prototype.update = function(){
+  if(!Game.initialized) return;
+
+  var player = Game.config.players[Game.config.playerName];
+
   if(Game.config.mode === 'normal' && Game.fuel < 0){
-    Game.drill.kill();
+    player.kill();
     Game.loseReason = 'fuel';
     return this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);
   }
 
-  if(Game.drill.emitter){
-    Game.drill.emitter.forEachAlive(function(particle){
-      particle.alpha = Math.max(0, Math.min(1, (particle.lifespan / Game.drill.emitter.lifespan) * 2));
+  if(player.emitter){
+    player.emitter.forEachAlive(function(particle){
+      particle.alpha = Math.max(0, Math.min(1, (particle.lifespan / player.emitter.lifespan) * 2));
     });
   }
 
@@ -74,14 +103,14 @@ Game.states.play.prototype.update = function(){
 
     if(Game.hud.isOpen) Game.entities.hud.close();
     else{
-      if(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10) Game.entities.spaceco.open();
+      if(Game.game.math.distance(player.x, player.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10) Game.entities.spaceco.open();
       else Game.entities.hud.open('hud');
       return;
     }
   }
 
   Game.lava.forEachAlive(function(lava){
-    if(!Game.drill.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(Game.drill.x, Game.drill.y, lava.x, lava.y) < Game.blockPx/2){
+    if(!player.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(player.x, player.y, lava.x, lava.y) < Game.blockPx/2){
       Game.entities.player.hurt(lava.full ? 12 + Game.randFloat(1, 6) : 8 + Game.randFloat(1, 3), 'lava');
     }
 
@@ -99,7 +128,7 @@ Game.states.play.prototype.update = function(){
   }, this);
 
   Game.gas.forEachAlive(function(gas){
-    if(!Game.drill.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(Game.drill.x, Game.drill.y, gas.x, gas.y) < Game.blockPx/2){
+    if(!player.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(player.x, player.y, gas.x, gas.y) < Game.blockPx/2){
       Game.entities.player.hurt(gas.full ? 10 + Game.randFloat(1, 5) : 6 + Game.randFloat(1, 2), 'gas');
     }
 
@@ -113,7 +142,7 @@ Game.states.play.prototype.update = function(){
   }, this);
 
   Game.monsters.forEachAlive(function(monster){
-    if(!Game.drill.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(Game.drill.x, Game.drill.y, monster.x, monster.y) < Game.blockPx/2){
+    if(!player.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(player.x, player.y, monster.x, monster.y) < Game.blockPx/2){
       Game.entities.player.hurt(5 + Game.randFloat(1, 5), 'monster');
     }
   }, this);
@@ -171,7 +200,7 @@ Game.states.play.prototype.update = function(){
     }
 
     else if(Game.game.math.distance(this.input.activePointer.x, this.input.activePointer.y, 70, 50) < 128){
-      if(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10) Game.entities.spaceco.open();
+      if(Game.game.math.distance(player.x, player.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10) Game.entities.spaceco.open();
       else Game.entities.hud.open('hud');
 
       return;
@@ -310,13 +339,13 @@ Game.states.play.prototype.update = function(){
     return;
   }
 
-  if(!this.game.tweens.isTweening(Game.drill) && !this.game.tweens.isTweening(Game.hud.scale)){
+  if(!this.game.tweens.isTweening(player) && !this.game.tweens.isTweening(Game.hud.scale)){
     var moving;
     var surrounds = Game.entities.player.getSurrounds();
 
     if(this.input.activePointer.isDown){
-      var xDiff = Game.drill.x - this.input.activePointer.x - Game.game.camera.x;
-      var yDiff = Game.drill.y - this.input.activePointer.y - Game.game.camera.y;
+      var xDiff = player.x - this.input.activePointer.x - Game.game.camera.x;
+      var yDiff = player.y - this.input.activePointer.y - Game.game.camera.y;
 
       var xDirection = xDiff > 0 ? 'left' : 'right';
       var yDirection = yDiff > 0 ? 'up' : 'down';

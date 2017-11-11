@@ -13,7 +13,7 @@ Game.entities.mineral.types = ['green', 'red', 'blue', 'purple', 'teal', '???'];
 
 Game.entities.mineral.create = function(x, y, type){
   var mineral = Game.minerals.getFirstDead();
-  
+
   if(mineral === null){
     mineral = Game.minerals.add(new Game.entities.mineral(x, y));
   }
@@ -21,7 +21,7 @@ Game.entities.mineral.create = function(x, y, type){
     mineral.reset(x, y);
     mineral.revive();
   }
-  
+
   mineral.frame = Game.entities.mineral.types.indexOf(type.replace('mineral_', ''));
   mineral.type = type;
 

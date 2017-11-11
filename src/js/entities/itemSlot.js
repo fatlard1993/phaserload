@@ -8,7 +8,7 @@ Game.entities.itemSlot.create = function(x, y){
   itemSlot.anchor.setTo(0.5, 0.5);
   
   itemSlot.fixedToCamera = true;
-  
+
   itemSlot.frame = 0;
   itemSlot.item = '';
 
@@ -27,7 +27,7 @@ Game.entities.itemSlot.setItem = function(slotNum, item){
 
     Game['itemSlot'+ slotNum].itemSprite = Game.game.add.sprite(0, 0, item.includes('charge') ? 'explosive' : item);
     Game['itemSlot'+ slotNum].itemSprite.anchor.setTo(0.5, 0.5);
-  
+
     Game['itemSlot'+ slotNum].addChild(Game['itemSlot'+ slotNum].itemSprite);
 
     if(item.includes('charge')){

@@ -1,11 +1,9 @@
-/* global Phaser, Game */
+/* global Phaser, Game, Socket */
 
 Game.entities.player = function(){};
 
-Game.entities.player.create = function(){
-  var playerX = Game.rand(1, Game.config.width - 1);
-
-  var player = Game.game.add.sprite(Game.toPx(playerX), Game.toPx(1), 'drill', 15);
+Game.entities.player.create = function(settings){
+  var player = Game.game.add.sprite(Game.toPx(settings.position.x), Game.toPx(1), 'drill', 15);
 
   player.anchor.setTo(0.5, 0.5);
 
@@ -17,42 +15,46 @@ Game.entities.player.create = function(){
 
   player.animations.play('normal');
 
-  Game.config.map[playerX][1][0] = Game.mapNames.indexOf('player1');
+  Game.config.map[settings.position.x][1][0] = Game.mapNames.indexOf('player1');
 
-  Game.drillScaleX = player.scale.x;
+  Game.config.defaultPlayerScale = player.scale.x;
 
-  Game.adjustViewPosition(player.x - Game.viewWidth / 2, player.y - Game.viewHeight / 2, Math.ceil(Game.game.math.distance(player.x, player.y, Game.game.camera.x / 2, Game.game.camera.y / 2)));
+  if(settings.isLocal) Game.adjustViewPosition(player.x - Game.viewWidth / 2, player.y - Game.viewHeight / 2, Math.ceil(Game.game.math.distance(player.x, player.y, Game.game.camera.x / 2, Game.game.camera.y / 2)));
 
   return player;
 };
 
 Game.entities.player.getSurrounds = function(){
+  var player = Game.config.players[Game.config.playerName];
+
   return {
-    left: Game.groundAt(Game.drill.x - Game.blockPx, Game.drill.y),
-    farLeft: Game.groundAt(Game.drill.x - (Game.blockPx * 2), Game.drill.y),
-    topLeft: Game.groundAt(Game.drill.x - Game.blockPx, Game.drill.y - Game.blockPx),
-    top: Game.groundAt(Game.drill.x, Game.drill.y - Game.blockPx),
-    topRight: Game.groundAt(Game.drill.x + Game.blockPx, Game.drill.y - Game.blockPx),
-    right: Game.groundAt(Game.drill.x + Game.blockPx, Game.drill.y),
-    farRight: Game.groundAt(Game.drill.x + (Game.blockPx * 2), Game.drill.y),
-    bottomRight: Game.groundAt(Game.drill.x + Game.blockPx, Game.drill.y + Game.blockPx),
-    bottom: Game.groundAt(Game.drill.x, Game.drill.y + Game.blockPx),
-    bottomLeft: Game.groundAt(Game.drill.x - Game.blockPx, Game.drill.y + Game.blockPx)
+    left: Game.groundAt(player.x - Game.blockPx, player.y),
+    farLeft: Game.groundAt(player.x - (Game.blockPx * 2), player.y),
+    topLeft: Game.groundAt(player.x - Game.blockPx, player.y - Game.blockPx),
+    top: Game.groundAt(player.x, player.y - Game.blockPx),
+    topRight: Game.groundAt(player.x + Game.blockPx, player.y - Game.blockPx),
+    right: Game.groundAt(player.x + Game.blockPx, player.y),
+    farRight: Game.groundAt(player.x + (Game.blockPx * 2), player.y),
+    bottomRight: Game.groundAt(player.x + Game.blockPx, player.y + Game.blockPx),
+    bottom: Game.groundAt(player.x, player.y + Game.blockPx),
+    bottomLeft: Game.groundAt(player.x - Game.blockPx, player.y + Game.blockPx)
   };
 };
 
 Game.entities.player.move = function(game, direction){
   // console.log('Drill: On the move, goin: ', direction);
 
+  var player = Game.config.players[Game.config.playerName];
+
   var surrounds = Game.entities.player.getSurrounds();
 
-  if(direction === 'left' && (Game.drill.x <= Game.blockPx/2 || (!surrounds.bottomLeft && !surrounds.bottom && !surrounds.farLeft))){
+  if(direction === 'left' && (player.x <= Game.blockPx/2 || (!surrounds.bottomLeft && !surrounds.bottom && !surrounds.farLeft))){
     return;
   }
-  else if(direction === 'right' && (Game.drill.x >= (Game.config.width * 64) - 32 || (!surrounds.bottomRight && !surrounds.bottom && !surrounds.farRight))){
+  else if(direction === 'right' && (player.x >= (Game.config.width * 64) - 32 || (!surrounds.bottomRight && !surrounds.bottom && !surrounds.farRight))){
     return;
   }
-  else if(direction === 'down' && Game.drill.y === Game.toPx(Game.config.depth - 2)){
+  else if(direction === 'down' && player.y === Game.toPx(Game.config.depth - 2)){
     return;
   }
   else if(direction === 'up' && (!surrounds.left && !surrounds.right && !surrounds.topLeft && !surrounds.topRight)){
@@ -71,23 +73,23 @@ Game.entities.player.move = function(game, direction){
   }
 
   var newPosition = {
-    x: Game.drill.x + (direction === 'left' ? -Game.blockPx : direction === 'right' ? Game.blockPx : 0),
-    y: Game.drill.y + (direction === 'up' ? -Game.blockPx : direction === 'down' ? Game.blockPx : 0)
+    x: player.x + (direction === 'left' ? -Game.blockPx : direction === 'right' ? Game.blockPx : 0),
+    y: player.y + (direction === 'up' ? -Game.blockPx : direction === 'down' ? Game.blockPx : 0)
   }, newCameraPosition;
 
   var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
   var moveTime = targetGroundType ? Game.config.digTime[targetGroundType.replace('ground_', '')] ? Game.config.digTime[targetGroundType.replace('ground_', '')] : Game.config.baseDrillMoveTime : Game.config.baseDrillMoveTime;
 
   if(direction.includes('teleport')){
-    Game.drill.animations.play('teleporting');
+    player.animations.play('teleporting');
 
-    var teleportPos = direction.includes('responder') ? { x: Game.drill.responder.x, y: Game.drill.responder.y } : { x: Game.spaceco.x, y: Game.spaceco.y };
+    var teleportPos = direction.includes('responder') ? { x: player.responder.x, y: player.responder.y } : { x: Game.spaceco.x, y: Game.spaceco.y };
 
-    moveTime = Math.ceil(Game.game.math.distance(Game.drill.x, Game.drill.y, teleportPos.x, teleportPos.y));
+    moveTime = Math.ceil(Game.game.math.distance(player.x, player.y, teleportPos.x, teleportPos.y));
 
     setTimeout(function(){
       // Game.drawCurrentView();
-      Game.drill.animations.play(Game.drill.upgrade > 0 ? 'upgrade_'+ Game.drill.upgrade : 'normal');
+      player.animations.play(player.upgrade > 0 ? 'upgrade_'+ player.upgrade : 'normal');
       if(!direction.includes('responder')) Game.notify('Open your console to connect to Spaceco', 2);
     }, 200 + moveTime);
 
@@ -96,32 +98,32 @@ Game.entities.player.move = function(game, direction){
     newPosition.x = teleportPos.x;
     newPosition.y = teleportPos.y;
   }
-  else if(direction === 'up' && Math.abs((game.camera.y + Game.viewHeight) - Game.drill.y) > Game.viewHeight / 2){
+  else if(direction === 'up' && Math.abs((game.camera.y + Game.viewHeight) - player.y) > Game.viewHeight / 2){
     newCameraPosition = { x: game.camera.x, y: game.camera.y - Game.blockPx };
   }
-  else if(direction === 'down' && Math.abs(game.camera.y - Game.drill.y) > Game.viewHeight / 2){
+  else if(direction === 'down' && Math.abs(game.camera.y - player.y) > Game.viewHeight / 2){
     newCameraPosition = { x: game.camera.x, y: game.camera.y + Game.blockPx };
   }
-  else if(direction === 'left' && Math.abs((game.camera.x + Game.viewWidth) - Game.drill.x) > Game.viewWidth / 2){
+  else if(direction === 'left' && Math.abs((game.camera.x + Game.viewWidth) - player.x) > Game.viewWidth / 2){
     newCameraPosition = { x: game.camera.x - Game.blockPx, y: game.camera.y };
   }
-  else if(direction === 'right' && Math.abs(game.camera.x - Game.drill.x) > Game.viewWidth / 2){
+  else if(direction === 'right' && Math.abs(game.camera.x - player.x) > Game.viewWidth / 2){
     newCameraPosition = { x: game.camera.x + Game.blockPx, y: game.camera.y };
   }
 
   if(targetGroundType && targetGroundType.startsWith('ground')){
-    Game.drill.emitter = Game.game.add.emitter(0, 0, 100);
-    Game.drill.addChild(Game.drill.emitter);
+    player.emitter = Game.game.add.emitter(0, 0, 100);
+    player.addChild(player.emitter);
 
     var frameMod = Game.entities.ground.types.indexOf(targetGroundType.replace('ground_', '')) * 4;
 
-    Game.drill.emitter.makeParticles('ground', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod]);
+    player.emitter.makeParticles('ground', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod]);
 
-    Game.drill.emitter.x = 32;
+    player.emitter.x = 32;
 
-    Game.drill.emitter.setScale(0.1, 0.3, 0.1, 0.3);
+    player.emitter.setScale(0.1, 0.3, 0.1, 0.3);
 
-    Game.drill.emitter.start(true, moveTime + 100, null, Math.round(Game.rand(3, 7)));
+    player.emitter.start(true, moveTime + 100, null, Math.round(Game.rand(3, 7)));
 
     Game.entities.ground.dig(newPosition);
   }
@@ -152,55 +154,57 @@ Game.entities.player.move = function(game, direction){
 
   if(Game.hull.space < 0) moveTime += 250;
 
-  moveTime = Math.max(Game.config.baseDrillMoveTime, moveTime - (((Game.drill.upgrade || 0) + 1) * 50));
+  moveTime = Math.max(Game.config.baseDrillMoveTime, moveTime - (((player.upgrade || 0) + 1) * 50));
 
   //if(targetGroundType && targetGroundType.startsWith('ground')) Game.game.camera.shake((moveTime * 0.00001) * 0.42, moveTime);
 
-  game.add.tween(Game.drill).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
+  game.add.tween(player).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
+
+  Socket.active.emit('player_update', { position: newPosition, moveTime: moveTime, direction: direction });
 
   if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime, direction);
 
   var invertTexture = false;
 
   if(direction === 'up'){
-    if(surrounds.left || surrounds.topLeft && !(surrounds.topRight && surrounds.topLeft && Game.entities.player.lastMove === 'right')){
+    if(surrounds.left || surrounds.topLeft && !(surrounds.topRight && surrounds.topLeft && player.lastMove === 'right')){
       invertTexture = true;
-      Game.drill.angle = 90;
+      player.angle = 90;
     }
-    else Game.drill.angle = -90;
+    else player.angle = -90;
   }
   else if(direction === 'down'){
-    if(surrounds.right || surrounds.bottomRight && !(surrounds.bottomRight && surrounds.bottomLeft && Game.entities.player.lastMove === 'right')){
+    if(surrounds.right || surrounds.bottomRight && !(surrounds.bottomRight && surrounds.bottomLeft && player.lastMove === 'right')){
       invertTexture = true;
-      Game.drill.angle = -90;
+      player.angle = -90;
     }
-    else Game.drill.angle = 90;
+    else player.angle = 90;
   }
   else{
-    Game.drill.angle = 0;
+    player.angle = 0;
   }
 
   if(direction === 'left'){
     invertTexture = true;
   }
 
-  if(invertTexture) Game.drill.scale.x = -Game.drillScaleX;
-  else Game.drill.scale.x = Game.drillScaleX;
+  if(invertTexture) player.scale.x = -Game.config.defaultPlayerScale;
+  else player.scale.x = Game.config.defaultPlayerScale;
 
-  Game.entities.player.lastMoveInvert = invertTexture;
-  Game.entities.player.lastMove = direction;
+  player.lastMoveInvert = invertTexture;
+  player.lastMove = direction;
 
-  Game.entities.player.lastPosition = newPosition;
+  player.lastPosition = newPosition;
 
-  Game.config.map[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)][0] = -1;
+  Game.config.map[Game.toGridPos(player.x)][Game.toGridPos(player.y)][0] = -1;
   Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
-  Game.config.viewBufferMap[Game.toGridPos(Game.drill.x)][Game.toGridPos(Game.drill.y)][0] = -1;
+  Game.config.viewBufferMap[Game.toGridPos(player.x)][Game.toGridPos(player.y)][0] = -1;
   Game.config.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
 
-  if(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10){
+  if(Game.game.math.distance(player.x, player.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10){
     Game.notify('Open your console to connect to Spaceco', 2);
   }
-  else if(Game.game.math.distance(Game.drill.x, Game.drill.y, Game.spaceco.x, Game.spaceco.y) > Game.blockPx - 10){
+  else if(Game.game.math.distance(player.x, player.y, Game.spaceco.x, Game.spaceco.y) > Game.blockPx - 10){
     Game.infoLine.setText('');
   }
   else if(Game.hud.isOpen) Game.entities.hud.close();
@@ -222,9 +226,9 @@ Game.entities.player.move = function(game, direction){
   setTimeout(function(){
     Game.entities.hud.update();
 
-    if(Game.drill.emitter){
-      Game.drill.emitter.destroy();
-      Game.drill.emitter = null;
+    if(player.emitter){
+      player.emitter.destroy();
+      player.emitter = null;
     }
   }, moveTime + 150);
 };
@@ -243,11 +247,13 @@ Game.entities.player.useItem = function(slotNum, item){
     }, 500);
   }
 
+  var player = Game.config.players[Game.config.playerName];
+
   if(item === 'teleporter'){
     Game.entities.player.move(Game.game, 'teleport');
   }
   else if(item.includes('charge')){
-    if(Game.drill.activeCharge){
+    if(player.activeCharge){
       Game.notify('You have already placed a charge', 2);
 
       return;
@@ -264,61 +270,61 @@ Game.entities.player.useItem = function(slotNum, item){
       Game.entities.itemSlot.setItem(slotNum, 'detonator');
     }
     else{
-      Game.drill.charge_TO = setTimeout(function(){
-        Game.drill.activeCharge.frame++;
+      player.charge_TO = setTimeout(function(){
+        player.activeCharge.frame++;
 
-        Game.effects[Game.drill.activeChargeType.includes('freeze') ? 'freeze' : 'explode']({ x: Game.drill.activeCharge.x, y: Game.drill.activeCharge.y }, Game.drill.activeChargeType.includes('remote') ? 5 : 3);
+        Game.effects[player.activeChargeType.includes('freeze') ? 'freeze' : 'explode']({ x: player.activeCharge.x, y: player.activeCharge.y }, player.activeChargeType.includes('remote') ? 5 : 3);
 
-        Game.game.camera.shake(Game.drill.activeChargeType.includes('remote') ? 0.05 : 0.03, 1000);
+        Game.game.camera.shake(player.activeChargeType.includes('remote') ? 0.05 : 0.03, 1000);
 
         setTimeout(function(){
-          Game.drill.activeCharge.destroy();
-          Game.drill.activeCharge = null;
-          Game.drill.activeChargeType = null;
+          player.activeCharge.destroy();
+          player.activeCharge = null;
+          player.activeChargeType = null;
         }, 1000);
       }, 3*1000);
     }
 
-    Game.drill.activeChargeType = item;
+    player.activeChargeType = item;
 
-    Game.drill.activeCharge = Game.game.add.sprite(Game.drill.x, Game.drill.y, 'explosive');
-    Game.drill.activeCharge.anchor.setTo(0.5, 0);
-    Game.drill.activeCharge.frame = frame;
+    player.activeCharge = Game.game.add.sprite(player.x, player.y, 'explosive');
+    player.activeCharge.anchor.setTo(0.5, 0);
+    player.activeCharge.frame = frame;
   }
   else if(item === 'detonator'){
     Game['itemSlot'+ slotNum].itemSprite.animations.play('use');
 
-    Game.drill.charge_TO = setTimeout(function(){
-      Game.drill.activeCharge.frame++;
+    player.charge_TO = setTimeout(function(){
+      player.activeCharge.frame++;
 
-      Game.effects[Game.drill.activeChargeType.includes('freeze') ? 'freeze' : 'explode']({ x: Game.drill.activeCharge.x, y: Game.drill.activeCharge.y }, Game.drill.activeChargeType.includes('remote') ? 5 : 3);
+      Game.effects[player.activeChargeType.includes('freeze') ? 'freeze' : 'explode']({ x: player.activeCharge.x, y: player.activeCharge.y }, player.activeChargeType.includes('remote') ? 5 : 3);
 
-      Game.game.camera.shake(Game.drill.activeChargeType.includes('remote') ? 0.05 : 0.03, 1000);
+      Game.game.camera.shake(player.activeChargeType.includes('remote') ? 0.05 : 0.03, 1000);
 
       setTimeout(function(){
         Game.entities.itemSlot.setItem(slotNum, '');
-        if(Game.inventory[Game.drill.activeChargeType] > 0) Game.entities.itemSlot.setItem(slotNum, Game.drill.activeChargeType);
+        if(Game.inventory[player.activeChargeType] > 0) Game.entities.itemSlot.setItem(slotNum, player.activeChargeType);
 
-        Game.drill.activeCharge.destroy();
-        Game.drill.activeCharge = null;
-        Game.drill.activeChargeType = null;
+        player.activeCharge.destroy();
+        player.activeCharge = null;
+        player.activeChargeType = null;
       }, 1000);
     }, 1000);
   }
   else if(item === 'responder_teleporter'){
-    if(!Game.drill.responder){
-      Game.drill.responder = Game.game.add.sprite(Game.drill.x, Game.drill.y, 'responder');
-      Game.drill.responder.anchor.setTo(0.5, 0);
-      Game.drill.responder.animations.add('active', [0, 1], 5, true);
-      Game.drill.responder.animations.play('active');
+    if(!player.responder){
+      player.responder = Game.game.add.sprite(player.x, player.y, 'responder');
+      player.responder.anchor.setTo(0.5, 0);
+      player.responder.animations.add('active', [0, 1], 5, true);
+      player.responder.animations.play('active');
 
       Game.entities.player.move(Game.game, 'teleport');
     }
     else{
       Game.entities.player.move(Game.game, 'responder_teleport');
 
-      Game.drill.responder.destroy();
-      Game.drill.responder = null;
+      player.responder.destroy();
+      player.responder = null;
     }
   }
   else{
@@ -326,7 +332,7 @@ Game.entities.player.useItem = function(slotNum, item){
   }
 
   if(item !== 'detonator'){
-    if(item === 'responder_teleporter' && Game.drill.responder) return;
+    if(item === 'responder_teleporter' && player.responder) return;
 
     Game.inventory[item]--;
 
@@ -338,14 +344,16 @@ Game.entities.player.useItem = function(slotNum, item){
 };
 
 Game.entities.player.hurt = function(amount, by){
-  if(Game.drill.justHurt) return; //todo make this depend on what the damage is from
-  Game.drill.justHurt = true;
-  Game.drill.justHurt_TO = setTimeout(function(){ Game.drill.justHurt = false; }, 500);
+  var player = Game.config.players[Game.config.playerName];
+
+  if(player.justHurt) return; //todo make this depend on what the damage is from
+  player.justHurt = true;
+  player.justHurt_TO = setTimeout(function(){ player.justHurt = false; }, 500);
 
   Game.health -= amount;
 
   if(Game.health <= 0){
-    Game.drill.kill();
+    player.kill();
     Game.loseReason = by;
     Game.game.time.events.add(200, function(){ Game.game.state.start('end'); });
   }

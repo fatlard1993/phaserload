@@ -21,20 +21,20 @@ Game.entities.monster.prototype.update = function(){
 
   var moving;
 
-  var xDiff = this.x - Game.drill.x;
-  var yDiff = this.y - Game.drill.y;
+  var xDiff = this.x - Game.config.players[Game.config.playerName].x;
+  var yDiff = this.y - Game.config.players[Game.config.playerName].y;
 
   var xDirection = xDiff > 0 ? 'left' : 'right';
   var yDirection = yDiff > 0 ? 'up' : 'down';
 
   var wantToMove = Math.abs(xDiff) > Math.abs(yDiff) ? xDirection : yDirection;
-  
+
   var canMove = {};
-  
+
   if(gridPos.x - 1 > 0 && (!Game.mapPosName(gridPos.x - 1, gridPos.y) || ['player1', 'lava', 'gas'].includes(Game.mapPosName(gridPos.x - 1, gridPos.y)))){
     canMove.left = 1;
   }
-  
+
   if(gridPos.x + 1 < Game.config.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'lava', 'gas'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
     canMove.right = 1;
   }

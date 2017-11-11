@@ -1,7 +1,7 @@
 const Game = require('./game.js');
 
 var Sockets = {
-  users: {},
+  players: {},
   rooms: {},
   init: function(server){
     Sockets.io = require('socket.io').listen(server);
@@ -9,104 +9,121 @@ var Sockets = {
     Sockets.io.on('connection', function(socket){
       console.log('socket', '"Someone" connected...');
 
-      var User;
+      var Player;
 
-      socket.on('connect_request', function(userData){
-        console.log('User connected: ', userData);
+      socket.on('connect_request', function(data){
+        console.log('Player connected: ', data);
 
-        User = Sockets.users[userData.username] = Object.assign(userData, {
+        Player = Sockets.players[data.name] = Object.assign(data, {
           socket: socket,
           joinRoom: function(room, roomData){
-            User.leaveRoom();
+            Player.leaveRoom();
 
-            if(Sockets.rooms[room]){
-              console.log('socket', room +' already exists... Adding '+ User.username +' to users list..');
+            socket.join(room);
 
-              Sockets.rooms[room].users.push(User.username);
+            Player.room = room;
 
-              socket.broadcast.in(room).emit('user_connect', User.username);
-            }
-            else{
-              console.log('socket', room +' doesn\'t exist, creating room, initializing users list with '+ User.username +'..');
+            if(!Sockets.rooms[room]){
+              console.log('socket', room +' doesn\'t exist, creating room, initializing players list with '+ Player.name +'..');
 
-              var newRoomData = Object.assign(Game.generateMap(roomData && roomData.mode ? roomData.mode : 'normal'), {
-                users: [User.username]
-              });
+              var newRoomData = Object.assign(Game.generateMap(roomData && roomData.mode ? roomData.mode : 'normal'), { players: {} });
 
               if(roomData) newRoomData = Object.assign(newRoomData, roomData);
 
               Sockets.rooms[room] = newRoomData;
+
+              Sockets.rooms[room].spaceco = {
+                position: {
+                  x: Game.rand(3, Sockets.rooms[room].width - 3)
+                }
+              };
             }
 
-            socket.join(room);
+            Sockets.rooms[room].players[Player.name] = {
+              name: Player.name,
+              position: {
+                x: Game.rand(1, Sockets.rooms[room].width - 1)
+              }
+            };
 
-            User.room = room;
+            socket.broadcast.in(room).emit('player_connect', Sockets.rooms[room].players[Player.name]);
 
             socket.emit('roomData', Sockets.rooms[room]);
           },
           leaveRoom: function(){
-            if(User.room && Sockets.rooms[User.room]){
-              Sockets.rooms[User.room].users.splice(Sockets.rooms[User.room].users.indexOf(User.username), 1);
-
-              if(!Sockets.rooms[User.room].users.length){
+            if(Player.room && Sockets.rooms[Player.room]){
+              if(!Object.keys(Sockets.rooms[Player.room].players).length){
                 console.log('socket', 'Room is now empty, tearing down room..');
 
-                delete Sockets.rooms[User.room];
+                delete Sockets.rooms[Player.room];
               }
               else{
-                console.log('socket', 'There are '+ Sockets.rooms[User.room].users.length +' uses left in '+ User.room);
+                console.log('socket', 'There are '+ Object.keys(Sockets.rooms[Player.room].players).length +' players left in '+ Player.room);
 
-                Sockets.io.in(User.room).emit('user_disconnect', User.username);
+                Sockets.io.in(Player.room).emit('player_disconnect', Sockets.rooms[Player.room].players[Player.name]);
               }
+
+              delete Sockets.rooms[Player.room].players[Player.name];
             }
           },
           disconnect: function(){
-            if(!Sockets.users[User.username]) return console.warn('socket', 'Disconnecting "'+ User.username +'"..');
+            if(!Sockets.players[Player.name]) return console.warn('socket', 'Disconnecting "'+ Player.name +'"..');
 
-            delete Sockets.users[User.username];
+            delete Sockets.players[Player.name];
 
-            User.leaveRoom();
+            Player.leaveRoom();
 
-            User = null;
+            Player = null;
           }
         });
 
-        socket.emit('welcome', { rooms: Object.keys(Sockets.rooms) });
+        socket.emit('welcome', { name: Player.name, rooms: Object.keys(Sockets.rooms) });
       });
 
       socket.on('create_room', function(roomData){
         console.log('create_room', roomData);
 
-        User.joinRoom(roomData.name, roomData);
+        Player.joinRoom(roomData.name, roomData);
       });
 
       socket.on('join_room', function(roomName){
         console.log('join_room', roomName);
 
-        User.joinRoom(roomName);
+        Player.joinRoom(roomName);
       });
 
-      socket.on('join_room', function(roomName){
-        console.log('join_room', roomName);
+      socket.on('player_update', function(data){
+        if(!Player) return;
 
-        User.joinRoom(roomName);
+        console.log('player_update', data);
+
+        Sockets.rooms[Player.room].players[Player.name].position = {
+          x: Game.toGridPos(data.position.x),
+          y: Game.toGridPos(data.position.y)
+        };
+
+        data.name = Player.name;
+
+        socket.broadcast.in(Player.room).emit('player_update', data);
       });
 
       socket.on('crush_ground', function(pos){
+        if(!Player) return;
+
         console.log('crush_ground', pos);
 
-        Sockets.rooms[User.room].map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
-        Sockets.rooms[User.room].viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
+        Sockets.rooms[Player.room].map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
+        Sockets.rooms[Player.room].viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
 
-        Sockets.io.in(User.room).emit('crush_ground', pos);
+        Sockets.io.in(Player.room).emit('crush_ground', pos);
       });
 
       socket.on('disconnect', function(){
-        if(!User || !User.username) return console.warn('socket', 'Undefined user left!');
+        if(!Player || !Player.name) return console.warn('socket', 'Undefined player left!');
 
-        console.log('socket', User.username +' left '+ User.socketRoom);
+        console.log('socket', Player.name +' left '+ Player.socketRoom);
 
-        User.disconnect();
+        Player.disconnect();
       });
     });
 
@@ -120,7 +137,7 @@ var Sockets = {
 
     else if(Sockets.rooms[destination]) Sockets.io.sockets.in(destination).emit(event, content);
 
-    else if(Sockets.users[destination]) Sockets.users[destination].socket.emit(event, content);
+    else if(Sockets.players[destination]) Sockets.players[destination].socket.emit(event, content);
 
     else  console.warn('socket', 'Could not find '+ destination);
   }

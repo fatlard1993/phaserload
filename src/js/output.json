@@ -9,7 +9,7 @@
     "src/js/_log.js",
     "src/js/_socket.js",
     "src/js/game.js",
-    "src/js/main.js",
+    "src/js/init.js",
 
     "src/js/entities/player.js",
     "src/js/entities/hud.js",

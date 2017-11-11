@@ -16,8 +16,8 @@ var Game = {
         Game.entities.spaceco.hurt((radius + 1) - (Game.game.math.distance(pos.x, pos.y, Game.spaceco.x, Game.spaceco.y) / Game.blockPx), 'an explosion');
       }
 
-      if(Game.game.math.distance(pos.x, pos.y, Game.drill.x, Game.drill.y) < Game.blockPx * radius){
-        Game.entities.player.hurt(Game.randFloat(radius, radius * 2) * (radius - (Game.game.math.distance(pos.x, pos.y, Game.drill.x, Game.drill.y) / Game.blockPx)), 'explosion');
+      if(Game.game.math.distance(pos.x, pos.y, Game.config.players[Game.config.playerName].x, Game.config.players[Game.config.playerName].y) < Game.blockPx * radius){
+        Game.entities.player.hurt(Game.randFloat(radius, radius * 2) * (radius - (Game.game.math.distance(pos.x, pos.y, Game.config.players[Game.config.playerName].x, Game.config.players[Game.config.playerName].y) / Game.blockPx)), 'explosion');
       }
 
       Game.ground.forEachAlive(function(ground){
@@ -144,8 +144,8 @@ var Game = {
     Game.infoLine.setText(' '+ text +' ');
 
     Game.notify_TO = setTimeout(function(){
-      Game.infoLine.setText('');
-    }, timeout * 1000);
+      if(Game.infoLine) Game.infoLine.setText('');
+    }, (timeout || 3) * 1000);
   },
   playLevel: function(level){
     Game.desiredLevel = level;
@@ -313,7 +313,7 @@ var Game = {
   dev: function(){
     Game.fuel = Game.health = Game.hull.space = Game.credits = 999;
 
-    Game.drill.upgrade = 3;
+    Game.config.players[Game.config.playerName].upgrade = 3;
 
     Game.inventory = {
       teleporter: 99,
