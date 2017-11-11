@@ -54,35 +54,6 @@ var Worlds = {
         ]
       },
       {
-        briefing: '\n\n Welcome to asteroid CR417-13F',
-        size: {
-          width: [45, 90],
-          depth: [300, 400]
-        },
-        holeChance: 0.1,
-        lavaChance: 0.7,
-        gasChance: 0.01,
-        monsterChance: 0.2,
-        mineralChance: 0.15,
-        mineralRareity: {
-          blue: 40,
-          purple: 30,
-          teal: 20,
-          '???': 10,
-        },
-        layers: [
-          { black: 65, red: 25, purple: 5, pink: 5 },
-          { black: 50, red: 30, purple: 10, pink: 10 },
-          { black: 40, red: 35, purple: 15, pink: 5 },
-          { black: 30, red: 40, purple: 20, pink: 10 },
-          { black: 20, red: 40, purple: 30, pink: 10 },
-          { black: 10, red: 35, purple: 35, pink: 20 },
-          { black: 5, red: 30, purple: 45, pink: 20 },
-          { black: 5, red: 20, purple: 45, pink: 30 },
-          { black: 5, red: 10, purple: 35, pink: 50 },
-        ]
-      },
-      {
         briefing: '\n\n Welcome to asteroid FR153-34R',
         size: {
           width: [70, 110],
@@ -107,36 +78,6 @@ var Worlds = {
           { white: 5, orange: 30, yellow: 45, red: 20 },
           { white: 5, orange: 20, yellow: 45, red: 30 },
           { white: 5, orange: 10, yellow: 35, red: 50 },
-        ]
-      },
-      {
-        briefing: '\n\n Welcome to asteroid ZT546-3T1',
-        size: {
-          width: [80, 120],
-          depth: [200, 350]
-        },
-        holeChance: 0.5,
-        lavaChance: 0.6,
-        gasChance: 0.6,
-        monsterChance: 0.6,
-        mineralChance: 0.1,
-        mineralRareity: {
-          green: 20,
-          red: 30,
-          blue: 30,
-          purple: 10,
-          teal: 9,
-          '???': 1
-        },
-        layers: [
-          { white: 70, red: 15, black: 5 },
-          { white: 60, red: 20, black: 10 },
-          { white: 40, red: 30, black: 30 },
-          { white: 20, red: 40, black: 40 },
-          { white: 5, red: 55, black: 40 },
-          { green: 20, red: 40, black: 40 },
-          { green: 20, red: 30, black: 50 },
-          { green: 30, red: 30, black: 40 }
         ]
       },
       {
@@ -165,33 +106,6 @@ var Worlds = {
           { white: 20, red: 20, black: 30, teal: 30 },
           { white: 20, red: 30, black: 20, teal: 20, blue: 10 },
           { white: 10, red: 20, black: 10, teal: 30, blue: 30 }
-        ]
-      },
-      {
-        briefing: '\n\n Welcome to asteroid GS340-20S',
-        size: {
-          width: [80, 140],
-          depth: [200, 400]
-        },
-        holeChance: 0.2,
-        lavaChance: 0.01,
-        gasChance: 0.6,
-        monsterChance: 0.01,
-        mineralChance: 0.05,
-        mineralRareity: {
-          green: 80,
-          blue: 5,
-          purple: 4,
-          '???': 1
-        },
-        layers: [
-          { green: 60, purple: 30, orange: 10 },
-          { green: 60, purple: 20, orange: 20 },
-          { green: 50, purple: 20, orange: 30 },
-          { green: 30, purple: 20, orange: 30, black: 15, yellow: 5 },
-          { green: 20, orange: 20, black: 30, yellow: 30 },
-          { green: 20, orange: 30, black: 20, yellow: 20, blue: 10 },
-          { green: 10, orange: 20, black: 10, yellow: 30, blue: 30 }
         ]
       },
       {
@@ -330,6 +244,36 @@ var Worlds = {
         ]
       },
       {
+        briefing: '\n\n Welcome to asteroid ZT542-21N',
+        size: {
+          width: [80, 120],
+          depth: [200, 350]
+        },
+        holeChance: 0.5,
+        lavaChance: 0.6,
+        gasChance: 0.6,
+        monsterChance: 0.6,
+        mineralChance: 0.1,
+        mineralRareity: {
+          green: 20,
+          red: 30,
+          blue: 30,
+          purple: 10,
+          teal: 9,
+          '???': 1
+        },
+        layers: [
+          { white: 70, yellow: 15, black: 5 },
+          { white: 60, yellow: 20, blue: 10 },
+          { white: 40, yellow: 30, black: 30 },
+          { white: 20, yellow: 40, blue: 40 },
+          { white: 5, orange: 55, black: 40 },
+          { green: 20, orange: 40, blue: 40 },
+          { green: 20, orange: 30, red: 50 },
+          { green: 30, orange: 30, red: 40 }
+        ]
+      },
+      {
         briefing: '\n\n   Welcome to moon CM12W-I13',
         size: {
           width: [30, 70],
@@ -354,6 +298,94 @@ var Worlds = {
           { teal: 40, green: 35, pink: 15, purple: 5 },
           { teal: 30, green: 25, pink: 15, purple: 30 },
           { teal: 30, green: 40, blue: 30 }
+        ]
+      }
+    ],
+    hard: [
+      {
+        briefing: '\n\n Welcome to asteroid CR417-13F',
+        size: {
+          width: [45, 90],
+          depth: [300, 400]
+        },
+        holeChance: 0.1,
+        lavaChance: 0.7,
+        gasChance: 0.01,
+        monsterChance: 0.2,
+        mineralChance: 0.15,
+        mineralRareity: {
+          blue: 40,
+          purple: 30,
+          teal: 20,
+          '???': 10,
+        },
+        layers: [
+          { black: 65, red: 25, purple: 5, pink: 5 },
+          { black: 50, red: 30, purple: 10, pink: 10 },
+          { black: 40, red: 35, purple: 15, pink: 5 },
+          { black: 30, red: 40, purple: 20, pink: 10 },
+          { black: 20, red: 40, purple: 30, pink: 10 },
+          { black: 10, red: 35, purple: 35, pink: 20 },
+          { black: 5, red: 30, purple: 45, pink: 20 },
+          { black: 5, red: 20, purple: 45, pink: 30 },
+          { black: 5, red: 10, purple: 35, pink: 50 },
+        ]
+      },
+      {
+        briefing: '\n\n Welcome to asteroid GS340-20S',
+        size: {
+          width: [80, 140],
+          depth: [200, 400]
+        },
+        holeChance: 0.2,
+        lavaChance: 0.01,
+        gasChance: 0.6,
+        monsterChance: 0.01,
+        mineralChance: 0.05,
+        mineralRareity: {
+          green: 80,
+          blue: 5,
+          purple: 4,
+          '???': 1
+        },
+        layers: [
+          { green: 60, purple: 30, orange: 10 },
+          { green: 60, purple: 20, orange: 20 },
+          { green: 50, purple: 20, orange: 30 },
+          { green: 30, purple: 20, orange: 30, black: 15, yellow: 5 },
+          { green: 20, orange: 20, black: 30, yellow: 30 },
+          { green: 20, orange: 30, black: 20, yellow: 20, blue: 10 },
+          { green: 10, orange: 20, black: 10, yellow: 30, blue: 30 }
+        ]
+      },
+      {
+        briefing: '\n\n Welcome to asteroid ZT546-3T1',
+        size: {
+          width: [80, 120],
+          depth: [200, 350]
+        },
+        holeChance: 0.5,
+        lavaChance: 0.6,
+        gasChance: 0.6,
+        monsterChance: 0.6,
+        mineralChance: 0.1,
+        mineralRareity: {
+          green: 20,
+          red: 30,
+          blue: 30,
+          purple: 10,
+          teal: 9,
+          '???': 1
+        },
+        layers: [
+          { white: 70, red: 15, black: 5 },
+          { white: 60, red: 20, black: 10 },
+          { white: 40, red: 30, black: 30 },
+          { white: 20, red: 40, black: 40 },
+          { white: 5, red: 55, black: 40 },
+          { green: 20, red: 40, black: 40 },
+          { green: 20, red: 30, black: 50 },
+          { green: 30, red: 30, black: 40 }
         ]
       },
       {
