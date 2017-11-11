@@ -60,7 +60,7 @@ var Game = {
   },
   generateMap: function(mode){
     var worlds = Worlds.categories[Modes[mode].worldCategory];
-    var settings = worlds[Game.rand(0, worlds.length)];
+    var settings = worlds[Game.rand(0, worlds.length - 1)];
 
     var mapData = Object.assign(Modes[mode], {
       mode: mode,
