@@ -80,7 +80,7 @@ Game.entities.spaceco.open = function(){
 
         // if(Game.hull.items[hullItemNames[x]] > 0) contents += hullItemNames[x] +': '+ Game.hull.items[hullItemNames[x]] +' * '+ Game.entities.spaceco.getValue(hullItemNames[x]) +'\n';
 
-        Game.credits += Game.hull.items[hullItemNames[x]] * Game.entities.spaceco.getValue(hullNames[x]);
+        Game.credits += Game.hull.items[hullItemNames[x]] * Game.entities.spaceco.getValue(hullItemNames[x]);
       }
 
       contents += 'Sold:\n';
