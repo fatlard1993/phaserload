@@ -311,17 +311,17 @@ var Game = {
     this.monsters.forEachAlive(cleanup);
   },
   dev: function(){
-    Game.fuel = Game.health = Game.hull.space = Game.credits = 1000;
+    Game.fuel = Game.health = Game.hull.space = Game.credits = 999;
 
     Game.drill.upgrade = 3;
 
     Game.inventory = {
-      teleporter: 20,
-      responder_teleporter: 20,
-      timed_charge: 20,
-      remote_charge: 20,
-      timed_freeze_charge: 20,
-      remote_freeze_charge: 20
+      teleporter: 99,
+      responder_teleporter: 99,
+      timed_charge: 99,
+      remote_charge: 99,
+      timed_freeze_charge: 99,
+      remote_freeze_charge: 99
     };
 
     Game.entities.itemSlot.setItem(1, 'responder_teleporter');
