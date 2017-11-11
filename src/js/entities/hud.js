@@ -16,7 +16,7 @@ Game.entities.hud.create = function(x, y){
   hud.statusText.lineSpacing = -8;
   hud.addChild(hud.statusText);
 
-  hud.interfaceText = Game.game.add.text(20, 20, '', { font: '14px '+ Game.config.font, fill: '#fff', fontWeight: 'bold' });
+  hud.interfaceText = Game.game.add.text(20, 20, '', { font: '13px '+ Game.config.font, fill: '#fff', fontWeight: 'bold' });
   hud.addChild(hud.interfaceText);
 
   hud.bottomLine = Game.game.add.text(20, 205, '', { font: '14px '+ Game.config.font, fill: Game.config.hudTextColor });
@@ -49,7 +49,7 @@ Game.entities.hud.update = function(){
     else if(item === 'credits') statusText += Game.credits.toFixed(2);
     else if(item === 'hull') statusText += Game.hull.space.toFixed(2);
     else{
-      if(item.startsWith('mineral') && Game.hull[item]) statusText += Game.hull[item];
+      if(item.startsWith('mineral') && Game.hull.items[item]) statusText += Game.hull.items[item];
     }
   }
 
@@ -120,6 +120,7 @@ Game.entities.hud.setView = function(view){
   var space = 20;
 
   var inventoryItemNames = Game.entities.hud.inventoryItemNames = Object.keys(Game.inventory), inventoryItemCount = inventoryItemNames.length;
+  var hullItemNames = Game.entities.hud.hullItemNames = Object.keys(Game.hull.items), hullItemCount = hullItemNames.length;
 
   if(view === 'briefing'){
     menu = ' [Briefing]  Help      Exit\n';
@@ -134,9 +135,9 @@ Game.entities.hud.setView = function(view){
   }
 
   if(view === 'inventory'){
-    menu = ' ['+ (inventoryItemCount > 6 ? '   pg1   ' : 'Inventory') +'] Hull      Exit\n';
+    menu = ' ['+ (inventoryItemCount > 7 ? '   pg1   ' : 'Inventory') +'] Hull      Exit\n';
 
-    for(var x = 0; x < Math.min(6, inventoryItemCount); x++){
+    for(var x = 0; x < Math.min(7, inventoryItemCount); x++){
       var itemName = inventoryItemNames[x];
       var slot = Game.itemSlot1.item === itemName ? 1 : Game.itemSlot2.item === itemName ? 2 : ' ';
 
@@ -146,7 +147,17 @@ Game.entities.hud.setView = function(view){
   else if(view === 'inventory_pg2'){
     menu = ' [   pg2   ] Hull      Exit\n';
 
-    for(var x = 6; x < inventoryItemCount; x++){
+    for(var x = 7; x < Math.min(14, inventoryItemCount); x++){
+      var itemName = inventoryItemNames[x];
+      var slot = Game.itemSlot1.item === itemName ? 1 : Game.itemSlot2.item === itemName ? 2 : ' ';
+
+      items += '['+ slot +'] '+ itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.inventory[itemName] +'\n';
+    }
+  }
+  else if(view === 'inventory_pg3'){
+    menu = ' [   pg3   ] Hull      Exit\n';
+
+    for(var x = 14; x < inventoryItemCount; x++){
       var itemName = inventoryItemNames[x];
       var slot = Game.itemSlot1.item === itemName ? 1 : Game.itemSlot2.item === itemName ? 2 : ' ';
 
@@ -158,28 +169,28 @@ Game.entities.hud.setView = function(view){
 
     items += 'Hull Space               '+ Game.hull.space.toFixed(2) +'\n';
 
-    var mineralNames = ['mineral_green', 'mineral_blue', 'mineral_red', 'mineral_purple', 'mineral_teal', 'mineral_???'];
+    for(var x = 0; x < Math.min(6, hullItemCount); x++){
+      var itemName = hullItemNames[x];
 
-    for(var x = 0; x < mineralNames.length; x++){
-      items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + (Game.hull[mineralNames[x]] || 0) +'\n';
+      items += itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.hull.items[itemName] +'\n';
     }
   }
   else if(view === 'hull_p2'){
     menu = '  Inventory [ p2 ]     Exit\n';
 
-    var mineralNames = ['ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue'];
+    for(var x = 6; x < Math.min(13, hullItemCount); x++){
+      var itemName = hullItemNames[x];
 
-    for(var x = 0; x < mineralNames.length; x++){
-      items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + (Game.hull[mineralNames[x]] || 0) +'\n';
+      items += itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.hull.items[itemName] +'\n';
     }
   }
   else if(view === 'hull_p3'){
     menu = '  Inventory [ p3 ]     Exit\n';
 
-    var mineralNames = ['ground_purple', 'ground_pink', 'ground_black'];
+    for(var x = 13; x < hullItemCount; x++){
+      var itemName = hullItemNames[x];
 
-    for(var x = 0; x < mineralNames.length; x++){
-      items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + (Game.hull[mineralNames[x]] || 0) +'\n';
+      items += itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.hull.items[itemName] +'\n';
     }
   }
 
@@ -197,7 +208,8 @@ Game.entities.hud.handlePointer = function(pointer){
       }
       else{
         Log()('inventory');
-        if(Game.hud.view === 'inventory' && Object.keys(Game.inventory).length > 6) Game.entities.hud.setView('inventory_pg2');
+        if(Game.hud.view === 'inventory' && Object.keys(Game.inventory).length > 7) Game.entities.hud.setView('inventory_pg2');
+        else if(Game.hud.view === 'inventory_pg2' && Object.keys(Game.inventory).length > 14) Game.entities.hud.setView('inventory_pg3');
         else Game.entities.hud.setView('inventory');
       }
     }
@@ -208,8 +220,9 @@ Game.entities.hud.handlePointer = function(pointer){
       }
       else{
         Log()('hull');
-        if(Game.hud.view === 'hull') Game.entities.hud.setView('hull_p2');
-        else if(Game.hud.view === 'hull_p2') Game.entities.hud.setView('hull_p3');
+
+        if(Game.hud.view === 'hull' && Object.keys(Game.hull.items).length > 6) Game.entities.hud.setView('hull_p2');
+        else if(Game.hud.view === 'hull_p2' && Object.keys(Game.hull.items).length > 13) Game.entities.hud.setView('hull_p3');
         else Game.entities.hud.setView('hull');
       }
     }

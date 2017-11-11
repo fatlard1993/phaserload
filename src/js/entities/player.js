@@ -131,9 +131,9 @@ Game.entities.player.move = function(game, direction){
   if(Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] && Game.hull.space > mineralWeight){
     Game.minerals.forEachAlive(function(mineral){
       if(mineral.x === newPosition.x && mineral.y === newPosition.y){
-        Game.hull[mineral.type] = Game.hull[mineral.type] !== undefined ? Game.hull[mineral.type] : 0;
+        Game.hull.items[mineral.type] = Game.hull.items[mineral.type] !== undefined ? Game.hull.items[mineral.type] : 0;
 
-        Game.hull[mineral.type]++;
+        Game.hull.items[mineral.type]++;
 
         var animationTime = 200 + Math.ceil(Game.game.math.distance(game.camera.x, game.camera.y, mineral.x, mineral.y));
 

@@ -75,14 +75,14 @@ Game.entities.spaceco.open = function(){
 
       for(x = 0; x < hullNames.length; x++){
         Game.entities.spaceco.resourceBay[hullNames[x]] = Game.entities.spaceco.resourceBay[hullNames[x]] || 0;
-        Game.entities.spaceco.resourceBay[hullNames[x]] += Game.hull[hullNames[x]];
+        Game.entities.spaceco.resourceBay[hullNames[x]] += Game.hull.items[hullNames[x]];
 
         var type = hullNames[x].replace(/_.*$/, '');
-        soldItems[type] += Game.hull[hullNames[x]];
+        soldItems[type] += Game.hull.items[hullNames[x]];
 
-        // if(Game.hull[hullNames[x]] > 0) contents += hullNames[x] +': '+ Game.hull[hullNames[x]] +' * '+ Game.entities.spaceco.getValue(hullNames[x]) +'\n';
+        // if(Game.hull.items[hullNames[x]] > 0) contents += hullNames[x] +': '+ Game.hull.items[hullNames[x]] +' * '+ Game.entities.spaceco.getValue(hullNames[x]) +'\n';
 
-        Game.credits += Game.hull[hullNames[x]] * Game.entities.spaceco.getValue(hullNames[x]);
+        Game.credits += Game.hull.items[hullNames[x]] * Game.entities.spaceco.getValue(hullNames[x]);
       }
 
       contents += 'Sold:\n';
@@ -95,7 +95,9 @@ Game.entities.spaceco.open = function(){
 
       contents += 'For '+ (Game.credits - statingCredits).toFixed(2) +' credits';
 
-      Game.hull = {};
+      Game.hull = {
+        items: []
+      };
       Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);
 
       if(Game.credits - 0.1 < 0){

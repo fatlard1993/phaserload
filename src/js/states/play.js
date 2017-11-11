@@ -34,13 +34,16 @@ Game.states.play.prototype.create = function(){
   else{
     Game.entities.spaceco.resourceBay = {};
 
-    Game.inventory = {};
-    Game.inventory.teleporter = 1;
+    Game.inventory = {
+      teleporter: 1
+    };
 
     Game.entities.itemSlot.setItem(1, 'teleporter');
 
-    Game.hull = {};
-    Game.hull.space = 10;
+    Game.hull = {
+      space: 10,
+      items: []
+    };
 
     Game.drill.upgrade = 0;
 
