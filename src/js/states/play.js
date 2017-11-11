@@ -5,8 +5,6 @@ Game.states.play = function(game){};
 Game.states.play.prototype.create = function(){
   console.log('play');
 
-  Game.entities.spaceco.prices = Game.config.world.spacecoPrices || Game.entities.spaceco.defaultPrices;
-
   Game.game.camera.bounds = null;
 
   Game.ground = this.game.add.group();

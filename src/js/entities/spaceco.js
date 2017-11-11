@@ -4,21 +4,6 @@ Game.entities.spaceco = function(game){};
 
 Game.entities.spaceco.headingText = '             SPACECO\n';
 
-Game.entities.spaceco.defaultPrices = {
-  gas: 1,
-  energy: 2,
-  super_oxygen_liquid_nitrogen: 3,
-  teleporter: 5,
-  responder_teleporter: 10,
-  repair: 40,
-  upgrade: 10,
-  transport: 100,
-  timed_charge: 5,
-  remote_charge: 10,
-  timed_freeze_charge: 10,
-  remote_freeze_charge: 15,
-};
-
 Game.entities.spaceco.create = function(){
   var spacecoX = Game.rand(3, Game.config.width - 3);
 
@@ -113,7 +98,7 @@ Game.entities.spaceco.open = function(){
       Game.hull = {};
       Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);
 
-      if(Game.credits === 0){
+      if(Game.credits - 0.1 < 0){
         Game.entities.spaceco.getOut_TO = setTimeout(Game.entities.spaceco.boot, 30*1000);
       }
     }
@@ -172,24 +157,24 @@ Game.entities.spaceco.setView = function(view){
   }
   else if(view === 'fuel'){
     menu = '   Rates [Fuel] Shop     Exit';
-    items += '\nGas                          $'+ Game.entities.spaceco.prices.gas;
-    items += '\nEnergy                       $'+ Game.entities.spaceco.prices.energy;
-    items += '\nSuper Oxygen Liquid Nitrogen $'+ Game.entities.spaceco.prices.super_oxygen_liquid_nitrogen;
+    items += '\nGas                          $'+ Game.config.spacecoPrices.gas;
+    items += '\nEnergy                       $'+ Game.config.spacecoPrices.energy;
+    items += '\nSuper Oxygen Liquid Nitrogen $'+ Game.config.spacecoPrices.super_oxygen_liquid_nitrogen;
   }
   else if(view === 'shop'){
     menu = '   Rates  Fuel [ p1 ]    Exit';
-    items += '\nTeleporter                   $'+ Game.entities.spaceco.prices.teleporter;
-    items += '\nResponder Teleporter         $'+ Game.entities.spaceco.prices.responder_teleporter;
-    items += '\nRepair                       $'+ Game.entities.spaceco.prices.repair;
-    items += '\nUpgrade                      $'+ Game.entities.spaceco.prices.upgrade;
-    items += '\nTransport                    $'+ Game.entities.spaceco.prices.transport;
+    items += '\nTeleporter                   $'+ Game.config.spacecoPrices.teleporter;
+    items += '\nResponder Teleporter         $'+ Game.config.spacecoPrices.responder_teleporter;
+    items += '\nRepair                       $'+ Game.config.spacecoPrices.repair;
+    items += '\nUpgrade                      $'+ Game.config.spacecoPrices.upgrade;
+    items += '\nTransport                    $'+ Game.config.spacecoPrices.transport;
   }
   else if(view === 'shop_p2'){
     menu = '   Rates  Fuel [ p2 ]    Exit';
-    items += '\nTimed Charge                 $'+ Game.entities.spaceco.prices.timed_charge;
-    items += '\nRemote Charge                $'+ Game.entities.spaceco.prices.remote_charge;
-    items += '\nTimed Freeze Charge          $'+ Game.entities.spaceco.prices.timed_freeze_charge;
-    items += '\nRemote Freeze Charge         $'+ Game.entities.spaceco.prices.remote_freeze_charge;
+    items += '\nTimed Charge                 $'+ Game.config.spacecoPrices.timed_charge;
+    items += '\nRemote Charge                $'+ Game.config.spacecoPrices.remote_charge;
+    items += '\nTimed Freeze Charge          $'+ Game.config.spacecoPrices.timed_freeze_charge;
+    items += '\nRemote Freeze Charge         $'+ Game.config.spacecoPrices.remote_freeze_charge;
   }
   Game.entities.spaceco.spacecoFuel = '';
   Game.entities.spaceco.spacecoProducts = '';
@@ -200,10 +185,11 @@ Game.entities.spaceco.setView = function(view){
 Game.entities.spaceco.updateBottomLine = function(){
   if(Game.hud.isOpen !== 'spaceco') return;
 
-  var credits = ' Credits: '+ Game.credits.toFixed(2);
-  var fuel = '   Fuel: '+ Game.fuel.toFixed(2);
+  var credits = '$:'+ Game.credits.toFixed(1);
+  var fuel = '  Fuel:'+ Game.fuel.toFixed(1);
+  var health = '  Health:'+ Game.health.toFixed(1);
 
-  Game.hud.bottomLine.setText(credits + fuel);
+  Game.hud.bottomLine.setText(credits + fuel + health);
 };
 
 Game.entities.spaceco.handlePointer = function(pointer){
@@ -290,50 +276,72 @@ Game.entities.spaceco.selectItem = function(item){
 
   if(Game.hud.justSelectedItem) return;
   Game.hud.justSelectedItem = true;
-  Game.hud.justSelectedItem_TO = setTimeout(function(){ Game.hud.justSelectedItem = false; }, 400);
+  Game.hud.justSelectedItem_TO = setTimeout(function(){ Game.hud.justSelectedItem = false; }, 500);
 
-  if(Game.credits < Game.entities.spaceco.prices[item]) return;
+  var bottomLineUpdate;
 
-  if(item === 'repair' && Game.health === 100 + (20 * ((Game.drill.upgrade || 0) + 1))) return;
-  if(item === 'upgrade' && Game.drill.upgrade === 3) return;
-  if(item === 'gas' && Game.drill.upgrade !== 0) return;
-  if(item === 'energy' && Game.drill.upgrade !== 1) return;
-  if(item === 'super_oxygen_liquid_nitrogen' && Game.drill.upgrade !== 2) return;
-
-  Game.credits -= Game.entities.spaceco.prices[item];
-
-  if(item === 'gas'){
-    if(Game.drill.upgrade === 0) Game.fuel += 1.5;
+  if(Game.credits < Game.config.spacecoPrices[item]){
+    bottomLineUpdate ='       Not enough credits!';
   }
-  else if(item === 'energy'){
-    if(Game.drill.upgrade === 1) Game.fuel += 3.2;
+  else if(item === 'repair' && Game.health === 100 + (20 * ((Game.drill.upgrade || 0) + 1))){
+    bottomLineUpdate ='          Full health!';
   }
-  else if(item === 'super_oxygen_liquid_nitrogen'){
-    if(Game.drill.upgrade === 2) Game.fuel += 6.9;
+  else if((item === 'gas' || item === 'energy' || item === 'super_oxygen_liquid_nitrogen') && Game.fuel > 10 + (10 * ((Game.drill.upgrade || 0) + 1))){
+    bottomLineUpdate ='          Fuel is full!';
   }
-  else if(item === 'transport'){
-    Game.purchasedTransport = true;
-
-    Game.game.state.start('play');
+  else if(item === 'upgrade' && Game.drill.upgrade === 3){
+    bottomLineUpdate ='         Fully upgraded!';
   }
-  else if(item === 'upgrade'){
-    if(Game.drill.upgrade === 3) return;
-
-    Game.drill.upgrade++;
-
-    Game.drill.animations.play('upgrade_'+ Game.drill.upgrade);
-
-    Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);
+  else if(item === 'gas' && Game.drill.upgrade > 1){
+    bottomLineUpdate ='          Cant use gas!';
   }
-  else if(item === 'repair'){
-    Game.health = 100 + (20 * ((Game.drill.upgrade || 0) + 1));
+  else if(item === 'energy' && Game.drill.upgrade !== 2){
+    bottomLineUpdate ='        Cant use energy!';
   }
-  else{
-    Game.inventory[item] = Game.inventory[item] || 0;
-    Game.inventory[item]++;
+  else if(item === 'super_oxygen_liquid_nitrogen' && Game.drill.upgrade !== 3){
+    bottomLineUpdate ='         Cant use SOLN!';
   }
 
-  Game.entities.spaceco.updateBottomLine();
+  if(!bottomLineUpdate && Game.config.spacecoPrices[item]){
+    bottomLineUpdate = item +' : '+ Game.config.spacecoPrices[item];
+
+    Game.credits -= Game.config.spacecoPrices[item];
+
+    if(item === 'gas'){
+      if(Game.drill.upgrade < 2) Game.fuel += 1.5;
+    }
+    else if(item === 'energy'){
+      if(Game.drill.upgrade === 2) Game.fuel += 3.2;
+    }
+    else if(item === 'super_oxygen_liquid_nitrogen'){
+      if(Game.drill.upgrade === 3) Game.fuel += 6.9;
+    }
+    else if(item === 'transport'){
+      Game.purchasedTransport = true;
+
+      Game.game.state.start('play');
+    }
+    else if(item === 'upgrade'){
+      Game.drill.upgrade++;
+
+      Game.drill.animations.play('upgrade_'+ Game.drill.upgrade);
+
+      Game.hull.space = 10 * ((Game.drill.upgrade || 0) + 1);
+    }
+    else if(item === 'repair'){
+      Game.health = 100 + (20 * ((Game.drill.upgrade || 0) + 1));
+    }
+    else{
+      Game.inventory[item] = Game.inventory[item] || 0;
+      Game.inventory[item]++;
+    }
+  }
+
+  if(bottomLineUpdate){
+    Game.hud.bottomLine.setText(bottomLineUpdate);
+
+    return setTimeout(Game.entities.spaceco.updateBottomLine, 500);
+  }
 };
 
 Game.entities.spaceco.hurt = function(amount, by){
