@@ -165,7 +165,7 @@ Game.entities.hud.setView = function(view){
     }
   }
   else if(view === 'hull'){
-    menu = '  Inventory [ p1 ]     Exit\n';
+    menu = '  Inventory ['+ (hullItemCount > 6 ? ' p1 ' : 'Hull') +']     Exit\n';
 
     items += 'Hull Space               '+ Game.hull.space.toFixed(2) +'\n';
 
