@@ -4,7 +4,7 @@ var Worlds = {
       {
         briefing: '\n\n Welcome to asteroid GH734-1B2',
         size: {
-          width: [50, 80],
+          width: [30, 40],
           depth: [300, 425]
         },
         holeChance: 0.12,
@@ -30,7 +30,7 @@ var Worlds = {
       {
         briefing: '\n\n Welcome to asteroid SP425-13K',
         size: {
-          width: [60, 90],
+          width: [40, 50],
           depth: [300, 425]
         },
         holeChance: 0.12,
@@ -56,7 +56,7 @@ var Worlds = {
       {
         briefing: '\n\n Welcome to asteroid FR153-34R',
         size: {
-          width: [70, 100],
+          width: [40, 60],
           depth: [200, 360]
         },
         holeChance: 0.3,
@@ -111,7 +111,7 @@ var Worlds = {
       {
         briefing: '\n\n Welcome to asteroid TR982-420',
         size: {
-          width: [50, 70],
+          width: [50, 60],
           depth: [210, 320]
         },
         holeChance: 0.1,
@@ -189,7 +189,7 @@ var Worlds = {
       {
         briefing: '\n\n   Welcome to moon D83R-W110',
         size: {
-          width: [60, 70],
+          width: [40, 50],
           depth: [250, 400]
         },
         holeChance: 0.1,
@@ -217,7 +217,7 @@ var Worlds = {
       {
         briefing: '\n\nWelcome to metoerite AE02A-809',
         size: {
-          width: [32, 64],
+          width: [32, 60],
           depth: [220, 400]
         },
         holeChance: 0.05,
@@ -246,7 +246,7 @@ var Worlds = {
       {
         briefing: '\n\n Welcome to asteroid ZT542-21N',
         size: {
-          width: [80, 100],
+          width: [30, 50],
           depth: [200, 350]
         },
         holeChance: 0.5,
@@ -334,7 +334,7 @@ var Worlds = {
       {
         briefing: '\n\n Welcome to asteroid GS340-20S',
         size: {
-          width: [80, 100],
+          width: [50, 80],
           depth: [200, 400]
         },
         holeChance: 0.2,
@@ -361,7 +361,7 @@ var Worlds = {
       {
         briefing: '\n\n Welcome to asteroid ZT546-3T1',
         size: {
-          width: [80, 100],
+          width: [40, 70],
           depth: [200, 350]
         },
         holeChance: 0.5,
@@ -391,7 +391,7 @@ var Worlds = {
       {
         briefing: '\n\nWelcome to metoerite SP43N-72D',
         size: {
-          width: [64, 92],
+          width: [64, 90],
           depth: [220, 400]
         },
         holeChance: 0.02,
