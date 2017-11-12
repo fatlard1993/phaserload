@@ -274,37 +274,49 @@ Game.entities.spaceco.handlePointer = function(pointer){
 Game.entities.spaceco.selectItem = function(item){
   if(!item) return;
 
+  var isFuel = (item === 'gas' || item === 'energy' || item === 'super_oxygen_liquid_nitrogen'), canUse = true;
+
   if(Game.hud.justSelectedItem) return;
   Game.hud.justSelectedItem = true;
-  Game.hud.justSelectedItem_TO = setTimeout(function(){ Game.hud.justSelectedItem = false; }, 500);
 
   var bottomLineUpdate;
   var player = Game.config.players[Game.config.playerName];
 
   if(Game.credits < Game.config.spacecoPrices[item]){
+    canUse = false;
     bottomLineUpdate ='       Not enough credits!';
   }
   else if(item === 'repair' && Game.health === 100 + (20 * ((player.upgrade || 0) + 1))){
+    canUse = false;
     bottomLineUpdate ='          Full health!';
   }
-  else if((item === 'gas' || item === 'energy' || item === 'super_oxygen_liquid_nitrogen') && Game.fuel > 10 + (10 * ((player.upgrade || 0) + 1))){
-    bottomLineUpdate ='          Fuel is full!';
-  }
   else if(item === 'upgrade' && player.upgrade === 3){
+    canUse = false;
     bottomLineUpdate ='         Fully upgraded!';
   }
   else if(item === 'gas' && player.upgrade > 1){
+    canUse = false;
     bottomLineUpdate ='          Cant use gas!';
   }
   else if(item === 'energy' && player.upgrade !== 2){
+    canUse = false;
     bottomLineUpdate ='        Cant use energy!';
   }
   else if(item === 'super_oxygen_liquid_nitrogen' && player.upgrade !== 3){
+    canUse = false;
     bottomLineUpdate ='         Cant use SOLN!';
   }
+  else if(isFuel && Game.fuel > 10 + (10 * ((player.upgrade || 0) + 1))){
+    canUse = false;
+    bottomLineUpdate ='          Fuel is full!';
+  }
+
+  var timeout = isFuel && canUse ? 250 : 800;
+
+  Game.hud.justSelectedItem_TO = setTimeout(function(){ Game.hud.justSelectedItem = false; }, timeout);
 
   if(!bottomLineUpdate && Game.config.spacecoPrices[item]){
-    bottomLineUpdate = item +' : '+ Game.config.spacecoPrices[item];
+    bottomLineUpdate = item.replace('super_oxygen_liquid_nitrogen', 'SOLN') +' : '+ Game.config.spacecoPrices[item] + (isFuel ? ' (hold to fill)' : '');
 
     Game.credits -= Game.config.spacecoPrices[item];
 
@@ -338,10 +350,11 @@ Game.entities.spaceco.selectItem = function(item){
     }
   }
 
+
   if(bottomLineUpdate){
     Game.hud.bottomLine.setText(bottomLineUpdate);
 
-    return setTimeout(Game.entities.spaceco.updateBottomLine, 500);
+    return setTimeout(Game.entities.spaceco.updateBottomLine, timeout);
   }
 };
 
