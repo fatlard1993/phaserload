@@ -16,16 +16,18 @@ Game.entities.gas = function(x, y){
       y: Game.toGridPos(this.y)
     };
 
-    if(gridPos.x - 1 > 0 && (!Game.mapPosName(gridPos.x - 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x - 1, gridPos.y)))){
-      Game.entities.gas.create(this.x - Game.blockPx, this.y, 1);
+    var canMoveRight = gridPos.x + 1 < Game.config.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)));
+
+    if((gridPos.x - 1 > 0 && (!Game.mapPosName(gridPos.x - 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x - 1, gridPos.y)))) && (!canMoveRight || Game.chance())){
+      Game.entities.gas.create(this.x - Game.blockPx, this.y, 1, this.spawnChance);
     }
 
-    else if(gridPos.x + 1 < Game.config.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
-      Game.entities.gas.create(this.x + Game.blockPx, this.y, 1);
+    else if(canMoveRight){
+      Game.entities.gas.create(this.x + Game.blockPx, this.y, 1, this.spawnChance);
     }
 
     if(gridPos.y - 1 > 0 && (!Game.mapPosName(gridPos.x, gridPos.y - 1) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x, gridPos.y - 1)))){
-      Game.entities.gas.create(this.x, this.y - Game.blockPx, 1);
+      Game.entities.gas.create(this.x, this.y - Game.blockPx, 1, this.spawnChance);
     }
 
     this.play('dissipate');
@@ -44,7 +46,9 @@ Game.entities.gas = function(x, y){
 Game.entities.gas.prototype = Object.create(Phaser.Sprite.prototype);
 Game.entities.gas.prototype.constructor = Game.entities.gas;
 
-Game.entities.gas.create = function(x, y, isNew){
+Game.entities.gas.create = function(x, y, isNew, spawnChance){
+  if(isNew && spawnChance !== undefined && !Game.chance(spawnChance)) return;
+
   var gas = Game.gas.getFirstDead();
 
   if(!gas){
@@ -66,6 +70,7 @@ Game.entities.gas.create = function(x, y, isNew){
     Game.config.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('gas');
 
     gas.full = false;
+    gas.spawnChance = spawnChance !== undefined ? spawnChance - Game.rand(0, 3) : 100;
 
     gas.animations.play('filling');
   }
