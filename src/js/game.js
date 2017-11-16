@@ -220,8 +220,8 @@ var Game = {
     left = Math.max(0, Math.min(Game.toPx(Game.config.width) - Game.viewWidth - 32, left));
     newX = Math.max(0, Math.min(Game.toPx(Game.config.width) - Game.viewWidth - 32, newX));
 
-    if(direction) Game.drawViewDirection(direction, Math.abs(oldX - newX), Math.abs(oldY - newY));
-    Game.drawView(left, top, right, bottom);
+    // if(direction) Game.drawViewDirection(direction, Math.abs(oldX - newX), Math.abs(oldY - newY));
+    // Game.drawView(left, top, right, bottom);
 
     Game.game.add.tween(Game.game.camera).to({ x: newX, y: newY }, time, Phaser.Easing.Sinusoidal.InOut, true);
 
@@ -236,7 +236,7 @@ var Game = {
     Game.drawView(Game.toGridPos(Game.game.camera.x) - Game.viewBufferSize, Game.toGridPos(Game.game.camera.y) - Game.viewBufferSize, Game.toGridPos(Game.game.camera.x + Game.viewWidth) + Game.viewBufferSize, Game.toGridPos(Game.game.camera.y + Game.viewHeight) + Game.viewBufferSize);
   },
   drawViewDirection: function(direction, distanceX, distanceY){
-    console.log('drawCurrentView');
+    console.log('drawViewDirection');
 
     var modX = (distanceX || 0) + Game.viewBufferSize;
     var modY = (distanceY || 0) + Game.viewBufferSize;

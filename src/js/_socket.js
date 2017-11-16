@@ -23,7 +23,7 @@ var Socket = {
         // }
         // else
         Game.updateMapPos(data.pos, data.id);
-        Game.drawCurrentView();
+        // Game.drawCurrentView();
       });
 
       Socket.active.on('player_update', function(data){

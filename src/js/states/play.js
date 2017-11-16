@@ -53,6 +53,8 @@ Game.states.play.prototype.create = function(){
 
       Game.entities.hud.open('briefing');
 
+      Game.drawView(0, 0, Game.config.width, Game.config.depth);
+
       if(Game.purchasedTransport){
         Game.purchasedTransport = false;
       }
