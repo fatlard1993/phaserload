@@ -267,7 +267,6 @@ Game.entities.spaceco.handlePointer = function(pointer){
 
   if(selectedItem){
     Game.entities.spaceco.selectItem(selectedItem);
-    //idea::todo animate a sprite of the purchased thing going from the top to the bottom (from spaceco to the player)
   }
 };
 

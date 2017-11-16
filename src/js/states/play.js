@@ -53,7 +53,7 @@ Game.states.play.prototype.create = function(){
 
       Game.entities.hud.open('briefing');
 
-      Game.drawView(0, 0, Game.config.width, Game.config.depth);
+      Game.drawView(0, 0, Game.config.width, Game.config.depth / 2);
 
       if(Game.purchasedTransport){
         Game.purchasedTransport = false;
@@ -175,6 +175,8 @@ Game.states.play.prototype.update = function(){
     if(Game.hud.isOpen && !Game.hud.justUsedItemSlot && !this.game.tweens.isTweening(Game.hud.scale)){
       if(this.input.activePointer.x > 575 || this.input.activePointer.y > 460) Game.entities.hud.close();
 
+      else if(Game.hud.isOpen === 'trade') Game.entities.player.handlePointer(this.input.activePointer);
+
       else if(Game.entities[Game.hud.isOpen] && Game.entities[Game.hud.isOpen].handlePointer) Game.entities[Game.hud.isOpen].handlePointer(this.input.activePointer);
 
       else Game.entities.hud.close();
@@ -206,7 +208,20 @@ Game.states.play.prototype.update = function(){
 
     else if(Game.game.math.distance(this.input.activePointer.x, this.input.activePointer.y, 70, 50) < 128){
       if(Game.game.math.distance(player.x, player.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10) Game.entities.spaceco.open();
-      else Game.entities.hud.open('hud');
+      else{
+        var tradePlayer, playerNames = Object.keys(Game.config.players);
+
+        for(var x = 0; x < playerNames.length; x++){
+          if(playerNames[x] === Game.config.playerName) continue;
+
+          var player_x = Game.config.players[playerNames[x]];
+          if(player.x === player_x.x && player.y === player_x.y) tradePlayer = playerNames[x];
+        }
+
+        if(!tradePlayer) return Game.entities.hud.open('hud');
+
+        Game.entities.player.openTrade(tradePlayer);
+      }
 
       return;
     }

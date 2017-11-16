@@ -1,4 +1,4 @@
-/* global Phaser, Game, Socket */
+/* global Phaser, Game, Socket, Log */
 
 Game.entities.player = function(){};
 
@@ -205,13 +205,23 @@ Game.entities.player.move = function(game, direction){
   // Game.config.viewBufferMap[Game.toGridPos(player.x)][Game.toGridPos(player.y)][0] = -1;
   // Game.config.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
 
-  if(Game.game.math.distance(player.x, player.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10){
+  if(Game.game.math.distance(newPosition.x, newPosition.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10){
     Game.notify('Open your console to connect to Spaceco', 2);
   }
-  else if(Game.game.math.distance(player.x, player.y, Game.spaceco.x, Game.spaceco.y) > Game.blockPx - 10){
-    Game.infoLine.setText('');
+  else{
+    var tradePlayer, playerNames = Object.keys(Game.config.players);
+
+    for(var x = 0; x < playerNames.length; x++){
+      if(playerNames[x] === Game.config.playerName) continue;
+
+      var player_x = Game.config.players[playerNames[x]];
+      if(newPosition.x === player_x.x && newPosition.y === player_x.y) tradePlayer = playerNames[x];
+    }
+
+    if(!tradePlayer && Game.hud.isOpen) Game.entities.hud.close();
+
+    else if(tradePlayer) Game.notify('Open your console to trade with '+ tradePlayer, 2);
   }
-  else if(Game.hud.isOpen) Game.entities.hud.close();
 
   if(!direction.includes('teleport') && Game.config.mode === 'normal'){
     Game.fuel -= moveTime * 0.0001;
@@ -369,4 +379,175 @@ Game.entities.player.hurt = function(amount, by){
   }
 
   Game.entities.hud.update();
+};
+
+Game.entities.player.openTrade = function(tradePlayerName){
+  if(Game.hud.isOpen) return;
+
+  Game.entities.hud.open('trade');
+
+  var player = Game.config.players[Game.config.playerName];
+  var tradePlayer = Game.config.players[tradePlayerName];
+
+  var menu = '  Inventory  Offer     Exit\n';
+
+  Game.hud.interfaceText.setText('          PLAYER TRADE\n'+ menu);
+
+  Game.offer = {};
+};
+
+
+Game.entities.player.handlePointer = function(pointer){
+  if(Game.hud.isOpen !== 'trade') return;
+
+  if(pointer.y > 70 && pointer.y < 110){// menu
+    if(pointer.x > 50 && pointer.x < 210){
+      Log()('inventory');
+      if(Game.hud.view === 'inventory' && Object.keys(Game.inventory).length > 7) Game.entities.player.setView('inventory_pg2');
+      else if(Game.hud.view === 'inventory_pg2' && Object.keys(Game.inventory).length > 14) Game.entities.player.setView('inventory_pg3');
+      else Game.entities.player.setView('inventory');
+    }
+    else if(pointer.x > 220 && pointer.x < 300){
+      Log()('offer');
+      if(Game.hud.view === 'offer' && Object.keys(Game.offer).length > 7) Game.entities.player.setView('offer_pg2');
+      else if(Game.hud.view === 'offer_pg2' && Object.keys(Game.offer).length > 14) Game.entities.player.setView('offer_pg3');
+      else Game.entities.player.setView('offer');
+    }
+    else if(pointer.x > 360 && pointer.x < 500){
+      Log()('exit');
+      Game.entities.hud.close();
+    }
+  }
+
+  var selectedItem, rootView = Game.hud.view.replace(/_.*/, ''), pageIndexMod = (parseInt(Game.hud.view.replace(/.*_?p?g?/, '')) || 0) * 6;
+
+  if(pointer.y > 120 && pointer.y < 150){
+    selectedItem = Game.entities.hud[rootView +'ItemNames'][pageIndexMod + 0];
+  }
+
+  else if(pointer.y > 160 && pointer.y < 200){
+    selectedItem = Game.entities.hud[rootView +'ItemNames'][pageIndexMod + 1];
+  }
+
+  else if(pointer.y > 210 && pointer.y < 240){
+    selectedItem = Game.entities.hud[rootView +'ItemNames'][pageIndexMod + 2];
+  }
+
+  else if(pointer.y > 250 && pointer.y < 280){
+    selectedItem = Game.entities.hud[rootView +'ItemNames'][pageIndexMod + 3];
+  }
+
+  else if(pointer.y > 290 && pointer.y < 320){
+    selectedItem = Game.entities.hud[rootView +'ItemNames'][pageIndexMod + 4];
+  }
+
+  else if(pointer.y > 330 && pointer.y < 360){
+    selectedItem = Game.entities.hud[rootView +'ItemNames'][pageIndexMod + 5];
+  }
+
+  Game.entities.player.selectItem(selectedItem, Game.hud.view);
+};
+
+Game.entities.player.setView = function(view){
+  if(Game.hud.isOpen !== 'trade') return;
+
+  if(Game.hud.justSetView) return;
+  Game.hud.justSetView = true;
+  Game.hud.justSetView_TO = setTimeout(function(){ Game.hud.justSetView = false; }, 400);
+
+  Game.hud.view = view;
+
+  var menu = '';
+  var items = '';
+  var shortestLength = 10;
+  var space = 19;
+  var x, itemName, offered, leftAlignLineItem;
+
+  var inventoryItemNames = Game.entities.hud.inventoryItemNames = Object.keys(Game.inventory), inventoryItemCount = inventoryItemNames.length;
+  var offerItemNames = Game.entities.hud.offerItemNames = Object.keys(Game.offer), offerItemCount = offerItemNames.length;
+
+  if(view === 'inventory'){
+    menu = ' ['+ (inventoryItemCount > 7 ? '   pg1   ' : 'Inventory') +'] Offer     Exit\n';
+
+    for(x = 0; x < Math.min(7, inventoryItemCount); x++){
+      itemName = inventoryItemNames[x];
+      offered = Game.offer[itemName] || 0;
+
+      leftAlignLineItem = '['+ (offered > Game.inventory[itemName] ? '+' : offered ? '-' : '') + offered +'] '+ itemName;
+
+      items += leftAlignLineItem + (' '.repeat(leftAlignLineItem.length > shortestLength ? space - (leftAlignLineItem.length - shortestLength) : space)) + Game.inventory[itemName] +'\n';
+    }
+  }
+  else if(view === 'inventory_pg2'){
+    menu = ' [   pg2   ] Offer     Exit\n';
+
+    for(x = 7; x < Math.min(14, inventoryItemCount); x++){
+      itemName = inventoryItemNames[x];
+      offered = Game.offer[itemName] || 0;
+
+      leftAlignLineItem = '['+ (offered > Game.inventory[itemName] ? '+' : offered ? '-' : '') + offered +'] '+ itemName;
+
+      items += leftAlignLineItem + (' '.repeat(leftAlignLineItem.length > shortestLength ? space - (leftAlignLineItem.length - shortestLength) : space)) + Game.inventory[itemName] +'\n';
+    }
+  }
+  else if(view === 'inventory_pg3'){
+    menu = ' [   pg3   ] Offer     Exit\n';
+
+    for(x = 14; x < inventoryItemCount; x++){
+      itemName = inventoryItemNames[x];
+      offered = Game.offer[itemName] || 0;
+
+      leftAlignLineItem = '['+ (offered > Game.inventory[itemName] ? '+' : offered ? '-' : '') + offered +'] '+ itemName;
+
+      items += leftAlignLineItem + (' '.repeat(leftAlignLineItem.length > shortestLength ? space - (leftAlignLineItem.length - shortestLength) : space)) + Game.inventory[itemName] +'\n';
+    }
+  }
+  else if(view === 'offer'){
+    menu = '  Inventory ['+ (offerItemCount > 7 ? ' pg1 ' : 'Offer') +']    Exit\n';
+
+    for(x = 0; x < Math.min(7, offerItemCount); x++){
+      itemName = offerItemNames[x];
+
+      items += '['+ (Game.offer[itemName] > Game.inventory[itemName] ? '+' : '-') + Game.offer[itemName] +'] '+ itemName;
+    }
+  }
+  else if(view === 'offer_pg2'){
+    menu = '  Inventory [ pg2 ]    Exit\n';
+
+    for(x = 7; x < Math.min(14, offerItemCount); x++){
+      itemName = offerItemNames[x];
+
+      items += '['+ (Game.offer[itemName] > Game.inventory[itemName] ? '+' : '-') + Game.offer[itemName] +'] '+ itemName;
+    }
+  }
+  else if(view === 'offer_pg3'){
+    menu = '  Inventory [ pg3 ]    Exit\n';
+
+    for(x = 14; x < offerItemCount; x++){
+      itemName = offerItemNames[x];
+
+      items += '['+ (Game.offer[itemName] > Game.inventory[itemName] ? '+' : '-') + Game.offer[itemName] +'] '+ itemName;
+    }
+  }
+
+  Game.hud.interfaceText.setText('          PLAYER TRADE\n'+ menu + items);
+};
+
+Game.entities.player.selectItem = function(item, view){
+  if(!item) return;
+
+  if(Game.hud.justSelectedItem) return;
+  Game.hud.justSelectedItem = true;
+  Game.hud.justSelectedItem_TO = setTimeout(function(){ Game.hud.justSelectedItem = false; }, 400);
+
+  Game.offer[item] = Game.offer[item] || 0;
+
+  if(view === 'inventory') Game.offer[item]++;
+  else Game.offer[item]--;
+
+  if(Game.offer[item] > Game.inventory[item] || Game.offer[item] < 0) Game.offer[item] = 0;
+
+  if(Game.offer[item] === 0) delete Game.offer[item];
+
+  Game.entities.player.setView(view);
 };
