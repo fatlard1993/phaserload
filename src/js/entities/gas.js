@@ -83,6 +83,8 @@ Game.entities.gas.spread = function(x, y){
       if(gridPos.y - 1 > 0 && (!surrounds.top || ['player1', 'monster'].includes(surrounds.top))){
         Game.entities.gas.create(gas.x, gas.y - Game.blockPx, 1, gas.spreadChance);
       }
+
+      gas.play('dissipate');      
     }
   });
 };
