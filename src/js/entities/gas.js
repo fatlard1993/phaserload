@@ -9,7 +9,7 @@ Game.entities.gas = function(x, y){
 Game.entities.gas.prototype = Object.create(Phaser.Sprite.prototype);
 Game.entities.gas.prototype.constructor = Game.entities.gas;
 
-Game.entities.gas.create = function(x, y, isNew, spawnChance){
+Game.entities.gas.create = function(x, y, isNew, spawnChance, spreadChance){
   if(isNew && spawnChance !== undefined && !Game.chance(spawnChance)) return;
 
   var gas = Game.gas.getFirstDead();
@@ -21,8 +21,6 @@ Game.entities.gas.create = function(x, y, isNew, spawnChance){
     fillingAnim.onComplete.add(function(){
       gas.play('full');
 
-      gas.full = true;
-
       Game.entities.gas.spread(gas.x, gas.y);
     }, gas);
 
@@ -33,7 +31,12 @@ Game.entities.gas.create = function(x, y, isNew, spawnChance){
       Game.setMapPos({ x: gas.x, y: gas.y }, -1);
     }, gas);
 
-    gas.animations.add('full', [3, 4, 5], 10, true);
+    var fullAnim = gas.animations.add('full', [3, 4, 5], 6, false);
+    fullAnim.onComplete.add(function(){
+      gas.play('dissipate');
+    }, gas);
+
+    gas.animations.add('trapped', [3, 4, 5], 12, true);
   }
   else{
     gas.reset(x, y);
@@ -44,15 +47,12 @@ Game.entities.gas.create = function(x, y, isNew, spawnChance){
   if(isNew){
     Game.setMapPos({ x: x, y: y }, Game.mapNames.indexOf('gas'));
 
-    gas.full = false;
-    gas.spawnChance = spawnChance !== undefined ? spawnChance - Game.rand(0, 3) : 100;
+    gas.spreadChance = spreadChance !== undefined ? spreadChance : spawnChance !== undefined ? spawnChance - Game.rand(0, 9) : 100;
 
     gas.animations.play('filling');
   }
   else{
-    gas.full = true;
-
-    gas.animations.play('full');
+    gas.animations.play('trapped');
   }
 
   return gas;
@@ -60,7 +60,7 @@ Game.entities.gas.create = function(x, y, isNew, spawnChance){
 
 Game.entities.gas.spread = function(x, y){
   Game.gas.forEachAlive(function(gas){
-    if(!gas.full && Game.game.math.distance(gas.x, gas.y, x, y) < Game.blockPx){
+    if(gas.x === x && gas.y === y){
       var gridPos = {
         x: Game.toGridPos(gas.x),
         y: Game.toGridPos(gas.y)
@@ -68,32 +68,21 @@ Game.entities.gas.spread = function(x, y){
 
       var surrounds = {
         left: Game.mapPosName(gridPos.x - 1, gridPos.y),
-        farLeft: Game.mapPosName(gridPos.x - (1 * 2), gridPos.y),
-        topLeft: Game.mapPosName(gridPos.x - 1, gridPos.y - 1),
-        top: Game.mapPosName(gridPos.x, gridPos.y - 1),
-        topRight: Game.mapPosName(gridPos.x + 1, gridPos.y - 1),
         right: Game.mapPosName(gridPos.x + 1, gridPos.y),
-        farRight: Game.mapPosName(gridPos.x + (1 * 2), gridPos.y),
-        bottomRight: Game.mapPosName(gridPos.x + 1, gridPos.y + 1),
-        bottom: Game.mapPosName(gridPos.x, gridPos.y + 1),
-        bottomLeft: Game.mapPosName(gridPos.x - 1, gridPos.y + 1)
+        top: Game.mapPosName(gridPos.x, gridPos.y - 1)
       };
 
-      var canMoveRight = (gridPos.x + 1 < Game.config.width && (!surrounds.right || ['player1', 'monster'].includes(surrounds.right)));
-
-      if((gridPos.x - 1 > 0 && (!surrounds.left || ['player1', 'monster'].includes(surrounds.left))) && (!canMoveRight || Game.chance())){
-        Game.entities.gas.create(gas.x - Game.blockPx, gas.y, 1, gas.spawnChance);
+      if(gridPos.x - 1 > 0 && (!surrounds.left || ['player1', 'monster'].includes(surrounds.left))){
+        Game.entities.gas.create(gas.x - Game.blockPx, gas.y, 1, gas.spreadChance);
       }
 
-      else if(canMoveRight){
-        Game.entities.gas.create(gas.x + Game.blockPx, gas.y, 1, gas.spawnChance);
+      if(gridPos.x + 1 < Game.config.width && (!surrounds.right || ['player1', 'monster'].includes(surrounds.right))){
+        Game.entities.gas.create(gas.x + Game.blockPx, gas.y, 1, gas.spreadChance);
       }
 
       if(gridPos.y - 1 > 0 && (!Game.mapPosName(surrounds.top) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x, gridPos.y - 1)))){
-        Game.entities.gas.create(gas.x, gas.y - Game.blockPx, 1, gas.spawnChance);
+        Game.entities.gas.create(gas.x, gas.y - Game.blockPx, 1, gas.spreadChance);
       }
-
-      gas.play('dissipate');
     }
   });
 };
