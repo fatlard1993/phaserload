@@ -116,10 +116,8 @@ Game.states.play.prototype.update = function(){
 
   Game.lava.forEachAlive(function(lava){
     if(!player.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(player.x, player.y, lava.x, lava.y) < Game.blockPx/2){
-      Game.entities.player.hurt(lava.full ? 12 + Game.randFloat(1, 6) : 8 + Game.randFloat(1, 3), 'lava');
+      Game.entities.player.hurt(12 + Game.randFloat(1, 6), 'lava');
     }
-
-    if(!lava.full) return;
 
     if(this.game.math.distance(Game.spaceco.x, Game.spaceco.y, lava.x, lava.y) < Game.blockPx){
       Game.entities.spaceco.hurt(1, 'lava');
@@ -136,10 +134,8 @@ Game.states.play.prototype.update = function(){
 
   Game.gas.forEachAlive(function(gas){
     if(!player.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(player.x, player.y, gas.x, gas.y) < Game.blockPx/2){
-      Game.entities.player.hurt(gas.full ? 10 + Game.randFloat(1, 5) : 6 + Game.randFloat(1, 2), 'gas');
+      Game.entities.player.hurt(10 + Game.randFloat(1, 5), 'gas');
     }
-
-    if(!gas.full) return;
 
     Game.monsters.forEachAlive(function(monster){
       if(this.game.math.distance(monster.x, monster.y, gas.x, gas.y) < Game.blockPx){
