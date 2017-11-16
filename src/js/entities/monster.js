@@ -13,6 +13,7 @@ Game.entities.monster.prototype.constructor = Game.entities.monster;
 
 Game.entities.monster.prototype.update = function(){
   if(!this.alive || this.game.tweens.isTweening(this)) return;
+  if(Game.game.math.distance(Game.config.players[Game.config.playerName].x, Game.config.players[Game.config.playerName].y, this.x, this.y) > Game.viewHeight) return;
 
   var gridPos = {
     x: Game.toGridPos(this.x),
