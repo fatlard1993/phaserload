@@ -11,7 +11,19 @@ var Socket = {
       cb(data);
 
       Socket.active.on('crush_ground', function(pos){
-        Game.entities.ground.crush(pos);
+        console.log('crush_ground', pos);
+
+        // Game.entities.ground.crush(pos, 1);
+        // Game.drawCurrentView();
+      });
+
+      Socket.active.on('updateMapPos', function(data){
+        // if(data.id === Game.mapNames.indexOf('gas')){
+        //   Game.entities.gas.create(data.x, data.y, 1, 0);
+        // }
+        // else
+        Game.updateMapPos(data.pos, data.id);
+        Game.drawCurrentView();
       });
 
       Socket.active.on('player_update', function(data){
@@ -19,18 +31,7 @@ var Socket = {
 
         var player = Game.config.players[data.name];
 
-        var surrounds = {
-          left: Game.groundAt(player.x - Game.blockPx, player.y),
-          farLeft: Game.groundAt(player.x - (Game.blockPx * 2), player.y),
-          topLeft: Game.groundAt(player.x - Game.blockPx, player.y - Game.blockPx),
-          top: Game.groundAt(player.x, player.y - Game.blockPx),
-          topRight: Game.groundAt(player.x + Game.blockPx, player.y - Game.blockPx),
-          right: Game.groundAt(player.x + Game.blockPx, player.y),
-          farRight: Game.groundAt(player.x + (Game.blockPx * 2), player.y),
-          bottomRight: Game.groundAt(player.x + Game.blockPx, player.y + Game.blockPx),
-          bottom: Game.groundAt(player.x, player.y + Game.blockPx),
-          bottomLeft: Game.groundAt(player.x - Game.blockPx, player.y + Game.blockPx)
-        };
+        var surrounds = Game.entities.player.getSurrounds(player.name);
 
         Game.game.add.tween(player).to(data.position, data.moveTime, Phaser.Easing.Sinusoidal.InOut, true);
 
@@ -77,6 +78,8 @@ var Socket = {
         Game.notify('player disconnected');
 
         Game.config.players[data.name].kill();
+
+        // Game.setMapPos({ x: Game.config.players[data.name].x, y: Game.config.players[data.name].y }, -1);
 
         delete Game.config.players[data.name];
       });

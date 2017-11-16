@@ -46,24 +46,24 @@ var Sockets = {
               }
             };
 
-            socket.broadcast.in(room).emit('player_connect', Sockets.rooms[room].players[Player.name]);
+            socket.broadcast.to(room).emit('player_connect', Sockets.rooms[room].players[Player.name]);
 
             socket.emit('roomData', Sockets.rooms[room]);
           },
           leaveRoom: function(){
             if(Player.room && Sockets.rooms[Player.room]){
-              if(!Object.keys(Sockets.rooms[Player.room].players).length){
+              if(!(Object.keys(Sockets.rooms[Player.room].players).length - 1)){
                 console.log('socket', 'Room is now empty, tearing down room..');
 
                 delete Sockets.rooms[Player.room];
               }
               else{
-                console.log('socket', 'There are '+ Object.keys(Sockets.rooms[Player.room].players).length +' players left in '+ Player.room);
+                console.log('socket', 'There are '+ (Object.keys(Sockets.rooms[Player.room].players).length - 1) +' players left in '+ Player.room);
 
                 Sockets.io.in(Player.room).emit('player_disconnect', Sockets.rooms[Player.room].players[Player.name]);
-              }
 
-              delete Sockets.rooms[Player.room].players[Player.name];
+                delete Sockets.rooms[Player.room].players[Player.name];
+              }
             }
           },
           disconnect: function(){
@@ -81,15 +81,29 @@ var Sockets = {
       });
 
       socket.on('create_room', function(roomData){
+        if(!Player) return;
+
         console.log('create_room', roomData);
 
         Player.joinRoom(roomData.name, roomData);
       });
 
       socket.on('join_room', function(roomName){
+        if(!Player) return;
+
         console.log('join_room', roomName);
 
         Player.joinRoom(roomName);
+      });
+
+      socket.on('setMapPos', function(data){
+        if(!Player) return;
+
+        console.log('updateMapPos', data.pos, 'from', Game.toName(Sockets.rooms[Player.room].map[data.pos.x][data.pos.y][0]), 'to', Game.mapNames[data.id]);
+
+        Sockets.rooms[Player.room].map[data.pos.x][data.pos.y][0] = data.id;
+
+        socket.broadcast.to(Player.room).emit('updateMapPos', data);
       });
 
       socket.on('player_update', function(data){
@@ -104,16 +118,13 @@ var Sockets = {
 
         data.name = Player.name;
 
-        socket.broadcast.in(Player.room).emit('player_update', data);
+        socket.broadcast.to(Player.room).emit('player_update', data);
       });
 
       socket.on('crush_ground', function(pos){
         if(!Player) return;
 
         console.log('crush_ground', pos);
-
-        Sockets.rooms[Player.room].map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
-        Sockets.rooms[Player.room].viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
 
         Sockets.io.in(Player.room).emit('crush_ground', pos);
       });

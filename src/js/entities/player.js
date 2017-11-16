@@ -15,7 +15,7 @@ Game.entities.player.create = function(settings){
 
   player.animations.play('normal');
 
-  Game.config.map[settings.position.x][1][0] = Game.mapNames.indexOf('player1');
+  // Game.config.map[settings.position.x][1][0] = Game.mapNames.indexOf('player1');
 
   Game.config.defaultPlayerScale = player.scale.x;
 
@@ -24,8 +24,8 @@ Game.entities.player.create = function(settings){
   return player;
 };
 
-Game.entities.player.getSurrounds = function(){
-  var player = Game.config.players[Game.config.playerName];
+Game.entities.player.getSurrounds = function(playerName){
+  var player = Game.config.players[playerName || Game.config.playerName];
 
   return {
     left: Game.groundAt(player.x - Game.blockPx, player.y),
@@ -78,6 +78,7 @@ Game.entities.player.move = function(game, direction){
   }, newCameraPosition;
 
   var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
+  var targetType = Game.mapPosName(newPosition.x, newPosition.y);
   var moveTime = targetGroundType ? Game.config.digTime[targetGroundType.replace('ground_', '')] ? Game.config.digTime[targetGroundType.replace('ground_', '')] : Game.config.baseDrillMoveTime : Game.config.baseDrillMoveTime;
 
   if(direction.includes('teleport')){
@@ -144,9 +145,10 @@ Game.entities.player.move = function(game, direction){
         setTimeout(function(){
           Game.hull.space -= mineralWeight;
 
-          mineral.kill();
+          Game.config.map[Game.toGridPos(mineral.x)][Game.toGridPos(mineral.y)][1] = -1;
+          Game.config.viewBufferMap[Game.toGridPos(mineral.x)][Game.toGridPos(mineral.y)][1] = -1;
 
-          Game.clearMapPos(newPosition);
+          mineral.kill();
         }, animationTime);
       }
     });
@@ -161,6 +163,8 @@ Game.entities.player.move = function(game, direction){
   game.add.tween(player).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
 
   Socket.active.emit('player_update', { position: newPosition, moveTime: moveTime, direction: direction });
+
+  // if(['gas', 'lava'].includes(targetType)) Game.entities[targetType].spread(newPosition.x, newPosition.y, 1);
 
   if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime, direction);
 
@@ -196,10 +200,10 @@ Game.entities.player.move = function(game, direction){
 
   player.lastPosition = newPosition;
 
-  Game.config.map[Game.toGridPos(player.x)][Game.toGridPos(player.y)][0] = -1;
-  Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
-  Game.config.viewBufferMap[Game.toGridPos(player.x)][Game.toGridPos(player.y)][0] = -1;
-  Game.config.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
+  // Game.config.map[Game.toGridPos(player.x)][Game.toGridPos(player.y)][0] = -1;
+  // Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
+  // Game.config.viewBufferMap[Game.toGridPos(player.x)][Game.toGridPos(player.y)][0] = -1;
+  // Game.config.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
 
   if(Game.game.math.distance(player.x, player.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10){
     Game.notify('Open your console to connect to Spaceco', 2);
@@ -354,6 +358,9 @@ Game.entities.player.hurt = function(amount, by){
 
   if(Game.health <= 0){
     player.kill();
+
+    // Game.setMapPos({ x: Game.config.players[player.name].x, y: Game.config.players[player.name].y }, -1);
+
     Game.loseReason = by;
     Game.game.time.events.add(200, function(){ Game.game.state.start('end'); });
   }

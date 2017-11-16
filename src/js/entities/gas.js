@@ -4,43 +4,6 @@ Game.entities.gas = function(x, y){
   Phaser.Sprite.call(this, Game.game, x, y, 'gas');
 
   this.anchor.setTo(0.5, 0.5);
-
-  var fillingAnim = this.animations.add('filling', [2, 1, 0], 3, false);
-  fillingAnim.onComplete.add(function(){
-    this.play('full');
-
-    this.full = true;
-
-    var gridPos = {
-      x: Game.toGridPos(this.x),
-      y: Game.toGridPos(this.y)
-    };
-
-    var canMoveRight = gridPos.x + 1 < Game.config.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)));
-
-    if((gridPos.x - 1 > 0 && (!Game.mapPosName(gridPos.x - 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x - 1, gridPos.y)))) && (!canMoveRight || Game.chance())){
-      Game.entities.gas.create(this.x - Game.blockPx, this.y, 1, this.spawnChance);
-    }
-
-    else if(canMoveRight){
-      Game.entities.gas.create(this.x + Game.blockPx, this.y, 1, this.spawnChance);
-    }
-
-    if(gridPos.y - 1 > 0 && (!Game.mapPosName(gridPos.x, gridPos.y - 1) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x, gridPos.y - 1)))){
-      Game.entities.gas.create(this.x, this.y - Game.blockPx, 1, this.spawnChance);
-    }
-
-    this.play('dissipate');
-  }, this);
-
-  var dissipateAnim = this.animations.add('dissipate', [0, 1, 2], 3, false);
-  dissipateAnim.onComplete.add(function(){
-    this.kill();
-
-    Game.clearMapPos(this);
-  }, this);
-
-  this.animations.add('full', [3, 4, 5], 10, true);
 };
 
 Game.entities.gas.prototype = Object.create(Phaser.Sprite.prototype);
@@ -53,6 +16,24 @@ Game.entities.gas.create = function(x, y, isNew, spawnChance){
 
   if(!gas){
     gas = Game.gas.add(new Game.entities.gas(x, y));
+
+    var fillingAnim = gas.animations.add('filling', [2, 1, 0], 3, false);
+    fillingAnim.onComplete.add(function(){
+      gas.play('full');
+
+      gas.full = true;
+
+      Game.entities.gas.spread(gas.x, gas.y);
+    }, gas);
+
+    var dissipateAnim = gas.animations.add('dissipate', [0, 1, 2], 3, false);
+    dissipateAnim.onComplete.add(function(){
+      gas.kill();
+
+      Game.setMapPos({ x: gas.x, y: gas.y }, -1);
+    }, gas);
+
+    gas.animations.add('full', [3, 4, 5], 10, true);
   }
   else{
     gas.reset(x, y);
@@ -61,13 +42,7 @@ Game.entities.gas.create = function(x, y, isNew, spawnChance){
   }
 
   if(isNew){
-    var gridPos = {
-      x: Game.toGridPos(x),
-      y: Game.toGridPos(y)
-    };
-
-    Game.config.viewBufferMap[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('gas');
-    Game.config.map[gridPos.x][gridPos.y][0] = Game.mapNames.indexOf('gas');
+    Game.setMapPos({ x: x, y: y }, Game.mapNames.indexOf('gas'));
 
     gas.full = false;
     gas.spawnChance = spawnChance !== undefined ? spawnChance - Game.rand(0, 3) : 100;
@@ -85,22 +60,37 @@ Game.entities.gas.create = function(x, y, isNew, spawnChance){
 
 Game.entities.gas.spread = function(x, y){
   Game.gas.forEachAlive(function(gas){
-    if(Game.game.math.distance(gas.x, gas.y, x, y) < Game.blockPx){
+    if(!gas.full && Game.game.math.distance(gas.x, gas.y, x, y) < Game.blockPx){
       var gridPos = {
         x: Game.toGridPos(gas.x),
         y: Game.toGridPos(gas.y)
       };
 
-      if(gridPos.x - 1 >= 0 && (!Game.mapPosName(gridPos.x - 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x - 1, gridPos.y)))){
-        Game.entities.gas.create(x - Game.blockPx, y, 1);
+      var surrounds = {
+        left: Game.mapPosName(gridPos.x - 1, gridPos.y),
+        farLeft: Game.mapPosName(gridPos.x - (1 * 2), gridPos.y),
+        topLeft: Game.mapPosName(gridPos.x - 1, gridPos.y - 1),
+        top: Game.mapPosName(gridPos.x, gridPos.y - 1),
+        topRight: Game.mapPosName(gridPos.x + 1, gridPos.y - 1),
+        right: Game.mapPosName(gridPos.x + 1, gridPos.y),
+        farRight: Game.mapPosName(gridPos.x + (1 * 2), gridPos.y),
+        bottomRight: Game.mapPosName(gridPos.x + 1, gridPos.y + 1),
+        bottom: Game.mapPosName(gridPos.x, gridPos.y + 1),
+        bottomLeft: Game.mapPosName(gridPos.x - 1, gridPos.y + 1)
+      };
+
+      var canMoveRight = (gridPos.x + 1 < Game.config.width && (!surrounds.right || ['player1', 'monster'].includes(surrounds.right)));
+
+      if((gridPos.x - 1 > 0 && (!surrounds.left || ['player1', 'monster'].includes(surrounds.left))) && (!canMoveRight || Game.chance())){
+        Game.entities.gas.create(gas.x - Game.blockPx, gas.y, 1, gas.spawnChance);
       }
 
-      else if(gridPos.x + 1 < Game.config.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
-        Game.entities.gas.create(x + Game.blockPx, y, 1);
+      else if(canMoveRight){
+        Game.entities.gas.create(gas.x + Game.blockPx, gas.y, 1, gas.spawnChance);
       }
 
-      if(gridPos.y - 1 > 0 && (!Game.mapPosName(gridPos.x, gridPos.y - 1) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x, gridPos.y - 1)))){
-        Game.entities.gas.create(x, y - Game.blockPx, 1);
+      if(gridPos.y - 1 > 0 && (!Game.mapPosName(surrounds.top) || ['player1', 'monster'].includes(Game.mapPosName(gridPos.x, gridPos.y - 1)))){
+        Game.entities.gas.create(gas.x, gas.y - Game.blockPx, 1, gas.spawnChance);
       }
 
       gas.play('dissipate');

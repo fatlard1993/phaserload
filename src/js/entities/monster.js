@@ -82,11 +82,9 @@ Game.entities.monster.prototype.update = function(){
     y: Game.toGridPos(moving.y)
   };
 
-  Game.config.viewBufferMap[gridPos.x][gridPos.y][0] = -1;
-  Game.config.map[gridPos.x][gridPos.y][0] = -1;
-  
-  Game.config.viewBufferMap[newGridPos.x][newGridPos.y][0] = Game.mapNames.indexOf('monster');
-  Game.config.map[newGridPos.x][newGridPos.y][0] = Game.mapNames.indexOf('monster');
+  Game.setMapPos({ x: this.x, y: this.y }, -1);
+
+  Game.setMapPos(moving, Game.mapNames.indexOf('monster'));
 };
 
 Game.entities.monster.create = function(x, y){

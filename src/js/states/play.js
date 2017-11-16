@@ -5,13 +5,6 @@ Game.states.play = function(game){};
 Game.states.play.prototype.create = function(){
   console.log('play');
 
-  Game.game.camera.bounds = null;
-
-  Game.ground = this.game.add.group();
-  Game.lava = this.game.add.group();
-  Game.gas = this.game.add.group();
-  Game.minerals = this.game.add.group();
-
   Socket.init(function(welcomeData){
     console.log('welcome', welcomeData);
 
@@ -31,6 +24,13 @@ Game.states.play.prototype.create = function(){
       console.log('roomData', roomData);
 
       Game.config = Object.assign(Game.config, roomData);
+
+      Game.game.camera.bounds = null;
+
+      Game.ground = Game.game.add.group();
+      Game.lava = Game.game.add.group();
+      Game.gas = Game.game.add.group();
+      Game.minerals = Game.game.add.group();
 
       Game.spaceco = Game.entities.spaceco.create(Game.config.spaceco);
 
@@ -87,6 +87,9 @@ Game.states.play.prototype.update = function(){
 
   if(Game.config.mode === 'normal' && Game.fuel < 0){
     player.kill();
+
+    // Game.setMapPos({ x: Game.config.players[player.name].x, y: Game.config.players[player.name].y }, -1);
+
     Game.loseReason = 'fuel';
     return this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);
   }
@@ -123,6 +126,8 @@ Game.states.play.prototype.update = function(){
     Game.monsters.forEachAlive(function(monster){
       if(this.game.math.distance(monster.x, monster.y, lava.x, lava.y) < Game.blockPx){
         monster.kill();
+
+        Game.setMapPos({ x: monster.x, y: monster.y }, -1);
       }
     }, this);
   }, this);
@@ -137,6 +142,8 @@ Game.states.play.prototype.update = function(){
     Game.monsters.forEachAlive(function(monster){
       if(this.game.math.distance(monster.x, monster.y, gas.x, gas.y) < Game.blockPx){
         monster.kill();
+
+        Game.setMapPos({ x: monster.x, y: monster.y }, -1);
       }
     }, this);
   }, this);
@@ -207,7 +214,7 @@ Game.states.play.prototype.update = function(){
     }
   }
 
-  if(Game.hud.isOpen  && !this.game.tweens.isTweening(Game.hud.scale)){
+  if(Game.hud.isOpen && !this.game.tweens.isTweening(Game.hud.scale)){
     var selectedItem, selectedMenu;
 
     if(this.input.keyboard.isDown(Phaser.Keyboard.I) && Game.hud.isOpen === 'hud' && !Game.hud.briefingOpen){
@@ -341,7 +348,7 @@ Game.states.play.prototype.update = function(){
 
   if(!this.game.tweens.isTweening(player) && !this.game.tweens.isTweening(Game.hud.scale)){
     var moving;
-    var surrounds = Game.entities.player.getSurrounds();
+    var surrounds = Game.entities.player.getSurrounds(player.name);
 
     if(this.input.activePointer.isDown){
       var xDiff = player.x - this.input.activePointer.x - Game.game.camera.x;
@@ -376,20 +383,22 @@ Game.states.play.prototype.update = function(){
       Game.entities.player.move(this.game, moving);
     }
 
-    else if(!Game.entities.player.justMoved){
+    else if(!player.justMoved){
       if(!surrounds.left && !surrounds.right && !surrounds.bottom){
         var direction;
 
-        if(Game.entities.player.lastMove === 'up' && (surrounds.bottomLeft || surrounds.bottomRight)){
-          direction = surrounds.bottomLeft && !surrounds.bottomRight ? 'left' : (surrounds.bottomLeft && surrounds.bottomRight ? (Game.entities.player.lastMoveInvert ? 'left' : 'right') : 'right');
+        if(player.lastMove === 'up' && (surrounds.bottomLeft || surrounds.bottomRight)){
+          direction = surrounds.bottomLeft && !surrounds.bottomRight ? 'left' : (surrounds.bottomLeft && surrounds.bottomRight ? (player.lastMoveInvert ? 'left' : 'right') : 'right');
+
+          console.log('Automove from: '+ player.lastMove +' to: '+ direction, surrounds);
         }
         else{
           direction = 'down';
 
-          if(Game.entities.player.lastMove === 'down') Game.entities.player.hurt(Game.randFloat(1, 3), 'falling');
-        }
+          if(player.lastMove === 'down') Game.entities.player.hurt(Game.randFloat(1, 3), 'falling');
 
-        console.log('Automove from: '+ Game.entities.player.lastMove +' to: '+ direction, surrounds);
+          console.log('falling');
+        }
 
         Game.entities.player.move(this.game, direction);
       }

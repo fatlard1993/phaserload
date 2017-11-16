@@ -24,8 +24,8 @@ Game.entities.ground.create = function(x, y, type){
 
   if(!type){
     type = Game.weightedChance(Game.config.world.layers[Math.ceil(Game.config.world.layers.length * (Game.toGridPos(y) / Game.config.depth)) - 1]);
-    Game.config.map[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf('ground_'+ type);
-    Game.config.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf('ground_'+ type);
+
+    Game.setMapPos({ x: x, y: y }, Game.mapNames.indexOf('ground_'+ type));
   }
 
   type = type.replace('ground_', '');
@@ -43,17 +43,23 @@ Game.entities.ground.create = function(x, y, type){
   return ground;
 };
 
-Game.entities.ground.crush = function(pos){
+Game.entities.ground.crush = function(pos, fromServer){
   // console.log('crush: ', groundType, pos);
   Game.ground.forEachAlive(function(ground){
     if(ground.x === pos.x && ground.y === pos.y && !ground.animations.getAnimation('crush_'+ ground.ground_type).isPlaying){
-      var groundType = Game.groundAt(pos.x, pos.y).replace('ground_', '');
+      var groundAt = Game.groundAt(pos.x, pos.y);
+      if(!groundAt) return;
+
+      var groundType = groundAt.replace('ground_', '');
+
       ground.tween = Game.game.add.tween(ground).to({ alpha: 0 }, Game.config.digTime[groundType], Phaser.Easing.Cubic.In, true);
       ground.animations.play('crush_'+ ground.ground_type);
 
-      Socket.active.emit('crush_ground', pos);
+      if(fromServer) return;
 
-      Game.clearMapPos(pos);
+      // Socket.active.emit('crush_ground', pos);
+
+      Game.setMapPos(pos, -1);
 
       var gridPos = {
         x: Game.toGridPos(ground.x),
@@ -91,7 +97,7 @@ Game.entities.ground.releaseSurrounds = function(ground, surrounds, delay){
     if(['gas'].includes(surrounds.bottom)){
       Game.entities.gas.spread(ground.x, ground.y + Game.blockPx);
     }
-  }, delay + 1000);
+  }, (delay || 100) + 1000);
 };
 
 Game.entities.ground.dig = function(pos){

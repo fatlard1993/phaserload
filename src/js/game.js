@@ -30,7 +30,7 @@ var Game = {
         if(Game.game.math.distance(pos.x, pos.y, monster.x, monster.y) < Game.blockPx * radius){
           monster.kill();
 
-          Game.clearMapPos(monster);
+          Game.setMapPos({ x: monster.x, y: monster.y }, -1);
         }
       });
     },
@@ -46,17 +46,11 @@ var Game = {
     lava: function(chance, pos){
       if(Game.chance(chance)){
         Game.entities.lava.create(pos.x, pos.y, 1);
-
-        Game.config.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('lava');
-        Game.config.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('lava');
       }
     },
     gas: function(chance, pos){
       if(Game.chance(chance)){
         Game.entities.gas.create(pos.x, pos.y, 1);
-
-        Game.config.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('gas');
-        Game.config.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = Game.mapNames.indexOf('gas');
       }
     },
     lavaRelease: function(){
@@ -65,9 +59,6 @@ var Game = {
           if(Game.chance(90) && Game.mapPos(x, y) === 'ground_red'){
             Game.entities.ground.crush({ x: x, y: y });
             Game.entities.lava.create(x, y, 1);
-
-            Game.config.map[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf('lava');
-            Game.config.viewBufferMap[Game.toGridPos(x)][Game.toGridPos(y)][0] = Game.mapNames.indexOf('lava');
           }
         }
       }
@@ -147,10 +138,6 @@ var Game = {
       if(Game.infoLine) Game.infoLine.setText('');
     }, (timeout || 3) * 1000);
   },
-  playLevel: function(level){
-    Game.desiredLevel = level;
-    Game.game.state.start('play');
-  },
   mapPos: function(x, y){
     return Game.config.map[x] !== undefined ? (Game.config.map[x][y] !== undefined ? Game.config.map[x][y] : [-1, -1]) : [-1, -1];
   },
@@ -195,14 +182,33 @@ var Game = {
 
     Game.hud.interfaceText.setText(heading + Game.config.world.missionText);
   },
-  clearMapPos: function(pos){
-    console.log('clearMapPos', pos);
-    Game.config.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
-    Game.config.viewBufferMap[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][0] = -1;
+  setMapPos: function(pos, id){
+    var gridPos = {
+      x: Game.toGridPos(pos.x),
+      y: Game.toGridPos(pos.y)
+    };
+
+    console.log('setMapPos', gridPos, 'from', Game.mapPosName(pos.x, pos.y), 'to', Game.mapNames[id]);
+
+    Game.config.map[gridPos.x][gridPos.y][0] = id;
+    // Game.config.viewBufferMap[gridPos.x][gridPos.y][0] = id;
+
+    Socket.active.emit('setMapPos', { pos: gridPos, id: id });
+  },
+  updateMapPos: function(pos, id){
+    console.log('updateMapPos', pos, Game.mapNames[id]);
+
+    if(id === -1 || Game.config.map[pos.x][pos.y][0] >= 0) Game.cleanGroundSpriteAt(Game.toPx(pos.x), Game.toPx(pos.y));
+    else Game.drawTile(pos.x, pos.y, Game.toName(id));
+
+    Game.config.map[pos.x][pos.y][0] = id;
+    // Game.config.viewBufferMap[pos.x][pos.y][0] = -1;
   },
   viewBufferMap: [],
   viewBufferSize: 3,
   adjustViewPosition: function(newX, newY, time, direction){
+    console.log('adjustViewPosition');
+
     var oldX = Game.game.camera.x;
     var oldY = Game.game.camera.y;
 
@@ -225,9 +231,13 @@ var Game = {
     }, time + 200);
   },
   drawCurrentView: function(){
+    console.log('drawCurrentView');
+
     Game.drawView(Game.toGridPos(Game.game.camera.x) - Game.viewBufferSize, Game.toGridPos(Game.game.camera.y) - Game.viewBufferSize, Game.toGridPos(Game.game.camera.x + Game.viewWidth) + Game.viewBufferSize, Game.toGridPos(Game.game.camera.y + Game.viewHeight) + Game.viewBufferSize);
   },
   drawViewDirection: function(direction, distanceX, distanceY){
+    console.log('drawCurrentView');
+
     var modX = (distanceX || 0) + Game.viewBufferSize;
     var modY = (distanceY || 0) + Game.viewBufferSize;
 
@@ -239,6 +249,8 @@ var Game = {
     Game.drawView(left, top, right, bottom);
   },
   drawView: function(left, top, right, bottom){
+    console.log('drawView');
+
     if(top - 3 < 0) top = 0;
     if(left - 3 < 0) left = 0;
     if(bottom + 3 > Game.config.depth) bottom = Game.config.depth;
@@ -246,43 +258,67 @@ var Game = {
 
     Log()('drawing '+ (((bottom - top) + 1) * ((right - left) + 1)) +' sprites, from: x'+ left +' y'+ top +' TO x'+ right +' y'+ bottom);
 
+    var drawn = 0;
+
     for(var x = left; x <= right; x++){
       for(var y = top; y <= bottom; y++){
         var mapPos = Game.mapPos(x, y);
         var viewBufferPos = Game.viewBufferPos(x, y);
 
-        if(viewBufferPos[0] >= 0 || mapPos[0] < 0) continue;
-
-        Game.config.viewBufferMap[x][y] = mapPos;
+        if((viewBufferPos[0] === mapPos[0] && mapPos[1] < 0) || (mapPos[0] < 0 && mapPos[1] < 0)) continue;
 
         var mapPos_0_name = Game.toName(mapPos[0]);
 
-        // Log()(x, y, Game.config.viewBufferMap[x][y], element);
-
-        if(mapPos_0_name.startsWith('ground')){
-          Game.entities.ground.create(Game.toPx(x), Game.toPx(y), mapPos_0_name);
-
-          if(mapPos[1] > 0){
-            Game.entities.mineral.create(Game.toPx(x), Game.toPx(y), Game.toName(mapPos[1]));
-          }
+        if(mapPos[1] > 0){
+          Game.entities.mineral.create(Game.toPx(x), Game.toPx(y), Game.toName(mapPos[1]));
         }
 
-        else if(mapPos_0_name === 'lava'){
-          Game.entities.lava.create(Game.toPx(x), Game.toPx(y));
-        }
-
-        else if(mapPos_0_name === 'gas'){
-          Game.entities.gas.create(Game.toPx(x), Game.toPx(y));
-        }
-
-        else if(mapPos_0_name === 'monster'){
-          Game.entities.monster.create(Game.toPx(x), Game.toPx(y));
-        }
+        Game.drawTile(x, y, mapPos_0_name);
+        drawn++;
       }
     }
+
+    console.log('drew: ', drawn);
+  },
+  drawTile: function(x, y, mapPos_0_name){
+    if(!mapPos_0_name) return;
+
+    Game.config.viewBufferMap[x][y] = Game.config.map[x][y];
+
+    if(mapPos_0_name.startsWith('ground')){
+      Game.entities.ground.create(Game.toPx(x), Game.toPx(y), mapPos_0_name);
+    }
+
+    else if(mapPos_0_name === 'lava'){
+      Game.entities.lava.create(Game.toPx(x), Game.toPx(y));
+    }
+
+    else if(mapPos_0_name === 'gas'){
+      Game.entities.gas.create(Game.toPx(x), Game.toPx(y));
+    }
+
+    else if(mapPos_0_name === 'monster'){
+      Game.entities.monster.create(Game.toPx(x), Game.toPx(y));
+    }
+  },
+  cleanGroundSpriteAt: function(x, y){
+    console.log('cleanGroundSpriteAt', x, y);
+
+    function cleanup(entity){
+      if(entity.x === x && entity.y === y){
+        Game.config.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)][0] = -1;
+        console.log('killing: ', entity);
+        entity.kill();
+      }
+    }
+
+    this.ground.forEachAlive(cleanup);
+    this.lava.forEachAlive(cleanup);
+    this.monsters.forEachAlive(cleanup);
   },
   cleanupView: function(force){
-    if(!force && Game.game.tweens.isTweening(Game.game.camera)) return;
+    if(!force && Game.game.tweens.isTweening(Game.game.camera) || 1) return;
+    console.log('cleanupView');
 
     let viewTop = this.game.camera.y;
     let viewLeft = this.game.camera.x;
@@ -298,10 +334,12 @@ var Game = {
 
         if(entity.y > viewBottom + pxViewBuffer || entity.y < viewTop - pxViewBuffer) clean = true;
         else if(entity.x > viewRight + pxViewBuffer || entity.x < viewLeft - pxViewBuffer) clean = true;
+        // else if(Game.config.map[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)][0] === -1 && Game.config.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)][0] >= 0) clean = true;
       }
 
       if(clean){
-        Game.config.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)] = [-1, -1];
+        Game.config.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)][0] = -1;
+        console.log('killing: ', entity);
         entity.kill();
       }
     }
