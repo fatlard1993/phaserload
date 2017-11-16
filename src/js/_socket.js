@@ -31,41 +31,12 @@ var Socket = {
 
         var player = Game.config.players[data.name];
 
-        var surrounds = Game.entities.player.getSurrounds(player.name);
-
-        Game.game.add.tween(player).to(data.position, data.moveTime, Phaser.Easing.Sinusoidal.InOut, true);
-
-        var invertTexture = false;
-
-        if(data.direction === 'up'){
-          if(surrounds.left || surrounds.topLeft && !(surrounds.topRight && surrounds.topLeft && player.lastMove === 'right')){
-            invertTexture = true;
-            player.angle = 90;
-          }
-          else player.angle = -90;
-        }
-        else if(data.direction === 'down'){
-          if(surrounds.right || surrounds.bottomRight && !(surrounds.bottomRight && surrounds.bottomLeft && player.lastMove === 'right')){
-            invertTexture = true;
-            player.angle = -90;
-          }
-          else player.angle = 90;
-        }
-        else{
-          player.angle = 0;
-        }
-
-        if(data.direction === 'left'){
-          invertTexture = true;
-        }
-
-        if(invertTexture) player.scale.x = -Game.config.defaultPlayerScale;
+        if(data.invertTexture) player.scale.x = -Game.config.defaultPlayerScale;
         else player.scale.x = Game.config.defaultPlayerScale;
 
-        player.lastMoveInvert = invertTexture;
-        player.lastMove = data.direction;
+        player.angle = data.angle;
 
-        player.lastPosition = data.position;
+        Game.game.add.tween(player).to(data.position, data.moveTime - 150, Phaser.Easing.Sinusoidal.InOut, true);
       });
 
       Socket.active.on('player_connect', function(data){

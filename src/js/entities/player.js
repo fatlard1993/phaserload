@@ -145,8 +145,8 @@ Game.entities.player.move = function(game, direction){
         setTimeout(function(){
           Game.hull.space -= mineralWeight;
 
-          Game.config.map[Game.toGridPos(mineral.x)][Game.toGridPos(mineral.y)][1] = -1;
-          Game.config.viewBufferMap[Game.toGridPos(mineral.x)][Game.toGridPos(mineral.y)][1] = -1;
+          // Game.config.map[Game.toGridPos(mineral.x)][Game.toGridPos(mineral.y)][1] = -1;
+          // Game.config.viewBufferMap[Game.toGridPos(mineral.x)][Game.toGridPos(mineral.y)][1] = -1;
 
           mineral.kill();
         }, animationTime);
@@ -161,8 +161,6 @@ Game.entities.player.move = function(game, direction){
   //if(targetGroundType && targetGroundType.startsWith('ground')) Game.game.camera.shake((moveTime * 0.00001) * 0.42, moveTime);
 
   game.add.tween(player).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
-
-  Socket.active.emit('player_update', { position: newPosition, moveTime: moveTime, direction: direction });
 
   // if(['gas', 'lava'].includes(targetType)) Game.entities[targetType].spread(newPosition.x, newPosition.y, 1);
 
@@ -199,6 +197,8 @@ Game.entities.player.move = function(game, direction){
   player.lastMove = direction;
 
   player.lastPosition = newPosition;
+
+  Socket.active.emit('player_update', { position: newPosition, moveTime: moveTime, direction: direction, invertTexture: invertTexture, angle: player.angle });
 
   // Game.config.map[Game.toGridPos(player.x)][Game.toGridPos(player.y)][0] = -1;
   // Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
