@@ -121,6 +121,16 @@ var Sockets = {
         socket.broadcast.to(Player.room).emit('player_update', data);
       });
 
+      socket.on('offer', function(data){
+        if(!Player) return;
+
+        console.log('offer', data);
+
+        if(data.accept) return Sockets.emitTo(data.to, 'offer_accept');
+
+        Sockets.emitTo(data.to, 'offer', data.offer);
+      });
+
       socket.on('crush_ground', function(pos){
         if(!Player) return;
 

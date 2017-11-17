@@ -26,6 +26,48 @@ var Socket = {
         // Game.drawCurrentView();
       });
 
+      Socket.active.on('offer', function(data){
+        console.log('offer', data);
+
+        Game.tradeOffer = data;
+
+        Game.offer_accepted = Game.offer_sent_accept = 0;
+
+        Game.entities.player.setView(Game.hud.view);
+      });
+
+      Socket.active.on('offer_accept', function(){
+        console.log('offer_accept');
+
+        Game.offer_accepted = 1;
+
+        if(Game.offer_sent_accept){
+          var itemNames = Object.keys(Game.tradeOffer), x;
+
+          for(x = 0; x < itemNames.length; x++){
+            Game.inventory[itemNames[x]] = Game.inventory[itemNames[x]] || 0;
+
+            Game.inventory[itemNames[x]] += Game.tradeOffer[itemNames[x]];
+          }
+
+          itemNames = Object.keys(Game.offer);
+
+          for(x = 0; x < itemNames.length; x++){
+            Game.inventory[itemNames[x]] -= Game.offer[itemNames[x]];
+
+            if(Game.inventory[itemNames[x]] <= 0) delete Game.inventory[itemNames[x]];
+          }
+
+          Game.offer = {};
+          Game.tradeOffer = {};
+          Game.offer_sent_accept = Game.offer_accepted = 0;
+
+          Game.entities.player.setView('trade');
+        }
+
+        else Game.hud.bottomLine.setText('       - offer accepted -');
+      });
+
       Socket.active.on('player_update', function(data){
         console.log('player_update', data);
 

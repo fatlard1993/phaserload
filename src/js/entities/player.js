@@ -389,63 +389,75 @@ Game.entities.player.openTrade = function(tradePlayerName){
   var player = Game.config.players[Game.config.playerName];
   var tradePlayer = Game.config.players[tradePlayerName];
 
-  var menu = '  Inventory  Offer     Exit\n';
+  var menu = '   Trade   For     Accept\n';
 
-  Game.hud.interfaceText.setText('          PLAYER TRADE\n'+ menu);
+  Game.hud.interfaceText.setText('            PLAYER TRADE        Exit\n'+ menu);
 
   Game.offer = {};
+  Game.offer_sent_accept = Game.offer_accepted = 0;
+  Game.tradePlayerName = tradePlayerName;
+
+  Game.hud.view = 'for';
 };
 
 
 Game.entities.player.handlePointer = function(pointer){
   if(Game.hud.isOpen !== 'trade') return;
 
+  // return console.log(pointer.x, pointer.y);
+
+  if(pointer.y > 20 && pointer.y < 80 && pointer.x > 460 && pointer.x < 560){
+    Log()('exit');
+    return Game.entities.hud.close();
+  }
+
   if(pointer.y > 70 && pointer.y < 110){// menu
-    if(pointer.x > 50 && pointer.x < 210){
-      Log()('inventory');
-      if(Game.hud.view === 'inventory' && Object.keys(Game.inventory).length > 7) Game.entities.player.setView('inventory_pg2');
-      else if(Game.hud.view === 'inventory_pg2' && Object.keys(Game.inventory).length > 14) Game.entities.player.setView('inventory_pg3');
-      else Game.entities.player.setView('inventory');
+    if(pointer.x > 60 && pointer.x < 160){
+      Log()('trade');
+      if(Game.hud.view === 'trade' && Object.keys(Game.inventory).length > 7) Game.entities.player.setView('trade_pg2');
+      else if(Game.hud.view === 'trade_pg2' && Object.keys(Game.inventory).length > 14) Game.entities.player.setView('trade_pg3');
+      else Game.entities.player.setView('trade');
     }
-    else if(pointer.x > 220 && pointer.x < 300){
-      Log()('offer');
-      if(Game.hud.view === 'offer' && Object.keys(Game.offer).length > 7) Game.entities.player.setView('offer_pg2');
-      else if(Game.hud.view === 'offer_pg2' && Object.keys(Game.offer).length > 14) Game.entities.player.setView('offer_pg3');
-      else Game.entities.player.setView('offer');
+    else if(pointer.x > 170 && pointer.x < 250){
+      Log()('for');
+      if(Game.hud.view === 'for' && Object.keys(Game.offer).length > 7) Game.entities.player.setView('for_pg2');
+      else if(Game.hud.view === 'for_pg2' && Object.keys(Game.offer).length > 14) Game.entities.player.setView('for_pg3');
+      else Game.entities.player.setView('for');
     }
-    else if(pointer.x > 360 && pointer.x < 500){
-      Log()('exit');
-      Game.entities.hud.close();
+    else if(pointer.x > 290 && pointer.x < 400){
+      Log()('accept');
+      Game.entities.player.setView('accept');
     }
   }
 
-  var selectedItem, rootView = Game.hud.view.replace(/_.*/, ''), pageIndexMod = (parseInt(Game.hud.view.replace(/.*_?p?g?/, '')) || 0) * 6;
+  if(Game.hud.view !== 'trade') return;
+  var selectedItem, pageIndexMod = (parseInt(Game.hud.view.replace(/.*_pg?/, '')) || 0) * 6;
 
   if(pointer.y > 120 && pointer.y < 150){
-    selectedItem = Game.entities.hud[rootView +'ItemNames'][pageIndexMod + 0];
+    selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 0];
   }
 
   else if(pointer.y > 160 && pointer.y < 200){
-    selectedItem = Game.entities.hud[rootView +'ItemNames'][pageIndexMod + 1];
+    selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 1];
   }
 
   else if(pointer.y > 210 && pointer.y < 240){
-    selectedItem = Game.entities.hud[rootView +'ItemNames'][pageIndexMod + 2];
+    selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 2];
   }
 
   else if(pointer.y > 250 && pointer.y < 280){
-    selectedItem = Game.entities.hud[rootView +'ItemNames'][pageIndexMod + 3];
+    selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 3];
   }
 
   else if(pointer.y > 290 && pointer.y < 320){
-    selectedItem = Game.entities.hud[rootView +'ItemNames'][pageIndexMod + 4];
+    selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 4];
   }
 
   else if(pointer.y > 330 && pointer.y < 360){
-    selectedItem = Game.entities.hud[rootView +'ItemNames'][pageIndexMod + 5];
+    selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 5];
   }
 
-  Game.entities.player.selectItem(selectedItem, Game.hud.view);
+  Game.entities.player.selectItem(selectedItem, Game.hud.view, pointer);
 };
 
 Game.entities.player.setView = function(view){
@@ -463,77 +475,119 @@ Game.entities.player.setView = function(view){
   var space = 19;
   var x, itemName, offered, leftAlignLineItem;
 
-  var inventoryItemNames = Game.entities.hud.inventoryItemNames = Object.keys(Game.inventory), inventoryItemCount = inventoryItemNames.length;
-  var offerItemNames = Game.entities.hud.offerItemNames = Object.keys(Game.offer), offerItemCount = offerItemNames.length;
+  Game.tradeOffer = Game.tradeOffer || {};
 
-  if(view === 'inventory'){
-    menu = ' ['+ (inventoryItemCount > 7 ? '   pg1   ' : 'Inventory') +'] Offer     Exit\n';
+  var inventoryItemNames = Game.entities.hud.inventoryItemNames = Object.keys(Game.inventory), inventoryItemCount = inventoryItemNames.length;
+  var offerItemNames = Game.entities.hud.offerItemNames = Object.keys(Game.tradeOffer), offerItemCount = offerItemNames.length;
+
+  if(view === 'trade'){
+    menu = '  ['+ (inventoryItemCount > 7 ? ' pg1 ' : 'Trade') +']  For     Accept\n';
 
     for(x = 0; x < Math.min(7, inventoryItemCount); x++){
       itemName = inventoryItemNames[x];
       offered = Game.offer[itemName] || 0;
 
-      leftAlignLineItem = '['+ (offered > Game.inventory[itemName] ? '+' : offered ? '-' : '') + offered +'] '+ itemName;
+      leftAlignLineItem = '['+ offered +'] '+ itemName;
 
       items += leftAlignLineItem + (' '.repeat(leftAlignLineItem.length > shortestLength ? space - (leftAlignLineItem.length - shortestLength) : space)) + Game.inventory[itemName] +'\n';
     }
+
+    if(inventoryItemCount === 0) items = 'no items';
   }
-  else if(view === 'inventory_pg2'){
-    menu = ' [   pg2   ] Offer     Exit\n';
+  else if(view === 'trade_pg2'){
+    menu = '  [ pg2 ]  For     Accept\n';
 
     for(x = 7; x < Math.min(14, inventoryItemCount); x++){
       itemName = inventoryItemNames[x];
       offered = Game.offer[itemName] || 0;
 
-      leftAlignLineItem = '['+ (offered > Game.inventory[itemName] ? '+' : offered ? '-' : '') + offered +'] '+ itemName;
+      leftAlignLineItem = '['+ offered +'] '+ itemName;
 
       items += leftAlignLineItem + (' '.repeat(leftAlignLineItem.length > shortestLength ? space - (leftAlignLineItem.length - shortestLength) : space)) + Game.inventory[itemName] +'\n';
     }
   }
-  else if(view === 'inventory_pg3'){
-    menu = ' [   pg3   ] Offer     Exit\n';
+  else if(view === 'trade_pg3'){
+    menu = '  [ pg3 ]  For     Accept\n';
 
     for(x = 14; x < inventoryItemCount; x++){
       itemName = inventoryItemNames[x];
       offered = Game.offer[itemName] || 0;
 
-      leftAlignLineItem = '['+ (offered > Game.inventory[itemName] ? '+' : offered ? '-' : '') + offered +'] '+ itemName;
+      leftAlignLineItem = '['+ offered +'] '+ itemName;
 
       items += leftAlignLineItem + (' '.repeat(leftAlignLineItem.length > shortestLength ? space - (leftAlignLineItem.length - shortestLength) : space)) + Game.inventory[itemName] +'\n';
     }
   }
-  else if(view === 'offer'){
-    menu = '  Inventory ['+ (offerItemCount > 7 ? ' pg1 ' : 'Offer') +']    Exit\n';
+  else if(view === 'for'){
+    menu = '   Trade  ['+ (offerItemCount > 7 ? 'pg1' : 'For') +']    Accept\n';
 
     for(x = 0; x < Math.min(7, offerItemCount); x++){
       itemName = offerItemNames[x];
 
-      items += '['+ (Game.offer[itemName] > Game.inventory[itemName] ? '+' : '-') + Game.offer[itemName] +'] '+ itemName;
+      items += '['+ Game.tradeOffer[itemName] +'] '+ itemName +'\n';
     }
+
+    if(offerItemCount === 0) items = 'no items';
   }
-  else if(view === 'offer_pg2'){
-    menu = '  Inventory [ pg2 ]    Exit\n';
+  else if(view === 'for_pg2'){
+    menu = '   Trade  [pg2]    Accept\n';
 
     for(x = 7; x < Math.min(14, offerItemCount); x++){
       itemName = offerItemNames[x];
 
-      items += '['+ (Game.offer[itemName] > Game.inventory[itemName] ? '+' : '-') + Game.offer[itemName] +'] '+ itemName;
+      items += '['+ Game.tradeOffer[itemName] +'] '+ itemName +'\n';
     }
   }
-  else if(view === 'offer_pg3'){
-    menu = '  Inventory [ pg3 ]    Exit\n';
+  else if(view === 'for_pg3'){
+    menu = '   Trade  [pg3]    Accept\n';
 
     for(x = 14; x < offerItemCount; x++){
       itemName = offerItemNames[x];
 
-      items += '['+ (Game.offer[itemName] > Game.inventory[itemName] ? '+' : '-') + Game.offer[itemName] +'] '+ itemName;
+      items += '['+ Game.tradeOffer[itemName] +'] '+ itemName +'\n';
     }
   }
+  else if(view === 'accept'){
+    menu = '   Trade   For    [Accept]\n';
 
-  Game.hud.interfaceText.setText('          PLAYER TRADE\n'+ menu + items);
+    Game.offer_sent_accept = 1;
+
+    Socket.active.emit('offer', { to: Game.tradePlayerName, accept: 1 });
+
+    Game.hud.bottomLine.setText('');
+
+    if(Game.offer_accepted){
+      var itemNames = Object.keys(Game.tradeOffer);
+
+      for(x = 0; x < itemNames.length; x++){
+        Game.inventory[itemNames[x]] = Game.inventory[itemNames[x]] || 0;
+
+        Game.inventory[itemNames[x]] += Game.tradeOffer[itemNames[x]];
+      }
+
+      itemNames = Object.keys(Game.offer);
+
+      for(x = 0; x < itemNames.length; x++){
+        Game.inventory[itemNames[x]] -= Game.offer[itemNames[x]];
+
+        if(Game.inventory[itemNames[x]] <= 0) delete Game.inventory[itemNames[x]];
+      }
+
+      Game.offer = {};
+      Game.tradeOffer = {};
+      Game.offer_sent_accept = Game.offer_accepted = 0;
+
+      setTimeout(function(){
+        Game.entities.player.setView('trade');
+      }, 800);
+    }
+    else Game.hud.view = 'for';
+  }
+
+  Game.hud.interfaceText.setText('            PLAYER TRADE        Exit\n'+ menu + items);
 };
 
-Game.entities.player.selectItem = function(item, view){
+Game.entities.player.selectItem = function(item, view, pointer){
   if(!item) return;
 
   if(Game.hud.justSelectedItem) return;
@@ -542,12 +596,18 @@ Game.entities.player.selectItem = function(item, view){
 
   Game.offer[item] = Game.offer[item] || 0;
 
-  if(view === 'inventory') Game.offer[item]++;
+  if(pointer.x < 420) Game.offer[item]++;
   else Game.offer[item]--;
 
   if(Game.offer[item] > Game.inventory[item] || Game.offer[item] < 0) Game.offer[item] = 0;
 
   if(Game.offer[item] === 0) delete Game.offer[item];
+
+  Socket.active.emit('offer', { to: Game.tradePlayerName, offer: Game.offer });
+
+  Game.offer_accepted = Game.offer_sent_accept = 0;
+
+  Game.hud.bottomLine.setText('');
 
   Game.entities.player.setView(view);
 };
