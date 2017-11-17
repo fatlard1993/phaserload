@@ -1,4 +1,5 @@
 # Phaserload
+## Now with multiplayer!
 ![game-play](game-play.png)
 Phaserload is a Motherload-inspired game built with [Phaser.js](https://github.com/photonstorm/phaser-ce).
 
