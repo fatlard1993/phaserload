@@ -161,6 +161,13 @@ var Game = {
     var re = new RegExp('^-?\\d+(?:.\\d{0,' + (decimalPlaces || -1) + '})?');
     return num.toString().match(re)[0];
   },
+  capitalize: function(str, recursive, split){
+    for(var i = 0, words = str.split(split || ' '); i < (recursive ? words.length : 1); i++){
+      words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+    }
+
+    return words.join(' ');
+  },
   hull: {},
   toGridPos: function(px){
     return Math.round((px - 32) / 64);

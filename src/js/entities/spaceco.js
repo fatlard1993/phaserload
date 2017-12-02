@@ -134,7 +134,7 @@ Game.entities.spaceco.setView = function(view){
     mineralNames = ['ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue'];
 
     for(x = 0; x < mineralNames.length; x++){
-      items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + Game.entities.spaceco.getValue(mineralNames[x]).toFixed(2) +'\n';
+      items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + '$' + Game.entities.spaceco.getValue(mineralNames[x]).toFixed(2) +'\n';
     }
   }
   else if(view === 'rates_pg2'){
@@ -143,7 +143,7 @@ Game.entities.spaceco.setView = function(view){
     mineralNames = ['ground_purple', 'ground_pink', 'ground_black'];
 
     for(x = 0; x < mineralNames.length; x++){
-      items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + Game.entities.spaceco.getValue(mineralNames[x]).toFixed(2) +'\n';
+      items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + '$' + Game.entities.spaceco.getValue(mineralNames[x]).toFixed(2) +'\n';
     }
   }
   else if(view === 'rates_pg3'){
@@ -152,7 +152,7 @@ Game.entities.spaceco.setView = function(view){
     mineralNames = ['mineral_green', 'mineral_blue', 'mineral_red', 'mineral_purple', 'mineral_teal', 'mineral_???'];
 
     for(x = 0; x < mineralNames.length; x++){
-      items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + Game.entities.spaceco.getValue(mineralNames[x]).toFixed(2) +'\n';
+      items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + '$' + Game.entities.spaceco.getValue(mineralNames[x]).toFixed(2) +'\n';
     }
   }
   else if(view === 'fuel'){
@@ -315,7 +315,7 @@ Game.entities.spaceco.selectItem = function(item){
   Game.hud.justSelectedItem_TO = setTimeout(function(){ Game.hud.justSelectedItem = false; }, timeout);
 
   if(!bottomLineUpdate && Game.config.spacecoPrices[item]){
-    bottomLineUpdate = item.replace('super_oxygen_liquid_nitrogen', 'SOLN') +' : '+ Game.config.spacecoPrices[item] + (isFuel ? ' (hold to fill)' : '');
+    bottomLineUpdate = Game.capitalize(item.replace('super_oxygen_liquid_nitrogen', 'SOLN'), 1, '_') +' : '+ Game.config.spacecoPrices[item] + (isFuel ? ' (Hold to fill)' : '');
 
     Game.credits -= Game.config.spacecoPrices[item];
 
