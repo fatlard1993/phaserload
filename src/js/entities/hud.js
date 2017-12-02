@@ -200,7 +200,7 @@ Game.entities.hud.setView = function(view){
 Game.entities.hud.handlePointer = function(pointer){
   if(Game.hud.isOpen !== 'hud') return;
 
-  if(pointer.y > 70 && pointer.y < 110){// menu
+  if(pointer.y > 70 && pointer.y < 105){// menu
     if(pointer.x > 50 && pointer.x < 210){
       if(Game.entities.hud.briefingOpen){
         Log()('briefing');
@@ -234,37 +234,37 @@ Game.entities.hud.handlePointer = function(pointer){
 
   var selectedItem;
 
-  if(pointer.y > 120 && pointer.y < 150){
+  if(pointer.y > 110 && pointer.y < 140){
     if(Game.hud.view === 'inventory'){
       selectedItem = Game.entities.hud.inventoryItemNames[0];
     }
   }
 
-  else if(pointer.y > 160 && pointer.y < 200){
+  else if(pointer.y > 150 && pointer.y < 180){
     if(Game.hud.view === 'inventory'){
       selectedItem = Game.entities.hud.inventoryItemNames[1];
     }
   }
 
-  else if(pointer.y > 210 && pointer.y < 240){
+  else if(pointer.y > 190 && pointer.y < 220){
     if(Game.hud.view === 'inventory'){
       selectedItem = Game.entities.hud.inventoryItemNames[2];
     }
   }
 
-  else if(pointer.y > 250 && pointer.y < 280){
+  else if(pointer.y > 230 && pointer.y < 260){
     if(Game.hud.view === 'inventory'){
       selectedItem = Game.entities.hud.inventoryItemNames[3];
     }
   }
 
-  else if(pointer.y > 290 && pointer.y < 320){
+  else if(pointer.y > 270 && pointer.y < 300){
     if(Game.hud.view === 'inventory'){
       selectedItem = Game.entities.hud.inventoryItemNames[4];
     }
   }
 
-  else if(pointer.y > 330 && pointer.y < 360){
+  else if(pointer.y > 310 && pointer.y < 340){
     if(Game.hud.view === 'inventory'){
       selectedItem = Game.entities.hud.inventoryItemNames[5];
     }

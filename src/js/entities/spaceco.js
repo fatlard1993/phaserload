@@ -195,7 +195,7 @@ Game.entities.spaceco.updateBottomLine = function(){
 Game.entities.spaceco.handlePointer = function(pointer){
   if(Game.hud.isOpen !== 'spaceco') return;
 
-  if(pointer.y > 70 && pointer.y < 110){// menu
+  if(pointer.y > 70 && pointer.y < 105){// menu
     if(pointer.x > 70 && pointer.x < 165){
       if(Game.hud.view === 'rates') Game.entities.spaceco.setView('rates_pg2');
       if(Game.hud.view === 'rates_pg2') Game.entities.spaceco.setView('rates_pg3');
@@ -215,7 +215,7 @@ Game.entities.spaceco.handlePointer = function(pointer){
 
   var selectedItem;
 
-  if(pointer.y > 120 && pointer.y < 150){
+  if(pointer.y > 110 && pointer.y < 140){
     if(Game.hud.view === 'fuel'){
       selectedItem = 'gas';
     }
@@ -227,7 +227,7 @@ Game.entities.spaceco.handlePointer = function(pointer){
     }
   }
 
-  else if(pointer.y > 160 && pointer.y < 200){
+  else if(pointer.y > 150 && pointer.y < 180){
     if(Game.hud.view === 'fuel'){
       selectedItem = 'energy';
     }
@@ -238,7 +238,7 @@ Game.entities.spaceco.handlePointer = function(pointer){
       selectedItem = 'remote_charge';
     }
   }
-  else if(pointer.y > 210 && pointer.y < 240){
+  else if(pointer.y > 190 && pointer.y < 220){
     if(Game.hud.view === 'fuel'){
       selectedItem = 'super_oxygen_liquid_nitrogen';
     }
@@ -250,7 +250,7 @@ Game.entities.spaceco.handlePointer = function(pointer){
     }
   }
 
-  else if(pointer.y > 250 && pointer.y < 280){
+  else if(pointer.y > 230 && pointer.y < 260){
     if(Game.hud.view === 'shop'){
       selectedItem = 'upgrade';
     }
@@ -259,7 +259,7 @@ Game.entities.spaceco.handlePointer = function(pointer){
     }
   }
 
-  else if(pointer.y > 290 && pointer.y < 320){
+  else if(pointer.y > 270 && pointer.y < 300){
     if(Game.hud.view === 'shop'){
       selectedItem = 'transport';
     }

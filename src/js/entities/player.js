@@ -411,7 +411,7 @@ Game.entities.player.handlePointer = function(pointer){
     return Game.entities.hud.close();
   }
 
-  if(pointer.y > 70 && pointer.y < 110){// menu
+  if(pointer.y > 70 && pointer.y < 105){// menu
     if(pointer.x > 60 && pointer.x < 160){
       Log()('trade');
       if(Game.hud.view === 'trade' && Object.keys(Game.inventory).length > 7) Game.entities.player.setView('trade_pg2');
@@ -433,27 +433,27 @@ Game.entities.player.handlePointer = function(pointer){
   if(Game.hud.view !== 'trade') return;
   var selectedItem, pageIndexMod = (parseInt(Game.hud.view.replace(/.*_pg?/, '')) || 0) * 6;
 
-  if(pointer.y > 120 && pointer.y < 150){
+  if(pointer.y > 110 && pointer.y < 140){
     selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 0];
   }
 
-  else if(pointer.y > 160 && pointer.y < 200){
+  else if(pointer.y > 150 && pointer.y < 180){
     selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 1];
   }
 
-  else if(pointer.y > 210 && pointer.y < 240){
+  else if(pointer.y > 190 && pointer.y < 220){
     selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 2];
   }
 
-  else if(pointer.y > 250 && pointer.y < 280){
+  else if(pointer.y > 230 && pointer.y < 260){
     selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 3];
   }
 
-  else if(pointer.y > 290 && pointer.y < 320){
+  else if(pointer.y > 270 && pointer.y < 300){
     selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 4];
   }
 
-  else if(pointer.y > 330 && pointer.y < 360){
+  else if(pointer.y > 310 && pointer.y < 340){
     selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 5];
   }
 
