@@ -44,10 +44,10 @@ Game.entities.hud.update = function(){
     else statusText = value[0] + spacer;
 
     if(item === 'position') statusText += 'x'+ Game.toGridPos(Game.config.players[Game.config.playerName].x) +' y'+ Game.toGridPos(Game.config.players[Game.config.playerName].y);
-    else if(item === 'health') statusText += Game.health.toFixed(2);
-    else if(item === 'fuel') statusText += Game.fuel.toFixed(2);
-    else if(item === 'credits') statusText += Game.credits.toFixed(2);
-    else if(item === 'hull') statusText += Game.hull.space.toFixed(2);
+    else if(item === 'health') statusText += Game.toFixed(Game.health, 2);
+    else if(item === 'fuel') statusText += Game.toFixed(Game.fuel, 2);
+    else if(item === 'credits') statusText += Game.toFixed(Game.credits, 2);
+    else if(item === 'hull') statusText += Game.toFixed(Game.hull.space, 2);
     else{
       if(item.startsWith('mineral') && Game.hull.items[item]) statusText += Game.hull.items[item];
     }
@@ -167,7 +167,7 @@ Game.entities.hud.setView = function(view){
   else if(view === 'hull'){
     menu = '  Inventory ['+ (hullItemCount > 6 ? ' p1 ' : 'Hull') +']     Exit\n';
 
-    items += 'Hull Space               '+ Game.hull.space.toFixed(2) +'\n';
+    items += 'Hull Space               '+ Game.toFixed(Game.hull.space, 2) +'\n';
 
     for(var x = 0; x < Math.min(6, hullItemCount); x++){
       var itemName = hullItemNames[x];

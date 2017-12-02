@@ -157,6 +157,10 @@ var Game = {
   toName: function(id){
     return Game.mapNames[id];
   },
+  toFixed: function(num, decimalPlaces){
+    var re = new RegExp('^-?\\d+(?:.\\d{0,' + (decimalPlaces || -1) + '})?');
+    return num.toString().match(re)[0];
+  },
   hull: {},
   toGridPos: function(px){
     return Math.round((px - 32) / 64);

@@ -91,7 +91,7 @@ Game.entities.spaceco.open = function(){
         contents += ' '+ soldItems[soldItemNames[x]] +' x '+ soldItemNames[x] +'s\n';
       }
 
-      contents += 'For '+ (Game.credits - statingCredits).toFixed(2) +' credits';
+      contents += 'For '+ Game.toFixed(Game.credits - statingCredits, 2) +' credits';
 
       Game.hull = {
         items: []
@@ -185,9 +185,9 @@ Game.entities.spaceco.setView = function(view){
 Game.entities.spaceco.updateBottomLine = function(){
   if(Game.hud.isOpen !== 'spaceco') return;
 
-  var credits = '$:'+ Game.credits.toFixed(1);
-  var fuel = '  Fuel:'+ Game.fuel.toFixed(1);
-  var health = '  Health:'+ Game.health.toFixed(1);
+  var credits = '$:'+ Game.toFixed(Game.credits, 1);
+  var fuel = '  Fuel:'+ Game.toFixed(Game.fuel, 1);
+  var health = '  Health:'+ Game.toFixed(Game.health, 1);
 
   Game.hud.bottomLine.setText(credits + fuel + health);
 };
