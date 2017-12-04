@@ -19,7 +19,7 @@ Game.entities.hud.create = function(x, y){
   hud.interfaceText = Game.game.add.text(20, 20, '', { font: '13px '+ Game.config.font, fill: '#fff', fontWeight: 'bold' });
   hud.addChild(hud.interfaceText);
 
-  hud.bottomLine = Game.game.add.text(20, 205, '', { font: '14px '+ Game.config.font, fill: Game.config.hudTextColor });
+  hud.bottomLine = Game.game.add.text(20, 211, '', { font: '11px '+ Game.config.font, fill: Game.config.hudTextColor });
   hud.addChild(hud.bottomLine);
 
   return hud;
