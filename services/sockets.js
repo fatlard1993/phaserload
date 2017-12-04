@@ -33,10 +33,19 @@ var Sockets = {
               Sockets.rooms[room] = newRoomData;
 
               Sockets.rooms[room].spaceco = {
+                parts: {},
                 position: {
                   x: Game.rand(3, Sockets.rooms[room].width - 3)
                 }
               };
+
+              var partNames = Game.shuffleArr(Object.keys(Game.parts));
+
+              // partNames.length = Game.rand(4, 9);
+
+              for(var x = 0; x < partNames.length; x++){
+                Sockets.rooms[room].spaceco.parts[partNames[x]] = Game.parts[partNames[x]];
+              }
             }
 
             Sockets.rooms[room].players[Player.name] = {

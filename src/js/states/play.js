@@ -34,6 +34,8 @@ Game.states.play.prototype.create = function(){
 
       Game.spaceco = Game.entities.spaceco.create(Game.config.spaceco);
 
+      Game.spaceco.parts = roomData.spaceco.parts;
+
       Game.monsters = Game.game.add.group();
 
       var playerNames = Object.keys(Game.config.players);

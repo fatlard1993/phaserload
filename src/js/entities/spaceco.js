@@ -2,7 +2,7 @@
 
 Game.entities.spaceco = function(game){};
 
-Game.entities.spaceco.headingText = '             SPACECO\n';
+Game.entities.spaceco.headingText = '             SPACECO            Exit\n';
 
 Game.entities.spaceco.create = function(settings){
   var spaceco = Game.game.add.sprite(Game.toPx(settings.position.x), Game.toPx(1), 'spaceco', 10);
@@ -57,7 +57,7 @@ Game.entities.spaceco.open = function(){
   Game.entities.hud.open('spaceco');
 
   Game.entities.spaceco.welcome(function(){
-    var menu = '   Rates  Fuel  Shop     Exit\n';
+    var menu = '   Rates   Fuel   Parts   Shop\n';
     var contents = '';
 
     if(Game.config.mode === 'normal'){
@@ -124,60 +124,96 @@ Game.entities.spaceco.setView = function(view){
 
   var menu = '';
   var items = '';
-  var shortestLength = 10;
-  var space = 19;
-  var mineralNames, x;
+  var leftSpace = 30;
+  var mineralNames, x, itemName;
+
+  var partNames = Object.keys(Game.spaceco.parts), partCount = partNames.length;
 
   if(view === 'rates'){
-    menu = '  [ pg1 ] Fuel  Shop     Exit\n';
+    menu = '  [ pg1 ]  Fuel   Parts   Shop\n';
 
     mineralNames = ['ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue'];
 
     for(x = 0; x < mineralNames.length; x++){
-      items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + '$' + Game.entities.spaceco.getValue(mineralNames[x]).toFixed(2) +'\n';
+      itemName = mineralNames[x];
+
+      items += itemName + (' '.repeat(leftSpace - itemName.length)) +'$'+ Game.entities.spaceco.getValue(itemName).toFixed(2) +'\n';
     }
   }
   else if(view === 'rates_pg2'){
-    menu = '  [ pg2 ] Fuel  Shop     Exit\n';
+    menu = '  [ pg2 ]  Fuel   Parts   Shop\n';
 
     mineralNames = ['ground_purple', 'ground_pink', 'ground_black'];
 
     for(x = 0; x < mineralNames.length; x++){
-      items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + '$' + Game.entities.spaceco.getValue(mineralNames[x]).toFixed(2) +'\n';
+      itemName = mineralNames[x];
+
+      items += itemName + (' '.repeat(leftSpace - itemName.length)) +'$'+ Game.entities.spaceco.getValue(itemName).toFixed(2) +'\n';
     }
   }
   else if(view === 'rates_pg3'){
-    menu = '  [ pg3 ] Fuel  Shop     Exit\n';
+    menu = '  [ pg3 ]  Fuel   Parts   Shop\n';
 
     mineralNames = ['mineral_green', 'mineral_blue', 'mineral_red', 'mineral_purple', 'mineral_teal', 'mineral_???'];
 
     for(x = 0; x < mineralNames.length; x++){
-      items += mineralNames[x] + (' '.repeat(mineralNames[x].length > shortestLength ? space - (mineralNames[x].length - shortestLength) : space)) + '$' + Game.entities.spaceco.getValue(mineralNames[x]).toFixed(2) +'\n';
+      itemName = mineralNames[x];
+
+      items += itemName + (' '.repeat(leftSpace - itemName.length)) +'$'+ Game.entities.spaceco.getValue(itemName).toFixed(2) +'\n';
     }
   }
   else if(view === 'fuel'){
-    menu = '   Rates [Fuel] Shop     Exit';
+    menu = '   Rates  [Fuel]  Parts   Shop';
+
     items += '\nGas                          $'+ Game.config.spacecoPrices.gas;
     items += '\nEnergy                       $'+ Game.config.spacecoPrices.energy;
     items += '\nSuper Oxygen Liquid Nitrogen $'+ Game.config.spacecoPrices.super_oxygen_liquid_nitrogen;
   }
+  else if(view === 'parts'){
+    menu = '   Rates   Fuel  ['+ (partCount > 7 ? ' pg1 ' : 'Parts') +']  Shop';
+
+    for(x = 0; x < Math.min(7, partCount); x++){
+      itemName = partNames[x];
+
+      items += '\n'+ itemName + (' '.repeat(leftSpace - itemName.length)) +'$'+ Game.config.spaceco.parts[itemName];
+    }
+
+    if(partCount === 0) items = 'no parts';
+  }
+  else if(view === 'parts_pg2'){
+    menu = '   Rates   Fuel  [ pg2 ]  Shop';
+
+    for(x = 7; x < Math.min(14, partCount); x++){
+      itemName = partNames[x];
+
+      items += '\n'+ itemName + (' '.repeat(leftSpace - itemName.length)) +'$'+ Game.config.spaceco.parts[itemName];
+    }
+  }
+  else if(view === 'parts_pg3'){
+    menu = '   Rates   Fuel  [ pg3 ]  Shop';
+
+    for(x = 14; x < partCount; x++){
+      itemName = partNames[x];
+
+      items += '\n'+ itemName + (' '.repeat(leftSpace - itemName.length)) +'$'+ Game.config.spaceco.parts[itemName];
+    }
+  }
   else if(view === 'shop'){
-    menu = '   Rates  Fuel [ p1 ]    Exit';
+    menu = '   Rates   Fuel   Parts  [ p1 ]';
+
     items += '\nTeleporter                   $'+ Game.config.spacecoPrices.teleporter;
     items += '\nResponder Teleporter         $'+ Game.config.spacecoPrices.responder_teleporter;
     items += '\nRepair                       $'+ Game.config.spacecoPrices.repair;
-    items += '\nUpgrade                      $'+ Game.config.spacecoPrices.upgrade;
     items += '\nTransport                    $'+ Game.config.spacecoPrices.transport;
   }
   else if(view === 'shop_p2'){
-    menu = '   Rates  Fuel [ p2 ]    Exit';
+    menu = '   Rates   Fuel   Parts  [ p2 ]';
+
     items += '\nTimed Charge                 $'+ Game.config.spacecoPrices.timed_charge;
     items += '\nRemote Charge                $'+ Game.config.spacecoPrices.remote_charge;
     items += '\nTimed Freeze Charge          $'+ Game.config.spacecoPrices.timed_freeze_charge;
     items += '\nRemote Freeze Charge         $'+ Game.config.spacecoPrices.remote_freeze_charge;
   }
-  Game.entities.spaceco.spacecoFuel = '';
-  Game.entities.spaceco.spacecoProducts = '';
 
   Game.entities.spaceco.setInterfaceText(menu + items);
 };
@@ -196,7 +232,7 @@ Game.entities.spaceco.handlePointer = function(pointer){
   if(Game.hud.isOpen !== 'spaceco') return;
 
   if(pointer.y > 70 && pointer.y < 105){// menu
-    if(pointer.x > 70 && pointer.x < 165){
+    if(pointer.x > 60 && pointer.x < 165){
       if(Game.hud.view === 'rates') Game.entities.spaceco.setView('rates_pg2');
       if(Game.hud.view === 'rates_pg2') Game.entities.spaceco.setView('rates_pg3');
       else Game.entities.spaceco.setView('rates');
@@ -204,12 +240,14 @@ Game.entities.spaceco.handlePointer = function(pointer){
     else if(pointer.x > 175 && pointer.x < 255){
       Game.entities.spaceco.setView('fuel');
     }
-    else if(pointer.x > 265 && pointer.x < 350){
+    else if(pointer.x > 275 && pointer.x < 370){
+      if(Game.hud.view === 'parts') Game.entities.spaceco.setView('parts_pg2');
+      if(Game.hud.view === 'parts_pg2') Game.entities.spaceco.setView('parts_pg3');
+      else Game.entities.spaceco.setView('parts');
+    }
+    else if(pointer.x > 385 && pointer.x < 470){
       if(Game.hud.view === 'shop') Game.entities.spaceco.setView('shop_p2');
       else Game.entities.spaceco.setView('shop');
-    }
-    else if(pointer.x > 400 && pointer.x < 500){
-      Game.entities.hud.close();
     }
   }
 
@@ -348,7 +386,6 @@ Game.entities.spaceco.selectItem = function(item){
       Game.inventory[item]++;
     }
   }
-
 
   if(bottomLineUpdate){
     Game.hud.bottomLine.setText(bottomLineUpdate);

@@ -17,6 +17,31 @@ var Game = {
 
     return num;
   },
+  parts: {
+    drill_1: 1,
+    drill_2: 1,
+    drill_3: 1,
+    hull_1: 1,
+    hull_2: 1,
+    hull_3: 1,
+    tracks_1: 1,
+    tracks_2: 1,
+    tracks_3: 1
+  },
+  shuffleArr: function(array){
+    var currentIndex = array.length, temporaryValue, randomIndex;
+
+    while(currentIndex !== 0){
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+
+    return array;
+  },
   chance: function(chance){
     if(chance === undefined){ chance = 50; }
     return chance > 0 && (Math.random() * 100 <= chance);
