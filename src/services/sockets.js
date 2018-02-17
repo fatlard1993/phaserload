@@ -57,13 +57,29 @@ var Sockets = {
 						},
 						addPlayer: function(playerName){
 							this.players[playerName] = {
-								name: Player.name,
+								name: playerName,
 								position: {
-									x: Game.rand(1, this.mapData.width - 1)
-								}
+									x: Game.rand(1, this.mapData.width - 1),
+									y: 1
+								},
+								hull: {
+									space: 10,
+									items: []
+								},
+								configuration: {
+									drill: 'standard',
+									hull: 'standard',
+									tracks: 'standard'
+								},
+								inventory: {
+									teleporter: 1
+								},
+								fuel: 5,
+								health: 100,
+								credits: 0
 							};
 
-							Log()(`Player "${playerName}" joined ${this.name} | Current players: ${this.players}`);
+							Log()(`Player "${playerName}" joined ${this.name} | Current players: ${Object.keys(this.players)}`);
 
 							Sockets.wss.broadcast(JSON.stringify({ command: 'player_join', room: this.name, player: this.players[playerName] }));
 
@@ -94,11 +110,34 @@ var Sockets = {
 
 					Sockets.games[Player.room].addPlayer(Player.name);
 
-					socket.send(JSON.stringify({ command: 'player_join_accept', players: Sockets.games[Player.room].players, mapData: Sockets.games[Player.room].mapData, spaceco: Sockets.games[Player.room].spaceco, options: Sockets.games[Player.room].options }));
+					socket.send(JSON.stringify({ command: 'player_join_accept', players: Sockets.games[Player.room].players, mapData: Sockets.games[Player.room].mapData, spaceco: Sockets.games[Player.room].spaceco }));
 				}
 
-				delete data.command;
-				if(Object.keys(data).length) Log()('socket', 'Command data: ', data, '\n');
+				else if(data.command === 'player_move'){
+					Sockets.games[Player.room].players[Player.name].position = data.position;
+
+					data.player = Player.name;
+					data.room = Player.room;
+
+					Sockets.wss.broadcast(JSON.stringify(data));
+				}
+
+				else if(data.command === 'player_set_map_position'){
+					var gridPos = {
+						x: Game.toGridPos(data.pos.x),
+						y: Game.toGridPos(data.pos.y)
+					};
+
+					Sockets.games[Player.room].mapData.map[gridPos.x][gridPos.y][0] = data.id;
+
+					data.player = Player.name;
+					data.room = Player.room;
+
+					Sockets.wss.broadcast(JSON.stringify(data));
+				}
+
+				// delete data.command;
+				// if(Object.keys(data).length) Log()('socket', 'Command data: ', data, '\n');
 			};
 
 			socket.onclose = function(data){

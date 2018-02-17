@@ -3,6 +3,8 @@
 Game.states.load = function(){};
 
 Game.states.load.prototype.preload = function(){
+	Game.phaser.stage.disableVisibilityChange = true;
+
 	this.progress = Game.phaser.add.text(Game.phaser.world.centerX, Game.phaser.world.centerY - 30, '0%', { fill: 'white' });
 	this.progress.anchor.setTo(0.5, 0.5);
 

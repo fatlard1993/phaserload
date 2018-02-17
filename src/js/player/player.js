@@ -6,6 +6,57 @@ function Load(){
 	if(Loaded) return;
 	Loaded = true;
 
+	var playerChangeQueue = {};
+	var groundChangeQueue = {};
+	var cyclingPlayerQueue = false;
+	var cyclingGroundQueue = false;
+
+	document.addEventListener('visibilitychange', function(evt){
+		Log()(evt, document.hidden);
+		if(document.hidden) return;
+
+		Log()(playerChangeQueue, groundChangeQueue);
+
+		cyclePlayerQueue();
+		cycleGroundQueue();
+	});
+
+	function cyclePlayerQueue(){
+		var queue = playerChangeQueue, ids = Object.keys(queue), queueLen = ids.length;
+		playerChangeQueue = {};
+		cyclingPlayerQueue = true;
+
+		if(!queueLen) return;
+
+		Log()('cycling player queue: ', queue);
+
+		for(var x = 0; x < queueLen; ++x){
+			Game.movePlayer(queue[ids[x]]);
+		}
+
+		cyclingPlayerQueue = false;
+
+		cyclePlayerQueue();
+	}
+
+	function cycleGroundQueue(){
+		var queue = groundChangeQueue, ids = Object.keys(queue), queueLen = ids.length;
+		groundChangeQueue = {};
+		cyclingGroundQueue = true;
+
+		if(!queueLen) return;
+
+		Log()('cycling ground queue: ', queue);
+
+		for(var x = 0; x < queueLen; ++x){
+			Game.setMapPos(queue[ids[x]].pos, queue[ids[x]].id, 1);
+		}
+
+		cyclingGroundQueue = false;
+
+		cycleGroundQueue();
+	}
+
 	var Player = {
 		room: Dom.location.query.get('room')
 	};
@@ -94,8 +145,7 @@ function Load(){
 			Game.spaceco = data.spaceco;
 			Game.options = data.options;
 
-			Game.player.name = Player.name;
-			Game.player.position = data.players[Player.name].position;
+			Game.player = data.players[Player.name];
 
 			Game.config = Object.assign(Game.config, data.mapData);
 
@@ -105,16 +155,34 @@ function Load(){
 		if(!data.room || !Player.room || data.room !== Player.room) return;
 
 		if(data.command === 'player_join'){
-			if(data.name === Player.name) return;
+			if(data.player.name === Player.name) return;
 
 			Game.players[data.player.name] = data.player;
+
+			if(Game.currentView === 'play'){
+				Game.players[data.player.name].sprite = Game.entities.player.create(Game.players[data.player.name]);
+			}
 		}
 
 		else if(data.command === 'player_leave'){
-			delete Game.players[data.player.name];
+			Game.players[data.name].sprite.kill();
+
+			delete Game.players[data.name];
 		}
 
-		if(Game.currentView === 'main') return;
+		if(Game.currentView === 'main' || data.player === Player.name) return;
+
+		else if(data.command === 'player_move'){
+			if(!document.hidden && !cyclingPlayerQueue) return Game.movePlayer(data);
+
+			playerChangeQueue[data.player] = data;
+		}
+
+		else if(data.command === 'player_set_map_position'){
+			if(!document.hidden && !cyclingGroundQueue) return Game.setMapPos(data.pos, data.id, 1);
+
+			groundChangeQueue[JSON.stringify(data.pos)] = data;
+		}
 	}
 
 	function joinGame(){

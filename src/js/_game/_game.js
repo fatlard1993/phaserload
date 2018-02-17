@@ -9,24 +9,7 @@ var Game = {
 		hudTextColor: '#94B133'
 	},
 	mapNames: ['monster', 'lava', 'gas', 'player', 'mineral_green', 'mineral_red', 'mineral_blue', 'mineral_purple', 'mineral_teal', 'mineral_???', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
-	player: {
-		name: '',
-		hull: {
-			space: 10,
-			items: []
-		},
-		configuration: {
-			drill: 'standard',
-			hull: 'standard',
-			tracks: 'standard'
-		},
-		inventory: {
-			teleporter: 1
-		},
-		fuel: 5,
-		health: 100,
-		credits: 0
-	},
+	player: {},
 	players: {},
 	states: {},
 	entities: {},
@@ -37,7 +20,7 @@ var Game = {
 			}
 
 			if(Game.phaser.math.distance(pos.x, pos.y, Game.player.sprite.x, Game.player.sprite.y) < Game.blockPx * radius){
-				Game.entities.player.hurt(Game.randFloat(radius, radius * 2) * (radius - (Game.phaser.math.distance(pos.x, pos.y, Game.player.sprite.x, Game.player.sprite.y) / Game.blockPx)), 'explosion');
+				Game.player.hurt(Game.randFloat(radius, radius * 2) * (radius - (Game.phaser.math.distance(pos.x, pos.y, Game.player.sprite.x, Game.player.sprite.y) / Game.blockPx)), 'explosion');
 			}
 
 			Game.ground.forEachAlive(function(ground){
@@ -219,7 +202,15 @@ var Game = {
 
 		Game.hud.interfaceText.setText(heading + Game.config.world.missionText);
 	},
-	setMapPos: function(pos, id){
+	movePlayer: function(data){
+		Game.phaser.add.tween(Game.players[data.player].sprite).to(data.position, data.moveTime, Phaser.Easing.Sinusoidal.InOut, true);
+
+		Game.players[data.player].sprite.angle = data.angle;
+
+		if(data.invertTexture) Game.players[data.player].sprite.scale.x = -Game.config.defaultPlayerScale;
+		else Game.players[data.player].sprite.scale.x = Game.config.defaultPlayerScale;
+	},
+	setMapPos: function(pos, id, fromServer){
 		var gridPos = {
 			x: Game.toGridPos(pos.x),
 			y: Game.toGridPos(pos.y)
@@ -230,16 +221,13 @@ var Game = {
 		Game.config.map[gridPos.x][gridPos.y][0] = id;
 		// Game.config.viewBufferMap[gridPos.x][gridPos.y][0] = id;
 
-		// Socket.active.emit('setMapPos', { pos: gridPos, id: id });
-	},
-	updateMapPos: function(pos, id){
-		Log()('updateMapPos', pos, Game.mapNames[id]);
+		if(fromServer){
+			if(id === -1) Game.cleanGroundSpriteAt(pos.x, pos.y);
 
-		if(id === -1 || Game.config.map[pos.x][pos.y][0] >= 0) Game.cleanGroundSpriteAt(Game.toPx(pos.x), Game.toPx(pos.y));
-		else Game.drawTile(pos.x, pos.y, Game.toName(id));
+			else Game.drawTile(gridPos.x, gridPos.y, Game.toName(id));
+		}
 
-		Game.config.map[pos.x][pos.y][0] = id;
-		// Game.config.viewBufferMap[pos.x][pos.y][0] = -1;
+		else Socket.active.send(JSON.stringify({ command: 'player_set_map_position', pos: pos, id: id }));
 	},
 	viewBufferMap: [],
 	viewBufferSize: 3,
