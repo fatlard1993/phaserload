@@ -72,15 +72,15 @@ Game.entities.gas.spread = function(x, y){
 				top: Game.mapPosName(gridPos.x, gridPos.y - 1)
 			};
 
-			if(gridPos.x - 1 > 0 && (!surrounds.left || ['player1', 'monster'].includes(surrounds.left))){
+			if(gridPos.x - 1 > 0 && (!surrounds.left || ['player', 'monster'].includes(surrounds.left))){
 				Game.entities.gas.create(gas.x - Game.blockPx, gas.y, 1, gas.spreadChance);
 			}
 
-			if(gridPos.x + 1 < Game.config.width && (!surrounds.right || ['player1', 'monster'].includes(surrounds.right))){
+			if(gridPos.x + 1 < Game.config.width && (!surrounds.right || ['player', 'monster'].includes(surrounds.right))){
 				Game.entities.gas.create(gas.x + Game.blockPx, gas.y, 1, gas.spreadChance);
 			}
 
-			if(gridPos.y - 1 > 0 && (!surrounds.top || ['player1', 'monster'].includes(surrounds.top))){
+			if(gridPos.y - 1 > 0 && (!surrounds.top || ['player', 'monster'].includes(surrounds.top))){
 				Game.entities.gas.create(gas.x, gas.y - Game.blockPx, 1, gas.spreadChance);
 			}
 

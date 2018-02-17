@@ -35,10 +35,8 @@ function Load(){
 
 			Dom.Content.appendChild(gameContainer);
 
-			var borderSize = 1;
-
-			var clientHeight = document.body.clientHeight - (borderSize * 2);
-			var clientWidth = document.body.clientWidth - (borderSize * 2);
+			var clientHeight = document.body.clientHeight - 4;
+			var clientWidth = document.body.clientWidth - 3;
 			var minViewWidth = 10 * Game.blockPx;
 			var minViewHeight = 8 * Game.blockPx;
 			var scale = (clientWidth < minViewWidth ? minViewWidth / clientWidth : 1);
@@ -86,17 +84,18 @@ function Load(){
 		}
 
 		else if(data.command === 'challenge_accept'){
-			Game.config.players = data.players;
+			Game.players = data.players;
 
 			Dom.draw();
 		}
 
 		else if(data.command === 'player_join_accept'){
-			Game.config.players = data.players;
-			Game.config.spaceco = data.spaceco;
+			Game.players = data.players;
+			Game.spaceco = data.spaceco;
 			Game.options = data.options;
 
-			Game.config.playerName = Player.name;
+			Game.player.name = Player.name;
+			Game.player.position = data.players[Player.name].position;
 
 			Game.config = Object.assign(Game.config, data.mapData);
 

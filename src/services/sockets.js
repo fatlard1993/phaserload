@@ -77,7 +77,7 @@ var Sockets = {
 
 					// partNames.length = Game.rand(4, 9);
 
-					for(var x = 0; x < partNames.length; x++){
+					for(var x = 0; x < partNames.length; ++x){
 						Sockets.games[data.options.name].spaceco.parts[partNames[x]] = Game.parts[partNames[x]];
 					}
 

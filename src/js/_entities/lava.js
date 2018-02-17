@@ -60,15 +60,15 @@ Game.entities.lava.spread = function(x, y){
 				bottom: Game.mapPosName(gridPos.x, gridPos.y + 1)
 			};
 
-			if(gridPos.x - 1 >= 0 && (!surrounds.left || ['player1', 'monster'].includes(surrounds.left))){
+			if(gridPos.x - 1 >= 0 && (!surrounds.left || ['player', 'monster'].includes(surrounds.left))){
 				Game.entities.lava.create(x - Game.blockPx, y, 1);
 			}
 
-			if(gridPos.x + 1 < Game.config.width && (!surrounds.right || ['player1', 'monster'].includes(surrounds.right))){
+			if(gridPos.x + 1 < Game.config.width && (!surrounds.right || ['player', 'monster'].includes(surrounds.right))){
 				Game.entities.lava.create(x + Game.blockPx, y, 1);
 			}
 
-			if(gridPos.y + 1 < Game.config.depth - 2 && (!surrounds.bottom || ['player1', 'monster'].includes(surrounds.bottom))){
+			if(gridPos.y + 1 < Game.config.depth - 2 && (!surrounds.bottom || ['player', 'monster'].includes(surrounds.bottom))){
 				Game.entities.lava.create(x, y + Game.blockPx, 1);
 			}
 		}

@@ -26,7 +26,7 @@ Game.entities.hud.create = function(x, y){
 };
 
 Game.entities.hud.update = function(){
-	if(Game.hud.isOpen) return;
+	if(Game.hud.isOpen || Game.notify_TO) return;
 
 	Game.hud.interfaceText.setText('');
 	Game.hud.bottomLine.setText('');
@@ -43,13 +43,13 @@ Game.entities.hud.update = function(){
 		if(statusText) statusText += '\n'+ value[0] + spacer;
 		else statusText = value[0] + spacer;
 
-		if(item === 'position') statusText += 'x'+ Game.toGridPos(Game.config.players[Game.config.playerName].x) +' y'+ Game.toGridPos(Game.config.players[Game.config.playerName].y);
-		else if(item === 'health') statusText += Game.toFixed(Game.health, 2);
-		else if(item === 'fuel') statusText += Game.toFixed(Game.fuel, 2);
-		else if(item === 'credits') statusText += Game.toFixed(Game.credits, 2);
-		else if(item === 'hull') statusText += Game.toFixed(Game.hull.space, 2);
+		if(item === 'position') statusText += 'x'+ Game.toGridPos(Game.player.sprite.x) +' y'+ Game.toGridPos(Game.player.sprite.y);
+		else if(item === 'health') statusText += Game.toFixed(Game.player.health, 2);
+		else if(item === 'fuel') statusText += Game.toFixed(Game.player.fuel, 2);
+		else if(item === 'credits') statusText += Game.toFixed(Game.player.credits, 2);
+		else if(item === 'hull') statusText += Game.toFixed(Game.player.hull.space, 2);
 		else{
-			if(item.startsWith('mineral') && Game.hull.items[item]) statusText += Game.hull.items[item];
+			if(item.startsWith('mineral') && Game.player.hull.items[item]) statusText += Game.player.hull.items[item];
 		}
 	}
 
@@ -120,8 +120,8 @@ Game.entities.hud.setView = function(view){
 	var space = 20;
 	var x, itemName, slot;
 
-	var inventoryItemNames = Game.entities.hud.inventoryItemNames = Object.keys(Game.inventory), inventoryItemCount = inventoryItemNames.length;
-	var hullItemNames = Game.entities.hud.hullItemNames = Object.keys(Game.hull.items), hullItemCount = hullItemNames.length;
+	var inventoryItemNames = Game.entities.hud.inventoryItemNames = Object.keys(Game.player.inventory), inventoryItemCount = inventoryItemNames.length;
+	var hullItemNames = Game.entities.hud.hullItemNames = Object.keys(Game.player.hull.items), hullItemCount = hullItemNames.length;
 
 	if(view === 'briefing'){
 		menu = ' [Briefing]	Help			Exit\n';
@@ -142,7 +142,7 @@ Game.entities.hud.setView = function(view){
 			itemName = inventoryItemNames[x];
 			slot = Game.itemSlot1.item === itemName ? 1 : Game.itemSlot2.item === itemName ? 2 : ' ';
 
-			items += '['+ slot +'] '+ itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.inventory[itemName] +'\n';
+			items += '['+ slot +'] '+ itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.player.inventory[itemName] +'\n';
 		}
 	}
 	else if(view === 'inventory_pg2'){
@@ -152,7 +152,7 @@ Game.entities.hud.setView = function(view){
 			itemName = inventoryItemNames[x];
 			slot = Game.itemSlot1.item === itemName ? 1 : Game.itemSlot2.item === itemName ? 2 : ' ';
 
-			items += '['+ slot +'] '+ itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.inventory[itemName] +'\n';
+			items += '['+ slot +'] '+ itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.player.inventory[itemName] +'\n';
 		}
 	}
 	else if(view === 'inventory_pg3'){
@@ -162,18 +162,18 @@ Game.entities.hud.setView = function(view){
 			itemName = inventoryItemNames[x];
 			slot = Game.itemSlot1.item === itemName ? 1 : Game.itemSlot2.item === itemName ? 2 : ' ';
 
-			items += '['+ slot +'] '+ itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.inventory[itemName] +'\n';
+			items += '['+ slot +'] '+ itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.player.inventory[itemName] +'\n';
 		}
 	}
 	else if(view === 'hull'){
 		menu = '	Inventory ['+ (hullItemCount > 6 ? ' p1 ' : 'Hull') +']		 Exit\n';
 
-		items += 'Hull Space							 '+ Game.toFixed(Game.hull.space, 2) +'\n';
+		items += 'Hull Space							 '+ Game.toFixed(Game.player.hull.space, 2) +'\n';
 
 		for(x = 0; x < Math.min(6, hullItemCount); x++){
 			itemName = hullItemNames[x];
 
-			items += itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.hull.items[itemName] +'\n';
+			items += itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.player.hull.items[itemName] +'\n';
 		}
 	}
 	else if(view === 'hull_p2'){
@@ -182,7 +182,7 @@ Game.entities.hud.setView = function(view){
 		for(x = 6; x < Math.min(13, hullItemCount); x++){
 			itemName = hullItemNames[x];
 
-			items += itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.hull.items[itemName] +'\n';
+			items += itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.player.hull.items[itemName] +'\n';
 		}
 	}
 	else if(view === 'hull_p3'){
@@ -191,7 +191,7 @@ Game.entities.hud.setView = function(view){
 		for(x = 13; x < hullItemCount; x++){
 			itemName = hullItemNames[x];
 
-			items += itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.hull.items[itemName] +'\n';
+			items += itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.player.hull.items[itemName] +'\n';
 		}
 	}
 
@@ -209,8 +209,8 @@ Game.entities.hud.handlePointer = function(pointer){
 			}
 			else{
 				Log()('inventory');
-				if(Game.hud.view === 'inventory' && Object.keys(Game.inventory).length > 7) Game.entities.hud.setView('inventory_pg2');
-				else if(Game.hud.view === 'inventory_pg2' && Object.keys(Game.inventory).length > 14) Game.entities.hud.setView('inventory_pg3');
+				if(Game.hud.view === 'inventory' && Object.keys(Game.player.inventory).length > 7) Game.entities.hud.setView('inventory_pg2');
+				else if(Game.hud.view === 'inventory_pg2' && Object.keys(Game.player.inventory).length > 14) Game.entities.hud.setView('inventory_pg3');
 				else Game.entities.hud.setView('inventory');
 			}
 		}
@@ -222,8 +222,8 @@ Game.entities.hud.handlePointer = function(pointer){
 			else{
 				Log()('hull');
 
-				if(Game.hud.view === 'hull' && Object.keys(Game.hull.items).length > 6) Game.entities.hud.setView('hull_p2');
-				else if(Game.hud.view === 'hull_p2' && Object.keys(Game.hull.items).length > 13) Game.entities.hud.setView('hull_p3');
+				if(Game.hud.view === 'hull' && Object.keys(Game.player.hull.items).length > 6) Game.entities.hud.setView('hull_p2');
+				else if(Game.hud.view === 'hull_p2' && Object.keys(Game.player.hull.items).length > 13) Game.entities.hud.setView('hull_p3');
 				else Game.entities.hud.setView('hull');
 			}
 		}

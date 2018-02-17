@@ -2,30 +2,30 @@
 
 Game.entities.player = function(){};
 
-Game.entities.player.create = function(settings){
-	var player = Game.phaser.add.sprite(Game.toPx(settings.position.x), Game.toPx(1), 'drill', 15);
+Game.entities.player.create = function(settings, isLocal){
+	var playerSprite = Game.phaser.add.sprite(Game.toPx(settings.position.x), Game.toPx(1), 'drill', 15);
 
-	player.anchor.setTo(0.5, 0.5);
+	playerSprite.anchor.setTo(0.5, 0.5);
 
-	player.animations.add('normal', [0, 1, 2], 10, true);
-	player.animations.add('upgrade_1', [3, 4, 5], 10, true);
-	player.animations.add('upgrade_2', [6, 7, 8], 10, true);
-	player.animations.add('upgrade_3', [9, 10, 11], 10, true);
-	player.animations.add('teleporting', [12, 13, 14], 10, true);
+	playerSprite.animations.add('normal', [0, 1, 2], 10, true);
+	playerSprite.animations.add('upgrade_1', [3, 4, 5], 10, true);
+	playerSprite.animations.add('upgrade_2', [6, 7, 8], 10, true);
+	playerSprite.animations.add('upgrade_3', [9, 10, 11], 10, true);
+	playerSprite.animations.add('teleporting', [12, 13, 14], 10, true);
 
-	player.animations.play('normal');
+	playerSprite.animations.play('normal');
 
-	// Game.config.map[settings.position.x][1][0] = Game.mapNames.indexOf('player1');
+	// Game.config.map[settings.position.x][1][0] = Game.mapNames.indexOf('player');
 
-	Game.config.defaultPlayerScale = player.scale.x;
+	Game.config.defaultPlayerScale = playerSprite.scale.x;
 
-	if(settings.isLocal) Game.adjustViewPosition(player.x - Game.viewWidth / 2, player.y - Game.viewHeight / 2, Math.ceil(Game.phaser.math.distance(player.x, player.y, Game.phaser.camera.x / 2, Game.phaser.camera.y / 2)));
+	if(isLocal) Game.adjustViewPosition(playerSprite.x - Game.viewWidth / 2, playerSprite.y - Game.viewHeight / 2, Math.ceil(Game.phaser.math.distance(playerSprite.x, playerSprite.y, Game.phaser.camera.x / 2, Game.phaser.camera.y / 2)));
 
-	return player;
+	return playerSprite;
 };
 
 Game.entities.player.getSurrounds = function(playerName){
-	var player = Game.config.players[playerName || Game.config.playerName];
+	var player = playerName ? Game.players[playerName].sprite : Game.player.sprite;
 
 	return {
 		left: Game.groundAt(player.x - Game.blockPx, player.y),
@@ -41,40 +41,38 @@ Game.entities.player.getSurrounds = function(playerName){
 	};
 };
 
-Game.entities.player.move = function(game, direction){
+Game.entities.player.move = function(direction){
 	// console.log('Drill: On the move, goin: ', direction);
-
-	var player = Game.config.players[Game.config.playerName];
 
 	var surrounds = Game.entities.player.getSurrounds();
 
-	if(direction === 'left' && (player.x <= Game.blockPx/2 || (!surrounds.bottomLeft && !surrounds.bottom && !surrounds.farLeft))){
+	if(direction === 'left' && (Game.player.sprite.x <= Game.blockPx/2 || (!surrounds.bottomLeft && !surrounds.bottom && !surrounds.farLeft))){
 		return;
 	}
-	else if(direction === 'right' && (player.x >= (Game.config.width * 64) - 32 || (!surrounds.bottomRight && !surrounds.bottom && !surrounds.farRight))){
+	else if(direction === 'right' && (Game.player.sprite.x >= (Game.config.width * 64) - 32 || (!surrounds.bottomRight && !surrounds.bottom && !surrounds.farRight))){
 		return;
 	}
-	else if(direction === 'down' && player.y === Game.toPx(Game.config.depth - 2)){
+	else if(direction === 'down' && Game.player.sprite.y === Game.toPx(Game.config.depth - 2)){
 		return;
 	}
 	else if(direction === 'up' && (!surrounds.left && !surrounds.right && !surrounds.topLeft && !surrounds.topRight)){
 		return;
 	}
 
-	if(Game.entities.player.justMoved_TO){
-		clearTimeout(Game.entities.player.justMoved_TO);
-		Game.entities.player.justMoved_TO = null;
+	if(Game.player.justMoved_TO){
+		clearTimeout(Game.player.justMoved_TO);
+		Game.player.justMoved_TO = null;
 	}
-	if(!Game.entities.player.justMoved_TO){
-		Game.entities.player.justMoved = true;
-		Game.entities.player.justMoved_TO = setTimeout(function(){
-			Game.entities.player.justMoved = false;
+	if(!Game.player.justMoved_TO){
+		Game.player.justMoved = true;
+		Game.player.justMoved_TO = setTimeout(function(){
+			Game.player.justMoved = false;
 		}, 500);
 	}
 
 	var newPosition = {
-		x: player.x + (direction === 'left' ? -Game.blockPx : direction === 'right' ? Game.blockPx : 0),
-		y: player.y + (direction === 'up' ? -Game.blockPx : direction === 'down' ? Game.blockPx : 0)
+		x: Game.player.sprite.x + (direction === 'left' ? -Game.blockPx : direction === 'right' ? Game.blockPx : 0),
+		y: Game.player.sprite.y + (direction === 'up' ? -Game.blockPx : direction === 'down' ? Game.blockPx : 0)
 	}, newCameraPosition;
 
 	var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
@@ -82,16 +80,16 @@ Game.entities.player.move = function(game, direction){
 	var moveTime = targetGroundType ? Game.config.digTime[targetGroundType.replace('ground_', '')] ? Game.config.digTime[targetGroundType.replace('ground_', '')] : Game.config.baseDrillMoveTime : Game.config.baseDrillMoveTime;
 
 	if(direction.includes('teleport')){
-		player.animations.play('teleporting');
+		Game.player.sprite.animations.play('teleporting');
 
-		var teleportPos = direction.includes('responder') ? { x: player.responder.x, y: player.responder.y } : { x: Game.spaceco.x, y: Game.spaceco.y };
+		var teleportPos = direction.includes('responder') ? { x: Game.player.responder.x, y: Game.player.responder.y } : { x: Game.spaceco.sprite.x, y: Game.spaceco.sprite.y };
 
-		moveTime = Math.ceil(Game.phaser.math.distance(player.x, player.y, teleportPos.x, teleportPos.y));
+		moveTime = Math.ceil(Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, teleportPos.x, teleportPos.y));
 
 		setTimeout(function(){
 			// Game.drawCurrentView();
-			player.animations.play(player.upgrade > 0 ? 'upgrade_'+ player.upgrade : 'normal');
-			if(!direction.includes('responder')) Game.notify('Open your console to connect to Spaceco', 2);
+			Game.player.sprite.animations.play(Game.player.upgrade > 0 ? 'upgrade_'+ Game.player.upgrade : 'normal');
+			if(!direction.includes('responder')) Game.notify('Open to connect\nto Spaceco', 4);
 		}, 200 + moveTime);
 
 		newCameraPosition = { x: teleportPos.x - Game.viewWidth / 2, y: teleportPos.y - Game.viewHeight / 2 };
@@ -99,51 +97,51 @@ Game.entities.player.move = function(game, direction){
 		newPosition.x = teleportPos.x;
 		newPosition.y = teleportPos.y;
 	}
-	else if(direction === 'up' && Math.abs((game.camera.y + Game.viewHeight) - player.y) > Game.viewHeight / 2){
-		newCameraPosition = { x: game.camera.x, y: game.camera.y - Game.blockPx };
+	else if(direction === 'up' && Math.abs((Game.phaser.camera.y + Game.viewHeight) - Game.player.sprite.y) > Game.viewHeight / 2){
+		newCameraPosition = { x: Game.phaser.camera.x, y: Game.phaser.camera.y - Game.blockPx };
 	}
-	else if(direction === 'down' && Math.abs(game.camera.y - player.y) > Game.viewHeight / 2){
-		newCameraPosition = { x: game.camera.x, y: game.camera.y + Game.blockPx };
+	else if(direction === 'down' && Math.abs(Game.phaser.camera.y - Game.player.sprite.y) > Game.viewHeight / 2){
+		newCameraPosition = { x: Game.phaser.camera.x, y: Game.phaser.camera.y + Game.blockPx };
 	}
-	else if(direction === 'left' && Math.abs((game.camera.x + Game.viewWidth) - player.x) > Game.viewWidth / 2){
-		newCameraPosition = { x: game.camera.x - Game.blockPx, y: game.camera.y };
+	else if(direction === 'left' && Math.abs((Game.phaser.camera.x + Game.viewWidth) - Game.player.sprite.x) > Game.viewWidth / 2){
+		newCameraPosition = { x: Game.phaser.camera.x - Game.blockPx, y: Game.phaser.camera.y };
 	}
-	else if(direction === 'right' && Math.abs(game.camera.x - player.x) > Game.viewWidth / 2){
-		newCameraPosition = { x: game.camera.x + Game.blockPx, y: game.camera.y };
+	else if(direction === 'right' && Math.abs(Game.phaser.camera.x - Game.player.sprite.x) > Game.viewWidth / 2){
+		newCameraPosition = { x: Game.phaser.camera.x + Game.blockPx, y: Game.phaser.camera.y };
 	}
 
 	if(targetGroundType && targetGroundType.startsWith('ground')){
-		player.emitter = Game.phaser.add.emitter(0, 0, 100);
-		player.addChild(player.emitter);
+		Game.player.sprite.emitter = Game.phaser.add.emitter(0, 0, 100);
+		Game.player.sprite.addChild(Game.player.sprite.emitter);
 
 		var frameMod = Game.entities.ground.types.indexOf(targetGroundType.replace('ground_', '')) * 4;
 
-		player.emitter.makeParticles('ground', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod]);
+		Game.player.sprite.emitter.makeParticles('ground', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod]);
 
-		player.emitter.x = 32;
+		Game.player.sprite.emitter.x = 32;
 
-		player.emitter.setScale(0.1, 0.3, 0.1, 0.3);
+		Game.player.sprite.emitter.setScale(0.1, 0.3, 0.1, 0.3);
 
-		player.emitter.start(true, moveTime + 100, null, Math.round(Game.rand(3, 7)));
+		Game.player.sprite.emitter.start(true, moveTime + 100, null, Math.round(Game.rand(3, 7)));
 
 		Game.entities.ground.dig(newPosition);
 	}
 
 	var mineralWeight = 0.08;
 
-	if(Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] && Game.hull.space > mineralWeight){
+	if(Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1] && Game.player.hull.space > mineralWeight){
 		Game.minerals.forEachAlive(function(mineral){
 			if(mineral.x === newPosition.x && mineral.y === newPosition.y){
-				Game.hull.items[mineral.type] = Game.hull.items[mineral.type] !== undefined ? Game.hull.items[mineral.type] : 0;
+				Game.player.hull.items[mineral.type] = Game.player.hull.items[mineral.type] !== undefined ? Game.player.hull.items[mineral.type] : 0;
 
-				Game.hull.items[mineral.type]++;
+				Game.player.hull.items[mineral.type]++;
 
-				var animationTime = 200 + Math.ceil(Game.phaser.math.distance(game.camera.x, game.camera.y, mineral.x, mineral.y));
+				var animationTime = 200 + Math.ceil(Game.phaser.math.distance(Game.phaser.camera.x, Game.phaser.camera.y, mineral.x, mineral.y));
 
-				game.add.tween(mineral).to({ x: game.camera.x, y: game.camera.y }, animationTime, Phaser.Easing.Quadratic.Out, true);
+				Game.phaser.add.tween(mineral).to({ x: Game.phaser.camera.x, y: Game.phaser.camera.y }, animationTime, Phaser.Easing.Quadratic.Out, true);
 
 				setTimeout(function(){
-					Game.hull.space -= mineralWeight;
+					Game.player.hull.space -= mineralWeight;
 
 					// Game.config.map[Game.toGridPos(mineral.x)][Game.toGridPos(mineral.y)][1] = -1;
 					// Game.config.viewBufferMap[Game.toGridPos(mineral.x)][Game.toGridPos(mineral.y)][1] = -1;
@@ -154,13 +152,13 @@ Game.entities.player.move = function(game, direction){
 		});
 	}
 
-	if(Game.hull.space < 0) moveTime += 250;
+	if(Game.player.hull.space < 0) moveTime += 250;
 
-	moveTime = Math.max(Game.config.baseDrillMoveTime, moveTime - (((player.upgrade || 0) + 1) * 50));
+	moveTime = Math.max(Game.config.baseDrillMoveTime, moveTime - (((Game.player.upgrade || 0) + 1) * 50));
 
 	//if(targetGroundType && targetGroundType.startsWith('ground')) Game.phaser.camera.shake((moveTime * 0.00001) * 0.42, moveTime);
 
-	game.add.tween(player).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
+	Game.phaser.add.tween(Game.player.sprite).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
 
 	// if(['gas', 'lava'].includes(targetType)) Game.entities[targetType].spread(newPosition.x, newPosition.y, 1);
 
@@ -169,70 +167,70 @@ Game.entities.player.move = function(game, direction){
 	var invertTexture = false;
 
 	if(direction === 'up'){
-		if(surrounds.left || surrounds.topLeft && !(surrounds.topRight && surrounds.topLeft && player.lastMove === 'right')){
+		if(surrounds.left || surrounds.topLeft && !(surrounds.topRight && surrounds.topLeft && Game.player.lastMove === 'right')){
 			invertTexture = true;
-			player.angle = 90;
+			Game.player.sprite.angle = 90;
 		}
-		else player.angle = -90;
+		else Game.player.sprite.angle = -90;
 	}
 	else if(direction === 'down'){
-		if(surrounds.right || surrounds.bottomRight && !(surrounds.bottomRight && surrounds.bottomLeft && player.lastMove === 'right')){
+		if(surrounds.right || surrounds.bottomRight && !(surrounds.bottomRight && surrounds.bottomLeft && Game.player.lastMove === 'right')){
 			invertTexture = true;
-			player.angle = -90;
+			Game.player.sprite.angle = -90;
 		}
-		else player.angle = 90;
+		else Game.player.sprite.angle = 90;
 	}
 	else{
-		player.angle = 0;
+		Game.player.sprite.angle = 0;
 	}
 
 	if(direction === 'left'){
 		invertTexture = true;
 	}
 
-	if(invertTexture) player.scale.x = -Game.config.defaultPlayerScale;
-	else player.scale.x = Game.config.defaultPlayerScale;
+	if(invertTexture) Game.player.sprite.scale.x = -Game.config.defaultPlayerScale;
+	else Game.player.sprite.scale.x = Game.config.defaultPlayerScale;
 
-	player.lastMoveInvert = invertTexture;
-	player.lastMove = direction;
+	Game.player.lastMoveInvert = invertTexture;
+	Game.player.lastMove = direction;
 
-	player.lastPosition = newPosition;
+	Game.player.lastPosition = newPosition;
 
-	// Socket.active.emit('player_update', { position: newPosition, moveTime: moveTime, direction: direction, invertTexture: invertTexture, angle: player.angle });
+	// Socket.active.emit('player_update', { position: newPosition, moveTime: moveTime, direction: direction, invertTexture: invertTexture, angle: Game.player.sprite.angle });
 
-	// Game.config.map[Game.toGridPos(player.x)][Game.toGridPos(player.y)][0] = -1;
-	// Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
-	// Game.config.viewBufferMap[Game.toGridPos(player.x)][Game.toGridPos(player.y)][0] = -1;
-	// Game.config.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player1');
+	// Game.config.map[Game.toGridPos(Game.player.sprite.x)][Game.toGridPos(Game.player.sprite.y)][0] = -1;
+	// Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player');
+	// Game.config.viewBufferMap[Game.toGridPos(Game.player.sprite.x)][Game.toGridPos(Game.player.sprite.y)][0] = -1;
+	// Game.config.viewBufferMap[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][0] = Game.mapNames.indexOf('player');
 
-	if(Game.phaser.math.distance(newPosition.x, newPosition.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10){
-		Game.notify('Open your console to connect to Spaceco', 2);
+	if(Game.phaser.math.distance(newPosition.x, newPosition.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) < Game.blockPx + 10){
+		Game.notify('Open to connect\nto Spaceco', 4);
 	}
 	else{
-		var tradePlayer, playerNames = Object.keys(Game.config.players);
+		var tradePlayer, playerNames = Object.keys(Game.players);
 
 		for(var x = 0; x < playerNames.length; x++){
-			if(playerNames[x] === Game.config.playerName) continue;
+			if(playerNames[x] === Game.player.name) continue;
 
-			var player_x = Game.config.players[playerNames[x]];
+			var player_x = Game.players[playerNames[x]];
 			if(newPosition.x === player_x.x && newPosition.y === player_x.y) tradePlayer = playerNames[x];
 		}
 
 		if(!tradePlayer && Game.hud.isOpen) Game.entities.hud.close();
 
-		else if(tradePlayer) Game.notify('Open your console to trade with '+ tradePlayer, 2);
+		else if(tradePlayer) Game.notify('Open your console to trade\nwith '+ tradePlayer, 2);
 	}
 
 	if(!direction.includes('teleport') && Game.config.mode === 'normal'){
-		Game.fuel -= moveTime * 0.0001;
+		Game.player.fuel -= moveTime * 0.0001;
 
-		if(Game.fuel < 1.5) Game.notify('Your fuel is running low', 2);
+		if(Game.player.fuel < 1.5) Game.notify('Your fuel is running low');
 	}
 
-	if(Game.hull.space < 1.5){
+	if(Game.player.hull.space < 1.5){
 		if(!Game.hullWarning_TO){
 			Game.hullWarning_TO = setTimeout(function(){
-				Game.notify('Your Hull is almost full', 2);
+				Game.notify('Your Hull is almost full');
 			}, 2000);
 		}
 	}
@@ -240,9 +238,9 @@ Game.entities.player.move = function(game, direction){
 	setTimeout(function(){
 		Game.entities.hud.update();
 
-		if(player.emitter){
-			player.emitter.destroy();
-			player.emitter = null;
+		if(Game.player.sprite.emitter){
+			Game.player.sprite.emitter.destroy();
+			Game.player.sprite.emitter = null;
 		}
 	}, moveTime + 150);
 };
@@ -261,14 +259,12 @@ Game.entities.player.useItem = function(slotNum, item){
 		}, 500);
 	}
 
-	var player = Game.config.players[Game.config.playerName];
-
 	if(item === 'teleporter'){
-		Game.entities.player.move(Game.phaser, 'teleport');
+		Game.entities.player.move('teleport');
 	}
 	else if(item.includes('charge')){
-		if(player.activeCharge){
-			Game.notify('You have already placed a charge', 2);
+		if(Game.player.activeCharge){
+			Game.notify('You have already placed a charge');
 
 			return;
 		}
@@ -284,98 +280,96 @@ Game.entities.player.useItem = function(slotNum, item){
 			Game.entities.itemSlot.setItem(slotNum, 'detonator');
 		}
 		else{
-			player.charge_TO = setTimeout(function(){
-				player.activeCharge.frame++;
+			Game.player.charge_TO = setTimeout(function(){
+				Game.player.activeCharge.frame++;
 
-				Game.effects[player.activeChargeType.includes('freeze') ? 'freeze' : 'explode']({ x: player.activeCharge.x, y: player.activeCharge.y }, player.activeChargeType.includes('remote') ? 5 : 3);
+				Game.effects[Game.player.activeChargeType.includes('freeze') ? 'freeze' : 'explode']({ x: Game.player.activeCharge.x, y: Game.player.activeCharge.y }, Game.player.activeChargeType.includes('remote') ? 5 : 3);
 
-				Game.phaser.camera.shake(player.activeChargeType.includes('remote') ? 0.05 : 0.03, 1000);
+				Game.phaser.camera.shake(Game.player.activeChargeType.includes('remote') ? 0.05 : 0.03, 1000);
 
 				setTimeout(function(){
-					player.activeCharge.destroy();
-					player.activeCharge = null;
-					player.activeChargeType = null;
+					Game.player.activeCharge.destroy();
+					Game.player.activeCharge = null;
+					Game.player.activeChargeType = null;
 				}, 1000);
 			}, 3*1000);
 		}
 
-		player.activeChargeType = item;
+		Game.player.activeChargeType = item;
 
-		player.activeCharge = Game.phaser.add.sprite(player.x, player.y, 'explosive');
-		player.activeCharge.anchor.setTo(0.5, 0);
-		player.activeCharge.frame = frame;
+		Game.player.activeCharge = Game.phaser.add.sprite(Game.player.sprite.x, Game.player.sprite.y, 'explosive');
+		Game.player.activeCharge.anchor.setTo(0.5, 0);
+		Game.player.activeCharge.frame = frame;
 	}
 	else if(item === 'detonator'){
 		Game['itemSlot'+ slotNum].itemSprite.animations.play('use');
 
-		player.charge_TO = setTimeout(function(){
-			player.activeCharge.frame++;
+		Game.player.charge_TO = setTimeout(function(){
+			Game.player.activeCharge.frame++;
 
-			Game.effects[player.activeChargeType.includes('freeze') ? 'freeze' : 'explode']({ x: player.activeCharge.x, y: player.activeCharge.y }, player.activeChargeType.includes('remote') ? 5 : 3);
+			Game.effects[Game.player.activeChargeType.includes('freeze') ? 'freeze' : 'explode']({ x: Game.player.activeCharge.x, y: Game.player.activeCharge.y }, Game.player.activeChargeType.includes('remote') ? 5 : 3);
 
-			Game.phaser.camera.shake(player.activeChargeType.includes('remote') ? 0.05 : 0.03, 1000);
+			Game.phaser.camera.shake(Game.player.activeChargeType.includes('remote') ? 0.05 : 0.03, 1000);
 
 			setTimeout(function(){
 				Game.entities.itemSlot.setItem(slotNum, '');
-				if(Game.inventory[player.activeChargeType] > 0) Game.entities.itemSlot.setItem(slotNum, player.activeChargeType);
+				if(Game.player.inventory[Game.player.activeChargeType] > 0) Game.entities.itemSlot.setItem(slotNum, Game.player.activeChargeType);
 
-				player.activeCharge.destroy();
-				player.activeCharge = null;
-				player.activeChargeType = null;
+				Game.player.activeCharge.destroy();
+				Game.player.activeCharge = null;
+				Game.player.activeChargeType = null;
 			}, 1000);
 		}, 1000);
 	}
 	else if(item === 'responder_teleporter'){
-		if(!player.responder){
-			player.responder = Game.phaser.add.sprite(player.x, player.y, 'responder');
-			player.responder.anchor.setTo(0.5, 0);
-			player.responder.animations.add('active', [0, 1], 5, true);
-			player.responder.animations.play('active');
+		if(!Game.player.responder){
+			Game.player.responder = Game.phaser.add.sprite(Game.player.sprite.x, Game.player.sprite.y, 'responder');
+			Game.player.responder.anchor.setTo(0.5, 0);
+			Game.player.responder.animations.add('active', [0, 1], 5, true);
+			Game.player.responder.animations.play('active');
 
-			Game.entities.player.move(Game.phaser, 'teleport');
+			Game.entities.player.move('teleport');
 		}
 		else{
-			Game.entities.player.move(Game.phaser, 'responder_teleport');
+			Game.entities.player.move('responder_teleport');
 
-			player.responder.destroy();
-			player.responder = null;
+			Game.player.responder.destroy();
+			Game.player.responder = null;
 		}
 	}
 	else{
-		console.log(item, ' not yet implemented use func');
+		Log()(item, ' not yet implemented use func');
 	}
 
 	if(item !== 'detonator'){
-		if(item === 'responder_teleporter' && player.responder) return;
+		if(item === 'responder_teleporter' && Game.player.responder) return;
 
-		Game.inventory[item]--;
+		Game.player.inventory[item]--;
 
-		if(!Game.inventory[item]){
-			delete Game.inventory[item];
+		if(!Game.player.inventory[item]){
+			delete Game.player.inventory[item];
 			if(!item.includes('remote')) Game.entities.itemSlot.setItem(slotNum, '');
 		}
 	}
 };
 
 Game.entities.player.hurt = function(amount, by){
-	var player = Game.config.players[Game.config.playerName];
+	if(Game.player.justHurt) return; //todo make this depend on what the damage is from
+	Game.player.justHurt = true;
+	Game.player.justHurt_TO = setTimeout(function(){ Game.player.justHurt = false; }, 500);
 
-	if(player.justHurt) return; //todo make this depend on what the damage is from
-	player.justHurt = true;
-	player.justHurt_TO = setTimeout(function(){ player.justHurt = false; }, 500);
+	Game.player.health -= amount;
 
-	Game.health -= amount;
+	if(Game.player.health <= 0){
+		Game.player.sprite.kill();
 
-	if(Game.health <= 0){
-		player.kill();
-
-		// Game.setMapPos({ x: Game.config.players[player.name].x, y: Game.config.players[player.name].y }, -1);
+		// Game.setMapPos({ x: Game.player.sprite.x, y: Game.player.sprite.y }, -1);
 
 		Game.loseReason = by;
 		Game.phaser.time.events.add(200, function(){ Game.phaser.state.start('end'); });
 	}
-	else if(Game.health <= 25){
-		Game.notify('Your health is running low', 2);
+	else if(Game.player.health <= 25){
+		Game.notify('Your health is running low');
 	}
 
 	Game.entities.hud.update();
@@ -386,8 +380,7 @@ Game.entities.player.openTrade = function(tradePlayerName){
 
 	Game.entities.hud.open('trade');
 
-	var player = Game.config.players[Game.config.playerName];
-	var tradePlayer = Game.config.players[tradePlayerName];
+	var tradePlayer = Game.players[tradePlayerName];
 
 	var menu = '	 Trade	 For		 Accept\n';
 
@@ -399,7 +392,6 @@ Game.entities.player.openTrade = function(tradePlayerName){
 
 	Game.hud.view = 'for';
 };
-
 
 Game.entities.player.handlePointer = function(pointer){
 	if(Game.hud.isOpen !== 'trade') return;
@@ -414,8 +406,8 @@ Game.entities.player.handlePointer = function(pointer){
 	if(pointer.y > 70 && pointer.y < 105){// menu
 		if(pointer.x > 60 && pointer.x < 160){
 			Log()('trade');
-			if(Game.hud.view === 'trade' && Object.keys(Game.inventory).length > 7) Game.entities.player.setView('trade_pg2');
-			else if(Game.hud.view === 'trade_pg2' && Object.keys(Game.inventory).length > 14) Game.entities.player.setView('trade_pg3');
+			if(Game.hud.view === 'trade' && Object.keys(Game.player.inventory).length > 7) Game.entities.player.setView('trade_pg2');
+			else if(Game.hud.view === 'trade_pg2' && Object.keys(Game.player.inventory).length > 14) Game.entities.player.setView('trade_pg3');
 			else Game.entities.player.setView('trade');
 		}
 		else if(pointer.x > 170 && pointer.x < 250){
@@ -477,7 +469,7 @@ Game.entities.player.setView = function(view){
 
 	Game.tradeOffer = Game.tradeOffer || {};
 
-	var inventoryItemNames = Game.entities.hud.inventoryItemNames = Object.keys(Game.inventory), inventoryItemCount = inventoryItemNames.length;
+	var inventoryItemNames = Game.entities.hud.inventoryItemNames = Object.keys(Game.player.inventory), inventoryItemCount = inventoryItemNames.length;
 	var offerItemNames = Game.entities.hud.offerItemNames = Object.keys(Game.tradeOffer), offerItemCount = offerItemNames.length;
 
 	if(view === 'trade'){
@@ -489,7 +481,7 @@ Game.entities.player.setView = function(view){
 
 			leftAlignLineItem = '['+ offered +'] '+ itemName;
 
-			items += leftAlignLineItem + (' '.repeat(leftAlignLineItem.length > shortestLength ? space - (leftAlignLineItem.length - shortestLength) : space)) + Game.inventory[itemName] +'\n';
+			items += leftAlignLineItem + (' '.repeat(leftAlignLineItem.length > shortestLength ? space - (leftAlignLineItem.length - shortestLength) : space)) + Game.player.inventory[itemName] +'\n';
 		}
 
 		if(inventoryItemCount === 0) items = 'no items';
@@ -503,7 +495,7 @@ Game.entities.player.setView = function(view){
 
 			leftAlignLineItem = '['+ offered +'] '+ itemName;
 
-			items += leftAlignLineItem + (' '.repeat(leftAlignLineItem.length > shortestLength ? space - (leftAlignLineItem.length - shortestLength) : space)) + Game.inventory[itemName] +'\n';
+			items += leftAlignLineItem + (' '.repeat(leftAlignLineItem.length > shortestLength ? space - (leftAlignLineItem.length - shortestLength) : space)) + Game.player.inventory[itemName] +'\n';
 		}
 	}
 	else if(view === 'trade_pg3'){
@@ -515,7 +507,7 @@ Game.entities.player.setView = function(view){
 
 			leftAlignLineItem = '['+ offered +'] '+ itemName;
 
-			items += leftAlignLineItem + (' '.repeat(leftAlignLineItem.length > shortestLength ? space - (leftAlignLineItem.length - shortestLength) : space)) + Game.inventory[itemName] +'\n';
+			items += leftAlignLineItem + (' '.repeat(leftAlignLineItem.length > shortestLength ? space - (leftAlignLineItem.length - shortestLength) : space)) + Game.player.inventory[itemName] +'\n';
 		}
 	}
 	else if(view === 'for'){
@@ -560,17 +552,17 @@ Game.entities.player.setView = function(view){
 			var itemNames = Object.keys(Game.tradeOffer);
 
 			for(x = 0; x < itemNames.length; x++){
-				Game.inventory[itemNames[x]] = Game.inventory[itemNames[x]] || 0;
+				Game.player.inventory[itemNames[x]] = Game.player.inventory[itemNames[x]] || 0;
 
-				Game.inventory[itemNames[x]] += Game.tradeOffer[itemNames[x]];
+				Game.player.inventory[itemNames[x]] += Game.tradeOffer[itemNames[x]];
 			}
 
 			itemNames = Object.keys(Game.offer);
 
 			for(x = 0; x < itemNames.length; x++){
-				Game.inventory[itemNames[x]] -= Game.offer[itemNames[x]];
+				Game.player.inventory[itemNames[x]] -= Game.offer[itemNames[x]];
 
-				if(Game.inventory[itemNames[x]] <= 0) delete Game.inventory[itemNames[x]];
+				if(Game.player.inventory[itemNames[x]] <= 0) delete Game.player.inventory[itemNames[x]];
 			}
 
 			Game.offer = {};
@@ -599,7 +591,7 @@ Game.entities.player.selectItem = function(item, view, pointer){
 	if(pointer.x < 420) Game.offer[item]++;
 	else Game.offer[item]--;
 
-	if(Game.offer[item] > Game.inventory[item] || Game.offer[item] < 0) Game.offer[item] = 0;
+	if(Game.offer[item] > Game.player.inventory[item] || Game.offer[item] < 0) Game.offer[item] = 0;
 
 	if(Game.offer[item] === 0) delete Game.offer[item];
 

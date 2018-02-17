@@ -8,17 +8,36 @@ var Game = {
 		textColor: '#227660',
 		hudTextColor: '#94B133'
 	},
-	players: [],
+	mapNames: ['monster', 'lava', 'gas', 'player', 'mineral_green', 'mineral_red', 'mineral_blue', 'mineral_purple', 'mineral_teal', 'mineral_???', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
+	player: {
+		name: '',
+		hull: {
+			space: 10,
+			items: []
+		},
+		configuration: {
+			drill: 'standard',
+			hull: 'standard',
+			tracks: 'standard'
+		},
+		inventory: {
+			teleporter: 1
+		},
+		fuel: 5,
+		health: 100,
+		credits: 0
+	},
+	players: {},
 	states: {},
 	entities: {},
 	effects: {
 		explode: function(pos, radius){
-			if(Game.phaser.math.distance(pos.x, pos.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx * (radius + 1)){
-				Game.entities.spaceco.hurt((radius + 1) - (Game.phaser.math.distance(pos.x, pos.y, Game.spaceco.x, Game.spaceco.y) / Game.blockPx), 'an explosion');
+			if(Game.phaser.math.distance(pos.x, pos.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) < Game.blockPx * (radius + 1)){
+				Game.entities.spaceco.hurt((radius + 1) - (Game.phaser.math.distance(pos.x, pos.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) / Game.blockPx), 'an explosion');
 			}
 
-			if(Game.phaser.math.distance(pos.x, pos.y, Game.config.players[Game.config.playerName].x, Game.config.players[Game.config.playerName].y) < Game.blockPx * radius){
-				Game.entities.player.hurt(Game.randFloat(radius, radius * 2) * (radius - (Game.phaser.math.distance(pos.x, pos.y, Game.config.players[Game.config.playerName].x, Game.config.players[Game.config.playerName].y) / Game.blockPx)), 'explosion');
+			if(Game.phaser.math.distance(pos.x, pos.y, Game.player.sprite.x, Game.player.sprite.y) < Game.blockPx * radius){
+				Game.entities.player.hurt(Game.randFloat(radius, radius * 2) * (radius - (Game.phaser.math.distance(pos.x, pos.y, Game.player.sprite.x, Game.player.sprite.y) / Game.blockPx)), 'explosion');
 			}
 
 			Game.ground.forEachAlive(function(ground){
@@ -130,13 +149,21 @@ var Game = {
 		if(Game.notify_TO){
 			clearTimeout(Game.notify_TO);
 
-			Game.infoLine.setText('');
+			Game.hud.statusText.setText('');
 		}
 
-		Game.infoLine.setText(' '+ text +' ');
+		Game.phaser.add.tween(Game.hud.scale).to({ x: 0.8, y: 0.8 }, 800, Phaser.Easing.Back.Out, true);
+
+		Game.hud.statusText.setText(text);
 
 		Game.notify_TO = setTimeout(function(){
-			if(Game.infoLine) Game.infoLine.setText('');
+			Game.notify_TO = null;
+
+			if(Game.hud.isOpen) return;
+
+			Game.phaser.add.tween(Game.hud.scale).to({ x: 0.5, y: 0.5 }, 400, Phaser.Easing.Circular.Out, true);
+
+			Game.entities.hud.update();
 		}, (timeout || 3) * 1000);
 	},
 	mapPos: function(x, y){
@@ -151,7 +178,6 @@ var Game = {
 	groundAt(pxX, pxY){
 		return Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0] > 3 ? Game.mapNames[Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0]] : undefined;
 	},
-	mapNames: ['monster', 'lava', 'gas', 'player1', 'mineral_green', 'mineral_red', 'mineral_blue', 'mineral_purple', 'mineral_teal', 'mineral_???', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
 	toId: function(name){
 		return Game.mapNames.indexOf(name);
 	},
@@ -169,7 +195,6 @@ var Game = {
 
 		return words.join(' ');
 	},
-	hull: {},
 	toGridPos: function(px){
 		return Math.round((px - 32) / 64);
 	},
@@ -332,10 +357,10 @@ var Game = {
 		if(!force && Game.phaser.tweens.isTweening(Game.phaser.camera) || 1) return;
 		Log()('cleanupView');
 
-		var viewTop = this.game.camera.y;
-		var viewLeft = this.game.camera.x;
-		var viewBottom = this.game.camera.y + this.viewHeight;
-		var viewRight = this.game.camera.x + this.viewWidth;
+		var viewTop = this.phaser.camera.y;
+		var viewLeft = this.phaser.camera.x;
+		var viewBottom = this.phaser.camera.y + this.viewHeight;
+		var viewRight = this.phaser.camera.x + this.viewWidth;
 
 		function cleanup(entity){
 			var clean = false;
@@ -361,11 +386,11 @@ var Game = {
 		this.monsters.forEachAlive(cleanup);
 	},
 	dev: function(){
-		Game.fuel = Game.health = Game.hull.space = Game.credits = 999;
+		Game.player.fuel = Game.player.health = Game.player.hull.space = Game.player.credits = 999;
 
-		Game.config.players[Game.config.playerName].upgrade = 3;
+		Game.player.upgrade = 3;
 
-		Game.inventory = {
+		Game.player.inventory = {
 			teleporter: 99,
 			responder_teleporter: 99,
 			timed_charge: 99,

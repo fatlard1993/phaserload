@@ -5,18 +5,6 @@ Game.states.start = function(game){};
 Game.states.start.prototype.create = function(){
 	Log()('start');
 
-	// Game.config.playerName = welcomeData.name;
-
-	// if(welcomeData.rooms.length) Socket.active.emit('join_room', welcomeData.rooms[0]);
-	// else Socket.active.emit('create_room', {
-	// 	name: 'test_room_'+ Game.rand(1, 99),
-	// 	playerCount: 10
-	// });
-
-	// Socket.active.on('roomData', function(roomData){
-
-	// });
-
 	if(Game.initialized) return;
 
 	Game.initialized = 1;
@@ -28,19 +16,16 @@ Game.states.start.prototype.create = function(){
 	Game.gas = Game.phaser.add.group();
 	Game.minerals = Game.phaser.add.group();
 
-	Game.spaceco = Game.entities.spaceco.create(Game.config.spaceco);
+	Game.spaceco.sprite = Game.entities.spaceco.create(Game.spaceco);
 
 	Game.monsters = Game.phaser.add.group();
 
-	var playerNames = Object.keys(Game.config.players);
+	var playerNames = Object.keys(Game.players);
 
-	for(var x = 0; x < playerNames.length; x++){
-		if(playerNames[x] === Game.config.playerName) Game.config.players[playerNames[x]].isLocal = 1;
-		Game.config.players[playerNames[x]] = Game.entities.player.create(Game.config.players[playerNames[x]]);
+	for(var x = 0; x < playerNames.length; ++x){
+		Game.players[playerNames[x]].sprite = Game.entities.player.create(Game.players[playerNames[x]], playerNames[x] === Game.player.name);
+		if(playerNames[x] === Game.player.name) Game.player.sprite = Game.players[playerNames[x]].sprite;
 	}
-
-	Game.infoLine = Game.phaser.add.text(5, 135, '', { font: '25px '+ Game.config.font, fill: '#fff', fontWeight: 'bold', backgroundColor: '#111' });
-	Game.infoLine.fixedToCamera = true;
 
 	Game.hud = Game.entities.hud.create(0, 0);
 
@@ -57,42 +42,39 @@ Game.states.start.prototype.create = function(){
 	else{
 		Game.entities.spaceco.resourceBay = {};
 
-		Game.inventory = {
+		Game.player.inventory = {
 			teleporter: 1
 		};
 
 		Game.entities.itemSlot.setItem(1, 'teleporter');
 
-		Game.hull = {
+		Game.player.hull = {
 			space: 10,
 			items: []
 		};
 
-		Game.config.players[Game.config.playerName].upgrade = 0;
-
-		Game.health = 100;
-		Game.credits = 0;
-		Game.fuel = 5;
+		Game.player.upgrade = 0;
+		Game.player.health = 100;
+		Game.player.credits = 0;
+		Game.player.fuel = 5;
 	}
 };
 
 Game.states.start.prototype.update = function(){
 	if(!Game.initialized) return;
 
-	var player = Game.config.players[Game.config.playerName];
+	if(Game.config.mode === 'normal' && Game.player.fuel < 0){
+		Game.player.sprite.kill();
 
-	if(Game.config.mode === 'normal' && Game.fuel < 0){
-		player.kill();
-
-		// Game.setMapPos({ x: Game.config.players[player.name].x, y: Game.config.players[player.name].y }, -1);
+		// Game.setMapPos({ x: Game.player.sprite.x, y: Game.player.sprite.y }, -1);
 
 		Game.loseReason = 'fuel';
-		return this.game.time.events.add(200, function(){ this.game.state.start('end'); }, this);
+		return Game.phaser.time.events.add(200, function(){ Game.phaser.state.start('end'); }, this);
 	}
 
-	if(player.emitter){
-		player.emitter.forEachAlive(function(particle){
-			particle.alpha = Math.max(0, Math.min(1, (particle.lifespan / player.emitter.lifespan) * 2));
+	if(Game.player.sprite.emitter){
+		Game.player.sprite.emitter.forEachAlive(function(particle){
+			particle.alpha = Math.max(0, Math.min(1, (particle.lifespan / Game.player.sprite.emitter.lifespan) * 2));
 		});
 	}
 
@@ -102,23 +84,23 @@ Game.states.start.prototype.update = function(){
 
 		if(Game.hud.isOpen) Game.entities.hud.close();
 		else{
-			if(Game.phaser.math.distance(player.x, player.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10) Game.entities.spaceco.open();
+			if(Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) < Game.blockPx + 10) Game.entities.spaceco.open();
 			else Game.entities.hud.open('hud');
 			return;
 		}
 	}
 
 	Game.lava.forEachAlive(function(lava){
-		if(!player.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(player.x, player.y, lava.x, lava.y) < Game.blockPx/2){
+		if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, lava.x, lava.y) < Game.blockPx/2){
 			Game.entities.player.hurt(12 + Game.randFloat(1, 6), 'lava');
 		}
 
-		if(this.game.math.distance(Game.spaceco.x, Game.spaceco.y, lava.x, lava.y) < Game.blockPx){
+		if(Game.phaser.math.distance(Game.spaceco.sprite.x, Game.spaceco.sprite.y, lava.x, lava.y) < Game.blockPx){
 			Game.entities.spaceco.hurt(1, 'lava');
 		}
 
 		Game.monsters.forEachAlive(function(monster){
-			if(this.game.math.distance(monster.x, monster.y, lava.x, lava.y) < Game.blockPx){
+			if(Game.phaser.math.distance(monster.x, monster.y, lava.x, lava.y) < Game.blockPx){
 				monster.kill();
 
 				Game.setMapPos({ x: monster.x, y: monster.y }, -1);
@@ -127,12 +109,12 @@ Game.states.start.prototype.update = function(){
 	}, this);
 
 	Game.gas.forEachAlive(function(gas){
-		if(!player.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(player.x, player.y, gas.x, gas.y) < Game.blockPx/2){
+		if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, gas.x, gas.y) < Game.blockPx/2){
 			Game.entities.player.hurt(10 + Game.randFloat(1, 5), 'gas');
 		}
 
 		Game.monsters.forEachAlive(function(monster){
-			if(this.game.math.distance(monster.x, monster.y, gas.x, gas.y) < Game.blockPx){
+			if(Game.phaser.math.distance(monster.x, monster.y, gas.x, gas.y) < Game.blockPx){
 				monster.kill();
 
 				Game.setMapPos({ x: monster.x, y: monster.y }, -1);
@@ -141,15 +123,15 @@ Game.states.start.prototype.update = function(){
 	}, this);
 
 	Game.monsters.forEachAlive(function(monster){
-		if(!player.animations.getAnimation('teleporting').isPlaying && this.game.math.distance(player.x, player.y, monster.x, monster.y) < Game.blockPx/2){
+		if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, monster.x, monster.y) < Game.blockPx/2){
 			Game.entities.player.hurt(5 + Game.randFloat(1, 5), 'monster');
 		}
 	}, this);
 
-	if(Game.spaceco.damage <= 10 && !this.game.tweens.isTweening(Game.spaceco)){
+	if(Game.spaceco.damage <= 10 && !Game.phaser.tweens.isTweening(Game.spaceco)){
 		var gridPos = {
-			x: Game.toGridPos(Game.spaceco.x),
-			y: Game.toGridPos(Game.spaceco.y)
+			x: Game.toGridPos(Game.spaceco.sprite.x),
+			y: Game.toGridPos(Game.spaceco.sprite.y)
 		};
 
 		var spacecoGroundBase = {
@@ -159,14 +141,14 @@ Game.states.start.prototype.update = function(){
 		};
 
 		if(spacecoGroundBase.bottomRight < 3 && spacecoGroundBase.bottom < 3 && spacecoGroundBase.bottomLeft < 3){
-			Game.phaser.add.tween(Game.spaceco).to({ y: Game.spaceco.y + Game.blockPx }, 500, Phaser.Easing.Sinusoidal.InOut, true);
+			Game.phaser.add.tween(Game.spaceco).to({ y: Game.spaceco.sprite.y + Game.blockPx }, 500, Phaser.Easing.Sinusoidal.InOut, true);
 
 			Game.entities.spaceco.hurt(1, 'falling');
 		}
 	}
 
 	if(this.input.activePointer.isDown){
-		if(Game.hud.isOpen && !Game.hud.justUsedItemSlot && !this.game.tweens.isTweening(Game.hud.scale)){
+		if(Game.hud.isOpen && !Game.hud.justUsedItemSlot && !Game.phaser.tweens.isTweening(Game.hud.scale)){
 			if(this.input.activePointer.x > 575 || this.input.activePointer.y > 460) Game.entities.hud.close();
 
 			else if(Game.hud.isOpen === 'trade') Game.entities.player.handlePointer(this.input.activePointer);
@@ -201,15 +183,15 @@ Game.states.start.prototype.update = function(){
 		}
 
 		else if(Game.phaser.math.distance(this.input.activePointer.x, this.input.activePointer.y, 70, 50) < 128){
-			if(Game.phaser.math.distance(player.x, player.y, Game.spaceco.x, Game.spaceco.y) < Game.blockPx + 10) Game.entities.spaceco.open();
+			if(Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) < Game.blockPx + 10) Game.entities.spaceco.open();
 			else{
-				var tradePlayer, playerNames = Object.keys(Game.config.players);
+				var tradePlayer, playerNames = Object.keys(Game.players);
 
 				for(var x = 0; x < playerNames.length; x++){
-					if(playerNames[x] === Game.config.playerName) continue;
+					if(playerNames[x] === Game.player.name) continue;
 
-					var player_x = Game.config.players[playerNames[x]];
-					if(player.x === player_x.x && player.y === player_x.y) tradePlayer = playerNames[x];
+					var player_x = Game.players[playerNames[x]];
+					if(Game.player.sprite.x === player_x.x && Game.player.sprite.y === player_x.y) tradePlayer = playerNames[x];
 				}
 
 				if(!tradePlayer) return Game.entities.hud.open('hud');
@@ -221,11 +203,11 @@ Game.states.start.prototype.update = function(){
 		}
 	}
 
-	if(Game.hud.isOpen && !this.game.tweens.isTweening(Game.hud.scale)){
+	if(Game.hud.isOpen && !Game.phaser.tweens.isTweening(Game.hud.scale)){
 		var selectedItem, selectedMenu;
 
 		if(this.input.keyboard.isDown(Phaser.Keyboard.I) && Game.hud.isOpen === 'hud' && !Game.hud.briefingOpen){
-			if(Game.hud.view === 'inventory' && Object.keys(Game.inventory).length > 6) selectedMenu = 'inventory_pg2';
+			if(Game.hud.view === 'inventory' && Object.keys(Game.player.inventory).length > 6) selectedMenu = 'inventory_pg2';
 			else selectedMenu = 'inventory';
 		}
 		else if(this.input.keyboard.isDown(Phaser.Keyboard.H) && Game.hud.isOpen === 'hud' && !Game.hud.briefingOpen){
@@ -353,13 +335,13 @@ Game.states.start.prototype.update = function(){
 		return;
 	}
 
-	if(!this.game.tweens.isTweening(player) && !this.game.tweens.isTweening(Game.hud.scale)){
+	if(!Game.phaser.tweens.isTweening(Game.player.sprite) && !Game.phaser.tweens.isTweening(Game.hud.scale)){
 		var moving;
-		var surrounds = Game.entities.player.getSurrounds(player.name);
+		var surrounds = Game.entities.player.getSurrounds(Game.player.name);
 
 		if(this.input.activePointer.isDown){
-			var xDiff = player.x - this.input.activePointer.x - Game.phaser.camera.x;
-			var yDiff = player.y - this.input.activePointer.y - Game.phaser.camera.y;
+			var xDiff = Game.player.sprite.x - this.input.activePointer.x - Game.phaser.camera.x;
+			var yDiff = Game.player.sprite.y - this.input.activePointer.y - Game.phaser.camera.y;
 
 			var xDirection = xDiff > 0 ? 'left' : 'right';
 			var yDirection = yDiff > 0 ? 'up' : 'down';
@@ -387,27 +369,27 @@ Game.states.start.prototype.update = function(){
 		}
 
 		if(moving){
-			Game.entities.player.move(this.game, moving);
+			Game.entities.player.move(moving);
 		}
 
-		else if(!player.justMoved){
+		else if(!Game.player.justMoved){
 			if(!surrounds.left && !surrounds.right && !surrounds.bottom){
 				var direction;
 
-				if(player.lastMove === 'up' && (surrounds.bottomLeft || surrounds.bottomRight)){
-					direction = surrounds.bottomLeft && !surrounds.bottomRight ? 'left' : (surrounds.bottomLeft && surrounds.bottomRight ? (player.lastMoveInvert ? 'left' : 'right') : 'right');
+				if(Game.player.lastMove === 'up' && (surrounds.bottomLeft || surrounds.bottomRight)){
+					direction = surrounds.bottomLeft && !surrounds.bottomRight ? 'left' : (surrounds.bottomLeft && surrounds.bottomRight ? (Game.player.lastMoveInvert ? 'left' : 'right') : 'right');
 
-					Log()('Automove from: '+ player.lastMove +' to: '+ direction, surrounds);
+					Log()('Automove from: '+ Game.player.lastMove +' to: '+ direction, surrounds);
 				}
 				else{
 					direction = 'down';
 
-					if(player.lastMove === 'down') Game.entities.player.hurt(Game.randFloat(1, 3), 'falling');
+					if(Game.player.lastMove === 'down') Game.entities.player.hurt(Game.randFloat(1, 3), 'falling');
 
 					Log()('falling');
 				}
 
-				Game.entities.player.move(this.game, direction);
+				Game.entities.player.move(direction);
 			}
 		}
 	}

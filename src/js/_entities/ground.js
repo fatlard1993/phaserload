@@ -117,13 +117,13 @@ Game.entities.ground.dig = function(pos){
 
 	var groundWeight = 0.07 + (Game.config.digTime[type] * 0.0001);
 
-	if(type === 'red' || Game.hull.space < groundWeight) return;
+	if(type === 'red' || Game.player.hull.space < groundWeight) return;
 
-	Game.hull.space -= groundWeight;
+	Game.player.hull.space -= groundWeight;
 
-	Game.hull.items['ground_'+ type] = Game.hull.items['ground_'+ type] !== undefined ? Game.hull.items['ground_'+ type] : 0;
+	Game.player.hull.items['ground_'+ type] = Game.player.hull.items['ground_'+ type] !== undefined ? Game.player.hull.items['ground_'+ type] : 0;
 
-	Game.hull.items['ground_'+ type]++;
+	Game.player.hull.items['ground_'+ type]++;
 };
 
 Game.entities.ground.applyBehavior = function(name, options, pos){
