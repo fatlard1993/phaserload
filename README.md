@@ -1,25 +1,28 @@
 # Phaserload
-## Now with multiplayer!
-![game-play](game-play.png)
-Phaserload is a Motherload-inspired game built with [Phaser.js](https://github.com/photonstorm/phaser-ce).
 
-## prerequisites
-- [Node.js](https://nodejs.org/en/) version 4 and above
-- Gulp $ `npm i -g gulp`
+## Prerequisites
 
-## setup
-- $ `git clone https://github.com/fatlard1993/phaserload.git`
-- $ `cd phaserload`
-- /phaserload $ `npm i`
+1. Linux or UNIX
+2. node.js [Check out NVM](https://github.com/creationix/nvm)
 
-## run
-- /phaserload $ `npm start`
-- Open: [localhost:8080](http://localhost:8080)
 
-## setup dev
-- /phaserload $ `npm i --only=dev`
+## Setup
 
-## develop
-- /phaserload $ `gulp dev`
-- /phaserload $ `sudo node app`
-- Open: [localhost](http://localhost)
+1. npm i --only=dev
+2. gulp setup
+
+
+## Run
+
+```./out/start``` can also be run with optional port: ```./out/start 1337```
+
+### Problems
+
+```sudo: node: command not found``` to fix this (if you used NVM) run: ```sudo ln -s "$NVM_DIR/versions/node/$(nvm version)/bin/node" "/usr/local/bin/node"```
+
+
+## Screenshots
+
+More in ```./screenshots```
+
+![game_play](./screenshots/game_play.png)

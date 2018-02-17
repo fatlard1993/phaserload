@@ -1,0 +1,64 @@
+@import 'boilerplate';
+
+ul#GamesList {
+	li {
+		cursor: pointer;
+		text-align: right;
+
+		span {
+			pointer-events: none;
+			float: left;
+			text-align: left;
+			width: 75%;
+			white-space: pre-wrap;
+			word-wrap: break-word;
+		}
+	}
+	li:after{
+		@extend .clear;
+	}
+	li:active {
+		background-color: $white;
+		color: $black;
+		border-color: $teal;
+	}
+	li#NewGame {
+		text-align: center;
+	}
+}
+
+div#NewGameForm {
+	width: 90%;
+	margin: 1% auto;
+
+	input {
+		display: block;
+		font-size: 20px;
+		width: 75%;
+		margin: 10px auto 0;
+	}
+
+	button {
+		display: block;
+		font-size: 30px;
+		width: 40%;
+		margin: 10px auto;
+	}
+}
+
+div.gameTitle {
+	font-size: 40px;
+	text-align: center;
+	margin: 10px auto;
+	width: 80%;
+	border-bottom: 4px solid $black;
+	word-wrap: break-word;
+}
+
+button#PlayButton, button#LobbyButton {
+	font-size: 20px;
+	padding: 8px;
+	width: 40%;
+	display: block;
+	margin: 5px auto;
+}
