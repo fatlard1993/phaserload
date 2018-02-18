@@ -16,7 +16,7 @@ var Game = {
 	effects: {
 		explode: function(pos, radius){
 			if(Game.phaser.math.distance(pos.x, pos.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) < Game.blockPx * (radius + 1)){
-				Game.entities.spaceco.hurt((radius + 1) - (Game.phaser.math.distance(pos.x, pos.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) / Game.blockPx), 'an explosion');
+				Game.spaceco.hurt((radius + 1) - (Game.phaser.math.distance(pos.x, pos.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) / Game.blockPx), 'an explosion');
 			}
 
 			if(Game.phaser.math.distance(pos.x, pos.y, Game.player.sprite.x, Game.player.sprite.y) < Game.blockPx * radius){
@@ -146,7 +146,7 @@ var Game = {
 
 			Game.phaser.add.tween(Game.hud.scale).to({ x: 0.5, y: 0.5 }, 400, Phaser.Easing.Circular.Out, true);
 
-			Game.entities.hud.update();
+			Game.hud.update();
 		}, (timeout || 3) * 1000);
 	},
 	mapPos: function(x, y){
@@ -196,7 +196,7 @@ var Game = {
 		return found;
 	},
 	showMissionText: function(){
-		Game.entities.hud.open('missionText');
+		Game.hud.open('missionText');
 
 		var heading = '					 PHASERLOAD\n';
 

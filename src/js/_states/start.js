@@ -1,4 +1,4 @@
-/* global Phaser, Game, Socket, Log */
+/* global Phaser, Game, Socket, Log, Cjs */
 
 Game.states.start = function(){};
 
@@ -202,7 +202,7 @@ Game.states.start.prototype.create = function(){
 				if(newPosition.x === player_x.x && newPosition.y === player_x.y) tradePlayer = playerNames[x];
 			}
 
-			if(!tradePlayer && Game.hud.isOpen) Game.entities.hud.close();
+			if(!tradePlayer && Game.hud.isOpen) Game.hud.close();
 
 			else if(tradePlayer) Game.notify('Open your console to trade\nwith '+ tradePlayer, 2);
 		}
@@ -222,7 +222,7 @@ Game.states.start.prototype.create = function(){
 		}
 
 		setTimeout(function(){
-			Game.entities.hud.update();
+			Game.hud.update();
 
 			if(Game.player.sprite.emitter){
 				Game.player.sprite.emitter.destroy();
@@ -373,13 +373,13 @@ Game.states.start.prototype.create = function(){
 			Game.notify('Your health is running low');
 		}
 
-		Game.entities.hud.update();
+		Game.hud.update();
 	};
 
 	Game.player.openTrade = function(tradePlayerName){
 		if(Game.hud.isOpen) return;
 
-		Game.entities.hud.open('trade');
+		Game.hud.open('trade');
 
 		var tradePlayer = Game.players[tradePlayerName];
 
@@ -401,7 +401,7 @@ Game.states.start.prototype.create = function(){
 
 		if(pointer.y > 20 && pointer.y < 80 && pointer.x > 460 && pointer.x < 560){
 			Log()('exit');
-			return Game.entities.hud.close();
+			return Game.hud.close();
 		}
 
 		if(pointer.y > 70 && pointer.y < 105){// menu
@@ -427,27 +427,27 @@ Game.states.start.prototype.create = function(){
 		var selectedItem, pageIndexMod = (parseInt(Game.hud.view.replace(/.*_pg?/, '')) || 0) * 6;
 
 		if(pointer.y > 110 && pointer.y < 140){
-			selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 0];
+			selectedItem = Game.hud.inventoryItemNames[pageIndexMod + 0];
 		}
 
 		else if(pointer.y > 150 && pointer.y < 180){
-			selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 1];
+			selectedItem = Game.hud.inventoryItemNames[pageIndexMod + 1];
 		}
 
 		else if(pointer.y > 190 && pointer.y < 220){
-			selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 2];
+			selectedItem = Game.hud.inventoryItemNames[pageIndexMod + 2];
 		}
 
 		else if(pointer.y > 230 && pointer.y < 260){
-			selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 3];
+			selectedItem = Game.hud.inventoryItemNames[pageIndexMod + 3];
 		}
 
 		else if(pointer.y > 270 && pointer.y < 300){
-			selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 4];
+			selectedItem = Game.hud.inventoryItemNames[pageIndexMod + 4];
 		}
 
 		else if(pointer.y > 310 && pointer.y < 340){
-			selectedItem = Game.entities.hud.inventoryItemNames[pageIndexMod + 5];
+			selectedItem = Game.hud.inventoryItemNames[pageIndexMod + 5];
 		}
 
 		Game.player.selectItem(selectedItem, Game.hud.view, pointer);
@@ -470,8 +470,8 @@ Game.states.start.prototype.create = function(){
 
 		Game.tradeOffer = Game.tradeOffer || {};
 
-		var inventoryItemNames = Game.entities.hud.inventoryItemNames = Object.keys(Game.player.inventory), inventoryItemCount = inventoryItemNames.length;
-		var offerItemNames = Game.entities.hud.offerItemNames = Object.keys(Game.tradeOffer), offerItemCount = offerItemNames.length;
+		var inventoryItemNames = Game.hud.inventoryItemNames = Object.keys(Game.player.inventory), inventoryItemCount = inventoryItemNames.length;
+		var offerItemNames = Game.hud.offerItemNames = Object.keys(Game.tradeOffer), offerItemCount = offerItemNames.length;
 
 		if(view === 'trade'){
 			menu = '	['+ (inventoryItemCount > 7 ? ' pg1 ' : 'Trade') +']	For		 Accept\n';
@@ -607,10 +607,740 @@ Game.states.start.prototype.create = function(){
 
 	Game.hud = Game.entities.hud.create(0, 0);
 
+	Game.hud.headingText = '						CONSOLE\n';
+
+	Game.hud.update = function(){
+		if(Game.hud.isOpen || Game.notify_TO) return;
+
+		Game.hud.interfaceText.setText('');
+		Game.hud.bottomLine.setText('');
+
+		var hudItemNames = Object.keys(Game.config.hudLayout), hudItemCount = hudItemNames.length;
+		var statusText;
+		var shortestLength = 1;
+		var longestLength = 6;
+
+		for(var x = 0; x < hudItemCount; x++){
+			var item = hudItemNames[x];
+			var value = Game.config.hudLayout[hudItemNames[x]].split(':~:');
+			var spacer = (' '.repeat(value[0].length > shortestLength ? longestLength - (value[0].length - shortestLength) : longestLength));
+			if(statusText) statusText += '\n'+ value[0] + spacer;
+			else statusText = value[0] + spacer;
+
+			if(item === 'position') statusText += 'x'+ Game.toGridPos(Game.player.sprite.x) +' y'+ Game.toGridPos(Game.player.sprite.y);
+			else if(item === 'health') statusText += Game.toFixed(Game.player.health, 2);
+			else if(item === 'fuel') statusText += Game.toFixed(Game.player.fuel, 2);
+			else if(item === 'credits') statusText += Game.toFixed(Game.player.credits, 2);
+			else if(item === 'hull') statusText += Game.toFixed(Game.player.hull.space, 2);
+			else{
+				if(item.startsWith('mineral') && Game.player.hull.items[item]) statusText += Game.player.hull.items[item];
+			}
+		}
+
+		Game.hud.statusText.setText(statusText);
+	};
+
+	Game.hud.open = function(name){
+		Game.hud.clear();
+
+		if(name === 'hud') Game.hud.openHud();
+		else if(name === 'briefing'){
+			name = 'hud';
+
+			Game.hud.openBriefing();
+		}
+
+		Game.hud.isOpen = name || 'unnamed';
+
+		var scale = { x: 1.79, y: 1.79 };
+
+		Game.phaser.add.tween(Game.hud.scale).to(scale, 600, Phaser.Easing.Circular.Out, true);
+	};
+
+	Game.hud.open2 = function(opts){
+		Game.hud.clear();
+
+		Game.hud.isOpen = opts.name || 'unnamed';
+
+		opts.heading = opts.heading || '';
+		opts.menuItems = opts.menuItems || [];
+		opts.pageItems = opts.pageItems || [];
+
+		var x, text = '', spacer, pageItemCount = Math.min(7, opts.pageItems.length), splitPageItem, pageItem, pageItemPrice;
+
+		text += ' '.repeat(18 - (opts.heading.length / 2)) + opts.heading + ' '.repeat(14 - (opts.heading.length / 2)) +'EXIT\n';
+
+		for(x = 0; x < 4; ++x){
+			if(!opts.menuItems[x]) continue;
+
+			spacer = ' '.repeat(4 - (opts.menuItems[x].length / 2));
+			text += spacer + Cjs.capitalize(opts.menuItems[x]) + spacer + (x === 3 ? '\n' : '');
+		}
+
+		for(x = 0; x < pageItemCount; ++x){
+			splitPageItem = opts.pageItems[x].split(':~:');
+			pageItem = Cjs.capitalize(splitPageItem[0]);
+			pageItemPrice = splitPageItem[1];
+
+			text += pageItem;
+
+			if(pageItemPrice){
+				spacer = ' '.repeat(31 - pageItem.length);
+				text += spacer + pageItemPrice;
+			}
+
+			text += '\n';
+		}
+
+		Game.hud.interfaceText.setText(text);
+
+		var scale = { x: 1.79, y: 1.79 };
+
+		Game.phaser.add.tween(Game.hud.scale).to(scale, 600, Phaser.Easing.Circular.Out, true);
+	};
+
+	Game.hud.close = function(){
+		Game.hud.isOpen = false;
+
+		if(Game.hud.briefingOpen) Game.hud.briefingOpen = false;
+
+		if(Game.hud.emitter){
+			Game.hud.emitter.destroy();
+			Game.hud.emitter = null;
+		}
+
+		Game.hud.interfaceText.setText('');
+		Game.hud.bottomLine.setText('');
+
+		Game.phaser.add.tween(Game.hud.scale).to({ x: 0.5, y: 0.5 }, 600, Phaser.Easing.Circular.Out, true);
+
+		Game.hud.update();
+	};
+
+	Game.hud.clear = function(){
+		Game.hud.statusText.setText('');
+		Game.hud.interfaceText.setText('');
+	};
+
+	Game.hud.openHud = function(){
+		Game.hud.interfaceText.setText(Game.hud.headingText +'	Inventory	Hull			Exit\n');
+	};
+
+	Game.hud.openBriefing = function(){
+		Game.hud.briefingOpen = true;
+
+		Game.hud.interfaceText.setText(Game.hud.headingText +'	Briefing	 Help			Exit\n');
+	};
+
+	Game.hud.setView = function(view){
+		if(Game.hud.justSetView) return;
+		Game.hud.justSetView = true;
+		Game.hud.justSetView_TO = setTimeout(function(){ Game.hud.justSetView = false; }, 400);
+
+		Game.hud.view = view;
+
+		var menu = '';
+		var items = '';
+		var shortestLength = 5;
+		var space = 20;
+		var x, itemName, slot;
+
+		var inventoryItemNames = Game.hud.inventoryItemNames = Object.keys(Game.player.inventory), inventoryItemCount = inventoryItemNames.length;
+		var hullItemNames = Game.hud.hullItemNames = Object.keys(Game.player.hull.items), hullItemCount = hullItemNames.length;
+
+		if(view === 'briefing'){
+			menu = ' [Briefing]	Help			Exit\n';
+
+			items = Game.config.world.briefing;
+		}
+
+		if(view === 'help'){
+			menu = '	Briefing	[Help]		 Exit\n';
+
+			items = ' Tap the HUD to open your console\n	 Tap Item Slots to use items\n	 Dig until your hull is full\n Then take your load to spaceco\nWhile you\'re there buy some stuff';
+		}
+
+		if(view === 'inventory'){
+			menu = ' ['+ (inventoryItemCount > 7 ? '	 pg1	 ' : 'Inventory') +'] Hull			Exit\n';
+
+			for(x = 0; x < Math.min(7, inventoryItemCount); x++){
+				itemName = inventoryItemNames[x];
+				slot = Game.itemSlot1.item === itemName ? 1 : Game.itemSlot2.item === itemName ? 2 : ' ';
+
+				items += '['+ slot +'] '+ itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.player.inventory[itemName] +'\n';
+			}
+		}
+		else if(view === 'inventory_pg2'){
+			menu = ' [	 pg2	 ] Hull			Exit\n';
+
+			for(x = 7; x < Math.min(14, inventoryItemCount); x++){
+				itemName = inventoryItemNames[x];
+				slot = Game.itemSlot1.item === itemName ? 1 : Game.itemSlot2.item === itemName ? 2 : ' ';
+
+				items += '['+ slot +'] '+ itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.player.inventory[itemName] +'\n';
+			}
+		}
+		else if(view === 'inventory_pg3'){
+			menu = ' [	 pg3	 ] Hull			Exit\n';
+
+			for(x = 14; x < inventoryItemCount; x++){
+				itemName = inventoryItemNames[x];
+				slot = Game.itemSlot1.item === itemName ? 1 : Game.itemSlot2.item === itemName ? 2 : ' ';
+
+				items += '['+ slot +'] '+ itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.player.inventory[itemName] +'\n';
+			}
+		}
+		else if(view === 'hull'){
+			menu = '	Inventory ['+ (hullItemCount > 6 ? ' p1 ' : 'Hull') +']		 Exit\n';
+
+			items += 'Hull Space							 '+ Game.toFixed(Game.player.hull.space, 2) +'\n';
+
+			for(x = 0; x < Math.min(6, hullItemCount); x++){
+				itemName = hullItemNames[x];
+
+				items += itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.player.hull.items[itemName] +'\n';
+			}
+		}
+		else if(view === 'hull_p2'){
+			menu = '	Inventory [ p2 ]		 Exit\n';
+
+			for(x = 6; x < Math.min(13, hullItemCount); x++){
+				itemName = hullItemNames[x];
+
+				items += itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.player.hull.items[itemName] +'\n';
+			}
+		}
+		else if(view === 'hull_p3'){
+			menu = '	Inventory [ p3 ]		 Exit\n';
+
+			for(x = 13; x < hullItemCount; x++){
+				itemName = hullItemNames[x];
+
+				items += itemName + (' '.repeat(itemName.length > shortestLength ? space - (itemName.length - shortestLength) : space)) + Game.player.hull.items[itemName] +'\n';
+			}
+		}
+
+		Game.hud.interfaceText.setText('						CONSOLE\n'+ menu + items);
+	};
+
+	Game.hud.handlePointer = function(pointer){
+		if(Game.hud.isOpen !== 'hud') return;
+
+		if(pointer.y > 70 && pointer.y < 105){// menu
+			if(pointer.x > 50 && pointer.x < 210){
+				if(Game.hud.briefingOpen){
+					Log()('briefing');
+					Game.hud.setView('briefing');
+				}
+				else{
+					Log()('inventory');
+					if(Game.hud.view === 'inventory' && Object.keys(Game.player.inventory).length > 7) Game.hud.setView('inventory_pg2');
+					else if(Game.hud.view === 'inventory_pg2' && Object.keys(Game.player.inventory).length > 14) Game.hud.setView('inventory_pg3');
+					else Game.hud.setView('inventory');
+				}
+			}
+			else if(pointer.x > 220 && pointer.x < 300){
+				if(Game.hud.briefingOpen){
+					Log()('help');
+					Game.hud.setView('help');
+				}
+				else{
+					Log()('hull');
+
+					if(Game.hud.view === 'hull' && Object.keys(Game.player.hull.items).length > 6) Game.hud.setView('hull_p2');
+					else if(Game.hud.view === 'hull_p2' && Object.keys(Game.player.hull.items).length > 13) Game.hud.setView('hull_p3');
+					else Game.hud.setView('hull');
+				}
+			}
+			else if(pointer.x > 360 && pointer.x < 500){
+				Log()('exit');
+				Game.hud.close();
+			}
+		}
+
+		var selectedItem;
+
+		if(pointer.y > 110 && pointer.y < 140){
+			if(Game.hud.view === 'inventory'){
+				selectedItem = Game.hud.inventoryItemNames[0];
+			}
+		}
+
+		else if(pointer.y > 150 && pointer.y < 180){
+			if(Game.hud.view === 'inventory'){
+				selectedItem = Game.hud.inventoryItemNames[1];
+			}
+		}
+
+		else if(pointer.y > 190 && pointer.y < 220){
+			if(Game.hud.view === 'inventory'){
+				selectedItem = Game.hud.inventoryItemNames[2];
+			}
+		}
+
+		else if(pointer.y > 230 && pointer.y < 260){
+			if(Game.hud.view === 'inventory'){
+				selectedItem = Game.hud.inventoryItemNames[3];
+			}
+		}
+
+		else if(pointer.y > 270 && pointer.y < 300){
+			if(Game.hud.view === 'inventory'){
+				selectedItem = Game.hud.inventoryItemNames[4];
+			}
+		}
+
+		else if(pointer.y > 310 && pointer.y < 340){
+			if(Game.hud.view === 'inventory'){
+				selectedItem = Game.hud.inventoryItemNames[5];
+			}
+		}
+
+		Game.hud.selectItem(selectedItem);
+	};
+
+	Game.hud.selectItem = function(item){
+		if(!item) return;
+
+		if(Game.hud.justSelectedItem) return;
+		Game.hud.justSelectedItem = true;
+		Game.hud.justSelectedItem_TO = setTimeout(function(){ Game.hud.justSelectedItem = false; }, 400);
+
+		var slot = Game.itemSlot1.item === item ? 2 : Game.itemSlot2.item === item ? -1 : 1;
+
+		if(Game.itemSlot1.item === item) Game.entities.itemSlot.setItem(1, '');
+		if(Game.itemSlot2.item === item) Game.entities.itemSlot.setItem(2, '');
+
+		if(slot > 0){
+			if(Game['itemSlot'+ slot].item && !Game['itemSlot'+ (slot === 1 ? 2 : 1)].item) slot = slot === 1 ? 2 : 1;
+			else if(Game['itemSlot'+ slot].item) Game.entities.itemSlot.setItem(slot, '');
+
+			Game.entities.itemSlot.setItem(slot, item);
+		}
+
+		Game.hud.setView('inventory');
+	};
+
+	Game.spaceco.headingText = '						 SPACECO						Exit\n';
+
+	Game.spaceco.setInterfaceText = function(text){
+		Game.hud.interfaceText.setText(Game.spaceco.headingText + text);
+	};
+
+	Game.spaceco.welcome = function(cb){
+		// Game.spaceco.setInterfaceText('\n\n Welcome to Spaceco, we love you');
+
+		Game.hud.open2({
+			name: 'spaceco',
+			pageItems: ['Welcome to Spaceco, we love you']
+		});
+
+		setTimeout(cb, 1500);
+	};
+
+	Game.spaceco.boot = function(cb){
+		if(Game.hud.isOpen !== 'spaceco') return;
+
+		// Game.spaceco.setInterfaceText('\n				Im sorry, but...\n			if you have no money\n		we simply cant help you.');
+
+		Game.hud.open2({
+			name: 'spaceco',
+			pageItems: ['Im sorry, but...', 'if you have no money', 'we simply cant help you.']
+		});
+
+		setTimeout(Game.hud.close, 3 * 1000);
+	};
+
+	Game.spaceco.getValue = function(name){
+		var value;
+
+		if(name.startsWith('ground')){
+			value = Game.config.baseGroundValue + (((Game.config.digTime[name.replace('ground_', '')] / 2) - (Game.spaceco.resourceBay[name] || 0)) / 1000);
+
+			if(name === 'ground_green' && Game.config.mode === 'normal') value *= 2;
+		}
+		else if(name.startsWith('mineral')){
+			value = Game.config.mineralValues[name.replace('mineral_', '')] - ((Game.spaceco.resourceBay[name] || 0) / 40);
+		}
+
+		return Math.max(0, value);
+	};
+
+	Game.spaceco.open = function(){
+		if(Game.hud.isOpen) return;
+
+		Game.spaceco.welcome(function(){
+			// var menu = '	 Rates	 Fuel	 Parts	 Shop\n';
+			var pageItem = '';
+			var output = {
+				name: 'spaceco',
+				heading: 'SPACECO',
+				menuItems: ['rates', 'fuel', 'parts', 'shop'],
+				pageItems: []
+			};
+
+			if(Game.config.mode === 'normal'){
+				delete Game.player.hull.space;
+
+				var hullItemNames = Object.keys(Game.player.hull.items);
+				var statingCredits = Game.player.credits;
+				var soldItems = {
+					ground: 0,
+					mineral: 0
+				};
+				var x;
+
+				for(x = 0; x < hullItemNames.length; x++){
+					Game.spaceco.resourceBay[hullItemNames[x]] = Game.spaceco.resourceBay[hullItemNames[x]] || 0;
+					Game.spaceco.resourceBay[hullItemNames[x]] += Game.player.hull.items[hullItemNames[x]];
+
+					var type = hullItemNames[x].replace(/_.*$/, '');
+					soldItems[type] += Game.player.hull.items[hullItemNames[x]];
+
+					// if(Game.player.hull.items[hullItemNames[x]] > 0) pageItem += hullItemNames[x] +': '+ Game.player.hull.items[hullItemNames[x]] +' * '+ Game.spaceco.getValue(hullItemNames[x]) +'\n';
+
+					Game.player.credits += Game.player.hull.items[hullItemNames[x]] * Game.spaceco.getValue(hullItemNames[x]);
+				}
+
+				output.pageItems.push('Sold:');
+
+				var soldItemNames = Object.keys(soldItems);
+
+				for(x = 0; x < soldItemNames.length; ++x){
+					output.pageItems.push(' '+ soldItems[soldItemNames[x]] +' x '+ soldItemNames[x] +'s');
+				}
+
+				output.pageItems.push('For '+ Game.toFixed(Game.player.credits - statingCredits, 2) +' credits');
+
+				Game.player.hull = {
+					items: []
+				};
+				Game.player.hull.space = 10 * ((Game.player.upgrade || 0) + 1);
+
+				if(Game.player.credits - 0.1 < 0){
+					Game.spaceco.getOut_TO = setTimeout(Game.spaceco.boot, 30*1000);
+				}
+			}
+
+			Game.hud.open2(output);
+
+			Game.hud.bottomLine.setText('...');
+
+			// Game.spaceco.setInterfaceText(menu + pageItem);
+
+			setTimeout(function(){
+				Game.spaceco.updateBottomLine();
+			}, 500);
+		});
+	};
+
+	Game.spaceco.setView = function(view){
+		if(Game.hud.isOpen !== 'spaceco') return;
+
+		if(Game.hud.justSetView) return;
+		Game.hud.justSetView = true;
+		Game.hud.justSetView_TO = setTimeout(function(){ Game.hud.justSetView = false; }, 400);
+
+		Game.hud.view = view;
+
+		Game.spaceco.updateBottomLine();
+
+		var menu = '';
+		var items = '';
+		var leftSpace = 30;
+		var mineralNames, x, itemName;
+
+		var partNames = Object.keys(Game.spaceco.parts), partCount = partNames.length;
+
+		if(view === 'rates'){
+			menu = '	[ pg1 ]	Fuel	 Parts	 Shop\n';
+
+			mineralNames = ['ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue'];
+
+			for(x = 0; x < mineralNames.length; x++){
+				itemName = mineralNames[x];
+
+				items += itemName + (' '.repeat(leftSpace - itemName.length)) +'$'+ Game.spaceco.getValue(itemName).toFixed(2) +'\n';
+			}
+		}
+		else if(view === 'rates_pg2'){
+			menu = '	[ pg2 ]	Fuel	 Parts	 Shop\n';
+
+			mineralNames = ['ground_purple', 'ground_pink', 'ground_black'];
+
+			for(x = 0; x < mineralNames.length; x++){
+				itemName = mineralNames[x];
+
+				items += itemName + (' '.repeat(leftSpace - itemName.length)) +'$'+ Game.spaceco.getValue(itemName).toFixed(2) +'\n';
+			}
+		}
+		else if(view === 'rates_pg3'){
+			menu = '	[ pg3 ]	Fuel	 Parts	 Shop\n';
+
+			mineralNames = ['mineral_green', 'mineral_blue', 'mineral_red', 'mineral_purple', 'mineral_teal', 'mineral_???'];
+
+			for(x = 0; x < mineralNames.length; x++){
+				itemName = mineralNames[x];
+
+				items += itemName + (' '.repeat(leftSpace - itemName.length)) +'$'+ Game.spaceco.getValue(itemName).toFixed(2) +'\n';
+			}
+		}
+		else if(view === 'fuel'){
+			menu = '	 Rates	[Fuel]	Parts	 Shop';
+
+			items += '\nGas													$'+ Game.config.spacecoPrices.gas;
+			items += '\nEnergy											 $'+ Game.config.spacecoPrices.energy;
+			items += '\nSuper Oxygen Liquid Nitrogen $'+ Game.config.spacecoPrices.super_oxygen_liquid_nitrogen;
+		}
+		else if(view === 'parts'){
+			menu = '	 Rates	 Fuel	['+ (partCount > 7 ? ' pg1 ' : 'Parts') +']	Shop';
+
+			for(x = 0; x < Math.min(7, partCount); x++){
+				itemName = partNames[x];
+
+				items += '\n'+ itemName + (' '.repeat(leftSpace - itemName.length)) +'$'+ Game.spaceco.parts[itemName];
+			}
+
+			if(partCount === 0) items = 'no parts';
+		}
+		else if(view === 'parts_pg2'){
+			menu = '	 Rates	 Fuel	[ pg2 ]	Shop';
+
+			for(x = 7; x < Math.min(14, partCount); x++){
+				itemName = partNames[x];
+
+				items += '\n'+ itemName + (' '.repeat(leftSpace - itemName.length)) +'$'+ Game.spaceco.parts[itemName];
+			}
+		}
+		else if(view === 'parts_pg3'){
+			menu = '	 Rates	 Fuel	[ pg3 ]	Shop';
+
+			for(x = 14; x < partCount; x++){
+				itemName = partNames[x];
+
+				items += '\n'+ itemName + (' '.repeat(leftSpace - itemName.length)) +'$'+ Game.spaceco.parts[itemName];
+			}
+		}
+		else if(view === 'shop'){
+			menu = '	 Rates	 Fuel	 Parts	[ p1 ]';
+
+			items += '\nTeleporter									 $'+ Game.config.spacecoPrices.teleporter;
+			items += '\nResponder Teleporter				 $'+ Game.config.spacecoPrices.responder_teleporter;
+			items += '\nRepair											 $'+ Game.config.spacecoPrices.repair;
+			items += '\nTransport										$'+ Game.config.spacecoPrices.transport;
+		}
+		else if(view === 'shop_p2'){
+			menu = '	 Rates	 Fuel	 Parts	[ p2 ]';
+
+			items += '\nTimed Charge								 $'+ Game.config.spacecoPrices.timed_charge;
+			items += '\nRemote Charge								$'+ Game.config.spacecoPrices.remote_charge;
+			items += '\nTimed Freeze Charge					$'+ Game.config.spacecoPrices.timed_freeze_charge;
+			items += '\nRemote Freeze Charge				 $'+ Game.config.spacecoPrices.remote_freeze_charge;
+		}
+
+		Game.spaceco.setInterfaceText(menu + items);
+	};
+
+	Game.spaceco.updateBottomLine = function(){
+		if(Game.hud.isOpen !== 'spaceco') return;
+
+		var credits = Game.toFixed(Game.player.credits, 1);
+		var fuel = Game.toFixed(Game.player.fuel, 1);
+		var health = Game.toFixed(Game.player.health, 1);
+
+		var creditsText = ' '.repeat(7 - (credits.length / 2)) +'$:'+ credits;
+		var fuelText = ' '.repeat(7 - (fuel.length / 2)) +'Fuel:'+ fuel;
+		var healthText = ' '.repeat(7 - (health.length / 2)) +'Health:'+ health;
+
+		Game.hud.bottomLine.setText(creditsText + fuelText + healthText);
+	};
+
+	Game.spaceco.handlePointer = function(pointer){
+		if(Game.hud.isOpen !== 'spaceco') return;
+
+		if(pointer.y > 70 && pointer.y < 105){// menu
+			if(pointer.x > 60 && pointer.x < 165){
+				if(Game.hud.view === 'rates') Game.spaceco.setView('rates_pg2');
+				if(Game.hud.view === 'rates_pg2') Game.spaceco.setView('rates_pg3');
+				else Game.spaceco.setView('rates');
+			}
+			else if(pointer.x > 175 && pointer.x < 255){
+				Game.spaceco.setView('fuel');
+			}
+			else if(pointer.x > 275 && pointer.x < 370){
+				if(Game.hud.view === 'parts') Game.spaceco.setView('parts_pg2');
+				if(Game.hud.view === 'parts_pg2') Game.spaceco.setView('parts_pg3');
+				else Game.spaceco.setView('parts');
+			}
+			else if(pointer.x > 385 && pointer.x < 470){
+				if(Game.hud.view === 'shop') Game.spaceco.setView('shop_p2');
+				else Game.spaceco.setView('shop');
+			}
+		}
+
+		var selectedItem;
+
+		if(pointer.y > 110 && pointer.y < 140){
+			if(Game.hud.view === 'fuel'){
+				selectedItem = 'gas';
+			}
+			else if(Game.hud.view === 'shop'){
+				selectedItem = 'teleporter';
+			}
+			else if(Game.hud.view === 'shop_p2'){
+				selectedItem = 'timed_charge';
+			}
+		}
+
+		else if(pointer.y > 150 && pointer.y < 180){
+			if(Game.hud.view === 'fuel'){
+				selectedItem = 'energy';
+			}
+			else if(Game.hud.view === 'shop'){
+				selectedItem = 'responder_teleporter';
+			}
+			else if(Game.hud.view === 'shop_p2'){
+				selectedItem = 'remote_charge';
+			}
+		}
+		else if(pointer.y > 190 && pointer.y < 220){
+			if(Game.hud.view === 'fuel'){
+				selectedItem = 'super_oxygen_liquid_nitrogen';
+			}
+			else if(Game.hud.view === 'shop'){
+				selectedItem = 'repair';
+			}
+			else if(Game.hud.view === 'shop_p2'){
+				selectedItem = 'timed_freeze_charge';
+			}
+		}
+
+		else if(pointer.y > 230 && pointer.y < 260){
+			if(Game.hud.view === 'shop'){
+				selectedItem = 'upgrade';
+			}
+			else if(Game.hud.view === 'shop_p2'){
+				selectedItem = 'remote_freeze_charge';
+			}
+		}
+
+		else if(pointer.y > 270 && pointer.y < 300){
+			if(Game.hud.view === 'shop'){
+				selectedItem = 'transport';
+			}
+		}
+
+		if(selectedItem){
+			Game.spaceco.selectItem(selectedItem);
+		}
+	};
+
+	Game.spaceco.selectItem = function(item){
+		if(!item) return;
+
+		var isFuel = (item === 'gas' || item === 'energy' || item === 'super_oxygen_liquid_nitrogen'), canUse = true;
+
+		if(Game.hud.justSelectedItem) return;
+		Game.hud.justSelectedItem = true;
+
+		var bottomLineUpdate;
+
+		if(Game.player.credits < Game.config.spacecoPrices[item]){
+			canUse = false;
+			bottomLineUpdate ='			 Not enough credits!';
+		}
+		else if(item === 'repair' && Game.player.health === 100 + (20 * ((Game.player.upgrade || 0) + 1))){
+			canUse = false;
+			bottomLineUpdate ='					Full health!';
+		}
+		else if(item === 'upgrade' && Game.player.upgrade === 3){
+			canUse = false;
+			bottomLineUpdate ='				 Fully upgraded!';
+		}
+		else if(item === 'gas' && Game.player.upgrade > 1){
+			canUse = false;
+			bottomLineUpdate ='					Cant use gas!';
+		}
+		else if(item === 'energy' && Game.player.upgrade !== 2){
+			canUse = false;
+			bottomLineUpdate ='				Cant use energy!';
+		}
+		else if(item === 'super_oxygen_liquid_nitrogen' && Game.player.upgrade !== 3){
+			canUse = false;
+			bottomLineUpdate ='				 Cant use SOLN!';
+		}
+		else if(isFuel && Game.player.fuel > 10 + (10 * ((Game.player.upgrade || 0) + 1))){
+			canUse = false;
+			bottomLineUpdate ='					Fuel is full!';
+		}
+
+		var timeout = isFuel && canUse ? 250 : 800;
+
+		Game.hud.justSelectedItem_TO = setTimeout(function(){ Game.hud.justSelectedItem = false; }, timeout);
+
+		if(!bottomLineUpdate && Game.config.spacecoPrices[item]){
+			bottomLineUpdate = Game.capitalize(item.replace('super_oxygen_liquid_nitrogen', 'SOLN'), 1, '_') +' : '+ Game.config.spacecoPrices[item] + (isFuel ? ' (Hold to fill)' : '');
+
+			Game.player.credits -= Game.config.spacecoPrices[item];
+
+			if(item === 'gas'){
+				if(Game.player.upgrade < 2) Game.player.fuel += 1.5;
+			}
+			else if(item === 'energy'){
+				if(Game.player.upgrade === 2) Game.player.fuel += 3.2;
+			}
+			else if(item === 'super_oxygen_liquid_nitrogen'){
+				if(Game.player.upgrade === 3) Game.player.fuel += 6.9;
+			}
+			else if(item === 'transport'){
+				Game.purchasedTransport = true;
+
+				Game.phaser.state.start('play');
+			}
+			else if(item === 'upgrade'){
+				Game.player.upgrade++;
+
+				Game.player.sprite.animations.play('upgrade_'+ Game.player.upgrade);
+
+				Game.player.hull.space = 10 * ((Game.player.upgrade || 0) + 1);
+			}
+			else if(item === 'repair'){
+				Game.player.health = 100 + (20 * ((Game.player.upgrade || 0) + 1));
+			}
+			else{
+				Game.player.inventory[item] = Game.player.inventory[item] || 0;
+				Game.player.inventory[item]++;
+			}
+		}
+
+		if(bottomLineUpdate){
+			Game.hud.bottomLine.setText(bottomLineUpdate);
+
+			return setTimeout(Game.spaceco.updateBottomLine, timeout);
+		}
+	};
+
+	Game.spaceco.hurt = function(amount, by){
+		if(Game.spaceco.justHurt) return; //todo make this depend on what the damage is from
+		Game.spaceco.justHurt = true;
+		Game.spaceco.justHurt_TO = setTimeout(function(){ Game.spaceco.justHurt = false; }, 500);
+
+		Game.spaceco.damage += amount;
+
+		if(Game.spaceco.damage > 9){
+			setTimeout(function(){
+				Game.spaceco.kill();
+
+				Game.notify('Spaceco was killed by '+ by);
+			}, 400);
+		}
+		else Game.spaceco.sprite.frame = Game.spaceco.damage;
+	};
+
 	Game.itemSlot1 = Game.entities.itemSlot.create(Game.viewWidth - 32, 32);
 	Game.itemSlot2 = Game.entities.itemSlot.create(Game.viewWidth - 32, 106);
 
-	Game.entities.hud.open('briefing');
+	Game.hud.open('briefing');
 
 	Game.drawView(0, 0, Game.config.width, Game.config.depth / 2);
 
@@ -618,7 +1348,7 @@ Game.states.start.prototype.create = function(){
 		Game.purchasedTransport = false;
 	}
 	else{
-		Game.entities.spaceco.resourceBay = {};
+		Game.spaceco.resourceBay = {};
 
 		Game.entities.itemSlot.setItem(1, 'teleporter');
 	}
@@ -648,10 +1378,10 @@ Game.states.start.prototype.update = function(){
 		Game.justPressedEsc = true;
 		Game.justPressedEsc_TO = setTimeout(function(){ Game.justPressedEsc = false; }, 1000);
 
-		if(Game.hud.isOpen) Game.entities.hud.close();
+		if(Game.hud.isOpen) Game.hud.close();
 		else{
-			if(Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) < Game.blockPx + 10) Game.entities.spaceco.open();
-			else Game.entities.hud.open('hud');
+			if(Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) < Game.blockPx + 10) Game.spaceco.open();
+			else Game.hud.open('hud');
 			return;
 		}
 	}
@@ -662,7 +1392,7 @@ Game.states.start.prototype.update = function(){
 		}
 
 		if(Game.phaser.math.distance(Game.spaceco.sprite.x, Game.spaceco.sprite.y, lava.x, lava.y) < Game.blockPx){
-			Game.entities.spaceco.hurt(1, 'lava');
+			Game.spaceco.hurt(1, 'lava');
 		}
 
 		Game.monsters.forEachAlive(function(monster){
@@ -709,19 +1439,19 @@ Game.states.start.prototype.update = function(){
 		if(spacecoGroundBase.bottomRight < 3 && spacecoGroundBase.bottom < 3 && spacecoGroundBase.bottomLeft < 3){
 			Game.phaser.add.tween(Game.spaceco).to({ y: Game.spaceco.sprite.y + Game.blockPx }, 500, Phaser.Easing.Sinusoidal.InOut, true);
 
-			Game.entities.spaceco.hurt(1, 'falling');
+			Game.spaceco.hurt(1, 'falling');
 		}
 	}
 
 	if(this.input.activePointer.isDown){
 		if(Game.hud.isOpen && !Game.hud.justUsedItemSlot && !Game.phaser.tweens.isTweening(Game.hud.scale)){
-			if(this.input.activePointer.x > 575 || this.input.activePointer.y > 460) Game.entities.hud.close();
+			if(this.input.activePointer.x > 575 || this.input.activePointer.y > 460) Game.hud.close();
 
 			else if(Game.hud.isOpen === 'trade') Game.player.handlePointer(this.input.activePointer);
 
 			else if(Game.entities[Game.hud.isOpen] && Game.entities[Game.hud.isOpen].handlePointer) Game.entities[Game.hud.isOpen].handlePointer(this.input.activePointer);
 
-			else Game.entities.hud.close();
+			else Game.hud.close();
 
 			return;
 		}
@@ -731,7 +1461,7 @@ Game.states.start.prototype.update = function(){
 			Game.hud.justUsedItemSlot = true;
 			Game.hud.justUsedItemSlot_TO = setTimeout(function(){ Game.hud.justUsedItemSlot = false; }, 500);
 
-			if(!Game.itemSlot1.item) Game.entities.hud.open('hud');
+			if(!Game.itemSlot1.item) Game.hud.open('hud');
 			else Game.player.useItem(1, Game.itemSlot1.item);
 
 			return;
@@ -742,14 +1472,14 @@ Game.states.start.prototype.update = function(){
 			Game.hud.justUsedItemSlot = true;
 			Game.hud.justUsedItemSlot_TO = setTimeout(function(){ Game.hud.justUsedItemSlot = false; }, 500);
 
-			if(!Game.itemSlot2.item) Game.entities.hud.open('hud');
+			if(!Game.itemSlot2.item) Game.hud.open('hud');
 			else Game.player.useItem(2, Game.itemSlot2.item);
 
 			return;
 		}
 
 		else if(Game.phaser.math.distance(this.input.activePointer.x, this.input.activePointer.y, 70, 50) < 128){
-			if(Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) < Game.blockPx + 10) Game.entities.spaceco.open();
+			if(Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) < Game.blockPx + 10) Game.spaceco.open();
 			else{
 				var tradePlayer, playerNames = Object.keys(Game.players);
 
@@ -760,7 +1490,7 @@ Game.states.start.prototype.update = function(){
 					if(Game.player.sprite.x === player_x.x && Game.player.sprite.y === player_x.y) tradePlayer = playerNames[x];
 				}
 
-				if(!tradePlayer) return Game.entities.hud.open('hud');
+				if(!tradePlayer) return Game.hud.open('hud');
 
 				Game.player.openTrade(tradePlayer);
 			}
@@ -790,14 +1520,14 @@ Game.states.start.prototype.update = function(){
 			selectedMenu = 'fuel';
 		}
 		else if(this.input.keyboard.isDown(Phaser.Keyboard.S) && Game.hud.isOpen === 'spaceco'){
-			if(Game.hud.view === 'shop') Game.entities.spaceco.setView('shop_p2');
+			if(Game.hud.view === 'shop') Game.spaceco.setView('shop_p2');
 			else selectedMenu = 'shop';
 		}
 
 		else if(this.input.keyboard.isDown(Phaser.Keyboard.ONE)){
 			if(Game.hud.isOpen === 'hud'){
 				if(Game.hud.view === 'inventory'){
-					selectedItem = Game.entities.hud.inventoryItemNames[0];
+					selectedItem = Game.hud.inventoryItemNames[0];
 				}
 			}
 			else if(Game.hud.isOpen === 'spaceco'){
@@ -816,7 +1546,7 @@ Game.states.start.prototype.update = function(){
 		else if(this.input.keyboard.isDown(Phaser.Keyboard.TWO)){
 			if(Game.hud.isOpen === 'hud'){
 				if(Game.hud.view === 'inventory'){
-					selectedItem = Game.entities.hud.inventoryItemNames[1];
+					selectedItem = Game.hud.inventoryItemNames[1];
 				}
 			}
 			else if(Game.hud.isOpen === 'spaceco'){
@@ -834,7 +1564,7 @@ Game.states.start.prototype.update = function(){
 		else if(this.input.keyboard.isDown(Phaser.Keyboard.THREE)){
 			if(Game.hud.isOpen === 'hud'){
 				if(Game.hud.view === 'inventory'){
-					selectedItem = Game.entities.hud.inventoryItemNames[2];
+					selectedItem = Game.hud.inventoryItemNames[2];
 				}
 			}
 			else if(Game.hud.isOpen === 'spaceco'){
@@ -853,7 +1583,7 @@ Game.states.start.prototype.update = function(){
 		else if(this.input.keyboard.isDown(Phaser.Keyboard.FOUR)){
 			if(Game.hud.isOpen === 'hud'){
 				if(Game.hud.view === 'inventory'){
-					selectedItem = Game.entities.hud.inventoryItemNames[3];
+					selectedItem = Game.hud.inventoryItemNames[3];
 				}
 			}
 			else if(Game.hud.isOpen === 'spaceco'){
@@ -869,7 +1599,7 @@ Game.states.start.prototype.update = function(){
 		else if(this.input.keyboard.isDown(Phaser.Keyboard.FIVE)){
 			if(Game.hud.isOpen === 'hud'){
 				if(Game.hud.view === 'inventory'){
-					selectedItem = Game.entities.hud.inventoryItemNames[4];
+					selectedItem = Game.hud.inventoryItemNames[4];
 				}
 			}
 			else if(Game.hud.isOpen === 'spaceco'){
@@ -882,7 +1612,7 @@ Game.states.start.prototype.update = function(){
 		else if(this.input.keyboard.isDown(Phaser.Keyboard.SIX)){
 			if(Game.hud.isOpen === 'hud'){
 				if(Game.hud.view === 'inventory'){
-					selectedItem = Game.entities.hud.inventoryItemNames[5];
+					selectedItem = Game.hud.inventoryItemNames[5];
 				}
 			}
 		}
