@@ -3,17 +3,6 @@ const Worlds = require('./_worlds.js');
 
 var Game = {
 	blockPx: 64,
-	parts: {
-		drill_1: 1,
-		drill_2: 1,
-		drill_3: 1,
-		hull_1: 1,
-		hull_2: 1,
-		hull_3: 1,
-		tracks_1: 1,
-		tracks_2: 1,
-		tracks_3: 1
-	},
 	mapNames: ['monster', 'lava', 'gas', 'player', 'mineral_green', 'mineral_red', 'mineral_blue', 'mineral_purple', 'mineral_teal', 'mineral_???', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
 	rand: function(min, max, excludes){
 		excludes = excludes || [];
@@ -57,6 +46,11 @@ var Game = {
 
 			if(rand <= sum) return itemNames[x];
 		}
+	},
+	randFromArr: function(arr){
+		var arrLen = arr.length;
+
+		return arr[Game.rand(0, arrLen - 1)];
 	},
 	normalizePosition: function(x, y){
 		x = Math.floor(x / (Game.blockPx / 2)) * (Game.blockPx / 2);
@@ -136,6 +130,31 @@ var Game = {
 		}
 
 		return mapData;
+	},
+	generatePart: function(){
+		var type = Game.randFromArr(['tracks', 'hull', 'drill', 'fuel_tank']);
+		var material = Game.weightedChance({ adamantite: 22, byzanium: 18, duranium: 15, etherium: 14, mithril: 11, quadium: 9, saronite: 7, tritanium: 4 });
+		var subTypes = {
+			tracks: { boosted_1: 40, boosted_2: 30, boosted_3: 20, antigravidic: 10 },
+			hull: { lightweight: 45, large: 35, oversized: 20 },
+			drill: { quadratic: 40, hardened: 30, precision_1: 20, precision_2: 10 },
+			fuel_tank: { large: 30, oversized: 20, pressurized: 25, battery: 15, condenser: 10 }
+		};
+		var subType = Game.weightedChance(subTypes[type]);
+
+		var typePrice = { tracks: 10, hull: 10, drill: 10, fuel_tank: 10 };
+		var materialPrice = { adamantite: 10, byzanium: 18, duranium: 22, etherium: 34, mithril: 40, quadium: 55, saronite: 67, tritanium: 84 };
+		var subtypePrices = {
+			tracks: { boosted_1: 10, boosted_2: 20, boosted_3: 30, antigravidic: 50 },
+			hull: { lightweight: 10, large: 20, oversized: 30 },
+			drill: { quadratic: 15, hardened: 15, precision_1: 30, precision_2: 40 },
+			fuel_tank: { large: 10, oversized: 20, pressurized: 35, battery: 45, condenser: 50 }
+		};
+
+		var partName = subType +':~:'+ material +':~:'+ type;
+		var partPrice = subtypePrices[type][subType] + materialPrice[material] + typePrice[type];
+
+		return { name: partName, price: partPrice };
 	}
 };
 

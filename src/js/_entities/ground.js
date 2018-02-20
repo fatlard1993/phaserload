@@ -121,9 +121,9 @@ Game.entities.ground.dig = function(pos){
 
 	Game.player.hull.space -= groundWeight;
 
-	Game.player.hull.items['ground_'+ type] = Game.player.hull.items['ground_'+ type] !== undefined ? Game.player.hull.items['ground_'+ type] : 0;
+	Game.player.hull['ground_'+ type] = Game.player.hull['ground_'+ type] !== undefined ? Game.player.hull['ground_'+ type] : 0;
 
-	Game.player.hull.items['ground_'+ type]++;
+	Game.player.hull['ground_'+ type]++;
 };
 
 Game.entities.ground.applyBehavior = function(name, options, pos){

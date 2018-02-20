@@ -135,19 +135,82 @@ var Game = {
 			Game.hud.statusText.setText('');
 		}
 
-		Game.phaser.add.tween(Game.hud.scale).to({ x: 0.8, y: 0.8 }, 800, Phaser.Easing.Back.Out, true);
+		Game.phaser.add.tween(Game.hud.scale).to({ x: 0.8, y: 0.8 }, 400, Phaser.Easing.Back.Out, true);
 
 		Game.hud.statusText.setText(text);
+
+		setTimeout(function(){
+			if(Game.hud.isOpen) return;
+
+			Game.phaser.add.tween(Game.hud.scale).to({ x: 0.5, y: 0.5 }, 400, Phaser.Easing.Circular.Out, true);
+		}, 350);
 
 		Game.notify_TO = setTimeout(function(){
 			Game.notify_TO = null;
 
 			if(Game.hud.isOpen) return;
 
-			Game.phaser.add.tween(Game.hud.scale).to({ x: 0.5, y: 0.5 }, 400, Phaser.Easing.Circular.Out, true);
-
 			Game.hud.update();
 		}, (timeout || 3) * 1000);
+	},
+	updateMaxHealth: function(){
+		var health = 0;
+		var tracksPart = Game.player.configuration.tracks.split(':~:');
+		var hullPart = Game.player.configuration.hull.split(':~:');
+		var drillPart = Game.player.configuration.drill.split(':~:');
+		var materialBonus = { steel: 30, adamantite: 35, byzanium: 40, duranium: 55, etherium: 65, mithril: 75, quadium: 80, saronite: 90, tritanium: 100 };
+
+		health += materialBonus[tracksPart[1]];
+		health += materialBonus[hullPart[1]];
+		health += materialBonus[drillPart[1]];
+
+		if(drillPart[0] === 'hardened') health += 15;
+
+		Game.player.max_health = health;
+		Game.player.health = Math.min(health, Game.player.health);
+	},
+	updateBaseMoveTime: function(){
+		var moveTime = 0;
+		var tracksPart = Game.player.configuration.tracks.split(':~:');
+		var hullPart = Game.player.configuration.hull.split(':~:');
+		var drillPart = Game.player.configuration.drill.split(':~:');
+		var materialSlowDown = { steel: 110, adamantite: 90, byzanium: 80, duranium: 75, etherium: 65, mithril: 55, quadium: 40, saronite: 35, tritanium: 30 };
+
+		moveTime += materialSlowDown[tracksPart[1]];
+		moveTime += materialSlowDown[hullPart[1]];
+		moveTime += materialSlowDown[drillPart[1]];
+
+		if(tracksPart[0].includes('boosted')) moveTime -= parseInt(tracksPart[0].split('_')) * 10;
+		if(hullPart[0] === 'lightweight') moveTime -= 15;
+
+		Game.player.baseMoveTime = moveTime;
+	},
+	updateMaxHullSpace: function(){
+		var hullSpace = 10;
+		var hullPart = Game.player.configuration.hull.split(':~:');
+
+		if(hullPart[0] === 'large') hullSpace += 10;
+		else if(hullPart[0] === 'oversized') hullSpace += 25;
+
+		Game.player.max_hullSpace = hullSpace;
+	},
+	updateDrillSpeedMod: function(){
+		var drillSpeedMod = 0;
+		var drillPart = Game.player.configuration.drill.split(':~:');
+
+		if(drillPart[0].includes('precision')) drillSpeedMod += parseInt(drillPart[0].split('_')) * 10;
+		else if(drillPart[0] === 'quadratic') drillSpeedMod += 30;
+
+		Game.player.drillSpeedMod = drillSpeedMod;
+	},
+	updateMaxFuel: function(){
+		var maxFuel = 0;
+		var fuelTankPart = Game.player.configuration.drill.split(':~:');
+
+		if(fuelTankPart[0].includes('precision')) maxFuel += parseInt(fuelTankPart[0].split('_')) * 10;
+		else if(fuelTankPart[0] === 'quadratic') maxFuel += 30;
+
+		Game.player.max_fuel = maxFuel;
 	},
 	mapPos: function(x, y){
 		return Game.config.map[x] !== undefined ? (Game.config.map[x][y] !== undefined ? Game.config.map[x][y] : [-1, -1]) : [-1, -1];

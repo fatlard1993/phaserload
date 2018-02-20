@@ -63,13 +63,13 @@ var Sockets = {
 									y: 1
 								},
 								hull: {
-									space: 10,
-									items: []
+									space: 10
 								},
 								configuration: {
-									drill: 'standard',
-									hull: 'standard',
-									tracks: 'standard'
+									tracks: 'standard:~:steel',
+									hull: 'standard:~:steel',
+									drill: 'standard:~:steel',
+									fuel_tank: 'standard:~:steel'
 								},
 								inventory: {
 									teleporter: 1
@@ -89,12 +89,12 @@ var Sockets = {
 
 					Sockets.games[data.options.name].spaceco.position.x = Game.rand(3, Sockets.games[data.options.name].mapData.width - 3);
 
-					var partNames = Game.shuffleArr(Object.keys(Game.parts));
+					var partCount = Game.rand(9, 17), part;
 
-					// partNames.length = Game.rand(4, 9);
+					for(var x = 0; x < partCount; ++x){
+						part = Game.generatePart();
 
-					for(var x = 0; x < partNames.length; ++x){
-						Sockets.games[data.options.name].spaceco.parts[partNames[x]] = Game.parts[partNames[x]];
+						Sockets.games[data.options.name].spaceco.parts[part.name] = part.price;
 					}
 
 					Log(2)('socket', 'Created New Game: ', Sockets.games[data.options.name]);

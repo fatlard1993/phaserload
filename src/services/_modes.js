@@ -9,28 +9,31 @@ var Modes = {
 			fuel: 'Fuel',
 			hull: 'Hull'
 		},
-		mineralValues: {
-			green: 2.5,
-			red: 3.75,
-			blue: 4.25,
-			purple: 5,
-			teal: 6.5,
-			'???': 8
-		},
-		baseGroundValue: 0.08,
-		spacecoPrices: {
-			gas: 3,
-			energy: 6,
-			super_oxygen_liquid_nitrogen: 9,
-			teleporter: 15,
-			responder_teleporter: 25,
-			repair: 50,
-			upgrade: 100,
-			transport: 300,
-			timed_charge: 10,
-			remote_charge: 15,
-			timed_freeze_charge: 15,
-			remote_freeze_charge: 20,
+		spaceco: {
+			baseGroundValue: 0.08,
+			mineralValues: {
+				green: 2.5,
+				red: 3.75,
+				blue: 4.25,
+				purple: 5,
+				teal: 6.5,
+				unknown: 8
+			},
+			fuel: {
+				gas: 3,
+				energy: 6,
+				super_oxygen_liquid_nitrogen: 9
+			},
+			shop: {
+				teleporter: 15,
+				responder_teleporter: 25,
+				repair: 50,
+				transport: 300,
+				timed_charge: 10,
+				remote_charge: 15,
+				timed_freeze_charge: 15,
+				remote_freeze_charge: 20
+			}
 		},
 		blockBehavior: {
 			red: 'lava:~:35',
