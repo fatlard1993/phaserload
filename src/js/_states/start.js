@@ -1270,9 +1270,9 @@ Game.states.start.prototype.create = function(){
 	Game.spaceco.updateBottomLine = function(){
 		if(Game.hud.isOpen.name !== 'spaceco') return;
 
-		var credits = Game.toFixed(Game.player.credits, 1);
-		var fuel = Game.toFixed(Game.player.fuel, 1);
-		var health = Game.toFixed(Game.player.health, 1);
+		var credits = String(parseInt(Game.player.credits));
+		var fuel = Game.toFixed(Game.player.fuel, 2);
+		var health = String(parseInt(Game.player.health));
 
 		var creditsText = ' '.repeat(7 - (credits.length / 2)) +'$:'+ credits;
 		var fuelText = ' '.repeat(7 - (fuel.length / 2)) +'Fuel:'+ fuel;
