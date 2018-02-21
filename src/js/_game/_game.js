@@ -129,15 +129,21 @@ var Game = {
 		return { x: x, y: y };
 	},
 	notify: function(text, timeout){
+		if(Game.notifyText === text) return;
+
 		if(Game.notify_TO){
 			clearTimeout(Game.notify_TO);
 
 			Game.hud.statusText.setText('');
+
+			Game.notifyText = '';
 		}
 
 		Game.phaser.add.tween(Game.hud.scale).to({ x: 0.8, y: 0.8 }, 400, Phaser.Easing.Back.Out, true);
 
 		Game.hud.statusText.setText(text);
+
+		Game.notifyText = text;
 
 		setTimeout(function(){
 			if(Game.hud.isOpen) return;
@@ -167,7 +173,23 @@ var Game = {
 		if(drillPart[0] === 'hardened') health += 15;
 
 		Game.player.max_health = health;
+
 		Game.player.health = Math.min(health, Game.player.health);
+	},
+	updateMaxFuel: function(){
+		var maxFuel = 0;
+		var fuelTankPart = Game.player.configuration.fuel_tank.split(':~:');
+
+		if(fuelTankPart[0] === 'standard') maxFuel += 5;
+		else if(fuelTankPart[0] === 'large') maxFuel += 10;
+		else if(fuelTankPart[0] === 'oversized') maxFuel += 15;
+		else if(fuelTankPart[0] === 'pressurized') maxFuel += 20;
+		else if(fuelTankPart[0] === 'battery') maxFuel += 35;
+		else if(fuelTankPart[0] === 'condenser') maxFuel += 45;
+
+		Game.player.max_fuel = maxFuel;
+
+		Game.player.fuel = Math.min(maxFuel, Game.player.fuel);
 	},
 	updateBaseMoveTime: function(){
 		var moveTime = 0;
@@ -192,6 +214,9 @@ var Game = {
 		if(hullPart[0] === 'large') hullSpace += 10;
 		else if(hullPart[0] === 'oversized') hullSpace += 25;
 
+		if(Game.player.hull.space !== undefined) Game.player.hull.space = hullSpace - (Game.player.max_hullSpace - Game.player.hull.space);
+		else Game.player.hull.space = hullSpace;
+
 		Game.player.max_hullSpace = hullSpace;
 	},
 	updateDrillSpeedMod: function(){
@@ -202,15 +227,6 @@ var Game = {
 		else if(drillPart[0] === 'quadratic') drillSpeedMod += 30;
 
 		Game.player.drillSpeedMod = drillSpeedMod;
-	},
-	updateMaxFuel: function(){
-		var maxFuel = 0;
-		var fuelTankPart = Game.player.configuration.drill.split(':~:');
-
-		if(fuelTankPart[0].includes('precision')) maxFuel += parseInt(fuelTankPart[0].split('_')) * 10;
-		else if(fuelTankPart[0] === 'quadratic') maxFuel += 30;
-
-		Game.player.max_fuel = maxFuel;
 	},
 	mapPos: function(x, y){
 		return Game.config.map[x] !== undefined ? (Game.config.map[x][y] !== undefined ? Game.config.map[x][y] : [-1, -1]) : [-1, -1];
@@ -230,9 +246,12 @@ var Game = {
 	toName: function(id){
 		return Game.mapNames[id];
 	},
-	toFixed: function(num, decimalPlaces){
-		var re = new RegExp('^-?\\d+(?:.\\d{0,' + (decimalPlaces || -1) + '})?');
-		return num.toString().match(re)[0];
+	toFixed: function(num, decimalPlaces, outputAsNumber){// no rounding, yay!
+		var floatRegex = new RegExp('(^[0-9]*)\\.?([0-9]{0,' + (decimalPlaces - 1|| -1) + '}[1-9]{1}(?=.+?0*$))?');
+		var output = String(num).match(floatRegex);
+		output = output[1] + (output[2] ? '.'+ output[2] : '');
+
+		return outputAsNumber ? parseFloat(output) : output;
 	},
 	capitalize: function(str, recursive, split){
 		for(var i = 0, words = str.split(split || ' '); i < (recursive ? words.length : 1); i++){
@@ -437,9 +456,10 @@ var Game = {
 		this.monsters.forEachAlive(cleanup);
 	},
 	dev: function(){
-		Game.player.fuel = Game.player.health = Game.player.hull.space = Game.player.credits = 999;
+		Game.player.credits = 999;
 
-		Game.player.upgrade = 3;
+		Game.player.fuel = Game.player.max_fuel;
+		Game.player.health = Game.player.max_health;
 
 		Game.player.inventory = {
 			teleporter: 99,

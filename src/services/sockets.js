@@ -62,9 +62,7 @@ var Sockets = {
 									x: Game.rand(1, this.mapData.width - 1),
 									y: 1
 								},
-								hull: {
-									space: 10
-								},
+								hull: {},
 								configuration: {
 									tracks: 'standard:~:steel',
 									hull: 'standard:~:steel',
