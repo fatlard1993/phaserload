@@ -183,6 +183,10 @@ function Load(){
 
 			groundChangeQueue[JSON.stringify(data.pos)] = data;
 		}
+
+		else if(data.command === 'player_purchase_part'){
+			delete Game.spaceco.parts[data.partName];
+		}
 	}
 
 	function joinGame(){

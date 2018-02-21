@@ -21,7 +21,7 @@ var Sockets = {
 			socket.onmessage = function(message){
 				Log(3)(message);
 
-				var data = JSON.parse(message.data);
+				var data = JSON.parse(message.data), echo = false;
 
 				if(data.command === 'test'){
 					Log()('socket', 'test');
@@ -87,7 +87,7 @@ var Sockets = {
 
 					Sockets.games[data.options.name].spaceco.position.x = Game.rand(3, Sockets.games[data.options.name].mapData.width - 3);
 
-					var partCount = Game.rand(9, 17), part;
+					var partCount = Game.rand(13, 21), part;
 
 					for(var x = 0; x < partCount; ++x){
 						part = Game.generatePart();
@@ -114,10 +114,7 @@ var Sockets = {
 				else if(data.command === 'player_move'){
 					Sockets.games[Player.room].players[Player.name].position = data.position;
 
-					data.player = Player.name;
-					data.room = Player.room;
-
-					Sockets.wss.broadcast(JSON.stringify(data));
+					echo = true;
 				}
 
 				else if(data.command === 'player_set_map_position'){
@@ -128,6 +125,16 @@ var Sockets = {
 
 					Sockets.games[Player.room].mapData.map[gridPos.x][gridPos.y][0] = data.id;
 
+					echo = true;
+				}
+
+				else if(data.command === 'player_purchase_part'){
+					delete Sockets.games[Player.room].spaceco.parts[data.partName];
+
+					echo = true;
+				}
+
+				if(echo){
 					data.player = Player.name;
 					data.room = Player.room;
 

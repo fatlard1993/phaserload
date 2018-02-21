@@ -1166,6 +1166,8 @@ Game.states.start.prototype.create = function(){
 
 						delete Game.spaceco.parts[item];
 
+						Socket.active.send('{ "command": "player_purchase_part", "partName": "'+ item +'" }');
+
 						redraw = 2;
 
 						Log()(price, item);
