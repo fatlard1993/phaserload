@@ -28,6 +28,7 @@ Game.states.start.prototype.create = function(){
 	}
 
 	Game.updateMaxHealth();
+	Game.updateMaxFuel();
 	Game.updateBaseMoveTime();
 	Game.updateMaxHullSpace();
 	Game.updateDrillSpeedMod();
@@ -68,7 +69,7 @@ Game.states.start.prototype.create = function(){
 
 		var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
 		var targetType = Game.mapPosName(newPosition.x, newPosition.y);
-		var moveTime = targetGroundType ? Game.config.digTime[targetGroundType.replace('ground_', '')] ? Game.config.digTime[targetGroundType.replace('ground_', '')] : Game.config.baseDrillMoveTime : Game.config.baseDrillMoveTime;
+		var moveTime = targetGroundType ? (Game.config.digTime[targetGroundType.replace('ground_', '')] ? Game.config.digTime[targetGroundType.replace('ground_', '')] - Game.player.drillSpeedMod : Game.player.baseMoveTime) : Game.player.baseMoveTime;
 
 		if(direction.includes('teleport')){
 			Game.player.sprite.animations.play('teleporting');
@@ -79,7 +80,7 @@ Game.states.start.prototype.create = function(){
 
 			setTimeout(function(){
 				// Game.drawCurrentView();
-				Game.player.sprite.animations.play(Game.player.upgrade > 0 ? 'upgrade_'+ Game.player.upgrade : 'normal');
+				Game.player.sprite.animations.play('normal');
 				if(!direction.includes('responder')) Game.notify('Open to connect\nto Spaceco', 4);
 			}, 200 + moveTime);
 
@@ -145,7 +146,7 @@ Game.states.start.prototype.create = function(){
 
 		if(Game.player.hull.space < 0) moveTime += 250;
 
-		moveTime = Math.max(Game.config.baseDrillMoveTime, moveTime - (((Game.player.upgrade || 0) + 1) * 50));
+		// moveTime = Math.max(Game.config.baseDrillMoveTime, moveTime - (((Game.player.upgrade || 0) + 1) * 50));
 
 		//if(targetGroundType && targetGroundType.startsWith('ground')) Game.phaser.camera.shake((moveTime * 0.00001) * 0.42, moveTime);
 
@@ -631,10 +632,10 @@ Game.states.start.prototype.create = function(){
 			else statusText = value[0] + spacer;
 
 			if(item === 'position') statusText += 'x'+ Game.toGridPos(Game.player.sprite.x) +' y'+ Game.toGridPos(Game.player.sprite.y);
-			else if(item === 'health') statusText += Game.toFixed(Game.player.health, 2);
-			else if(item === 'fuel') statusText += Game.toFixed(Game.player.fuel, 2);
+			else if(item === 'health') statusText += Game.toFixed(Game.player.health, 2) +'/'+ Game.player.max_health;
+			else if(item === 'fuel') statusText += Game.toFixed(Game.player.fuel, 2) +'/'+ Game.player.max_fuel;
 			else if(item === 'credits') statusText += Game.toFixed(Game.player.credits, 2);
-			else if(item === 'hull') statusText += Game.toFixed(Game.player.hull.space, 2);
+			else if(item === 'hull') statusText += Game.toFixed(Game.player.hull.space, 2) +'/'+ Game.player.max_hullSpace;
 			else{
 				if(item.startsWith('mineral') && Game.player.hull[item]) statusText += Game.player.hull[item];
 			}
@@ -661,7 +662,7 @@ Game.states.start.prototype.create = function(){
 	};
 
 	Game.hud.open2 = function(opts){
-		Log()('open hud', opts, Game.hud.isOpen);
+		// Log()('open hud', opts, Game.hud.isOpen);
 
 		Game.hud.clear();
 
@@ -719,6 +720,8 @@ Game.states.start.prototype.create = function(){
 
 		Game.hud.interfaceText.setText(text);
 
+		if(opts.name === 'spaceco') Game.spaceco.updateBottomLine();
+
 		var scale = { x: 1.79, y: 1.79 };
 
 		Game.phaser.add.tween(Game.hud.scale).to(scale, 600, Phaser.Easing.Circular.Out, true);
@@ -747,10 +750,7 @@ Game.states.start.prototype.create = function(){
 	Game.hud.clear = function(){
 		Game.hud.statusText.setText('');
 		Game.hud.interfaceText.setText('');
-	};
-
-	Game.hud.openHud = function(){
-		Game.hud.interfaceText.setText(Game.hud.headingText +'	Inventory	Hull			Exit\n');
+		Game.hud.bottomLine.setText('');
 	};
 
 	Game.hud.openBriefing = function(){
@@ -849,7 +849,8 @@ Game.states.start.prototype.create = function(){
 	};
 
 	Game.hud.useMenu = function(selection){
-		Log()('useMenu', selection);
+		// Log()('useMenu', selection);
+
 		if(!Game.hud.isOpen) return;
 
 		var x;
@@ -879,7 +880,7 @@ Game.states.start.prototype.create = function(){
 				}
 				else{
 					Game.hud.isOpen.view = 'inventory';
-					Game.hud.isOpen.menuItems[0] = inventoryItemCount < 7 ? '[ Inv ]' : '[ pg 1 ]';
+					Game.hud.isOpen.menuItems[0] = inventoryItemCount <= 7 ? '[ Inv ]' : '[ pg 1 ]';
 					Game.hud.isOpen.pageItems = inventoryItems.slice(0, 7);
 				}
 			}
@@ -903,7 +904,7 @@ Game.states.start.prototype.create = function(){
 				}
 				else{
 					Game.hud.isOpen.view = 'hull';
-					Game.hud.isOpen.menuItems[1] = hullItemCount < 7 ? '[ Hull ]' : '[ pg 1 ]';
+					Game.hud.isOpen.menuItems[1] = hullItemCount <= 7 ? '[ Hull ]' : '[ pg 1 ]';
 					Game.hud.isOpen.pageItems = hullItems.slice(0, 7);
 				}
 			}
@@ -944,7 +945,7 @@ Game.states.start.prototype.create = function(){
 				}
 				else{
 					Game.hud.isOpen.view = 'rates';
-					Game.hud.isOpen.menuItems[0] = rawMaterialCount < 7 ? '[ Rates ]' : '[ pg 1 ]';
+					Game.hud.isOpen.menuItems[0] = rawMaterialCount <= 7 ? '[ Rates ]' : '[ pg 1 ]';
 					Game.hud.isOpen.pageItems = rawMaterials.slice(0, 7);
 				}
 			}
@@ -957,21 +958,9 @@ Game.states.start.prototype.create = function(){
 					fuels[x] = Game.capitalize(fuels[x], 1, '_') +':~:$'+ Game.spaceco.getValue(fuels[x]);
 				}
 
-				if(Game.hud.isOpen.view === 'fuel' && fuelCount > 7){
-					Game.hud.isOpen.view = 'fuel_pg2';
-					Game.hud.isOpen.menuItems[1] = '[ pg 2 ]';
-					Game.hud.isOpen.pageItems = fuels.slice(7, 14);
-				}
-				else if(Game.hud.isOpen.view === 'fuel_pg2' && fuelCount > 14){
-					Game.hud.isOpen.view = 'fuel_pg3';
-					Game.hud.isOpen.menuItems[1] = '[ pg 3 ]';
-					Game.hud.isOpen.pageItems = fuels.slice(14, 21);
-				}
-				else{
-					Game.hud.isOpen.view = 'fuel';
-					Game.hud.isOpen.menuItems[1] = fuelCount < 7 ? '[ Fuel ]' : '[ pg 1 ]';
-					Game.hud.isOpen.pageItems = fuels.slice(0, 7);
-				}
+				Game.hud.isOpen.view = 'fuel';
+				Game.hud.isOpen.menuItems[1] = '[ Fuel ]';
+				Game.hud.isOpen.pageItems = fuels;
 			}
 
 			else if(selection === 2){
@@ -982,19 +971,19 @@ Game.states.start.prototype.create = function(){
 					parts[x] = Game.capitalize(parts[x], 1, ':~:') +':~:$'+ Game.spaceco.getValue(parts[x]);
 				}
 
-				if(Game.hud.isOpen.view === 'part' && partCount > 7){
+				if(Game.hud.isOpen.view === 'parts' && partCount > 7){
 					Game.hud.isOpen.view = 'parts_pg2';
 					Game.hud.isOpen.menuItems[2] = '[ pg 2 ]';
 					Game.hud.isOpen.pageItems = parts.slice(7, 14);
 				}
-				else if(Game.hud.isOpen.view === 'part_pg2' && partCount > 14){
+				else if(Game.hud.isOpen.view === 'parts_pg2' && partCount > 14){
 					Game.hud.isOpen.view = 'parts_pg3';
 					Game.hud.isOpen.menuItems[2] = '[ pg 3 ]';
 					Game.hud.isOpen.pageItems = parts.slice(14, 21);
 				}
 				else{
 					Game.hud.isOpen.view = 'parts';
-					Game.hud.isOpen.menuItems[2] = partCount < 7 ? '[ Parts ]' : '[ pg 1 ]';
+					Game.hud.isOpen.menuItems[2] = partCount <= 7 ? '[ Parts ]' : '[ pg 1 ]';
 					Game.hud.isOpen.pageItems = parts.slice(0, 7);
 				}
 			}
@@ -1019,7 +1008,7 @@ Game.states.start.prototype.create = function(){
 				}
 				else{
 					Game.hud.isOpen.view = 'shop';
-					Game.hud.isOpen.menuItems[3] = shopCount < 7 ? '[ Shop ]' : '[ pg 1 ]';
+					Game.hud.isOpen.menuItems[3] = shopCount <= 7 ? '[ Shop ]' : '[ pg 1 ]';
 					Game.hud.isOpen.pageItems = shopItems.slice(0, 7);
 				}
 			}
@@ -1031,7 +1020,7 @@ Game.states.start.prototype.create = function(){
 	};
 
 	Game.hud.selectItem = function(selection){
-		Log()('selectItem', selection);
+		// Log()('selectItem', selection);
 		if(!Game.hud.isOpen) return;
 
 		if(Game.hud.justSelectedItem) return;
@@ -1041,19 +1030,22 @@ Game.states.start.prototype.create = function(){
 
 		if(Game.hud.isOpen.name === 'console'){
 			if(Game.hud.isOpen.view.includes('inventory')){
-				item = Object.keys(Game.player.inventory)[selection + (Game.hud.isOpen.view.includes('pg') ? (parseInt(Game.hud.isOpen.view.slice(-1)) + 1) * 7 : 0)];
+				item = Object.keys(Game.player.inventory)[selection + (Game.hud.isOpen.view.includes('pg') ? (parseInt(Game.hud.isOpen.view.slice(-1)) - 1) * 7 : 0)];
 
 				if(item){
+					bottomLineText = 'Equipping '+ Game.capitalize((item.includes(':~:') ? item.split(':~:')[2] : item), 1, '_');
+
 					var itemBreakdown = item.split(':~:');
 
 					if(itemBreakdown[2] && ['tracks', 'hull', 'drill', 'fuel_tank'].includes(itemBreakdown[2])){
 						delete Game.player.inventory[item];
-						
+
 						Game.player.inventory[Game.player.configuration[itemBreakdown[2]] +':~:'+ itemBreakdown[2]] = 1;
 
 						Game.player.configuration[itemBreakdown[2]] = itemBreakdown[0] +':~:'+ itemBreakdown[1];
 
 						Game.updateMaxHealth();
+						Game.updateMaxFuel();
 						Game.updateBaseMoveTime();
 						Game.updateMaxHullSpace();
 						Game.updateDrillSpeedMod();
@@ -1104,9 +1096,16 @@ Game.states.start.prototype.create = function(){
 				if(Game.hud.isOpen.view.includes('fuel')){
 					timeout = 400;
 
+					var fuelTankType = Game.player.configuration.fuel_tank.split(':~:')[0];
+
 					if(Game.player.fuel >= Game.player.max_fuel){
 						canUse = false;
 						bottomLineText = 'Full!';
+					}
+
+					else if((item === 'fuel' && !['standard', 'large', 'oversized', 'pressurized'].includes(fuelTankType)) || (item === 'energy' && fuelTankType !== 'battery') || (item === 'super_oxygen_liquid_nitrogen' && fuelTankType !== 'condenser')){
+						canUse = false;
+						bottomLineText = 'Cant use this fuel type!';
 					}
 				}
 
@@ -1137,6 +1136,8 @@ Game.states.start.prototype.create = function(){
 
 				if(canUse){
 					Game.player.credits -= price;
+
+					bottomLineText = Game.hud.isOpen.pageItems[selection].replace(':~:' ,' : ');
 
 					if(item === 'gas'){
 						Game.player.fuel += 1.5;
@@ -1171,9 +1172,9 @@ Game.states.start.prototype.create = function(){
 					}
 				}
 			}
-
-			if(bottomLineText) Game.hud.bottomLine.setText(bottomLineText);
 		}
+
+		if(bottomLineText) Game.hud.bottomLine.setText(bottomLineText);
 
 		Game.hud.justSelectedItem_TO = setTimeout(function(){
 			Game.hud.justSelectedItem = false;
@@ -1207,12 +1208,15 @@ Game.states.start.prototype.create = function(){
 			view: 'welcome'
 		});
 
+		Game.hud.bottomLine.setText('...');
+
 		setTimeout(function(){
 			var output = {
 				name: 'spaceco',
 				heading: 'SPACECO',
 				menuItems: ['Rates', 'Fuel', 'Parts', 'Shop'],
-				pageItems: []
+				pageItems: [],
+				view: 'welcome_2'
 			};
 
 			if(Game.config.mode === 'normal'){
@@ -1249,23 +1253,15 @@ Game.states.start.prototype.create = function(){
 				output.pageItems.push('For '+ Game.toFixed(Game.player.credits - statingCredits, 2) +' credits');
 
 				Game.player.hull = {
-					space: 10 * ((Game.player.upgrade || 0) + 1)
+					space: Game.player.max_hullSpace
 				};
 
 				if(Game.player.credits - 0.1 < 0){
-					Game.spaceco.getOut_TO = setTimeout(Game.spaceco.boot, 30*1000);
+					Game.spaceco.getOut_TO = setTimeout(Game.spaceco.boot, 30 * 1000);
 				}
 			}
 
 			Game.hud.open2(output);
-
-			Game.hud.bottomLine.setText('...');
-
-			// Game.spaceco.setInterfaceText(menu + pageItem);
-
-			setTimeout(function(){
-				Game.spaceco.updateBottomLine();
-			}, 500);
 		}, 1500);
 	};
 
