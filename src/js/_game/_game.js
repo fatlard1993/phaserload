@@ -8,7 +8,14 @@ var Game = {
 		textColor: '#227660',
 		hudTextColor: '#94B133'
 	},
-	mapNames: ['monster', 'lava', 'gas', 'player', 'mineral_green', 'mineral_red', 'mineral_blue', 'mineral_purple', 'mineral_teal', 'mineral_???', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
+	helpText: [
+		'tap and hold/drag',
+		'up, left, down, right',
+		'w, a, s, d',
+		'esc to open hud',
+		'1, and 2 to use the item slots'
+	],
+	mapNames: ['monster', 'lava', 'gas', 'player', 'mineral_green', 'mineral_red', 'mineral_blue', 'mineral_purple', 'mineral_teal', 'mineral_unknown', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
 	player: {},
 	players: {},
 	states: {},
