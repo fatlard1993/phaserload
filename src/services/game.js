@@ -3,7 +3,7 @@ const Worlds = require('./_worlds.js');
 
 var Game = {
 	blockPx: 64,
-	mapNames: ['monster', 'lava', 'gas', 'player', 'mineral_green', 'mineral_red', 'mineral_blue', 'mineral_purple', 'mineral_teal', 'mineral_???', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
+	mapNames: ['monster', 'lava', 'gas', 'player', 'mineral_green', 'mineral_red', 'mineral_blue', 'mineral_purple', 'mineral_teal', 'mineral_unknown', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
 	rand: function(min, max, excludes){
 		excludes = excludes || [];
 

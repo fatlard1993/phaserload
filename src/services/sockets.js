@@ -134,6 +134,14 @@ var Sockets = {
 					echo = true;
 				}
 
+				else if(data.command === 'player_update_offer'){
+					echo = true;
+				}
+
+				else if(data.command === 'player_accept_offer'){
+					echo = true;
+				}
+
 				if(echo){
 					data.player = Player.name;
 					data.room = Player.room;

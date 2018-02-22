@@ -188,6 +188,16 @@ function Load(){
 		else if(data.command === 'player_purchase_part'){
 			delete Game.spaceco.parts[data.partName];
 		}
+
+		else if(data.command === 'player_update_offer' && data.to === Player.name){
+			Game.player.tradeFor = data.offer;
+
+			Game.hud.draw();
+		}
+
+		else if(data.command === 'player_accept_offer' && data.to === Player.name){
+			if(Game.player.offer_sent_accept) Game.player.acceptOffer();
+		}
 	}
 
 	function joinGame(){
