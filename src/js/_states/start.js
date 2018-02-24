@@ -149,9 +149,9 @@ Game.states.start.prototype.create = function(){
 
 		Socket.active.send(JSON.stringify({ command: 'player_move', position: newPosition, moveTime: moveTime, direction: direction, invertTexture: invertTexture, angle: Game.player.sprite.angle }));
 
-		if(Game.player.fuel < 1.5) Game.notify('Your fuel is running low');
+		if(Game.player.fuel < 1.5) Game.notify('Your fuel is\nrunning low');
 
-		else if(Game.player.hull.space < 1.5) Game.notify('Your Hull is almost full');
+		else if(Game.player.hull.space < 1.5) Game.notify('Your Hull is\nalmost full');
 
 		if(Game.phaser.math.distance(newPosition.x, newPosition.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) < Game.blockPx + 10){
 			Game.notify('Open to connect\nto Spaceco', 4);
@@ -247,7 +247,7 @@ Game.states.start.prototype.create = function(){
 
 		else if(item.includes('charge')){
 			if(Game.player.activeCharge){
-				Game.notify('You have already placed a charge');
+				Game.notify('You have already\nplaced a charge');
 
 				return;
 			}
@@ -369,7 +369,7 @@ Game.states.start.prototype.create = function(){
 		}
 
 		else if(Game.player.health <= 25){
-			Game.notify('Your health is running low');
+			Game.notify('Your health is\nrunning low');
 		}
 
 		Game.hud.update();
@@ -1246,7 +1246,7 @@ Game.states.start.prototype.create = function(){
 			setTimeout(function(){
 				Game.spaceco.kill();
 
-				Game.notify('Spaceco was killed by '+ by);
+				Game.notify('Spaceco was killed\nby '+ by);
 			}, 400);
 		}
 		else Game.spaceco.sprite.frame = Game.spaceco.damage;
