@@ -716,7 +716,7 @@ Game.states.start.prototype.create = function(){
 				var hullItems = Object.keys(Game.player.hull), hullItemCount = hullItems.length;
 
 				for(x = 0; x < hullItemCount; ++x){
-					hullItems[x] = Game.capitalize(hullItems[x], 1, '_') +':~:'+ Game.player.hull[hullItems[x]];
+					hullItems[x] = Game.capitalize(hullItems[x], 1, '_') +':~:'+ Game.toFixed(Game.player.hull[hullItems[x]], 2);
 				}
 
 				if(Game.hud.view === 'hull' && hullItemCount > 7){
@@ -990,6 +990,8 @@ Game.states.start.prototype.create = function(){
 						}
 
 						Game.hud.isOpen.pageItems[selection] = (slot > 0 ? '[ '+ slot +' ] ' : '') + Game.hud.isOpen.pageItems[selection].replace(/\[\s\d\s\]\s/, '');
+
+						redraw = 0;
 					}
 
 					Game.hud.open();
@@ -1026,7 +1028,7 @@ Game.states.start.prototype.create = function(){
 				}
 
 				else if(Game.hud.isOpen.view.includes('parts')){
-					// todo
+					// todo?
 				}
 
 				else if(Game.hud.isOpen.view.includes('shop')){
