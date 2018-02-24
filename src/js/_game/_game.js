@@ -161,6 +161,8 @@ var Game = {
 		Game.notify_TO = setTimeout(function(){
 			Game.notify_TO = null;
 
+			Game.notifyText = null;
+
 			if(Game.hud.isOpen) return;
 
 			Game.hud.update();
