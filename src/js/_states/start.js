@@ -1246,13 +1246,16 @@ Game.states.start.prototype.create = function(){
 
 		Socket.active.send(JSON.stringify({ command: 'hurt_spaceco', amount: amount }));
 
-		if(Game.spaceco.damage > 9){
+		if(!Game.spaceco.dead && Game.spaceco.damage > 9){
+			Game.spaceco.dead = 1;
+
 			setTimeout(function(){
 				Game.spaceco.sprite.kill();
 
 				Game.notify('Spaceco was killed\nby '+ by);
 			}, 400);
 		}
+
 		else Game.spaceco.sprite.frame = Game.spaceco.damage;
 	};
 
