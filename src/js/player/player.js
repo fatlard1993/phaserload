@@ -211,6 +211,10 @@ function Load(){
 
 			else Game.hud.bottomLine.setText(Game.player.tradee +' has accepted');
 		}
+
+		else if(data.command === 'crush_mineral'){
+			Game.entities.mineral.crush(data.pos);
+		}
 	}
 
 	function joinGame(){

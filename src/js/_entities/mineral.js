@@ -1,4 +1,4 @@
-/* global Phaser, Game, Log */
+/* global Phaser, Game, Socket, Log */
 
 Game.entities.mineral = function(x, y){
 	Phaser.Sprite.call(this, Game.phaser, x, y, 'mineral', 6);
@@ -28,6 +28,14 @@ Game.entities.mineral.create = function(x, y, type){
 	return mineral;
 };
 
+Game.entities.mineral.crush = function(pos){
+	Game.minerals.forEachAlive(function(mineral){
+		if(mineral.x === pos.x && mineral.y === pos.y){
+			mineral.kill();
+		}
+	});
+};
+
 Game.entities.mineral.collect = function(pos){
 	var mineralWeight = 0.08;
 
@@ -46,8 +54,9 @@ Game.entities.mineral.collect = function(pos){
 			setTimeout(function(){
 				Game.player.hull.space -= mineralWeight;
 
-				// Game.config.map[Game.toGridPos(mineral.x)][Game.toGridPos(mineral.y)][1] = -1;
-				// Game.config.viewBufferMap[Game.toGridPos(mineral.x)][Game.toGridPos(mineral.y)][1] = -1;
+				Game.config.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][1] = 0;
+
+				Socket.active.send(JSON.stringify({ command: 'crush_mineral', pos: pos }));
 
 				mineral.kill();
 			}, animationTime);
