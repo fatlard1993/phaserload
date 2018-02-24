@@ -1244,9 +1244,11 @@ Game.states.start.prototype.create = function(){
 
 		Game.spaceco.damage += amount;
 
+		Socket.active.send(JSON.stringify({ command: 'hurt_spaceco', amount: amount }));
+
 		if(Game.spaceco.damage > 9){
 			setTimeout(function(){
-				Game.spaceco.kill();
+				Game.spaceco.sprite.kill();
 
 				Game.notify('Spaceco was killed\nby '+ by);
 			}, 400);
@@ -1352,7 +1354,7 @@ Game.states.start.prototype.update = function(){
 		}
 	}, this);
 
-	if(Game.spaceco.damage <= 10 && !Game.phaser.tweens.isTweening(Game.spaceco)){
+	if(Game.spaceco.damage <= 10 && !Game.phaser.tweens.isTweening(Game.spaceco.sprite)){
 		var gridPos = {
 			x: Game.toGridPos(Game.spaceco.sprite.x),
 			y: Game.toGridPos(Game.spaceco.sprite.y)
@@ -1365,7 +1367,7 @@ Game.states.start.prototype.update = function(){
 		};
 
 		if(spacecoGroundBase.bottomRight < 3 && spacecoGroundBase.bottom < 3 && spacecoGroundBase.bottomLeft < 3){
-			Game.phaser.add.tween(Game.spaceco).to({ y: Game.spaceco.sprite.y + Game.blockPx }, 500, Phaser.Easing.Sinusoidal.InOut, true);
+			Game.phaser.add.tween(Game.spaceco.sprite).to({ y: Game.spaceco.sprite.y + Game.blockPx }, 500, Phaser.Easing.Sinusoidal.InOut, true);
 
 			Game.spaceco.hurt(1, 'falling');
 		}

@@ -52,6 +52,7 @@ var Sockets = {
 						mapData: Game.generateMap(data.options.mode || 'normal'),
 						players: {},
 						spaceco: {
+							damage: 0,
 							parts: {},
 							position: {}
 						},
@@ -146,6 +147,10 @@ var Sockets = {
 					Sockets.games[Player.room].mapData.map[Game.toGridPos(data.pos.x)][Game.toGridPos(data.pos.y)][1] = 0;
 
 					echo = true;
+				}
+
+				else if(data.command === 'hurt_spaceco'){
+					// Sockets.games[Player.room].spaceco.damage += data.amount;
 				}
 
 				if(echo){
