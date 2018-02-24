@@ -12,10 +12,10 @@ function Load(){
 	var cyclingGroundQueue = false;
 
 	document.addEventListener('visibilitychange', function(evt){
-		Log()(evt, document.hidden);
+		Log(1)(evt, document.hidden);
 		if(document.hidden) return;
 
-		Log()(playerChangeQueue, groundChangeQueue);
+		Log(1)(playerChangeQueue, groundChangeQueue);
 
 		cyclePlayerQueue();
 		cycleGroundQueue();
@@ -28,7 +28,7 @@ function Load(){
 
 		if(!queueLen) return;
 
-		Log()('cycling player queue: ', queue);
+		Log(1)('cycling player queue: ', queue);
 
 		for(var x = 0; x < queueLen; ++x){
 			Game.movePlayer(queue[ids[x]]);
@@ -46,7 +46,7 @@ function Load(){
 
 		if(!queueLen) return;
 
-		Log()('cycling ground queue: ', queue);
+		Log(1)('cycling ground queue: ', queue);
 
 		for(var x = 0; x < queueLen; ++x){
 			Game.setMapPos(queue[ids[x]].pos, queue[ids[x]].id, 1);
@@ -128,7 +128,7 @@ function Load(){
 	};
 
 	function onSocketMessage(data){
-		Log()(data);
+		Log(2)(data);
 
 		if(data.command === 'challenge'){
 			Socket.active.send('{ "command": "challenge_response", "room": "player", "game_room": "'+ Player.room +'" }');
@@ -177,6 +177,15 @@ function Load(){
 			if(!document.hidden && !cyclingPlayerQueue) return Game.movePlayer(data);
 
 			playerChangeQueue[data.player] = data;
+
+			if(Game.player.sprite.x === data.position.x && Game.player.sprite.y === data.position.y){
+				Game.player.tradee = data.player;
+				Game.notify('Open to trade\nwith '+ data.player, 4);
+			}
+			else if(data.player === Game.player.tradee){
+				Game.player.tradee = null;
+				if(Game.hud.isOpen.name === 'trade') Game.hud.close();
+			}
 		}
 
 		else if(data.command === 'player_set_map_position'){
@@ -192,11 +201,15 @@ function Load(){
 		else if(data.command === 'player_update_offer' && data.to === Player.name){
 			Game.player.tradeFor = data.offer;
 
-			Game.hud.draw();
+			Game.hud.bottomLine.setText('offer updated');
 		}
 
 		else if(data.command === 'player_accept_offer' && data.to === Player.name){
+			Game.player.offer_accepted = 1;
+
 			if(Game.player.offer_sent_accept) Game.player.acceptOffer();
+
+			else Game.hud.bottomLine.setText(Game.player.tradee +' has accepted');
 		}
 	}
 

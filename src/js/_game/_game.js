@@ -321,7 +321,7 @@ var Game = {
 	viewBufferMap: [],
 	viewBufferSize: 3,
 	adjustViewPosition: function(newX, newY, time, direction){
-		Log()('adjustViewPosition');
+		// Log()('adjustViewPosition');
 
 		// var oldX = Game.phaser.camera.x;
 		// var oldY = Game.phaser.camera.y;

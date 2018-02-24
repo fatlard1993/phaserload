@@ -33,45 +33,12 @@ Game.states.start.prototype.create = function(){
 	Game.updateMaxHullSpace();
 	Game.updateDrillSpeedMod();
 
-	Game.player.move = function(direction){
-		// Log()('player moving: ', direction);
+	Game.player.move = function(direction, surrounds){
+		Log()('player moving: ', direction);
 
-		var surrounds = Game.player.getSurrounds();
+		surrounds = surrounds || Game.player.getSurrounds();
 
-		if(direction === 'left' && (Game.player.sprite.x <= Game.blockPx/2 || (!surrounds.bottomLeft && !surrounds.bottom && !surrounds.farLeft))){
-			return;
-		}
-		else if(direction === 'right' && (Game.player.sprite.x >= (Game.config.width * 64) - 32 || (!surrounds.bottomRight && !surrounds.bottom && !surrounds.farRight))){
-			return;
-		}
-		else if(direction === 'down' && Game.player.sprite.y === Game.toPx(Game.config.depth - 2)){
-			return;
-		}
-		else if(direction === 'up' && (!surrounds.left && !surrounds.right && !surrounds.topLeft && !surrounds.topRight)){
-			return;
-		}
-
-		if(Game.player.justMoved_TO){
-			clearTimeout(Game.player.justMoved_TO);
-
-			Game.player.justMoved_TO = null;
-		}
-
-		if(!Game.player.justMoved_TO){
-			Game.player.justMoved = true;
-
-			Game.player.justMoved_TO = setTimeout(function(){
-				Game.player.justMoved = false;
-			}, 500);
-		}
-
-		var newPosition = {
-			x: Game.player.sprite.x + (direction === 'left' ? -Game.blockPx : direction === 'right' ? Game.blockPx : 0),
-			y: Game.player.sprite.y + (direction === 'up' ? -Game.blockPx : direction === 'down' ? Game.blockPx : 0)
-		}, newCameraPosition;
-
-		var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
-		var moveTime = targetGroundType ? (Game.config.digTime[targetGroundType.replace('ground_', '')] ? Game.config.digTime[targetGroundType.replace('ground_', '')] - Game.player.drillSpeedMod : Game.player.baseMoveTime) : Game.player.baseMoveTime;
+		var newPosition = {}, newCameraPosition, moveTime;
 
 		if(direction.includes('teleport')){
 			Game.player.sprite.animations.play('teleporting');
@@ -93,72 +60,85 @@ Game.states.start.prototype.create = function(){
 			newPosition.x = teleportPos.x;
 			newPosition.y = teleportPos.y;
 		}
-		else if(direction === 'up' && Math.abs((Game.phaser.camera.y + Game.viewHeight) - Game.player.sprite.y) > Game.viewHeight / 2){
-			newCameraPosition = { x: Game.phaser.camera.x, y: Game.phaser.camera.y - Game.blockPx };
-		}
-		else if(direction === 'down' && Math.abs(Game.phaser.camera.y - Game.player.sprite.y) > Game.viewHeight / 2){
-			newCameraPosition = { x: Game.phaser.camera.x, y: Game.phaser.camera.y + Game.blockPx };
-		}
-		else if(direction === 'left' && Math.abs((Game.phaser.camera.x + Game.viewWidth) - Game.player.sprite.x) > Game.viewWidth / 2){
-			newCameraPosition = { x: Game.phaser.camera.x - Game.blockPx, y: Game.phaser.camera.y };
-		}
-		else if(direction === 'right' && Math.abs(Game.phaser.camera.x - Game.player.sprite.x) > Game.viewWidth / 2){
-			newCameraPosition = { x: Game.phaser.camera.x + Game.blockPx, y: Game.phaser.camera.y };
-		}
-
-		if(targetGroundType && targetGroundType.startsWith('ground')){
-			Game.player.sprite.emitter = Game.phaser.add.emitter(0, 0, 100);
-			Game.player.sprite.addChild(Game.player.sprite.emitter);
-
-			var frameMod = Game.entities.ground.types.indexOf(targetGroundType.replace('ground_', '')) * 4;
-
-			Game.player.sprite.emitter.makeParticles('ground', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod]);
-
-			Game.player.sprite.emitter.x = 32;
-
-			Game.player.sprite.emitter.setScale(0.1, 0.3, 0.1, 0.3);
-
-			Game.player.sprite.emitter.start(true, moveTime + 100, null, Math.round(Game.rand(3, 7)));
-
-			Game.entities.ground.dig(newPosition);
-		}
-
-		if(Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1]) Game.entities.mineral.collect(newPosition);
-
-		if(Game.player.hull.space < 0) moveTime += 250;
-
-		//if(targetGroundType && targetGroundType.startsWith('ground')) Game.phaser.camera.shake((moveTime * 0.00001) * 0.42, moveTime);
-
-		// if(['gas', 'lava'].includes(targetType)) Game.entities[targetType].spread(newPosition.x, newPosition.y, 1);
-
-		var invertTexture = false;
-
-		if(direction === 'up'){
-			if(surrounds.left || surrounds.topLeft && !(surrounds.topRight && surrounds.topLeft && Game.player.lastMove === 'right')){
-				invertTexture = true;
-				Game.player.sprite.angle = 90;
-			}
-			else Game.player.sprite.angle = -90;
-		}
-		else if(direction === 'down'){
-			if(surrounds.right || surrounds.bottomRight && !(surrounds.bottomRight && surrounds.bottomLeft && Game.player.lastMove === 'right')){
-				invertTexture = true;
-				Game.player.sprite.angle = -90;
-			}
-			else Game.player.sprite.angle = 90;
-		}
 		else{
-			Game.player.sprite.angle = 0;
+			newPosition = {
+				x: Game.player.sprite.x + (direction === 'left' ? -Game.blockPx : direction === 'right' ? Game.blockPx : 0),
+				y: Game.player.sprite.y + (direction === 'up' ? -Game.blockPx : direction === 'down' ? Game.blockPx : 0)
+			};
+
+			var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
+			moveTime = targetGroundType ? (Game.config.digTime[targetGroundType.replace('ground_', '')] ? Game.config.digTime[targetGroundType.replace('ground_', '')] - Game.player.drillSpeedMod : Game.player.baseMoveTime) : Game.player.baseMoveTime;
+
+			if(direction === 'up' && Math.abs((Game.phaser.camera.y + Game.viewHeight) - Game.player.sprite.y) > Game.viewHeight / 2){
+				newCameraPosition = { x: Game.phaser.camera.x, y: Game.phaser.camera.y - Game.blockPx };
+			}
+			else if(direction === 'down' && Math.abs(Game.phaser.camera.y - Game.player.sprite.y) > Game.viewHeight / 2){
+				newCameraPosition = { x: Game.phaser.camera.x, y: Game.phaser.camera.y + Game.blockPx };
+			}
+			else if(direction === 'left' && Math.abs((Game.phaser.camera.x + Game.viewWidth) - Game.player.sprite.x) > Game.viewWidth / 2){
+				newCameraPosition = { x: Game.phaser.camera.x - Game.blockPx, y: Game.phaser.camera.y };
+			}
+			else if(direction === 'right' && Math.abs(Game.phaser.camera.x - Game.player.sprite.x) > Game.viewWidth / 2){
+				newCameraPosition = { x: Game.phaser.camera.x + Game.blockPx, y: Game.phaser.camera.y };
+			}
+
+			if(targetGroundType && targetGroundType.startsWith('ground')){
+				Game.player.sprite.emitter = Game.phaser.add.emitter(0, 0, 100);
+				Game.player.sprite.addChild(Game.player.sprite.emitter);
+
+				var frameMod = Game.entities.ground.types.indexOf(targetGroundType.replace('ground_', '')) * 4;
+
+				Game.player.sprite.emitter.makeParticles('ground', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod]);
+
+				Game.player.sprite.emitter.x = 32;
+
+				Game.player.sprite.emitter.setScale(0.1, 0.3, 0.1, 0.3);
+
+				Game.player.sprite.emitter.start(true, moveTime + 100, null, Math.round(Game.rand(3, 7)));
+
+				Game.entities.ground.dig(newPosition);
+			}
+
+			if(Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1]) Game.entities.mineral.collect(newPosition);
+
+			if(Game.player.hull.space < 0) moveTime += 250;
+
+			Game.player.fuel -= moveTime * 0.0001;
+
+			//if(targetGroundType && targetGroundType.startsWith('ground')) Game.phaser.camera.shake((moveTime * 0.00001) * 0.42, moveTime);
+
+			// if(['gas', 'lava'].includes(targetType)) Game.entities[targetType].spread(newPosition.x, newPosition.y, 1);
+
+			var invertTexture = false;
+
+			if(direction === 'up'){
+				if(surrounds.left || surrounds.topLeft && !(surrounds.topRight && surrounds.topLeft && Game.player.lastMove === 'right')){
+					invertTexture = true;
+					Game.player.sprite.angle = 90;
+				}
+				else Game.player.sprite.angle = -90;
+			}
+			else if(direction === 'down'){
+				if(surrounds.right || surrounds.bottomRight && !(surrounds.bottomRight && surrounds.bottomLeft && Game.player.lastMove === 'right')){
+					invertTexture = true;
+					Game.player.sprite.angle = -90;
+				}
+				else Game.player.sprite.angle = 90;
+			}
+			else{
+				Game.player.sprite.angle = 0;
+			}
+
+			if(direction === 'left'){
+				invertTexture = true;
+			}
+
+			if(invertTexture) Game.player.sprite.scale.x = -Game.config.defaultPlayerScale;
+			else Game.player.sprite.scale.x = Game.config.defaultPlayerScale;
+
+			Game.player.lastMoveInvert = invertTexture;
 		}
 
-		if(direction === 'left'){
-			invertTexture = true;
-		}
-
-		if(invertTexture) Game.player.sprite.scale.x = -Game.config.defaultPlayerScale;
-		else Game.player.sprite.scale.x = Game.config.defaultPlayerScale;
-
-		Game.player.lastMoveInvert = invertTexture;
 		Game.player.lastMove = direction;
 
 		Game.player.lastPosition = newPosition;
@@ -168,8 +148,6 @@ Game.states.start.prototype.create = function(){
 		if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime, direction);
 
 		Socket.active.send(JSON.stringify({ command: 'player_move', position: newPosition, moveTime: moveTime, direction: direction, invertTexture: invertTexture, angle: Game.player.sprite.angle }));
-
-		if(!direction.includes('teleport'))	Game.player.fuel -= moveTime * 0.0001;
 
 		if(Game.player.fuel < 1.5) Game.notify('Your fuel is running low');
 
@@ -210,6 +188,27 @@ Game.states.start.prototype.create = function(){
 				Game.player.sprite.emitter = null;
 			}
 		}, moveTime + 150);
+	};
+
+	Game.player.checkMove = function(direction, surrounds){
+		var canMove = 1;
+
+		if(direction === 'left' && (Game.player.sprite.x <= Game.blockPx/2 || (!surrounds.bottomLeft && !surrounds.bottom && !surrounds.farLeft))){
+			canMove = 0;
+		}
+		else if(direction === 'right' && (Game.player.sprite.x >= (Game.config.width * 64) - 32 || (!surrounds.bottomRight && !surrounds.bottom && !surrounds.farRight))){
+			canMove = 0;
+		}
+		else if(direction === 'down' && Game.player.sprite.y === Game.toPx(Game.config.depth - 2)){
+			canMove = 0;
+		}
+		else if(direction === 'up' && (!surrounds.left && !surrounds.right && !surrounds.topLeft && !surrounds.topRight)){
+			canMove = 0;
+		}
+
+		Log()('can'+ (canMove ? '' : 't') +' move '+ direction);
+
+		return canMove;
 	};
 
 	Game.player.getSurrounds = function(){
@@ -401,6 +400,8 @@ Game.states.start.prototype.create = function(){
 			if(!Game.player.inventory[itemNames[x]]) delete Game.player.inventory[itemNames[x]];
 		}
 
+		Game.player.tradee = null;
+
 		Game.player.offer_accepted = Game.player.offer_sent_accept = 0;
 
 		Game.player.offer = {};
@@ -483,6 +484,8 @@ Game.states.start.prototype.create = function(){
 
 		else Game.hud.isOpen = opts = opts || Game.hud.isOpen;
 
+		if(!opts) return;
+
 		opts.heading = opts.heading || '';
 		opts.name = opts.name || 'unnamed';
 		opts.view = opts.view || '';
@@ -542,6 +545,8 @@ Game.states.start.prototype.create = function(){
 			Game.hud.emitter.destroy();
 			Game.hud.emitter = null;
 		}
+
+		Game.player.tradee = null;
 
 		Game.hud.interfaceText.setText('');
 		Game.hud.bottomLine.setText('');
@@ -684,7 +689,7 @@ Game.states.start.prototype.create = function(){
 				var inventoryItems = Object.keys(Game.player.inventory), inventoryItemCount = inventoryItems.length;
 
 				for(x = 0; x < inventoryItemCount; ++x){
-					inventoryItems[x] = Game.capitalize(Game.capitalize(inventoryItems[x], 1, ':~:'), 1, '_');
+					inventoryItems[x] = Game.capitalize(Game.capitalize(inventoryItems[x], 1, ':~:'), 1, '_') +':~:'+ Game.player.inventory[inventoryItems[x]];
 
 					if(Game.itemSlot1.item === inventoryItems[x]) inventoryItems[x] = '[ 1 ] '+ inventoryItems[x];
 					else if(Game.itemSlot2.item === inventoryItems[x]) inventoryItems[x] = '[ 2 ] '+ inventoryItems[x];
@@ -843,10 +848,7 @@ Game.states.start.prototype.create = function(){
 				var tradeInventoryItems = Object.keys(Game.player.inventory), tradeInventoryItemCount = tradeInventoryItems.length;
 
 				for(x = 0; x < tradeInventoryItemCount; ++x){
-					tradeInventoryItems[x] = Game.capitalize(Game.capitalize(tradeInventoryItems[x], 1, ':~:'), 1, '_');
-
-					if(Game.itemSlot1.item === tradeInventoryItems[x]) tradeInventoryItems[x] = '[ 1 ] '+ tradeInventoryItems[x];
-					else if(Game.itemSlot2.item === tradeInventoryItems[x]) tradeInventoryItems[x] = '[ 2 ] '+ tradeInventoryItems[x];
+					tradeInventoryItems[x] = Game.capitalize(Game.capitalize(tradeInventoryItems[x], 1, ':~:'), 1, '_') +':~:'+ Game.player.inventory[tradeInventoryItems[x]];
 				}
 
 				if(Game.hud.isOpen.view === 'tradeInventory' && tradeInventoryItemCount > 7){
@@ -870,10 +872,7 @@ Game.states.start.prototype.create = function(){
 				var tradeOfferItems = Object.keys(Game.player.offer), tradeOfferItemCount = tradeOfferItems.length;
 
 				for(x = 0; x < tradeOfferItemCount; ++x){
-					tradeOfferItems[x] = Game.capitalize(Game.capitalize(tradeOfferItems[x], 1, ':~:'), 1, '_');
-
-					if(Game.itemSlot1.item === tradeOfferItems[x]) tradeOfferItems[x] = '[ 1 ] '+ tradeOfferItems[x];
-					else if(Game.itemSlot2.item === tradeOfferItems[x]) tradeOfferItems[x] = '[ 2 ] '+ tradeOfferItems[x];
+					tradeOfferItems[x] = Game.capitalize(Game.capitalize(tradeOfferItems[x], 1, ':~:'), 1, '_') +':~:'+ Game.player.offer[tradeOfferItems[x]];
 				}
 
 				if(Game.hud.isOpen.view === 'tradeOffer' && tradeOfferItemCount > 7){
@@ -897,10 +896,7 @@ Game.states.start.prototype.create = function(){
 				var tradeForItems = Object.keys(Game.player.tradeFor), tradeForItemCount = tradeForItems.length;
 
 				for(x = 0; x < tradeForItemCount; ++x){
-					tradeForItems[x] = Game.capitalize(Game.capitalize(tradeForItems[x], 1, ':~:'), 1, '_');
-
-					if(Game.itemSlot1.item === tradeForItems[x]) tradeForItems[x] = '[ 1 ] '+ tradeForItems[x];
-					else if(Game.itemSlot2.item === tradeForItems[x]) tradeForItems[x] = '[ 2 ] '+ tradeForItems[x];
+					tradeForItems[x] = Game.capitalize(Game.capitalize(tradeForItems[x], 1, ':~:'), 1, '_') +':~:'+ Game.player.tradeFor[tradeForItems[x]];
 				}
 
 				if(Game.hud.isOpen.view === 'tradeFor' && tradeForItemCount > 7){
@@ -923,9 +919,14 @@ Game.states.start.prototype.create = function(){
 			else if(selection === 3){
 				Game.player.offer_sent_accept = 1;
 
-				Socket.active.send(JSON.parse({ command: 'player_accept_offer', to: Game.player.tradee }));
+				Game.hud.isOpen.view = 'accept';
+				Game.hud.isOpen.menuItems[3] = 'ACCEPTED';
+
+				Socket.active.send(JSON.stringify({ command: 'player_accept_offer', to: Game.player.tradee }));
 
 				if(Game.player.offer_accepted) Game.player.acceptOffer();
+
+				else Game.hud.bottomLine.setText('offer accepted');
 			}
 		}
 
@@ -1092,39 +1093,39 @@ Game.states.start.prototype.create = function(){
 		}
 
 		else if(Game.hud.isOpen.name === 'trade'){
-			if(Game.hud.isOpen.view.includes('inventory')){
+			if(Game.hud.isOpen.view.includes('Inventory')){
 				item = Object.keys(Game.player.inventory)[selection + (Game.hud.isOpen.view.includes('pg') ? (parseInt(Game.hud.isOpen.view.slice(-1)) - 1) * 7 : 0)];
 
 				if(item){
 					bottomLineText = 'Offering '+ Game.capitalize((item.includes(':~:') ? item.split(':~:')[2] : item), 1, '_');
 
-					Game.offer[item] = Game.offer[item] || 0;
+					Game.player.offer[item] = Game.player.offer[item] || 0;
 
-					Game.offer[item] = Math.min(Game.offer[item] + 1, Game.inventory[item]);
+					Game.player.offer[item] = Math.min(Game.player.offer[item] + 1, Game.player.inventory[item]);
 
-					Socket.active.send(JSON.parse({ command: 'player_update_offer', to: Game.player.tradee, offer: Game.player.offer }));
+					Socket.active.send(JSON.stringify({ command: 'player_update_offer', to: Game.player.tradee, offer: Game.player.offer }));
 
 					Game.player.offer_accepted = Game.player.offer_sent_accept = 0;
 
-					Game.hud.open();
+					redraw = 1;
 				}
 			}
 
-			else if(Game.hud.isOpen.view.includes('offer')){
+			else if(Game.hud.isOpen.view.includes('Offer')){
 				item = Object.keys(Game.player.offer)[selection + (Game.hud.isOpen.view.includes('pg') ? (parseInt(Game.hud.isOpen.view.slice(-1)) - 1) * 7 : 0)];
 
 				if(item){
 					bottomLineText = 'Revoking '+ Game.capitalize((item.includes(':~:') ? item.split(':~:')[2] : item), 1, '_');
 
-					--Game.offer[item];
+					--Game.player.offer[item];
 
-					if(!Game.offer[item]) delete Game.offer[item];
+					if(!Game.player.offer[item]) delete Game.player.offer[item];
 
-					Socket.active.send(JSON.parse({ command: 'player_update_offer', to: Game.player.tradee, offer: Game.player.offer }));
+					Socket.active.send(JSON.stringify({ command: 'player_update_offer', to: Game.player.tradee, offer: Game.player.offer }));
 
 					Game.player.offer_accepted = Game.player.offer_sent_accept = 0;
 
-					Game.hud.open();
+					redraw = 1;
 				}
 			}
 		}
@@ -1369,18 +1370,20 @@ Game.states.start.prototype.update = function(){
 	}
 
 	if(!Game.phaser.tweens.isTweening(Game.player.sprite) && !Game.phaser.tweens.isTweening(Game.hud.scale)){
-		var moving;
+		var moving, altDirection;
 		var surrounds = Game.player.getSurrounds();
 
 		if(this.input.activePointer.isDown){
-			if(Game.hud.isOpen && !Game.hud.justUsedItemSlot && !Game.phaser.tweens.isTweening(Game.hud.scale)){
+			if(Game.hud.isOpen){//&& !Game.hud.justUsedItemSlot && !Game.phaser.tweens.isTweening(Game.hud.scale)
 				if(this.input.activePointer.x > 575 || this.input.activePointer.y > 460) Game.hud.close();
 
 				else Game.hud.handlePointer(this.input.activePointer);
+
+				return;
 			}
 
 			else if(!Game.hud.isOpen && Game.phaser.math.distance(this.input.activePointer.x, this.input.activePointer.y, 70, 50) < 128){
-				Game.player.openHUD();
+				return Game.player.openHUD();
 			}
 
 			else if(Game.phaser.math.distance(this.input.activePointer.x, this.input.activePointer.y, Game.viewWidth - 32, 32) < 32){
@@ -1392,6 +1395,8 @@ Game.states.start.prototype.update = function(){
 				if(!Game.itemSlot1.item) Game.hud.open('console');
 
 				else Game.player.useItem(1, Game.itemSlot1.item);
+
+				return;
 			}
 
 			else if(Game.phaser.math.distance(this.input.activePointer.x, this.input.activePointer.y, Game.viewWidth - 32, 106) < 32){
@@ -1403,32 +1408,43 @@ Game.states.start.prototype.update = function(){
 				if(!Game.itemSlot2.item) Game.hud.open('console');
 
 				else Game.player.useItem(2, Game.itemSlot2.item);
+
+				return;
 			}
 
-			else {
+			else{
 				var xDiff = Game.player.sprite.x - this.input.activePointer.x - Game.phaser.camera.x;
 				var yDiff = Game.player.sprite.y - this.input.activePointer.y - Game.phaser.camera.y;
 
 				var xDirection = xDiff > 0 ? 'left' : 'right';
 				var yDirection = yDiff > 0 ? 'up' : 'down';
 
-				moving = Math.abs(xDiff) > Math.abs(yDiff) ? xDirection : yDirection;
-			}
+				Log()(xDiff, yDiff);
 
-			return;
+				xDiff = Math.abs(xDiff);
+				yDiff = Math.abs(yDiff);
+
+				moving = xDiff > yDiff ? (xDiff > 10 ? xDirection : null) : (yDiff > 10 ? yDirection : null);
+				altDirection = xDiff > yDiff ? (yDiff > 10 ? yDirection : null) : (xDiff > 10 ? xDirection : null);
+			}
 		}
 
-		if(this.input.keyboard.isDown(Phaser.Keyboard.ESC) && !Game.justPressedEsc){
+		else if(this.input.keyboard.isDown(Phaser.Keyboard.ESC) && !Game.justPressedEsc){
 			Game.justPressedEsc = true;
 			Game.justPressedEsc_TO = setTimeout(function(){ Game.justPressedEsc = false; }, 1000);
 
 			if(Game.hud.isOpen) Game.hud.close();
 
-			else{
-				Game.player.openHUD();
+			else Game.player.openHUD();
 
-				return;
-			}
+			return;
+		}
+
+		else if(this.input.keyboard.isDown(Phaser.Keyboard.ONE)){
+			return Game.player.useItem(1, Game.itemSlot1.item);
+		}
+		else if(this.input.keyboard.isDown(Phaser.Keyboard.TWO)){
+			return Game.player.useItem(2, Game.itemSlot2.item);
 		}
 
 		else if(this.input.keyboard.isDown(Phaser.Keyboard.LEFT) || this.input.keyboard.isDown(Phaser.Keyboard.A)){
@@ -1444,16 +1460,18 @@ Game.states.start.prototype.update = function(){
 			moving = 'up';
 		}
 
-		else if(this.input.keyboard.isDown(Phaser.Keyboard.ONE)){
-			Game.player.useItem(1, Game.itemSlot1.item);
-		}
-		else if(this.input.keyboard.isDown(Phaser.Keyboard.TWO)){
-			Game.player.useItem(2, Game.itemSlot2.item);
+		var canMove;
+
+		if(moving) canMove = Game.player.checkMove(moving, surrounds);
+
+		if(!canMove && altDirection){
+			canMove = Game.player.checkMove(altDirection, surrounds);
+			if(canMove) moving = altDirection;
 		}
 
-		if(moving){
-			Game.player.move(moving);
-		}
+		if(!canMove) moving = null;
+
+		if(moving) Game.player.move(moving, surrounds);
 
 		else if(!Game.player.justMoved){
 			if(!surrounds.left && !surrounds.right && !surrounds.bottom){
