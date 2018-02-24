@@ -153,7 +153,7 @@ Game.states.start.prototype.create = function(){
 
 		else if(Game.player.hull.space < 1.5) Game.notify('Your Hull is almost full');
 
-		else if(Game.phaser.math.distance(newPosition.x, newPosition.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) < Game.blockPx + 10){
+		if(Game.phaser.math.distance(newPosition.x, newPosition.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) < Game.blockPx + 10){
 			Game.notify('Open to connect\nto Spaceco', 4);
 
 			Game.player.tradee = ':~:spaceco:~:';
