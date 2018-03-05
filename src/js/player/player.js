@@ -1,4 +1,4 @@
-/* global Cjs, Dom, Log, Socket, Interact, Game, Phaser */
+/* global Cjs, Dom, Log, WS, Interact, Game, Phaser, View */
 
 var Loaded = false;
 
@@ -61,8 +61,14 @@ function Load(){
 		room: Dom.location.query.get('room')
 	};
 
-	var views = {
+	View.init('?', {
 		main: function(){
+			Dom.Content = Dom.Content || document.getElementById('Content');
+
+			Dom.empty(Dom.Content);
+
+			var heading = Dom.createElem('div', { id: 'heading', textContent: 'Phaserload - Join '+ Player.room });
+
 			var joinGameForm = Dom.createElem('div', { id: 'JoinGameForm' });
 
 			var cachedName = Dom.cookie.get('player_name');
@@ -74,6 +80,7 @@ function Load(){
 
 			var lobbyButton = Dom.createElem('button', { id: 'LobbyButton', textContent: 'Back to Lobby' });
 
+			Dom.Content.appendChild(heading);
 			joinGameForm.appendChild(nameInput);
 			joinGameForm.appendChild(joinButton);
 			joinGameForm.appendChild(lobbyButton);
@@ -82,6 +89,10 @@ function Load(){
 			nameInput.focus();
 		},
 		play: function(){
+			Dom.Content = Dom.Content || document.getElementById('Content');
+
+			Dom.empty(Dom.Content);
+
 			var gameContainer = Dom.createElem('div', { id: 'Game' });
 
 			Dom.Content.appendChild(gameContainer);
@@ -125,19 +136,69 @@ function Load(){
 				Game.phaser.state.start('load');
 			}, 1000);
 		}
-	};
+	});
 
-	function onSocketMessage(data){
-		Log(2)(data);
+	function joinGame(){
+		if(!document.querySelectorAll('.invalid').length){
+			var nameInput = document.getElementById('JoinGameName');
 
-		if(data.command === 'challenge'){
-			Socket.active.send('{ "command": "challenge_response", "room": "player", "game_room": "'+ Player.room +'" }');
+			if(Object.keys(Game.players).includes(nameInput.value)){
+				nameInput.className = nameInput.className.replace(/\svalidated|\sinvalid/g, '') + ' invalid';
+
+				return;
+			}
+
+			Dom.Content = Dom.Content || document.getElementById('Content');
+
+			Player.name = nameInput.value;
+
+			Dom.cookie.set('player_name', Player.name);
+
+			WS.send({ command: 'player_join', game_room: Player.room, playerName: Player.name });
+
+			Dom.empty(Dom.Content);
+		}
+	}
+
+	Interact.onPointerUp.push(function(evt){
+		Log()(evt);
+
+		if(evt.target.id === 'JoinGameButton'){
+			evt.preventDefault();
+			Interact.pointerTarget = null;
+
+			joinGame();
 		}
 
-		else if(data.command === 'challenge_accept'){
+		else if(evt.target.id === 'LobbyButton'){
+			evt.preventDefault();
+			Interact.pointerTarget = null;
+
+			Dom.Content = Dom.Content || document.getElementById('Content');
+
+			Dom.empty(Dom.Content);
+
+			Dom.changeLocation('/lobby');
+		}
+	});
+
+	Interact.onKeyUp.push(function(evt, keyPressed){
+		if(keyPressed === 'ENTER'){
+			if(document.getElementById('JoinGameButton')){
+				evt.preventDefault();
+
+				joinGame();
+			}
+		}
+	});
+
+	WS.onMessage.push(function onSocketMessage(data){
+		Log(2)(data);
+
+		if(data.command === 'challenge_accept'){
 			Game.players = data.players;
 
-			Dom.draw();
+			View.draw();
 		}
 
 		else if(data.command === 'player_join_accept'){
@@ -150,7 +211,11 @@ function Load(){
 
 			Game.config = Object.assign(Game.config, data.mapData);
 
-			Dom.draw('play');
+			View.draw('play');
+		}
+
+		else if(data.command === 'goto_lobby'){
+			Dom.changeLocation('/lobby');
 		}
 
 		if(!data.room || !Player.room || data.room !== Player.room) return;
@@ -160,8 +225,8 @@ function Load(){
 
 			Game.players[data.player.name] = data.player;
 
-			if(Game.currentView === 'play'){
-				Game.players[data.player.name].sprite = Game.entities.player.create(Game.players[data.player.name]);
+			if(View.current === 'play'){
+				Game.players[data.player.name].sprite = Game.entities.player.create(data.player);
 			}
 		}
 
@@ -171,7 +236,7 @@ function Load(){
 			delete Game.players[data.name];
 		}
 
-		if(Game.currentView === 'main' || data.player === Player.name) return;
+		if(View.current === 'main' || data.player === Player.name) return;
 
 		else if(data.command === 'player_move'){
 			if(!document.hidden && !cyclingPlayerQueue) return Game.movePlayer(data);
@@ -215,73 +280,13 @@ function Load(){
 		else if(data.command === 'crush_mineral'){
 			Game.entities.mineral.crush(data.pos);
 		}
-	}
+	});
 
-	function joinGame(){
-		if(!document.querySelectorAll('.invalid').length){
-			var nameInput = document.getElementById('JoinGameName');
+	WS.room = 'player_'+ Player.room;
 
-			if(Object.keys(Game.players).includes(nameInput.value)){
-				nameInput.className = nameInput.className.replace(/\svalidated|\sinvalid/g, '') + ' invalid';
+	WS.connect();
 
-				return;
-			}
-
-			Dom.Content = Dom.Content || document.getElementById('Content');
-
-			Player.name = nameInput.value;
-
-			Dom.cookie.set('player_name', Player.name);
-
-			Socket.active.send('{ "command": "player_join", "game_room": "'+ Player.room +'", "playerName": "'+ Player.name +'" }');
-
-			Dom.empty(Dom.Content);
-		}
-	}
-
-	Dom.draw = function draw(view){
-		Dom.Content = Dom.Content || document.getElementById('Content');
-
-		Dom.empty(Dom.Content);
-
-		Dom.setTitle('Phaserload - player');
-
-		Game.currentView = view || 'main';
-
-		views[Game.currentView](arguments[1]);
-	};
-
-	Interact.onPointerUp = function(evt){
-		Log()(evt);
-
-		if(evt.target.id === 'JoinGameButton'){
-			evt.preventDefault();
-
-			joinGame();
-		}
-
-		else if(evt.target.id === 'LobbyButton'){
-			evt.preventDefault();
-
-			Dom.Content = Dom.Content || document.getElementById('Content');
-
-			Dom.empty(Dom.Content);
-
-			window.location = window.location.protocol +'//'+ window.location.hostname +':'+ window.location.port +'/lobby';
-		}
-	};
-
-	Interact.onKeyUp = function(evt, keyPressed){
-		if(keyPressed === 'ENTER'){
-			if(document.getElementById('JoinGameButton')){
-				evt.preventDefault();
-
-				joinGame();
-			}
-		}
-	};
-
-	Socket.init(null, onSocketMessage);
+	Dom.setTitle('Phaserload - player');
 }
 
 document.addEventListener('DOMContentLoaded', Load);

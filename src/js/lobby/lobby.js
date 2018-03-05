@@ -1,4 +1,4 @@
-/* global Cjs, Dom, Log, Socket, Interact */
+/* global Cjs, Dom, Log, WS, Interact, View */
 
 var Loaded = false;
 
@@ -8,10 +8,15 @@ function Load(){
 
 	var games;
 	var createdGame = false;
-	var currentView = 'main';
 
-	var views = {
+	View.init('/lobby', {
 		main: function(){
+			Dom.Content = Dom.Content || document.getElementById('Content');
+
+			Dom.empty(Dom.Content);
+
+			var heading = Dom.createElem('div', { id: 'heading', textContent: 'Phaserload - Lobby' });
+
 			var gamesList = Dom.createElem('ul', { id: 'GamesList' });
 			var gameNames = Object.keys(games), gameCount = gameNames.length;
 
@@ -24,9 +29,16 @@ function Load(){
 				gamesList.appendChild(li);
 			}
 
+			Dom.Content.appendChild(heading);
 			Dom.Content.appendChild(gamesList);
 		},
 		new_game: function(){
+			Dom.Content = Dom.Content || document.getElementById('Content');
+
+			Dom.empty(Dom.Content);
+
+			var heading = Dom.createElem('div', { id: 'heading', textContent: 'Phaserload - New Game' });
+
 			var newGameForm = Dom.createElem('div', { id: 'NewGameForm' });
 
 			var nameInput = Dom.createElem('input', { type: 'text', id: 'NewGameRoomName', placeholder: 'Room Name', validation: /^.{4,32}$/ });
@@ -35,46 +47,15 @@ function Load(){
 			var createButton = Dom.createElem('button', { id: 'NewGameCreateButton', textContent: 'Create' });
 			var lobbyButton = Dom.createElem('button', { id: 'LobbyButton', textContent: 'Back to Lobby' });
 
+			Dom.Content.appendChild(heading);
 			newGameForm.appendChild(nameInput);
 			newGameForm.appendChild(createButton);
 			newGameForm.appendChild(lobbyButton);
 			Dom.Content.appendChild(newGameForm);
 
 			nameInput.focus();
-		},
-		existing_game: function(name){
-			var title = Dom.createElem('div', { className: 'gameTitle', textContent: name });
-
-			var playButton = Dom.createElem('button', { id: 'PlayButton', textContent: 'Play' });
-			var lobbyButton = Dom.createElem('button', { id: 'LobbyButton', textContent: 'Back to Lobby' });
-
-			Dom.Content.appendChild(title);
-			Dom.Content.appendChild(playButton);
-			Dom.Content.appendChild(lobbyButton);
 		}
-	};
-
-	function onSocketMessage(data){
-		Log()(data);
-
-		if(data.command === 'challenge'){
-			Socket.active.send('{ "command": "challenge_response", "room": "lobby" }');
-		}
-
-		else if(data.command === 'challenge_accept' || data.command === 'lobby_reload'){
-			games = data.games;
-
-			if(data.command === 'lobby_reload' && createdGame){
-				window.location = window.location.protocol +'//'+ window.location.hostname +':'+ window.location.port +'/player?room='+ createdGame;
-
-			Dom.Content = Dom.Content || document.getElementById('Content');
-
-			Dom.empty(Dom.Content);
-			}
-
-			if(currentView === 'main') Dom.draw();
-		}
-	}
+	});
 
 	function createNewGame(){
 		if(!document.querySelectorAll('.invalid').length){
@@ -88,41 +69,31 @@ function Load(){
 
 			Log()(createdGame, options);
 
-			Socket.active.send(JSON.stringify({ command: 'lobby_new_game', options: options }));
+			WS.send({ command: 'lobby_new_game', options: options });
 
 			Dom.empty(Dom.Content);
 		}
 	}
 
-	Dom.draw = function draw(view){
-		currentView = view || 'main';
-
-		Dom.Content = Dom.Content || document.getElementById('Content');
-
-		Dom.empty(Dom.Content);
-
-		Dom.setTitle('Phaserload - lobby');
-
-		views[currentView](arguments[1]);
-	};
-
-	Interact.onPointerUp = function(evt){
+	Interact.onPointerUp.push(function(evt){
 		Log()(evt);
 
 		if(evt.target.id === 'NewGame'){
 			evt.preventDefault();
+			Interact.pointerTarget = null;
 
 			Log()(evt.target.textContent);
 
-			Dom.draw('new_game');
+			View.draw('new_game');
 		}
 
 		else if(evt.target.className === 'game'){
 			evt.preventDefault();
+			Interact.pointerTarget = null;
 
 			Log()(evt.target.textContent);
 
-			window.location = window.location.protocol +'//'+ window.location.hostname +':'+ window.location.port +'/player?room='+ evt.target.children[0].textContent;
+			Dom.changeLocation('/player?room='+ evt.target.children[0].textContent);
 
 			Dom.Content = Dom.Content || document.getElementById('Content');
 
@@ -131,6 +102,7 @@ function Load(){
 
 		else if(evt.target.className.includes('toggle')){
 			evt.preventDefault();
+			Interact.pointerTarget = null;
 
 			Log()(evt.target.textContent);
 
@@ -139,22 +111,24 @@ function Load(){
 
 		else if(evt.target.id === 'NewGameCreateButton'){
 			evt.preventDefault();
+			Interact.pointerTarget = null;
 
 			createNewGame();
 		}
 
 		else if(evt.target.id === 'LobbyButton'){
 			evt.preventDefault();
+			Interact.pointerTarget = null;
 
 			Dom.Content = Dom.Content || document.getElementById('Content');
 
 			Dom.empty(Dom.Content);
 
-			window.location.reload();
+			View.draw('main');
 		}
-	};
+	});
 
-	Interact.onKeyUp = function(evt, keyPressed){
+	Interact.onKeyUp.push(function(evt, keyPressed){
 		if(keyPressed === 'ENTER'){
 			if(document.getElementById('NewGameCreateButton')){
 				evt.preventDefault();
@@ -162,9 +136,35 @@ function Load(){
 				createNewGame();
 			}
 		}
-	};
+	});
 
-	Socket.init(null, onSocketMessage);
+	WS.room = 'lobby';
+
+	WS.onMessage.push(function onSocketMessage(data){
+		Log()(data);
+
+		if(data.command === 'challenge_accept' || data.command === 'lobby_reload'){
+			games = data.games;
+
+			if(data.command === 'lobby_reload' && createdGame){
+				Dom.changeLocation('/player?room='+ createdGame);
+
+				Dom.Content = Dom.Content || document.getElementById('Content');
+
+				Dom.empty(Dom.Content);
+			}
+
+			if(!View.current.length || (View.current === 'main')) View.draw();
+		}
+
+		else if(data.command === 'goto_lobby'){
+			Dom.changeLocation('/lobby');
+		}
+	});
+
+	WS.connect();
+
+	Dom.setTitle('Phaserload - lobby');
 }
 
 document.addEventListener('DOMContentLoaded', Load);
