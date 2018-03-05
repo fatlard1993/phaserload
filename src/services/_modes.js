@@ -1,7 +1,6 @@
 var Modes = {
 	normal: {
 		worldCategory: 'normal',
-		baseDrillMoveTime: 300,
 		hudLayout: {
 			position: 'GPS',
 			credits: '$',
@@ -25,14 +24,14 @@ var Modes = {
 				super_oxygen_liquid_nitrogen: 9
 			},
 			shop: {
-				teleporter: 15,
-				responder_teleporter: 25,
-				repair: 50,
+				teleporter: 12,
+				responder_teleporter: 20,
+				repair: 40,
 				transport: 300,
 				timed_charge: 10,
 				remote_charge: 15,
-				timed_freeze_charge: 15,
-				remote_freeze_charge: 20
+				timed_freeze_charge: 8,
+				remote_freeze_charge: 12
 			}
 		},
 		blockBehavior: {
