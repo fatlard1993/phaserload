@@ -1363,10 +1363,10 @@ Game.states.start.prototype.update = function(){
 		var hudIsTweening = Game.phaser.tweens.isTweening(Game.hud.scale);
 
 		if(this.input.activePointer.isDown){
-			if(Game.hud.isOpen && !hudIsTweening){//&& !Game.hud.justUsedItemSlot
-				if(this.input.activePointer.x > 575 || this.input.activePointer.y > 460) Game.hud.close();
+			if(Game.hud.isOpen){//&& !Game.hud.justUsedItemSlot
+				if(!hudIsTweening && (this.input.activePointer.x > 575 || this.input.activePointer.y > 460)) Game.hud.close();
 
-				else Game.hud.handlePointer(this.input.activePointer);
+				else if(!hudIsTweening) Game.hud.handlePointer(this.input.activePointer);
 
 				return;
 			}
