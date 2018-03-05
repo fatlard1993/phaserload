@@ -10,7 +10,7 @@ const Log = require(process.env.DIR +'/_log.js');
 const Errors = require(process.env.DIR +'/middleware/error.js');
 const Sockets = require(process.env.DIR +'/services/sockets.js');
 
-const VERSION = '0.2.dev';
+const VERSION = '0.3.dev';
 
 const PORT = process.env.PORT || 80;
 
@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 80;
 	initExpress(function(){
 		Sockets.active = Sockets.init(httpServer);
 
-		Log()(`-	Version ${VERSION}		-`);
+		Log()(`-	Version ${VERSION}		-\n`);
 	});
 })();
 

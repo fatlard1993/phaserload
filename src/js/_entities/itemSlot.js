@@ -1,6 +1,6 @@
-/* global Phaser, Game, Log */
+/* global Game, Log */
 
-Game.entities.itemSlot = function(game){};
+Game.entities.itemSlot = function(){};
 
 Game.entities.itemSlot.create = function(x, y){
 	var itemSlot =	Game.phaser.add.sprite(x, y, 'itemSlot', 2);
@@ -16,7 +16,7 @@ Game.entities.itemSlot.create = function(x, y){
 };
 
 Game.entities.itemSlot.setItem = function(slotNum, item){
-	console.log(slotNum, item);
+	Log()(slotNum, item);
 	Game['itemSlot'+ slotNum].item = item;
 
 	Game['itemSlot'+ slotNum].frame = item === '' ? 0 : 1;
