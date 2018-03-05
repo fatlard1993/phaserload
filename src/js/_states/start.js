@@ -364,14 +364,7 @@ Game.states.start.prototype.create = function(){
 
 		Game.player.health -= amount;
 
-		if(Game.player.health <= 0){
-			Game.player.sprite.kill();
-
-			// Game.setMapPos({ x: Game.player.sprite.x, y: Game.player.sprite.y }, -1);
-
-			Game.loseReason = by;
-			Game.phaser.time.events.add(200, function(){ Game.phaser.state.start('end'); });
-		}
+		if(Game.player.health <= 0) Game.player.kill(by);
 
 		else if(Game.player.health <= 25){
 			Game.notify('Your health is\nrunning low');
@@ -381,9 +374,12 @@ Game.states.start.prototype.create = function(){
 	};
 
 	Game.player.kill = function(by){
-		Game.player.sprite.kill();
-
+		Game.loseDepth = Game.toGridPos(Game.player.sprite.y);
 		Game.loseReason = by;
+
+		WS.send({ command: 'player_death', by: by, at: Game.loseDepth });
+
+		Game.player.sprite.kill();
 
 		return Game.phaser.time.events.add(200, function(){ Game.phaser.state.start('end'); }, this);
 	};

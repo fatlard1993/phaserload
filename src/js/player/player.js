@@ -61,8 +61,8 @@ function Load(){
 		room: Dom.location.query.get('room')
 	};
 
-	View.init('?', {
-		main: function(){
+	View.init('/player', {
+		join: function(){
 			Dom.Content = Dom.Content || document.getElementById('Content');
 
 			Dom.empty(Dom.Content);
@@ -236,7 +236,7 @@ function Load(){
 			delete Game.players[data.name];
 		}
 
-		if(View.current === 'main' || data.player === Player.name) return;
+		if(View.current === 'join' || data.player === Player.name) return;
 
 		else if(data.command === 'player_move'){
 			if(!document.hidden && !cyclingPlayerQueue) return Game.movePlayer(data);
@@ -279,6 +279,10 @@ function Load(){
 
 		else if(data.command === 'crush_mineral'){
 			Game.entities.mineral.crush(data.pos);
+		}
+
+		else if(data.command === 'player_death'){
+			Game.notify(data.player +(data.by === 'fuel' ? 'ran out of fuel' : '\ndied by '+ data.by) +'\nat: '+ data.at, 4);
 		}
 	});
 
