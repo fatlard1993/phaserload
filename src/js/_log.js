@@ -1,6 +1,7 @@
 /* global Dom */
 
 var Log, LogHelp = {
+	DBG: 0,
 	colorMap: {
 		reset: '\x1b[0m',
 		info: '\x1b[34m',
@@ -42,8 +43,11 @@ else{
 	Log.warn('Log', 'Enabled limited non ES6 support, only Log(v)(args), Log.warn(v)(args) and Log.error(v)(args) are available!');
 }
 
-if(typeof Dom !== 'undefined'){
-	LogHelp.DBG = (parseInt(Dom.location.query.get('DBG')) || 0);
+if(typeof window !== 'undefined'){
+	if(typeof Dom !== 'undefined') LogHelp.DBG = (parseInt(Dom.location.query.get('DBG')) || 0);
+	if(localStorage.DBG && !LogHelp.DBG) LogHelp.DBG = parseInt(localStorage.DBG);
+
+	localStorage.DBG = LogHelp.DBG;
 }
 
 else{
@@ -51,5 +55,7 @@ else{
 
 	LogHelp.isNode = true;
 	LogHelp.mapColors = process.env.COLOR;
-	LogHelp.DBG = process.env.DBG;
+	if(process.env.DBG) LogHelp.DBG = process.env.DBG;
 }
+
+Log()('Log verbosity set to: '+ LogHelp.DBG);

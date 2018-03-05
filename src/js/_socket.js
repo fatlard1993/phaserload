@@ -1,55 +1,97 @@
-/* global Dom, Log */
+/* global Log */
 
-var Socket = {
-	activity: 0,
-	init: function init(onopen_func, onmessage_func){
-		Socket.active = new WebSocket('ws://'+ window.location.hostname +':'+ (window.location.port || 80));
+var WS = {
+	room: 'unset',
+	disconnectedQueue: [],
+	onOpen: [],
+	onMessage: [],
+	onError: [],
+	onClose: [],
+	runEventFunctions: function(){
+		var eventName = Array.prototype.shift.apply(arguments);
 
-		Socket.active.onmessage = function onmessage(message){
-			Log(1)('message', message);
-			var data = JSON.parse(message.data);
-
-			if(data.command === 'reload'){
-				setTimeout(function reload_TO(){ window.location.reload(false); }, data.delay);
-			}
-
-			else if(data.command === 'get out') Socket.disconnect(data.message);
-
-			else if(data.command === 'goto_lobby'){
-				window.location = window.location.protocol +'//'+ window.location.hostname +':'+ window.location.port +'/lobby';
-			}
-
-			else{
-				if(onmessage_func) onmessage_func(data);
-				if(Socket.onmessage) Socket.onmessage(data);
-			}
-		};
-
-		Socket.active.onopen = function onopen(data){
-			Log()('onopen', data);
-
-			if(onopen_func) onopen_func(data);
-		};
-
-		Socket.active.onerror = function onerror(data){
-			Log()('error', arguments);
-
-			Log.error()('onerror', data);
-
-			// Socket.disconnect('Socket communication errored out with code: '+ data.code);
-		};
-
-		Socket.active.onclose = function onclose(data){
-			Log.warn()('onclose', data);
-
-			if(!data.wasClean) Socket.disconnect('Socket communication has been lost!');
-		};
+		for(var x = 0, funcCount = WS[eventName].length; x < funcCount; ++x){
+			WS[eventName][x].apply(null, arguments);
+		}
 	},
-	disconnect: function disconnect(message){
-		setTimeout(function disconnect_TO(){
-			Socket.active.close();
+	flushQueue: function(){
+		if(!WS.disconnectedQueue.length) return;
 
-			Log.warn()(message);
-		}, 200);
+		WS.active.send(WS.disconnectedQueue.shift());
+
+		WS.flushQueue();
+	},
+	connect: function(){
+		WS.active = new WebSocket('ws://'+ window.location.hostname +':'+ (window.location.port || 80));
+
+		WS.active.onmessage = WS.onmessage_root;
+
+		WS.active.onopen = WS.onopen_root;
+
+		WS.active.onerror = WS.onerror_root;
+
+		WS.active.onclose = WS.onclose_root;
+	},
+	reconnect: function(){
+		WS.reconnecting = true;
+
+		if(WS.reconnection_TO) return;
+
+		WS.reconnection_TO_time = WS.reconnection_TO_time || 1500;
+
+		WS.reconnection_TO = setTimeout(function(){
+			Log()('Attempting reconnection... ', WS.reconnection_TO_time);
+
+			WS.reconnection_TO = null;
+			WS.reconnection_TO_time += 200;
+
+			WS.connect();
+		}, WS.reconnection_TO_time);
+	},
+	send: function(json, dontRetry){
+		var message = JSON.stringify(json);
+
+		// if(WS.active.readyState > 1){
+		// 	if(!dontRetry) WS.disconnectedQueue.push(message);
+
+		// 	WS.reconnect();
+		// }
+
+		// else
+		WS.active.send(message);
+	},
+	onopen_root: function onopen(data){
+		Log()('onopen', data);
+
+		WS.reconnection_TO_time = null;
+
+		WS.runEventFunctions('onOpen', data);
+	},
+	onmessage_root: function onmessage(message){
+		Log(1)('message', message);
+
+		var data = JSON.parse(message.data);
+
+		if(data.command === 'challenge'){
+			WS.send({ command: 'challenge_response', room: WS.room });
+		}
+
+		else if(data.command === 'reload'){
+			setTimeout(function reload_TO(){ window.location.reload(false); }, data.delay);
+		}
+
+		else WS.runEventFunctions('onMessage', data);
+	},
+	onerror_root: function onerror(data){
+		Log.error()('onerror', data);
+
+		WS.runEventFunctions('onError', data);
+	},
+	onclose_root: function onclose(data){
+		Log.warn()('onclose', data);
+
+		WS.runEventFunctions('onClose', data);
+
+		// WS.reconnect();
 	}
 };

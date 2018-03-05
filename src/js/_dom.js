@@ -1,15 +1,25 @@
-/* global Log, Cjs */
+/* global Log	*/
 
 var Dom = {
-	createElem: function(node, settingsObj){
+	changeLocation: function changeLocation(newLocation){
+		window.location = window.location.protocol +'//'+ window.location.hostname +':'+ (window.location.port || 80) + newLocation;
+	},
+	createElem: function createElem(node, settingsObj){
 		var elem = document.createElement(node);
-		var settingsNames = Object.keys(settingsObj), settingsCount = settingsNames.length;
 
-		for(var x = 0; x < settingsCount; ++x){
-			elem[settingsNames[x]] = settingsObj[settingsNames[x]];
+		if(settingsObj){
+			var settingsNames = Object.keys(settingsObj), settingsCount = settingsNames.length;
+
+			for(var x = 0; x < settingsCount; ++x){
+				elem[settingsNames[x]] = settingsObj[settingsNames[x]];
+			}
 		}
 
 		return elem;
+	},
+	prependChild: function prependChild(child, parent){
+		if(parent.firstChild) parent.insertBefore(child, parent.firstChild);
+		else parent.appendChild(child);
 	},
 	isNodeList: function isNodeList(nodes){
 		var nodeCount = nodes.length;
@@ -34,7 +44,7 @@ var Dom = {
 		var elemCount = elem_s.length;
 
 		if(elem_s && elemCount){
-			elem_s = Cjs.clone(elem_s);
+			elem_s = elem_s.slice(0);
 
 			for(var x = 0, elem; x < elemCount; ++x){
 				elem = elem_s[x];
@@ -63,16 +73,12 @@ var Dom = {
 	},
 	show: function show(elem, className, cb){
 		Dom.animation.add('write', function show_write(){
-			elem.className = elem.className.replace(/\s(disappear|discard)/g, '');
+			elem.className = className || elem.className.replace(/\s?(disappear|discard)/g, '');
 
-			setTimeout(function show_TO(){
-				elem.className = className || '';
-
-				if(cb) cb();
-			}, 20);
+			if(cb) cb();
 		});
 	},
-	setTransform: function(elem, value){
+	setTransform: function setTransform(elem, value){
 		Dom.animation.add('write', function setTransform_write(){
 			elem.style.transform = elem.style.webkitTransform = elem.style.MozTransform = elem.style.msTransform = elem.style.OTransform = value;
 		});
@@ -140,8 +146,8 @@ var Dom = {
 
 				var queryString = location.search.slice(1), urlVariables = queryString.split('&');
 
-				for(var i = 0; i < urlVariables.length; i++){
-					var key = urlVariables[i].split('=')[0], value = urlVariables[i].split('=')[1];
+				for(var x = 0; x < urlVariables.length; ++x){
+					var splitVar = urlVariables[x].split('='), key = splitVar[0], value = splitVar[1];
 
 					queryObj[decodeURIComponent(key)] = decodeURIComponent(value);
 				}
@@ -168,9 +174,13 @@ var Dom = {
 	},
 	cookie: {
 		get: function getCookie(cookieName){
-			var ca = document.cookie.split(';');
+			var cookieArr = document.cookie.split(/;\s?/g), cookieCount = cookieArr.length, cookie, x;
 
-			for(var c in ca){ if(ca.hasOwnProperty(c) && ca[c].indexOf(cookieName) >= 0) return ca[c].split('=')[1]; }
+			for(x = 0; x < cookieCount; ++x){
+				cookie = cookieArr[x];
+
+				if(cookie.startsWith(cookieName +'=')) return cookie.replace(cookieName +'=', '');
+			}
 
 			return undefined;
 		},
@@ -231,11 +241,11 @@ var Dom = {
 			try{
 				if(Dom.animation.read_tasks.length){
 					//Log()('animation', 'running reads', Dom.animation.read_tasks.length);
-					Cjs.run(Dom.animation.read_tasks, 1);
+					Dom.funcRunner(Dom.animation.read_tasks, 1);
 				}
 				if(Dom.animation.write_tasks.length){
 					//Log()('animation', 'running writes', Dom.animation.write_tasks.length);
-					Cjs.run(Dom.animation.write_tasks, 1);
+					Dom.funcRunner(Dom.animation.write_tasks, 1);
 				}
 			}
 			catch(err){
@@ -258,7 +268,7 @@ var Dom = {
 		init: function initMaintenance(initialMaintenance){
 			if(initialMaintenance) Dom.maintenance.functions = Dom.maintenance.functions.concat(initialMaintenance);
 
-			Dom.maintenance.runner = Cjs.run.bind(null, Dom.maintenance.functions);
+			Dom.maintenance.runner = Dom.funcRunner.bind(null, Dom.maintenance.functions);
 
 			window.addEventListener('resize', function windowResize(){
 				if(Dom.maintenance.resizeTO){
@@ -278,6 +288,13 @@ var Dom = {
 				Dom.animation.add('write', Dom.maintenance.runner);
 			});
 		}
+	},
+	funcRunner: function run(arr, destructive){
+		if(!destructive) arr = arr.slice(0);
+
+		var task;
+
+		while((task = arr.shift())) task();
 	}
 };
 
