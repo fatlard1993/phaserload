@@ -132,7 +132,7 @@ Game.entities.ground.dig = function(pos){
 Game.entities.ground.applyBehavior = function(name, options, pos){
 	if(options) options = options.split(',');
 
-	if(name === 'lava' || name === 'gas'){
+	if(['gas', 'lava', 'exploding', 'freezing'].includes(name)){
 		if(!options) options = [null, pos];
 		else options.push(pos);
 	}

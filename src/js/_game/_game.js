@@ -53,6 +53,16 @@ var Game = {
 				}
 			});
 		},
+		exploding: function(chance, pos){
+			if(Game.chance(chance)){
+				Game.effects.explode({ x: pos.x, y: pos.y }, Game.rand(2, 4));
+			}
+		},
+		freezing: function(chance, pos){
+			if(Game.chance(chance)){
+				Game.effects.freeze({ x: pos.x, y: pos.y }, Game.rand(2, 4));
+			}
+		},
 		lava: function(chance, pos){
 			if(Game.chance(chance)){
 				Game.entities.lava.create(pos.x, pos.y, 1);
