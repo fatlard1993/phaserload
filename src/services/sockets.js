@@ -34,10 +34,12 @@ var Sockets = {
 						socket.send(JSON.stringify({ command: 'challenge_accept', games: Sockets.games }));
 					}
 
-					else if(data.room === 'player'){
-						if(!Sockets.games[data.game_room]) return socket.send('{ "command": "goto_lobby" }');
+					else if(data.room.startsWith('player')){
+						var gameRoom = data.room.replace('player_', '');
 
-						socket.send(JSON.stringify({ command: 'challenge_accept', players: Sockets.games[data.game_room].players }));
+						if(!Sockets.games[gameRoom]) return socket.send('{ "command": "goto_lobby" }');
+
+						socket.send(JSON.stringify({ command: 'challenge_accept', players: Sockets.games[gameRoom].players }));
 					}
 				}
 
