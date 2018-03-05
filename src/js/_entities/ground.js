@@ -106,13 +106,16 @@ Game.entities.ground.dig = function(pos){
 	// console.log('dig: ', type, pos);
 	if(!type) return;
 
-	Game.entities.ground.crush(pos);
-
 	type = type.replace('ground_', '');
 
 	var blockAction = Game.config.blockBehavior[type];
-	if(blockAction && Game.effects[blockAction.split(':~:')[0]]){
-		Game.entities.ground.applyBehavior(blockAction.split(':~:')[0], blockAction.split(':~:')[1], pos);
+	if(blockAction === 'impenetrable') return;
+
+	Game.entities.ground.crush(pos);
+
+	if(blockAction){
+		blockAction = blockAction.split(':~:');
+		Game.entities.ground.applyBehavior(blockAction[0], blockAction[1], pos);
 	}
 
 	var groundWeight = 0.07 + (Game.config.digTime[type] * 0.0001);

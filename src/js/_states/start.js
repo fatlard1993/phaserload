@@ -43,7 +43,7 @@ Game.states.start.prototype.create = function(){
 
 		surrounds = surrounds || Game.player.getSurrounds();
 
-		var newPosition = {}, newCameraPosition, moveTime;
+		var newPosition = {}, newCameraPosition, moveTime, canMove = true;
 
 		if(direction.includes('teleport')){
 			Game.player.sprite.animations.play('teleporting');
@@ -88,6 +88,10 @@ Game.states.start.prototype.create = function(){
 			}
 
 			if(targetGroundType && targetGroundType.startsWith('ground')){
+				canMove = !(Game.config.blockBehavior[targetGroundType.replace('ground_', '')] === 'impenetrable');
+
+				Game.entities.ground.dig(newPosition);
+
 				Game.player.sprite.emitter = Game.phaser.add.emitter(0, 0, 100);
 				Game.player.sprite.addChild(Game.player.sprite.emitter);
 
@@ -99,20 +103,8 @@ Game.states.start.prototype.create = function(){
 
 				Game.player.sprite.emitter.setScale(0.1, 0.3, 0.1, 0.3);
 
-				Game.player.sprite.emitter.start(true, moveTime + 100, null, Math.round(Game.rand(3, 7)));
-
-				Game.entities.ground.dig(newPosition);
+				Game.player.sprite.emitter.start(true, canMove ? moveTime + 100 : 150, null, Math.round(Game.rand(3, 7)));
 			}
-
-			if(Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1]) Game.entities.mineral.collect(newPosition);
-
-			if(Game.player.hull.space < 0) moveTime += 250;
-
-			Game.player.fuel -= moveTime * 0.0001;
-
-			//if(targetGroundType && targetGroundType.startsWith('ground')) Game.phaser.camera.shake((moveTime * 0.00001) * 0.42, moveTime);
-
-			// if(['gas', 'lava'].includes(targetType)) Game.entities[targetType].spread(newPosition.x, newPosition.y, 1);
 
 			var invertTexture = false;
 
@@ -144,15 +136,28 @@ Game.states.start.prototype.create = function(){
 			Game.player.lastMoveInvert = invertTexture;
 		}
 
-		Game.player.lastMove = direction;
+		if(canMove){
+			//if(targetGroundType && targetGroundType.startsWith('ground')) Game.phaser.camera.shake((moveTime * 0.00001) * 0.42, moveTime);
 
-		Game.player.lastPosition = newPosition;
+			// if(['gas', 'lava'].includes(targetType)) Game.entities[targetType].spread(newPosition.x, newPosition.y, 1);
 
-		Game.phaser.add.tween(Game.player.sprite).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
+			if(Game.config.map[Game.toGridPos(newPosition.x)][Game.toGridPos(newPosition.y)][1]) Game.entities.mineral.collect(newPosition);
 
-		if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime, direction);
+			if(Game.player.hull.space < 0) moveTime += 250;
 
-		WS.send({ command: 'player_move', position: newPosition, moveTime: moveTime, direction: direction, invertTexture: invertTexture, angle: Game.player.sprite.angle });
+			Game.player.fuel -= moveTime * 0.0001;
+
+			Game.player.lastMove = direction;
+
+			Game.player.lastPosition = newPosition;
+
+			Game.phaser.add.tween(Game.player.sprite).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
+
+			if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime, direction);
+
+			WS.send({ command: 'player_move', position: newPosition, moveTime: moveTime, direction: direction, invertTexture: invertTexture, angle: Game.player.sprite.angle });
+		}
+
 
 		if(Game.player.fuel < 1.5) Game.notify('Your fuel is\nrunning low');
 

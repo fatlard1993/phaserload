@@ -37,7 +37,8 @@ var Modes = {
 		},
 		blockBehavior: {
 			red: 'lava:~:35',
-			green: 'gas:~:15'
+			green: 'gas:~:15',
+			black: 'impenetrable'
 		},
 		digTime: {
 			white: 400,
