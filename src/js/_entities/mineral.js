@@ -1,4 +1,4 @@
-/* global Phaser, Game, Socket, Log */
+/* global Phaser, Game, WS, Log */
 
 Game.entities.mineral = function(x, y){
 	Phaser.Sprite.call(this, Game.phaser, x, y, 'mineral', 6);
@@ -56,7 +56,7 @@ Game.entities.mineral.collect = function(pos){
 
 				Game.config.map[Game.toGridPos(pos.x)][Game.toGridPos(pos.y)][1] = 0;
 
-				Socket.active.send(JSON.stringify({ command: 'crush_mineral', pos: pos }));
+				WS.send({ command: 'crush_mineral', pos: pos });
 
 				mineral.kill();
 			}, animationTime);

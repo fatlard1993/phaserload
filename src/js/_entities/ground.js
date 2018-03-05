@@ -1,4 +1,4 @@
-/* global Phaser, Socket, Game */
+/* global Phaser, Game */
 
 Game.entities.ground = function(x, y){
 	Phaser.Sprite.call(this, Game.phaser, x, y, 'ground');

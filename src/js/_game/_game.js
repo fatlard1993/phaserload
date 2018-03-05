@@ -1,4 +1,4 @@
-/* global Phaser, screenfull, io, Log, Socket */
+/* global Phaser, screenfull, io, Log, WS */
 
 var Game = {
 	blockPx: 64,
@@ -318,7 +318,7 @@ var Game = {
 			else Game.drawTile(gridPos.x, gridPos.y, Game.toName(id));
 		}
 
-		else Socket.active.send(JSON.stringify({ command: 'player_set_map_position', pos: pos, id: id }));
+		else WS.send({ command: 'player_set_map_position', pos: pos, id: id });
 	},
 	viewBufferMap: [],
 	viewBufferSize: 3,
