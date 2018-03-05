@@ -279,8 +279,6 @@ Game.states.start.prototype.create = function(){
 
 					Game.effects[Game.player.activeChargeType.includes('freeze') ? 'freeze' : 'explode']({ x: Game.player.activeCharge.x, y: Game.player.activeCharge.y }, Game.player.activeChargeType.includes('remote') ? 5 : 3);
 
-					Game.phaser.camera.shake(Game.player.activeChargeType.includes('remote') ? 0.05 : 0.03, 1000);
-
 					setTimeout(function(){
 						Game.player.activeCharge.destroy();
 						Game.player.activeCharge = null;
@@ -303,8 +301,6 @@ Game.states.start.prototype.create = function(){
 				Game.player.activeCharge.frame++;
 
 				Game.effects[Game.player.activeChargeType.includes('freeze') ? 'freeze' : 'explode']({ x: Game.player.activeCharge.x, y: Game.player.activeCharge.y }, Game.player.activeChargeType.includes('remote') ? 5 : 3);
-
-				Game.phaser.camera.shake(Game.player.activeChargeType.includes('remote') ? 0.05 : 0.03, 1000);
 
 				setTimeout(function(){
 					Game.entities.itemSlot.setItem(slotNum, '');

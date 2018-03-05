@@ -282,7 +282,14 @@ function Load(){
 		}
 
 		else if(data.command === 'player_death'){
-			Game.notify(data.player +(data.by === 'fuel' ? 'ran out of fuel' : '\ndied by '+ data.by) +'\nat: '+ data.at, 4);
+			Game.notify(data.player + (data.by === 'fuel' ? 'ran out of fuel' : '\ndied by '+ data.by) +'\nat: '+ data.at, 4);
+		}
+
+		else if(data.command === 'explosion'){
+			var distanceFromPlayer = Game.phaser.math.distance(data.pos.x, data.pos.y, Game.player.sprite.x, Game.player.sprite.y);
+
+			var intensity = Math.max(1, (data.radius * 2) + (data.radius - (distanceFromPlayer / Game.blockPx)));
+			Game.phaser.camera.shake(intensity / 1000, 1000);
 		}
 	});
 

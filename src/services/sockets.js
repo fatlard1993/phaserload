@@ -149,6 +149,10 @@ var Sockets = {
 					echo = true;
 				}
 
+				else if(data.command === 'explosion'){
+					echo = true;
+				}
+
 				else if(data.command === 'crush_mineral'){
 					Sockets.games[Player.room].mapData.map[Game.toGridPos(data.pos.x)][Game.toGridPos(data.pos.y)][1] = 0;
 

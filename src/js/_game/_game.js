@@ -1,4 +1,4 @@
-/* global Phaser, screenfull, io, Log, WS */
+/* global Phaser, Log, WS */
 
 var Game = {
 	blockPx: 64,
@@ -22,12 +22,19 @@ var Game = {
 	entities: {},
 	effects: {
 		explode: function(pos, radius){
+			var distanceFromPlayer = Game.phaser.math.distance(pos.x, pos.y, Game.player.sprite.x, Game.player.sprite.y);
+
+			var intensity = Math.max(1, (radius * 2) + (radius - (distanceFromPlayer / Game.blockPx)));
+			Game.phaser.camera.shake(intensity / 1000, 1000);
+
+			WS.send({ command: 'explosion', pos: pos, radius: radius });
+
 			if(Game.phaser.math.distance(pos.x, pos.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) < Game.blockPx * (radius + 1)){
 				Game.spaceco.hurt((radius + 1) - (Game.phaser.math.distance(pos.x, pos.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) / Game.blockPx), 'an explosion');
 			}
 
-			if(Game.phaser.math.distance(pos.x, pos.y, Game.player.sprite.x, Game.player.sprite.y) < Game.blockPx * radius){
-				Game.player.hurt(Game.randFloat(radius, radius * 2) * (radius - (Game.phaser.math.distance(pos.x, pos.y, Game.player.sprite.x, Game.player.sprite.y) / Game.blockPx)), 'explosion');
+			if(distanceFromPlayer < Game.blockPx * radius){
+				Game.player.hurt(Game.randFloat(radius, radius * 2) * (radius - (distanceFromPlayer / Game.blockPx)), 'explosion');
 			}
 
 			Game.ground.forEachAlive(function(ground){
