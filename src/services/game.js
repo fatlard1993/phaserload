@@ -76,9 +76,9 @@ var Game = {
 	toPx: function(gridPos){
 		return (gridPos * 64) + 32;
 	},
-	generateMap: function(mode){
+	generateMap: function(mode, worldIndex){
 		var worlds = Worlds.categories[Modes[mode].worldCategory];
-		var settings = worlds[Game.rand(0, worlds.length - 1)];
+		var settings = worlds[worldIndex !== 'rand' ? worldIndex : Game.rand(0, worlds.length - 1)];
 
 		var mapData = Object.assign(Modes[mode], {
 			mode: mode,

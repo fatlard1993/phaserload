@@ -44,13 +44,17 @@ function Load(){
 			var nameInput = Dom.createElem('input', { type: 'text', id: 'NewGameRoomName', placeholder: 'Room Name', validation: /^.{4,32}$/ });
 			Dom.validate(nameInput);
 
+			var startingWorld = Dom.createElem('input', { type: 'number', id: 'NewGameStartingWorld', placeholder: 'rand :: Starting world', validation: /(^([0-9]|10)$)|(^(?![\s\S]))/ });
+			Dom.validate(startingWorld);
+
 			var createButton = Dom.createElem('button', { id: 'NewGameCreateButton', textContent: 'Create' });
 			var lobbyButton = Dom.createElem('button', { id: 'LobbyButton', textContent: 'Back to Lobby' });
 
-			Dom.Content.appendChild(heading);
 			newGameForm.appendChild(nameInput);
+			newGameForm.appendChild(startingWorld);
 			newGameForm.appendChild(createButton);
 			newGameForm.appendChild(lobbyButton);
+			Dom.Content.appendChild(heading);
 			Dom.Content.appendChild(newGameForm);
 
 			nameInput.focus();
@@ -62,9 +66,11 @@ function Load(){
 			Dom.Content = Dom.Content || document.getElementById('Content');
 
 			createdGame = document.getElementById('NewGameRoomName').value;
+			var startingWorld = document.getElementById('NewGameStartingWorld').value;
 
 			var options = {
-				name: createdGame
+				name: createdGame,
+				startingWorld: startingWorld.length ? startingWorld : 'rand'
 			};
 
 			Log()(createdGame, options);
