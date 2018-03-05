@@ -145,7 +145,7 @@ Game.states.start.prototype.create = function(){
 
 			if(Game.player.hull.space < 0) moveTime += 250;
 
-			Game.player.fuel -= moveTime * 0.0001;
+			Game.effects.useFuel(moveTime * 0.0001, 0.2);
 
 			Game.player.lastMove = direction;
 
@@ -159,9 +159,7 @@ Game.states.start.prototype.create = function(){
 		}
 
 
-		if(Game.player.fuel < 1.5) Game.notify('Your fuel is\nrunning low');
-
-		else if(Game.player.hull.space < 1.5) Game.notify('Your Hull is\nalmost full');
+		if(Game.player.hull.space < 1.5) Game.notify('Your Hull is\nalmost full');
 
 		if(Game.phaser.math.distance(newPosition.x, newPosition.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) < Game.blockPx + 10){
 			Game.notify('Open to connect\nto Spaceco', 4);
@@ -253,6 +251,10 @@ Game.states.start.prototype.create = function(){
 
 		if(item === 'teleporter'){
 			Game.player.move('teleport');
+		}
+
+		else if(item === 'repair_nanites'){
+			Game.effects.repair(100);
 		}
 
 		else if(item.includes('charge')){
@@ -355,23 +357,6 @@ Game.states.start.prototype.create = function(){
 		else if(Game.player.tradee) Game.hud.open('trade');
 
 		else Game.hud.open('console');
-	};
-
-	Game.player.hurt = function(amount, by){
-		if(Game.player.justHurt) return; //todo make this depend on what the damage is from
-
-		Game.player.justHurt = true;
-		Game.player.justHurt_TO = setTimeout(function(){ Game.player.justHurt = false; }, 500);
-
-		Game.player.health -= amount;
-
-		if(Game.player.health <= 0) Game.player.kill(by);
-
-		else if(Game.player.health <= 25){
-			Game.notify('Your health is\nrunning low');
-		}
-
-		Game.hud.update();
 	};
 
 	Game.player.kill = function(by){
@@ -1058,19 +1043,19 @@ Game.states.start.prototype.create = function(){
 					bottomLineText = Game.hud.isOpen.pageItems[selection].replace(':~:' ,' : ');
 
 					if(item === 'gas'){
-						Game.player.fuel += 1.5;
+						Game.effects.refuel(1.5, 0.4);
 					}
 
 					else if(item === 'energy'){
-						Game.player.fuel += 3.2;
+						Game.effects.refuel(3.2, 0.3);
 					}
 
 					else if(item === 'super_oxygen_liquid_nitrogen'){
-						Game.player.fuel += 6.9;
+						Game.effects.refuel(6.9, 0.2);
 					}
 
 					else if(item === 'repair'){
-						Game.player.health = Game.player.max_health;
+						Game.effects.repair(100);
 					}
 
 					else if(Game.hud.isOpen.view.includes('shop')){
@@ -1309,10 +1294,6 @@ Game.states.start.prototype.create = function(){
 Game.states.start.prototype.update = function(){
 	if(!Game.initialized) return;
 
-	if(Game.config.mode === 'normal' && Game.player.fuel < 0){
-		Game.player.kill('fuel');
-	}
-
 	// if(Game.player.sprite.emitter){// particle decay
 	// 	Game.player.sprite.emitter.forEachAlive(function(particle){
 	// 		particle.alpha = Math.max(0, Math.min(1, (particle.lifespan / Game.player.sprite.emitter.lifespan) * 2));
@@ -1321,7 +1302,7 @@ Game.states.start.prototype.update = function(){
 
 	Game.lava.forEachAlive(function checkLava(lava){
 		if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, lava.x, lava.y) < Game.blockPx/2){
-			Game.player.hurt(12 + Game.randFloat(1, 6), 'lava');
+			Game.effects.hurt('lava', 12, 3);
 		}
 
 		if(Game.phaser.math.distance(Game.spaceco.sprite.x, Game.spaceco.sprite.y, lava.x, lava.y) < Game.blockPx){
@@ -1339,7 +1320,7 @@ Game.states.start.prototype.update = function(){
 
 	Game.gas.forEachAlive(function checkGas(gas){
 		if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, gas.x, gas.y) < Game.blockPx/2){
-			Game.player.hurt(10 + Game.randFloat(1, 5), 'gas');
+			Game.effects.hurt('gas', 10, 5);
 		}
 
 		Game.monsters.forEachAlive(function checkGas_monsters(monster){
@@ -1353,7 +1334,7 @@ Game.states.start.prototype.update = function(){
 
 	Game.monsters.forEachAlive(function checkMonsters(monster){
 		if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, monster.x, monster.y) < Game.blockPx/2){
-			Game.player.hurt(5 + Game.randFloat(1, 5), 'monster');
+			Game.effects.hurt('monster', 8, 3);
 		}
 	}, this);
 
@@ -1493,7 +1474,7 @@ Game.states.start.prototype.update = function(){
 				else{
 					direction = 'down';
 
-					if(Game.player.lastMove === 'down') Game.player.hurt(Game.randFloat(1, 3), 'falling');
+					if(Game.player.lastMove === 'down') Game.effects.hurt('falling', 4, 3);
 
 					Log()('falling');
 				}

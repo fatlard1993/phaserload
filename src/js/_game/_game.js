@@ -34,7 +34,7 @@ var Game = {
 			}
 
 			if(distanceFromPlayer < Game.blockPx * radius){
-				Game.player.hurt(Game.randFloat(radius, radius * 2) * (radius - (distanceFromPlayer / Game.blockPx)), 'explosion');
+				Game.effects.hurt('explosion', Game.randFloat(radius, radius * 2) * (radius - (distanceFromPlayer / Game.blockPx)), 3);
 			}
 
 			Game.ground.forEachAlive(function(ground){
@@ -89,6 +89,45 @@ var Game = {
 					}
 				}
 			}
+		},
+		repair: function(chance){
+			if(Game.chance(chance)){
+				Game.player.health = Game.player.max_health;
+			}
+
+			else{
+				Game.player.health = Math.min(Game.player.max_health, Game.player.health + Game.randFloat(1, Game.player.max_health / 2));
+			}
+		},
+		hurt: function(by, amount, variation){
+			if(Game.player.justHurt) return; //todo make this depend on what the damage is from
+
+			Game.player.justHurt = true;
+			Game.player.justHurt_TO = setTimeout(function(){ Game.player.justHurt = false; }, 800);
+
+			Game.player.health = Math.max(0, Game.player.health - (variation ? Game.randFloat(amount - variation, amount + variation) : amount));
+
+			if(Game.player.health <= 0) Game.player.kill(by);
+
+			else if(Game.player.health <= 25){
+				Game.notify('Your health is\nrunning low');
+			}
+
+			else Game.hud.update();
+		},
+		refuel: function(amount, variation){
+			Game.player.fuel = Math.min(Game.player.max_fuel, Game.player.fuel + (variation ? Game.randFloat(amount - variation, amount + variation) : amount));
+		},
+		useFuel: function(amount, variation){
+			Game.player.fuel = Math.max(0, Game.player.fuel - (variation ? Game.randFloat(amount - variation, amount + variation) : amount));
+
+			if(Game.player.fuel <= 0) Game.player.kill('fuel');
+
+			else if(Game.player.fuel <= 1){
+				Game.notify('Your fuel is\nrunning low');
+			}
+
+			else Game.hud.update();
 		}
 	},
 	rand: function(min, max, excludes){
