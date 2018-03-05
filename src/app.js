@@ -58,13 +58,13 @@ function initExpress(cb){
 	app.use(bodyParser.json());
 	app.use(cookieParser());
 
-	app.get('/lobby', function(req, res, next){
+	app.get('/lobby*', function(req, res, next){
 		Log()('Load lobby', req.socket.remoteAddress);
 
 		res.sendFile(process.env.DIR +'/resources/html/lobby.html');
 	});
 
-	app.get('/player', function(req, res, next){
+	app.get('/player*', function(req, res, next){
 		Log()('Load player', req.socket.remoteAddress, req.query.room);
 
 		if(req.query.room && !Sockets.games[req.query.room]) return res.redirect(301, '/lobby');
