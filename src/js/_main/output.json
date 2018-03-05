@@ -6,6 +6,7 @@
 		"./src/js/_log.js",
 		"./src/js/_common.js",
 		"./src/js/_socket.js",
-		"./src/js/_interact.js"
+		"./src/js/_interact.js",
+		"./src/js/_view.js"
 	]
 }
