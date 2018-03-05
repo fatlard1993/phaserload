@@ -92,18 +92,18 @@ Game.states.start.prototype.create = function(){
 
 				Game.entities.ground.dig(newPosition);
 
-				Game.player.sprite.emitter = Game.phaser.add.emitter(0, 0, 100);
-				Game.player.sprite.addChild(Game.player.sprite.emitter);
+				// Game.player.sprite.emitter = Game.phaser.add.emitter(0, 0, 100);
+				// Game.player.sprite.addChild(Game.player.sprite.emitter);
 
-				var frameMod = Game.entities.ground.types.indexOf(targetGroundType.replace('ground_', '')) * 4;
+				// var frameMod = Game.entities.ground.types.indexOf(targetGroundType.replace('ground_', '')) * 4;
 
-				Game.player.sprite.emitter.makeParticles('ground', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod]);
+				// Game.player.sprite.emitter.makeParticles('ground', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod]);
 
-				Game.player.sprite.emitter.x = 32;
+				// Game.player.sprite.emitter.x = 32;
 
-				Game.player.sprite.emitter.setScale(0.1, 0.3, 0.1, 0.3);
+				// Game.player.sprite.emitter.setScale(0.1, 0.3, 0.1, 0.3);
 
-				Game.player.sprite.emitter.start(true, canMove ? moveTime + 100 : 150, null, Math.round(Game.rand(3, 7)));
+				// Game.player.sprite.emitter.start(true, canMove ? moveTime + 100 : 150, null, Math.round(Game.rand(3, 7)));
 			}
 
 			var invertTexture = false;
@@ -1317,13 +1317,13 @@ Game.states.start.prototype.update = function(){
 		Game.player.kill('fuel');
 	}
 
-	if(Game.player.sprite.emitter){// particle decay
-		Game.player.sprite.emitter.forEachAlive(function(particle){
-			particle.alpha = Math.max(0, Math.min(1, (particle.lifespan / Game.player.sprite.emitter.lifespan) * 2));
-		});
-	}
+	// if(Game.player.sprite.emitter){// particle decay
+	// 	Game.player.sprite.emitter.forEachAlive(function(particle){
+	// 		particle.alpha = Math.max(0, Math.min(1, (particle.lifespan / Game.player.sprite.emitter.lifespan) * 2));
+	// 	});
+	// }
 
-	Game.lava.forEachAlive(function(lava){
+	Game.lava.forEachAlive(function checkLava(lava){
 		if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, lava.x, lava.y) < Game.blockPx/2){
 			Game.player.hurt(12 + Game.randFloat(1, 6), 'lava');
 		}
@@ -1332,7 +1332,7 @@ Game.states.start.prototype.update = function(){
 			Game.spaceco.hurt(1, 'lava');
 		}
 
-		Game.monsters.forEachAlive(function(monster){
+		Game.monsters.forEachAlive(function checkLava_monsters(monster){
 			if(Game.phaser.math.distance(monster.x, monster.y, lava.x, lava.y) < Game.blockPx){
 				monster.kill();
 
@@ -1341,12 +1341,12 @@ Game.states.start.prototype.update = function(){
 		}, this);
 	}, this);
 
-	Game.gas.forEachAlive(function(gas){
+	Game.gas.forEachAlive(function checkGas(gas){
 		if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, gas.x, gas.y) < Game.blockPx/2){
 			Game.player.hurt(10 + Game.randFloat(1, 5), 'gas');
 		}
 
-		Game.monsters.forEachAlive(function(monster){
+		Game.monsters.forEachAlive(function checkGas_monsters(monster){
 			if(Game.phaser.math.distance(monster.x, monster.y, gas.x, gas.y) < Game.blockPx){
 				monster.kill();
 
@@ -1355,7 +1355,7 @@ Game.states.start.prototype.update = function(){
 		}, this);
 	}, this);
 
-	Game.monsters.forEachAlive(function(monster){
+	Game.monsters.forEachAlive(function checkMonsters(monster){
 		if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, monster.x, monster.y) < Game.blockPx/2){
 			Game.player.hurt(5 + Game.randFloat(1, 5), 'monster');
 		}
@@ -1380,12 +1380,13 @@ Game.states.start.prototype.update = function(){
 		}
 	}
 
-	if(!Game.phaser.tweens.isTweening(Game.player.sprite) && !Game.phaser.tweens.isTweening(Game.hud.scale)){
+	if(!Game.phaser.tweens.isTweening(Game.player.sprite)){
 		var moving, altDirection;
 		var surrounds = Game.player.getSurrounds();
+		var hudIsTweening = Game.phaser.tweens.isTweening(Game.hud.scale);
 
 		if(this.input.activePointer.isDown){
-			if(Game.hud.isOpen){//&& !Game.hud.justUsedItemSlot && !Game.phaser.tweens.isTweening(Game.hud.scale)
+			if(Game.hud.isOpen && !hudIsTweening){//&& !Game.hud.justUsedItemSlot
 				if(this.input.activePointer.x > 575 || this.input.activePointer.y > 460) Game.hud.close();
 
 				else Game.hud.handlePointer(this.input.activePointer);
