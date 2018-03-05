@@ -286,13 +286,6 @@ var Game = {
 
 		return found;
 	},
-	showMissionText: function(){
-		Game.hud.open('missionText');
-
-		var heading = '					 PHASERLOAD\n';
-
-		Game.hud.interfaceText.setText(heading + Game.config.world.missionText);
-	},
 	movePlayer: function(data){
 		Game.phaser.add.tween(Game.players[data.player].sprite).to(data.position, data.moveTime, Phaser.Easing.Sinusoidal.InOut, true);
 
