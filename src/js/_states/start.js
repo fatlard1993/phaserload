@@ -1,4 +1,4 @@
-/* global Phaser, Game, Socket, Log, Cjs */
+/* global Phaser, Game, WS, Log, Cjs */
 
 Game.states.start = function(){};
 
@@ -15,10 +15,13 @@ Game.states.start.prototype.create = function(){
 	Game.lava = Game.phaser.add.group();
 	Game.gas = Game.phaser.add.group();
 	Game.minerals = Game.phaser.add.group();
+	Game.monsters = Game.phaser.add.group();
 
 	Game.spaceco.sprite = Game.entities.spaceco.create(Game.spaceco);
 
-	Game.monsters = Game.phaser.add.group();
+	Game.playersGroup = Game.phaser.add.group();
+
+	Game.hud = Game.entities.hud.create(0, 0);
 
 	var playerNames = Object.keys(Game.players);
 
@@ -35,6 +38,8 @@ Game.states.start.prototype.create = function(){
 
 	Game.player.move = function(direction, surrounds){
 		Log()('player moving: ', direction);
+
+		if(Game.hud.isOpen) Game.hud.close();
 
 		surrounds = surrounds || Game.player.getSurrounds();
 
@@ -147,7 +152,7 @@ Game.states.start.prototype.create = function(){
 
 		if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime, direction);
 
-		Socket.active.send(JSON.stringify({ command: 'player_move', position: newPosition, moveTime: moveTime, direction: direction, invertTexture: invertTexture, angle: Game.player.sprite.angle }));
+		WS.send({ command: 'player_move', position: newPosition, moveTime: moveTime, direction: direction, invertTexture: invertTexture, angle: Game.player.sprite.angle });
 
 		if(Game.player.fuel < 1.5) Game.notify('Your fuel is\nrunning low');
 
@@ -409,8 +414,6 @@ Game.states.start.prototype.create = function(){
 
 		Game.hud.close();
 	};
-
-	Game.hud = Game.entities.hud.create(0, 0);
 
 	Game.hud.update = function(){
 		if(Game.hud.isOpen || Game.notify_TO) return;
@@ -922,7 +925,7 @@ Game.states.start.prototype.create = function(){
 				Game.hud.isOpen.view = 'accept';
 				Game.hud.isOpen.menuItems[3] = 'ACCEPTED';
 
-				Socket.active.send(JSON.stringify({ command: 'player_accept_offer', to: Game.player.tradee }));
+				WS.send({ command: 'player_accept_offer', to: Game.player.tradee });
 
 				if(Game.player.offer_accepted) Game.player.acceptOffer();
 
@@ -1084,7 +1087,7 @@ Game.states.start.prototype.create = function(){
 
 						delete Game.spaceco.parts[item];
 
-						Socket.active.send('{ "command": "player_purchase_part", "partName": "'+ item +'" }');
+						WS.send({ command: 'player_purchase_part', partName: item });
 
 						redraw = 2;
 
@@ -1105,7 +1108,7 @@ Game.states.start.prototype.create = function(){
 
 					Game.player.offer[item] = Math.min(Game.player.offer[item] + 1, Game.player.inventory[item]);
 
-					Socket.active.send(JSON.stringify({ command: 'player_update_offer', to: Game.player.tradee, offer: Game.player.offer }));
+					WS.send({ command: 'player_update_offer', to: Game.player.tradee, offer: Game.player.offer });
 
 					Game.player.offer_accepted = Game.player.offer_sent_accept = 0;
 
@@ -1123,7 +1126,7 @@ Game.states.start.prototype.create = function(){
 
 					if(!Game.player.offer[item]) delete Game.player.offer[item];
 
-					Socket.active.send(JSON.stringify({ command: 'player_update_offer', to: Game.player.tradee, offer: Game.player.offer }));
+					WS.send({ command: 'player_update_offer', to: Game.player.tradee, offer: Game.player.offer });
 
 					Game.player.offer_accepted = Game.player.offer_sent_accept = 0;
 
@@ -1244,7 +1247,7 @@ Game.states.start.prototype.create = function(){
 
 		Game.spaceco.damage += amount;
 
-		Socket.active.send(JSON.stringify({ command: 'hurt_spaceco', amount: amount }));
+		WS.send({ command: 'hurt_spaceco', amount: amount });
 
 		if(!Game.spaceco.dead && Game.spaceco.damage > 9){
 			Game.spaceco.dead = 1;

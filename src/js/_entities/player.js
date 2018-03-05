@@ -19,5 +19,7 @@ Game.entities.player.create = function(settings){
 
 	Game.config.defaultPlayerScale = playerSprite.scale.x;
 
+	Game.playersGroup.add(playerSprite);
+
 	return playerSprite;
 };
