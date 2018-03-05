@@ -1,0 +1,108 @@
+[
+	{
+		"name": "asteroid TR982-420",
+		"size": {
+			"width": [50, 60],
+			"depth": [210, 320]
+		},
+		"holeChance": 0.1,
+		"lavaChance": 0.4,
+		"gasChance": 0.4,
+		"monsterChance": 0.4,
+		"mineralChance": 0.042,
+		"mineralRareity": {
+			"green": 30,
+			"blue": 30,
+			"purple": 30,
+			"teal": 8,
+			"unknown": 2
+		},
+		"layers": [
+			{ "blue": 40, "purple": 60 },
+			{ "blue": 40, "red": 60 },
+			{ "green": 50, "white": 50 },
+			{ "pink": 34, "black": 32, "green": 32 },
+			{ "blue": 40, "purple": 60 }
+		]
+	},
+	{
+		"name": "asteroid AE02A-809",
+		"size": {
+			"width": [32, 45],
+			"depth": [200, 340]
+		},
+		"holeChance": 0.2,
+		"lavaChance": 0.2,
+		"gasChance": 0.2,
+		"monsterChance": 0.2,
+		"mineralChance": 0.05,
+		"mineralRareity": {
+			"red": 65,
+			"blue": 23,
+			"teal": 10,
+			"unknown": 2
+		},
+		"layers": [
+			{ "blue": 75, "pink": 10, "teal": 10, "purple": 5 },
+			{ "blue": 60, "pink": 10, "teal": 15, "purple": 15 },
+			{ "blue": 40, "pink": 25, "teal": 15, "purple": 20 },
+			{ "blue": 20, "pink": 15, "teal": 25, "purple": 40 },
+			{ "blue": 5, "pink": 45, "teal": 5, "purple": 45 }
+		]
+	},
+	{
+		"name": "asteroid ZPQ6D-N02",
+		"size": {
+			"width": [45, 60],
+			"depth": [200, 300]
+		},
+		"holeChance": 0.2,
+		"lavaChance": 0.4,
+		"gasChance": 0.4,
+		"monsterChance": 0.2,
+		"mineralChance": 0.07,
+		"mineralRareity": {
+			"blue": 45,
+			"purple": 30,
+			"teal": 20,
+			"unknown": 5
+		},
+		"layers": [
+			{ "blue": 70, "yellow": 15, "orange": 10, "black": 5 },
+			{ "blue": 60, "yellow": 20, "orange": 10, "black": 10 },
+			{ "blue": 40, "yellow": 10, "orange": 30, "black": 20 },
+			{ "blue": 50, "yellow": 15, "orange": 20, "black": 15 },
+			{ "blue": 30, "yellow": 5, "orange": 60, "black": 5 },
+			{ "blue": 14, "yellow": 25, "orange": 60, "black": 1 },
+			{ "blue": 1, "orange": 97, "black": 1 }
+		]
+	},
+	{
+		"name": "moon D83R-W110",
+		"size": {
+			"width": [40, 50],
+			"depth": [250, 400]
+		},
+		"holeChance": 0.1,
+		"lavaChance": 0.1,
+		"gasChance": 0.1,
+		"monsterChance": 0.3,
+		"mineralChance": 0.1,
+		"mineralRareity": {
+			"green": 72,
+			"red": 5,
+			"blue": 20,
+			"purple": 1,
+			"teal": 1,
+			"unknown": 1
+		},
+		"layers": [
+			{ "white": 60, "orange": 10, "yellow": 10, "teal": 10, "black": 10 },
+			{ "white": 50, "orange": 20, "yellow": 10, "teal": 10, "black": 10 },
+			{ "white": 50, "orange": 10, "yellow": 10, "teal": 15, "black": 15 },
+			{ "white": 20, "orange": 10, "yellow": 10, "teal": 30, "black": 30 },
+			{ "white": 60, "orange": 10, "yellow": 10, "teal": 10, "black": 10 },
+			{ "white": 80, "orange": 5, "yellow": 5, "teal": 5, "black": 5 }
+		]
+	}
+]
