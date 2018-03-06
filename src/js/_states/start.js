@@ -8,8 +8,8 @@ var HUDLayout = { // todo make this a player setting
 	hull: 'Hull'
 };
 
-var BaseGroundValue = 0.8;
-var BaseMineralValue = 2;
+var BaseGroundValue = 0.5;
+var BaseMineralValue = 2.5;
 
 Game.states.start = function(){};
 
@@ -625,6 +625,19 @@ Game.states.start.prototype.create = function(){
 
 		var x;
 
+		var mineralNames = {
+			white: 'tritanium',
+			orange: 'duranium',
+			yellow: 'pentrilium',
+			green: 'byzanium',
+			teal: 'etherium',
+			blue: 'mithril',
+			purple: 'octanium',
+			pink: 'saronite',
+			red: 'adamantite',
+			black: 'quadium'
+		};
+
 		if(Game.hud.isOpen.name === 'briefing'){
 			Game.hud.isOpen.menuItems = ['Briefing', 'Help'];
 
@@ -703,7 +716,8 @@ Game.states.start.prototype.create = function(){
 				var hullItems = Object.keys(Game.player.hull), hullItemCount = hullItems.length;
 
 				for(x = 0; x < hullItemCount; ++x){
-					hullItems[x] = Game.capitalize(hullItems[x], 1, '_') +':~:'+ Game.toFixed(Game.player.hull[hullItems[x]], 2);
+					if(hullItems[x] === 'space') hullItems[x] = 'Space:~:'+ Game.toFixed(Game.player.hull[hullItems[x]], 2);
+					else hullItems[x] = (hullItems[x].startsWith('ground') ? 'Trace ' : 'Concentrated ') + Game.capitalize(mineralNames[hullItems[x].replace('ground_', '').replace('mineral_', '')]) +':~:'+ Game.toFixed(Game.player.hull[hullItems[x]], 2);
 				}
 
 				if(Game.hud.view === 'hull' && hullItemCount > 7){
@@ -740,11 +754,12 @@ Game.states.start.prototype.create = function(){
 			Game.hud.isOpen.menuItems = ['Rates', 'Fuel', 'Parts', 'Shop'];
 
 			if(selection === 0){
-				var rawMaterials = ['ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_black', 'mineral_green', 'mineral_blue', 'mineral_red', 'mineral_purple', 'mineral_teal', 'mineral_unknown'];
+				var materialNames = ['tritanium', 'duranium', 'pentrilium', 'byzanium', 'etherium', 'mithril', 'octanium', 'saronite', 'adamantite', 'quadium'];
+				var rawMaterials = ['ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black', 'mineral_white', 'mineral_orange', 'mineral_yellow', 'mineral_green', 'mineral_teal', 'mineral_blue', 'mineral_purple', 'mineral_pink', 'mineral_red', 'mineral_black'];
 				var rawMaterialCount = rawMaterials.length;
 
 				for(x = 0; x < rawMaterialCount; ++x){
-					rawMaterials[x] = Game.capitalize(rawMaterials[x], 1, '_') +':~:$'+ Game.spaceco.getValue(rawMaterials[x]).toFixed(2);
+					rawMaterials[x] = (rawMaterials[x].startsWith('ground') ? 'Trace ' : 'Concentrated ') + Game.capitalize(materialNames[x % 8]) +':~:$'+ Game.spaceco.getValue(rawMaterials[x]).toFixed(2);
 				}
 
 				if(Game.hud.isOpen.view === 'rates' && rawMaterialCount > 7){
@@ -1248,13 +1263,13 @@ Game.states.start.prototype.create = function(){
 		var value;
 
 		if(name.startsWith('ground')){
-			value = BaseGroundValue + (((Game.config.densities[name.replace('ground_', '')] / 2) - (Game.spaceco.resourceBay[name] || 0)) / 1000);
+			value = BaseGroundValue + (((Game.config.densities[name.replace('ground_', '')] * 0.7) - (Game.spaceco.resourceBay[name] || 0)) / 500);
 
 			// if(name === 'ground_green' && Game.config.mode === 'normal') value *= 2;
 		}
 
 		else if(name.startsWith('mineral')){
-			value = BaseMineralValue + (((Game.config.densities[name.replace('mineral_', '')] / 2) - (Game.spaceco.resourceBay[name] || 0)) / 1000);
+			value = BaseMineralValue + (((Game.config.densities[name.replace('mineral_', '')] * 0.7) - (Game.spaceco.resourceBay[name] || 0)) / 100);
 
 			// value = Game.config.spaceco.mineralValues[name.replace('mineral_', '')] - ((Game.spaceco.resourceBay[name] || 0) / 40);
 		}

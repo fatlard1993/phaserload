@@ -229,13 +229,11 @@ var Game = {
 		var tracksPart = Game.player.configuration.tracks.split(':~:');
 		var hullPart = Game.player.configuration.hull.split(':~:');
 		var drillPart = Game.player.configuration.drill.split(':~:');
-		var materialBonus = { steel: 30, adamantite: 35, byzanium: 40, duranium: 55, etherium: 65, mithril: 75, quadium: 80, saronite: 90, tritanium: 100 };
+		var materialBonus = { tritanium: 30, duranium: 35, pentrilium: 40, byzanium: 45, etherium: 50, mithril: 60, octanium: 65, saronite: 70, adamantite: 75, quadium: 80 };
 
 		health += materialBonus[tracksPart[1]];
 		health += materialBonus[hullPart[1]];
 		health += materialBonus[drillPart[1]];
-
-		if(drillPart[0] === 'hardened') health += 15;
 
 		Game.player.max_health = health;
 
@@ -257,18 +255,17 @@ var Game = {
 		Game.player.fuel = Math.min(maxFuel, Game.player.fuel);
 	},
 	updateBaseMoveTime: function(){
-		var moveTime = 0;
+		var moveTime = 200;
 		var tracksPart = Game.player.configuration.tracks.split(':~:');
 		var hullPart = Game.player.configuration.hull.split(':~:');
 		var drillPart = Game.player.configuration.drill.split(':~:');
-		var materialSlowDown = { steel: 110, adamantite: 90, byzanium: 80, duranium: 75, etherium: 65, mithril: 55, quadium: 40, saronite: 35, tritanium: 30 };
+		var materialSlowDown = { tritanium: 40, duranium: 45, pentrilium: 60, byzanium: 75, etherium: 90, mithril: 110, octanium: 125, saronite: 135, adamantite: 150, quadium: 180 };
 
 		moveTime += materialSlowDown[tracksPart[1]];
 		moveTime += materialSlowDown[hullPart[1]];
 		moveTime += materialSlowDown[drillPart[1]];
 
 		if(tracksPart[0].includes('boosted')) moveTime -= parseInt(tracksPart[0].split('_')) * 10;
-		if(hullPart[0] === 'lightweight') moveTime -= 15;
 
 		Game.player.baseMoveTime = moveTime;
 	},

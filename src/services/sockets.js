@@ -67,10 +67,10 @@ var Sockets = {
 								},
 								hull: {},
 								configuration: {
-									tracks: 'standard:~:steel',
-									hull: 'standard:~:steel',
-									drill: 'standard:~:steel',
-									fuel_tank: 'standard:~:steel'
+									tracks: 'standard:~:tritanium',
+									hull: 'standard:~:tritanium',
+									drill: 'standard:~:tritanium',
+									fuel_tank: 'standard:~:tritanium'
 								},
 								inventory: {
 									teleporter: 1

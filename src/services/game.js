@@ -4,6 +4,18 @@ const Log = require(process.env.DIR +'/_log.js');
 
 var Game = {
 	blockPx: 64,
+	mineralNames: {
+		white: 'tritanium',
+		orange: 'duranium',
+		yellow: 'pentrilium',
+		green: 'byzanium',
+		teal: 'etherium',
+		blue: 'mithril',
+		purple: 'octanium',
+		pink: 'saronite',
+		red: 'adamantite',
+		black: 'quadium'
+	},
 	mapNames: ['monster', 'lava', 'gas', 'player', 'mineral_white', 'mineral_orange', 'mineral_yellow', 'mineral_green', 'mineral_teal', 'mineral_blue', 'mineral_purple', 'mineral_pink', 'mineral_red', 'mineral_black', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
 	rand: function(min, max, excludes){
 		excludes = excludes || [];
@@ -202,22 +214,22 @@ var Game = {
 	},
 	generatePart: function(){
 		var type = Game.randFromArr(['tracks', 'hull', 'drill', 'fuel_tank']);
-		var material = Game.weightedChance({ adamantite: 22, byzanium: 18, duranium: 15, etherium: 14, mithril: 11, quadium: 9, saronite: 7, tritanium: 4 });
+		var material = Game.weightedChance({ tritanium: 20, duranium: 18, pentrilium: 16, byzanium: 14, etherium: 12, mithril: 8, octanium: 5, saronite: 4, adamantite: 1, quadium: 2 });
 		var subTypes = {
 			tracks: { boosted_1: 40, boosted_2: 30, boosted_3: 20, antigravidic: 10 },
-			hull: { lightweight: 45, large: 35, oversized: 20 },
-			drill: { quadratic: 40, hardened: 30, precision_1: 20, precision_2: 10 },
+			hull: { large: 70, oversized: 30 },
+			drill: { quadratic: 50, precision_1: 30, precision_2: 20 },
 			fuel_tank: { large: 30, oversized: 20, pressurized: 25, battery: 15, condenser: 10 }
 		};
 		var subType = Game.weightedChance(subTypes[type]);
 
 		var typePrice = { tracks: 10, hull: 10, drill: 10, fuel_tank: 10 };
-		var materialPrice = { adamantite: 10, byzanium: 18, duranium: 22, etherium: 34, mithril: 40, quadium: 55, saronite: 67, tritanium: 84 };
+		var materialPrice = { tritanium: 5, duranium: 10, pentrilium: 15, byzanium: 20, etherium: 25, mithril: 30, octanium: 35, saronite: 40, adamantite: 45, quadium: 50 };
 		var subtypePrices = {
-			tracks: { boosted_1: 10, boosted_2: 20, boosted_3: 30, antigravidic: 50 },
-			hull: { lightweight: 10, large: 20, oversized: 30 },
-			drill: { quadratic: 15, hardened: 15, precision_1: 30, precision_2: 40 },
-			fuel_tank: { large: 10, oversized: 20, pressurized: 35, battery: 45, condenser: 50 }
+			tracks: { boosted_1: 20, boosted_2: 30, boosted_3: 40, antigravidic: 50 },
+			hull: { large: 20, oversized: 40 },
+			drill: { quadratic: 20, precision_1: 30, precision_2: 50 },
+			fuel_tank: { large: 10, oversized: 20, pressurized: 30, battery: 45, condenser: 50 }
 		};
 
 		var partName = subType +':~:'+ material +':~:'+ type;
