@@ -23,7 +23,8 @@ Game.entities.ground.create = function(x, y, type){
 	}
 
 	if(!type){
-		type = Game.weightedChance(Game.config.world.layers[Math.ceil(Game.config.world.layers.length * (Game.toGridPos(y) / Game.config.depth)) - 1]);
+		// type = Game.weightedChance(Game.config.world.layers[Math.ceil(Game.config.world.layers.length * (Game.toGridPos(y) / Game.config.depth)) - 1]);
+		type = Game.weightedChance({ white: 90, red: 10 });
 
 		Game.setMapPos({ x: x, y: y }, Game.mapNames.indexOf('ground_'+ type));
 	}
