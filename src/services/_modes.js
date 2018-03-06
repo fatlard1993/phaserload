@@ -1,56 +1,47 @@
-var Modes = {
-	normal: {
-		worldCategory: 'normal',
-		hudLayout: {
-			position: 'GPS',
-			credits: '$',
-			health: 'Health',
-			fuel: 'Fuel',
-			hull: 'Hull'
-		},
-		spaceco: {
-			baseGroundValue: 0.08,
-			mineralValues: {
-				green: 2.5,
-				red: 3.75,
-				blue: 4.25,
-				purple: 5,
-				teal: 6.5,
-				unknown: 8
-			},
-			fuel: {
-				gas: 3,
-				energy: 6,
-				super_oxygen_liquid_nitrogen: 9
-			},
-			shop: {
-				teleporter: 12,
-				responder_teleporter: 20,
-				repair: 40,
-				transport: 300,
-				timed_charge: 10,
-				remote_charge: 15,
-				timed_freeze_charge: 8,
-				remote_freeze_charge: 12
-			}
-		},
-		blockBehavior: {
-			red: 'lava:~:35',
-			green: 'gas:~:15',
-			black: 'impenetrable'
-		},
-		digTime: {
-			white: 400,
-			orange: 500,
-			yellow: 540,
-			green: 700,
-			teal: 640,
-			blue: 700,
-			purple: 730,
-			pink: 750,
-			red: 300,
-			black: 800
-		}
+const fs = require('fs');
+const exec = require('child_process').exec;
+const Log = require(process.env.DIR +'/_log.js');
+
+function browse(folder, cb){
+	var folders = [];
+
+	exec('ls -d "'+ folder +'"/*/', function(err, stdout, stderr){
+		var folderNames = stdout.split('\n');
+
+		folderNames.forEach(function(folderName){
+			if(folderName && folderName.length) folders.push(/\/([^\/]*?)\/$/.exec(folderName)[1]);
+		});
+
+		var files = [];
+
+		exec('ls -p "'+ folder +'/" | grep -v /', function(err, stdout, stderr){
+			var fileNames = stdout.split('\n');
+
+			fileNames.forEach(function(fileName){
+				if(fileName && fileName.length) files.push(fileName);
+			});
+
+			cb({ folder: folder, folders: folders, files: files });
+		});
+	});
+}
+
+const Modes = {
+	list: {},
+	init: function(){
+		browse(process.env.DIR +'/../src/modes', function(data){
+			Log()(`Loading ${data.files.length} packs`);
+
+			data.files.forEach(function(file){
+				fs.readFile(data.folder +'/'+ file, function(err, data){
+					var packData = JSON.parse(data), packName = file.replace('.json', '');
+
+					Modes.list[packName] = packData;
+
+					Log()(`Loaded ${packName}`);
+				});
+			});
+		});
 	}
 };
 
