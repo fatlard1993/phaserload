@@ -1,0 +1,36 @@
+{
+	"spaceco": {
+		"fuel": {
+			"gas": 3,
+			"energy": 6,
+			"super_oxygen_liquid_nitrogen": 9
+		},
+		"shop": {
+			"teleporter": 12,
+			"responder_teleporter": 20,
+			"repair": 40,
+			"transport": 300,
+			"timed_charge": 10,
+			"remote_charge": 15,
+			"timed_freeze_charge": 8,
+			"remote_freeze_charge": 12
+		}
+	},
+	"groundEffects": {
+		"red": "lava:~:35",
+		"green": "gas:~:15",
+		"black": "impenetrable"
+	},
+	"densities": {
+		"white": 400,
+		"orange": 500,
+		"yellow": 540,
+		"green": 700,
+		"teal": 640,
+		"blue": 700,
+		"purple": 730,
+		"pink": 750,
+		"red": 300,
+		"black": 800
+	}
+}

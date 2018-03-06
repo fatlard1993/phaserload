@@ -1,0 +1,17 @@
+[
+	{
+		"name": "asteroid CV64R-385",
+		"holeChance": 20,
+		"lavaChance": 20,
+		"gasChance": 20,
+		"monsterChance": 20,
+		"mineralChance": 5,
+		"layers": [
+			{ "blue": 75, "orange": 10, "teal": 10, "red": 5 },
+			{ "blue": 60, "orange": 10, "teal": 15, "purple": 15 },
+			{ "yellow": 40, "pink": 25, "white": 15, "purple": 20 },
+			{ "blue": 20, "black": 15, "white": 25, "red": 40 },
+			{ "black": 5, "pink": 45, "teal": 5, "red": 45 }
+		]
+	}
+]

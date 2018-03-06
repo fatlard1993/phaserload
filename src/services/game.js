@@ -131,6 +131,66 @@ var Game = {
 
 		return mapData;
 	},
+	generateMap2: function(mode, worldCategory, worldIndex){
+		var mapData = Object.assign(Modes[mode], {
+			mode: mode,
+			world: Worlds.categories[worldCategory][worldIndex !== 'rand' ? worldIndex : Game.rand(0, Worlds.categories[worldCategory].length - 1)],
+			width: Game.rand(40, 60),
+			depth: Game.rand(180, 300),
+			map: [],
+			viewBufferMap: []
+		});
+
+		var safeLevel = 8;
+
+		var holeChance, mineralChance, lavaChance, gasChance, monsterChance, groundDistribution, mineralDistribution;
+		var x, y;
+
+		for(x = 0; x < mapData.width; ++x){
+			for(y = 1; y < mapData.depth; ++y){
+				holeChance = y * (mapData.world.holeChance / 100);
+				lavaChance = y * (mapData.world.lavaChance / 100);
+				gasChance = y * (mapData.world.gasChance / 100);
+				monsterChance = y * (mapData.world.monsterChance / 100);
+				mineralChance = y * (mapData.world.mineralChance / 100);
+
+				groundDistribution = mapData.world.layers[Math.ceil(mapData.world.layers.length * (y / mapData.depth)) - 1];
+				mineralDistribution = mapData.world.layers[Math.ceil(mapData.world.layers.length * (y / mapData.depth)) - 1];
+
+				mapData.map[x] = mapData.map[x] || [];
+				mapData.map[x][y] = [-1, -1];
+
+				mapData.viewBufferMap[x] = mapData.viewBufferMap[x] || [];
+				mapData.viewBufferMap[x][y] = [-1, -1];
+
+				if(!Game.chance(holeChance)){
+					mapData.map[x][y] = ['ground_'+ Game.weightedChance(groundDistribution), -1];
+
+					if(y > safeLevel && Game.chance(mineralChance)){
+						mapData.map[x][y][1] = 'mineral_'+ Game.weightedChance(mineralDistribution);
+					}
+				}
+
+				else if(y > safeLevel && Game.chance(lavaChance)){
+					mapData.map[x][y] = ['lava', -1];
+				}
+
+				else if(y > safeLevel && Game.chance(gasChance)){
+					mapData.map[x][y] = ['gas', -1];
+				}
+
+				else if(y > safeLevel && Game.chance(monsterChance)){
+					mapData.map[x][y] = ['monster', -1];
+				}
+
+				else if(y > safeLevel && Game.chance(mineralChance)){
+					mapData.map[x][y][1] = 'mineral_'+ Game.weightedChance(mineralDistribution);
+				}
+			}
+		}
+
+		return mapData;
+	},
 	generatePart: function(){
 		var type = Game.randFromArr(['tracks', 'hull', 'drill', 'fuel_tank']);
 		var material = Game.weightedChance({ adamantite: 22, byzanium: 18, duranium: 15, etherium: 14, mithril: 11, quadium: 9, saronite: 7, tritanium: 4 });
