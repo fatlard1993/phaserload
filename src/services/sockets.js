@@ -51,7 +51,7 @@ var Sockets = {
 					Sockets.games[data.options.name] = {
 						name: data.options.name,
 						options: data.options,
-						mapData: Game.generateMap(data.options.mode || 'normal', data.options.startingWorld),
+						mapData: Game.generateMap2('default', 'default', data.options.startingWorld),
 						players: {},
 						spaceco: {
 							damage: 0,

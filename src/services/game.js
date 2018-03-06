@@ -1,9 +1,10 @@
 const Modes = require('./_modes.js');
 const Worlds = require('./_worlds.js');
+const Log = require(process.env.DIR +'/_log.js');
 
 var Game = {
 	blockPx: 64,
-	mapNames: ['monster', 'lava', 'gas', 'player', 'mineral_green', 'mineral_red', 'mineral_blue', 'mineral_purple', 'mineral_teal', 'mineral_unknown', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
+	mapNames: ['monster', 'lava', 'gas', 'player', 'mineral_white', 'mineral_orange', 'mineral_yellow', 'mineral_green', 'mineral_teal', 'mineral_blue', 'mineral_purple', 'mineral_pink', 'mineral_red', 'mineral_black', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
 	rand: function(min, max, excludes){
 		excludes = excludes || [];
 
@@ -131,10 +132,12 @@ var Game = {
 
 		return mapData;
 	},
-	generateMap2: function(mode, worldCategory, worldIndex){
-		var mapData = Object.assign(Modes[mode], {
+	generateMap2: function(mode, worldPack, worldIndex){
+		Log()(mode, worldPack, worldIndex);
+
+		var mapData = Object.assign(Modes.list[mode], {
 			mode: mode,
-			world: Worlds.categories[worldCategory][worldIndex !== 'rand' ? worldIndex : Game.rand(0, Worlds.categories[worldCategory].length - 1)],
+			world: Worlds.packs[worldPack][worldIndex !== 'rand' ? worldIndex : Game.rand(0, Worlds.packs[worldPack].length - 1)],
 			width: Game.rand(40, 60),
 			depth: Game.rand(180, 300),
 			map: [],
@@ -147,7 +150,7 @@ var Game = {
 		var x, y;
 
 		for(x = 0; x < mapData.width; ++x){
-			for(y = 1; y < mapData.depth; ++y){
+			for(y = 0; y < mapData.depth; ++y){
 				holeChance = y * (mapData.world.holeChance / 100);
 				lavaChance = y * (mapData.world.lavaChance / 100);
 				gasChance = y * (mapData.world.gasChance / 100);
@@ -163,28 +166,34 @@ var Game = {
 				mapData.viewBufferMap[x] = mapData.viewBufferMap[x] || [];
 				mapData.viewBufferMap[x][y] = [-1, -1];
 
-				if(!Game.chance(holeChance)){
-					mapData.map[x][y] = ['ground_'+ Game.weightedChance(groundDistribution), -1];
+				if(y > 1 && !Game.chance(holeChance)){
+					// mapData.map[x][y] = ['ground_'+ Game.weightedChance(groundDistribution), -1];
+					mapData.map[x][y] = [Game.mapNames.indexOf('ground_'+ Game.weightedChance(groundDistribution)), -1];
 
 					if(y > safeLevel && Game.chance(mineralChance)){
-						mapData.map[x][y][1] = 'mineral_'+ Game.weightedChance(mineralDistribution);
+						// mapData.map[x][y][1] = 'mineral_'+ Game.weightedChance(mineralDistribution);
+						mapData.map[x][y][1] = Game.mapNames.indexOf('mineral_'+ Game.weightedChance(mineralDistribution));
 					}
 				}
 
 				else if(y > safeLevel && Game.chance(lavaChance)){
-					mapData.map[x][y] = ['lava', -1];
+					// mapData.map[x][y] = ['lava', -1];
+					mapData.map[x][y] = [Game.mapNames.indexOf('lava'), -1];
 				}
 
 				else if(y > safeLevel && Game.chance(gasChance)){
-					mapData.map[x][y] = ['gas', -1];
+					// mapData.map[x][y] = ['gas', -1];
+					mapData.map[x][y] = [Game.mapNames.indexOf('gas'), -1];
 				}
 
 				else if(y > safeLevel && Game.chance(monsterChance)){
-					mapData.map[x][y] = ['monster', -1];
+					// mapData.map[x][y] = ['monster', -1];
+					mapData.map[x][y] = [Game.mapNames.indexOf('monster'), -1];
 				}
 
 				else if(y > safeLevel && Game.chance(mineralChance)){
-					mapData.map[x][y][1] = 'mineral_'+ Game.weightedChance(mineralDistribution);
+					// mapData.map[x][y][1] = 'mineral_'+ Game.weightedChance(mineralDistribution);
+					mapData.map[x][y][1] = Game.mapNames.indexOf('mineral_'+ Game.weightedChance(mineralDistribution));
 				}
 			}
 		}

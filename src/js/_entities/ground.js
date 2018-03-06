@@ -53,7 +53,7 @@ Game.entities.ground.crush = function(pos, fromServer){
 
 			var groundType = groundAt.replace('ground_', '');
 
-			ground.tween = Game.phaser.add.tween(ground).to({ alpha: 0 }, Game.config.digTime[groundType], Phaser.Easing.Cubic.In, true);
+			ground.tween = Game.phaser.add.tween(ground).to({ alpha: 0 }, Game.config.densities[groundType], Phaser.Easing.Cubic.In, true);
 			ground.animations.play('crush_'+ ground.ground_type);
 
 			if(fromServer) return;
@@ -74,7 +74,7 @@ Game.entities.ground.crush = function(pos, fromServer){
 				bottom: Game.mapPosName(gridPos.x, gridPos.y + 1)
 			};
 
-			Game.entities.ground.releaseSurrounds(ground, surrounds, Game.config.digTime[groundType]);
+			Game.entities.ground.releaseSurrounds(ground, surrounds, Game.config.densities[groundType]);
 		}
 	});
 };
@@ -109,7 +109,7 @@ Game.entities.ground.dig = function(pos){
 
 	type = type.replace('ground_', '');
 
-	var blockAction = Game.config.blockBehavior[type];
+	var blockAction = Game.config.groundEffects[type];
 	if(blockAction === 'impenetrable') return;
 
 	Game.entities.ground.crush(pos);
@@ -119,7 +119,7 @@ Game.entities.ground.dig = function(pos){
 		Game.entities.ground.applyBehavior(blockAction[0], blockAction[1], pos);
 	}
 
-	var groundWeight = 0.07 + (Game.config.digTime[type] * 0.0001);
+	var groundWeight = 0.07 + (Game.config.densities[type] * 0.0001);
 
 	if(type === 'red' || Game.player.hull.space < groundWeight) return;
 

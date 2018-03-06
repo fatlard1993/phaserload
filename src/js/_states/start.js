@@ -1,5 +1,16 @@
 /* global Phaser, Game, WS, Log, Cjs */
 
+var HUDLayout = { // todo make this a player setting
+	position: 'GPS',
+	credits: '$',
+	health: 'Health',
+	fuel: 'Fuel',
+	hull: 'Hull'
+};
+
+var BaseGroundValue = 0.8;
+var BaseMineralValue = 2;
+
 Game.states.start = function(){};
 
 Game.states.start.prototype.create = function(){
@@ -72,7 +83,7 @@ Game.states.start.prototype.create = function(){
 			};
 
 			var targetGroundType = Game.groundAt(newPosition.x, newPosition.y);
-			moveTime = targetGroundType ? (Game.config.digTime[targetGroundType.replace('ground_', '')] ? Game.config.digTime[targetGroundType.replace('ground_', '')] - Game.player.drillSpeedMod : Game.player.baseMoveTime) : Game.player.baseMoveTime;
+			moveTime = targetGroundType ? (Game.config.densities[targetGroundType.replace('ground_', '')] ? Game.config.densities[targetGroundType.replace('ground_', '')] - Game.player.drillSpeedMod : Game.player.baseMoveTime) : Game.player.baseMoveTime;
 
 			if(direction === 'up' && Math.abs((Game.phaser.camera.y + Game.viewHeight) - Game.player.sprite.y) > Game.viewHeight / 2){
 				newCameraPosition = { x: Game.phaser.camera.x, y: Game.phaser.camera.y - Game.blockPx };
@@ -88,7 +99,7 @@ Game.states.start.prototype.create = function(){
 			}
 
 			if(targetGroundType && targetGroundType.startsWith('ground')){
-				canMove = !(Game.config.blockBehavior[targetGroundType.replace('ground_', '')] === 'impenetrable');
+				canMove = !(Game.config.groundEffects[targetGroundType.replace('ground_', '')] === 'impenetrable');
 
 				Game.entities.ground.dig(newPosition);
 
@@ -403,14 +414,14 @@ Game.states.start.prototype.create = function(){
 		Game.hud.interfaceText.setText('');
 		Game.hud.bottomLine.setText('');
 
-		var hudItemNames = Object.keys(Game.config.hudLayout), hudItemCount = hudItemNames.length;
+		var hudItemNames = Object.keys(HUDLayout), hudItemCount = hudItemNames.length;
 		var statusText;
 		var shortestLength = 1;
 		var longestLength = 6;
 
 		for(var x = 0; x < hudItemCount; x++){
 			var item = hudItemNames[x];
-			var value = Game.config.hudLayout[hudItemNames[x]].split(':~:');
+			var value = HUDLayout[hudItemNames[x]].split(':~:');
 			var spacer = (' '.repeat(value[0].length > shortestLength ? longestLength - (value[0].length - shortestLength) : longestLength));
 			if(statusText) statusText += '\n'+ value[0] + spacer;
 			else statusText = value[0] + spacer;
@@ -548,7 +559,6 @@ Game.states.start.prototype.create = function(){
 	};
 
 	Game.hud.handlePointer = function(pointer){
-		// Log()(pointer.x, pointer.y);
 		if(!Game.hud.isOpen) return;
 
 		if(pointer.x >= 450 && pointer.x <= 550 && pointer.y >= 25 && pointer.y <= 70){// exit
@@ -558,18 +568,10 @@ Game.states.start.prototype.create = function(){
 		else if(pointer.y > 70 && pointer.y < 105){// menu
 			if(pointer.x > 30 && pointer.x < 160){
 				Game.hud.useMenu(0);
-				// if(Game.hud.briefingOpen){
-				// 	Log()('briefing');
-				// 	Game.hud.setView('briefing');
-				// }
 			}
 
 			else if(pointer.x > 160 && pointer.x < 290){
 				Game.hud.useMenu(1);
-				// if(Game.hud.briefingOpen){
-				// 	Log()('help');
-				// 	Game.hud.setView('help');
-				// }
 			}
 
 			else if(pointer.x > 290 && pointer.x < 415){
@@ -627,7 +629,7 @@ Game.states.start.prototype.create = function(){
 			Game.hud.isOpen.menuItems = ['Briefing', 'Help'];
 
 			if(selection === 0){
-				var briefingLines = Game.briefingText, briefingLineCount = briefingLines.length;
+				var briefingLines = Game.config.world.name, briefingLineCount = briefingLines.length;
 
 				if(Game.hud.isOpen.view === 'briefing' && briefingLineCount > 7){
 					Game.hud.isOpen.view = 'briefing_pg2';
@@ -1162,46 +1164,44 @@ Game.states.start.prototype.create = function(){
 				view: 'welcome_2'
 			};
 
-			if(Game.config.mode === 'normal'){
-				delete Game.player.hull.space;
+			delete Game.player.hull.space;
 
-				var hullItemNames = Object.keys(Game.player.hull);
-				var statingCredits = Game.player.credits;
-				var soldItems = {
-					ground: 0,
-					mineral: 0
-				};
-				var x;
+			var hullItemNames = Object.keys(Game.player.hull);
+			var statingCredits = Game.player.credits;
+			var soldItems = {
+				ground: 0,
+				mineral: 0
+			};
+			var x;
 
-				for(x = 0; x < hullItemNames.length; x++){
-					Game.spaceco.resourceBay[hullItemNames[x]] = Game.spaceco.resourceBay[hullItemNames[x]] || 0;
-					Game.spaceco.resourceBay[hullItemNames[x]] += Game.player.hull[hullItemNames[x]];
+			for(x = 0; x < hullItemNames.length; x++){
+				Game.spaceco.resourceBay[hullItemNames[x]] = Game.spaceco.resourceBay[hullItemNames[x]] || 0;
+				Game.spaceco.resourceBay[hullItemNames[x]] += Game.player.hull[hullItemNames[x]];
 
-					var type = hullItemNames[x].replace(/_.*$/, '');
-					soldItems[type] += Game.player.hull[hullItemNames[x]];
+				var type = hullItemNames[x].replace(/_.*$/, '');
+				soldItems[type] += Game.player.hull[hullItemNames[x]];
 
-					// if(Game.player.hull[hullItemNames[x]] > 0) pageItem += hullItemNames[x] +': '+ Game.player.hull[hullItemNames[x]] +' * '+ Game.spaceco.getValue(hullItemNames[x]) +'\n';
+				// if(Game.player.hull[hullItemNames[x]] > 0) pageItem += hullItemNames[x] +': '+ Game.player.hull[hullItemNames[x]] +' * '+ Game.spaceco.getValue(hullItemNames[x]) +'\n';
 
-					Game.player.credits += Game.player.hull[hullItemNames[x]] * Game.spaceco.getValue(hullItemNames[x]);
-				}
+				Game.player.credits += Game.player.hull[hullItemNames[x]] * Game.spaceco.getValue(hullItemNames[x]);
+			}
 
-				output.pageItems.push('Sold:');
+			output.pageItems.push('Sold:');
 
-				var soldItemNames = Object.keys(soldItems);
+			var soldItemNames = Object.keys(soldItems);
 
-				for(x = 0; x < soldItemNames.length; ++x){
-					output.pageItems.push(' '+ soldItems[soldItemNames[x]] +' x '+ soldItemNames[x] +'s');
-				}
+			for(x = 0; x < soldItemNames.length; ++x){
+				output.pageItems.push(' '+ soldItems[soldItemNames[x]] +' x '+ soldItemNames[x] +'s');
+			}
 
-				output.pageItems.push('For '+ Game.toFixed(Game.player.credits - statingCredits, 2) +' credits');
+			output.pageItems.push('For '+ Game.toFixed(Game.player.credits - statingCredits, 2) +' credits');
 
-				Game.player.hull = {
-					space: Game.player.max_hullSpace
-				};
+			Game.player.hull = {
+				space: Game.player.max_hullSpace
+			};
 
-				if(Game.player.credits - 0.1 < 0){
-					Game.spaceco.getOut_TO = setTimeout(Game.spaceco.boot, 30 * 1000);
-				}
+			if(Game.player.credits - 0.1 < 0){
+				Game.spaceco.getOut_TO = setTimeout(Game.spaceco.boot, 30 * 1000);
 			}
 
 			Game.hud.open(output);
@@ -1248,13 +1248,15 @@ Game.states.start.prototype.create = function(){
 		var value;
 
 		if(name.startsWith('ground')){
-			value = Game.config.spaceco.baseGroundValue + (((Game.config.digTime[name.replace('ground_', '')] / 2) - (Game.spaceco.resourceBay[name] || 0)) / 1000);
+			value = BaseGroundValue + (((Game.config.densities[name.replace('ground_', '')] / 2) - (Game.spaceco.resourceBay[name] || 0)) / 1000);
 
-			if(name === 'ground_green' && Game.config.mode === 'normal') value *= 2;
+			// if(name === 'ground_green' && Game.config.mode === 'normal') value *= 2;
 		}
 
 		else if(name.startsWith('mineral')){
-			value = Game.config.spaceco.mineralValues[name.replace('mineral_', '')] - ((Game.spaceco.resourceBay[name] || 0) / 40);
+			value = BaseMineralValue + (((Game.config.densities[name.replace('mineral_', '')] / 2) - (Game.spaceco.resourceBay[name] || 0)) / 1000);
+
+			// value = Game.config.spaceco.mineralValues[name.replace('mineral_', '')] - ((Game.spaceco.resourceBay[name] || 0) / 40);
 		}
 
 		else if(Game.config.spaceco.fuel[name]){

@@ -1,7 +1,7 @@
 /* global Phaser, Game, WS, Log */
 
 Game.entities.mineral = function(x, y){
-	Phaser.Sprite.call(this, Game.phaser, x, y, 'mineral', 6);
+	Phaser.Sprite.call(this, Game.phaser, x, y, 'mineral', 10);
 
 	this.anchor.setTo(0.5, 0.5);
 };
@@ -9,7 +9,7 @@ Game.entities.mineral = function(x, y){
 Game.entities.mineral.prototype = Object.create(Phaser.Sprite.prototype);
 Game.entities.mineral.prototype.constructor = Game.entities.mineral;
 
-Game.entities.mineral.types = ['green', 'red', 'blue', 'purple', 'teal', 'unknown'];
+Game.entities.mineral.types = ['white', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink', 'red', 'black'];
 
 Game.entities.mineral.create = function(x, y, type){
 	var mineral = Game.minerals.getFirstDead();
