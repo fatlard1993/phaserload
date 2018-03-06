@@ -24,13 +24,13 @@
 	"densities": {
 		"white": 400,
 		"orange": 500,
-		"yellow": 540,
-		"green": 700,
-		"teal": 640,
-		"blue": 700,
-		"purple": 730,
-		"pink": 750,
-		"red": 300,
-		"black": 800
+		"yellow": 560,
+		"green": 620,
+		"teal": 700,
+		"blue": 740,
+		"purple": 760,
+		"pink": 780,
+		"red": 800,
+		"black": 900
 	}
 }
