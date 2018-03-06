@@ -121,7 +121,7 @@ Game.entities.ground.dig = function(pos){
 
 	var groundWeight = 0.07 + (Game.config.densities[type] * 0.0001);
 
-	if(type === 'red' || Game.player.hull.space < groundWeight) return;
+	if(Game.player.hull.space < groundWeight) return;
 
 	Game.player.hull.space -= groundWeight;
 
