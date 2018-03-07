@@ -18,6 +18,7 @@ Game.states.load.prototype.preload = function(){
 	Game.phaser.load.spritesheet('responder_teleporter', '/assets/responder_teleporter.png', 32, 32);
 	Game.phaser.load.spritesheet('repair', '/assets/repair.png', 32, 32);
 	Game.phaser.load.spritesheet('tombstone', '/assets/tombstone.png', 32, 32);
+	Game.phaser.load.spritesheet('repair_nanites', '/assets/repair_nanites.png', 32, 32);
 	Game.phaser.load.spritesheet('detonator', '/assets/detonator.png', 32, 32);
 	Game.phaser.load.spritesheet('explosive', '/assets/explosives.png', 32, 32);
 	Game.phaser.load.spritesheet('fuel', '/assets/fuel.png', 32, 32);
