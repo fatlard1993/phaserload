@@ -38,7 +38,7 @@ Game.entities.ground.create = function(x, y, type){
 
 	ground.frame = 0 + frameMod;
 
-	var animation = ground.animations.add('crush_'+ type, [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod], 10, false);
+	var animation = ground.animations.add('crush', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod], 10, false);
 	animation.killOnComplete = true;
 
 	return ground;
@@ -47,14 +47,14 @@ Game.entities.ground.create = function(x, y, type){
 Game.entities.ground.crush = function(pos, fromServer){
 	// console.log('crush: ', groundType, pos);
 	Game.ground.forEachAlive(function(ground){
-		if(ground.x === pos.x && ground.y === pos.y && !ground.animations.getAnimation('crush_'+ ground.ground_type).isPlaying){
+		if(ground.x === pos.x && ground.y === pos.y && !ground.animations.getAnimation('crush').isPlaying){//+ ground.ground_type
 			var groundAt = Game.groundAt(pos.x, pos.y);
 			if(!groundAt) return;
 
 			var groundType = groundAt.replace('ground_', '');
 
 			ground.tween = Game.phaser.add.tween(ground).to({ alpha: 0 }, Game.config.densities[groundType], Phaser.Easing.Cubic.In, true);
-			ground.animations.play('crush_'+ ground.ground_type);
+			ground.animations.play('crush');
 
 			if(fromServer) return;
 
