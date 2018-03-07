@@ -347,24 +347,26 @@ var Game = {
 		if(data.invertTexture) Game.players[data.player].sprite.scale.x = -Game.config.defaultPlayerScale;
 		else Game.players[data.player].sprite.scale.x = Game.config.defaultPlayerScale;
 	},
-	setMapPos: function(pos, id, fromServer){
+	setMapPos: function(pos, id, fromServer, animation){
 		var gridPos = {
 			x: Game.toGridPos(pos.x),
 			y: Game.toGridPos(pos.y)
 		};
 
-		Log()('setMapPos', gridPos, 'from', Game.mapPosName(pos.x, pos.y), 'to', Game.mapNames[id]);
+		var oldName = Game.mapPosName(gridPos.x, gridPos.y);
+
+		Log()('setMapPos', gridPos, 'from', oldName, 'to', Game.mapNames[id], animation ? 'playing '+ animation : '');
 
 		Game.config.map[gridPos.x][gridPos.y][0] = id;
 		// Game.config.viewBufferMap[gridPos.x][gridPos.y][0] = id;
 
 		if(fromServer){
-			if(id === -1) Game.cleanGroundSpriteAt(pos.x, pos.y);
+			if(id === -1) Game.cleanGroundSpriteAt(pos.x, pos.y, oldName);
 
-			else Game.drawTile(gridPos.x, gridPos.y, Game.toName(id));
+			else Game.drawTile(gridPos.x, gridPos.y, Game.toName(id), animation);
 		}
 
-		else WS.send({ command: 'player_set_map_position', pos: pos, id: id });
+		else WS.send({ command: 'player_set_map_position', pos: pos, id: id, animation: animation });
 	},
 	viewBufferMap: [],
 	viewBufferSize: 3,
@@ -442,41 +444,50 @@ var Game = {
 
 		Log()('drew: ', drawn);
 	},
-	drawTile: function(x, y, mapPos_0_name){
+	drawTile: function(x, y, mapPos_0_name, animation){
 		if(!mapPos_0_name) return;
 
-		Game.config.viewBufferMap[x][y] = Game.config.map[x][y];
+		var entity;
 
 		if(mapPos_0_name.startsWith('ground')){
-			Game.entities.ground.create(Game.toPx(x), Game.toPx(y), mapPos_0_name);
+			entity = Game.entities.ground.create(Game.toPx(x), Game.toPx(y), mapPos_0_name);
 		}
 
 		else if(mapPos_0_name === 'lava'){
-			Game.entities.lava.create(Game.toPx(x), Game.toPx(y));
+			entity = Game.entities.lava.create(Game.toPx(x), Game.toPx(y));
 		}
 
 		else if(mapPos_0_name === 'gas'){
-			Game.entities.gas.create(Game.toPx(x), Game.toPx(y));
+			entity = Game.entities.gas.create(Game.toPx(x), Game.toPx(y));
 		}
 
 		else if(mapPos_0_name === 'monster'){
-			Game.entities.monster.create(Game.toPx(x), Game.toPx(y));
+			entity = Game.entities.monster.create(Game.toPx(x), Game.toPx(y));
 		}
+
+		if(animation) entity.animations.play(animation);
+
+		Game.config.viewBufferMap[x][y] = Game.config.map[x][y];
 	},
-	cleanGroundSpriteAt: function(x, y){
+	cleanGroundSpriteAt: function(x, y, name){
 		Log()('cleanGroundSpriteAt', x, y);
 
 		function cleanup(entity){
 			if(entity.x === x && entity.y === y){
 				Game.config.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)][0] = -1;
 				Log()('killing: ', entity);
-				entity.kill();
+
+				if(name.startsWith('ground')) entity.animations.play('crush');
+
+				else entity.kill();
 			}
 		}
 
-		this.ground.forEachAlive(cleanup);
-		this.lava.forEachAlive(cleanup);
-		this.monsters.forEachAlive(cleanup);
+		if(name.startsWith('ground')) this.ground.forEachAlive(cleanup);
+		else if(name === 'lava') this.lava.forEachAlive(cleanup);
+		else if(name === 'gas') this.gas.forEachAlive(cleanup);
+		else if(name === 'monsters') this.monsters.forEachAlive(cleanup);
+		else Log.warn('cleanGroundSpriteAt: no defined name to search for');
 	},
 	cleanupView: function(force){
 		if(!force && Game.phaser.tweens.isTweening(Game.phaser.camera)) return;

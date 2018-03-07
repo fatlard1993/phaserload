@@ -14,29 +14,10 @@ Game.entities.gas.create = function(x, y, isNew, spawnChance, spreadChance){
 
 	var gas = Game.gas.getFirstDead();
 
+	var fillingAnim, dissipateAnim, fullAnim;
+
 	if(!gas){
 		gas = Game.gas.add(new Game.entities.gas(x, y));
-
-		var fillingAnim = gas.animations.add('filling', [2, 1, 0], 3, false);
-		fillingAnim.onComplete.add(function(){
-			gas.play('full');
-
-			Game.entities.gas.spread(gas.x, gas.y);
-		}, gas);
-
-		var dissipateAnim = gas.animations.add('dissipate', [0, 1, 2], 3, false);
-		dissipateAnim.onComplete.add(function(){
-			gas.kill();
-
-			Game.setMapPos({ x: gas.x, y: gas.y }, -1);
-		}, gas);
-
-		var fullAnim = gas.animations.add('full', [3, 4, 5], 6, false);
-		fullAnim.onComplete.add(function(){
-			gas.play('dissipate');
-		}, gas);
-
-		gas.animations.add('trapped', [3, 4, 5], 12, true);
 	}
 	else{
 		gas.reset(x, y);
@@ -44,47 +25,80 @@ Game.entities.gas.create = function(x, y, isNew, spawnChance, spreadChance){
 		gas.animations.stop();
 	}
 
-	if(isNew){
-		Game.setMapPos({ x: x, y: y }, Game.mapNames.indexOf('gas'));
+	fillingAnim = gas.animations.add('filling', [2, 1, 0], 3, false);
+	fillingAnim.onComplete.add(function(){
+		gas.animations.play('full');
+	}, gas);
 
+	fullAnim = gas.animations.add('full', [3, 4, 5], 6, false);
+
+	dissipateAnim = gas.animations.add('dissipate', [0, 1, 2], 3, false);
+	dissipateAnim.killOnComplete = true;
+
+	gas.animations.add('trapped', [3, 4, 5], 12, true);
+
+	if(isNew){
 		gas.spreadChance = spreadChance !== undefined ? spreadChance : spawnChance !== undefined ? spawnChance - Game.rand(0, 9) : 100;
+
+		fullAnim.onComplete.add(function(){
+			Game.entities.gas.spread(null, null, gas);
+		}, gas);
+
+		dissipateAnim.onComplete.add(function(){
+			Game.setMapPos({ x: gas.x, y: gas.y }, -1);
+		}, gas);
+
+		Game.setMapPos({ x: x, y: y }, Game.mapNames.indexOf('gas'), null, 'filling');
 
 		gas.animations.play('filling');
 	}
+
 	else{
+		fullAnim.onComplete.add(function(){
+			gas.animations.play('dissipate');
+		}, gas);
+
 		gas.animations.play('trapped');
 	}
 
 	return gas;
 };
 
-Game.entities.gas.spread = function(x, y){
+Game.entities.gas.find = function(x, y, cb){
 	Game.gas.forEachAlive(function(gas){
-		if(gas.x === x && gas.y === y){
-			var gridPos = {
-				x: Game.toGridPos(gas.x),
-				y: Game.toGridPos(gas.y)
-			};
-
-			var surrounds = {
-				left: Game.mapPosName(gridPos.x - 1, gridPos.y),
-				right: Game.mapPosName(gridPos.x + 1, gridPos.y),
-				top: Game.mapPosName(gridPos.x, gridPos.y - 1)
-			};
-
-			if(gridPos.x - 1 > 0 && (!surrounds.left || ['player', 'monster'].includes(surrounds.left))){
-				Game.entities.gas.create(gas.x - Game.blockPx, gas.y, 1, gas.spreadChance);
-			}
-
-			if(gridPos.x + 1 < Game.config.width && (!surrounds.right || ['player', 'monster'].includes(surrounds.right))){
-				Game.entities.gas.create(gas.x + Game.blockPx, gas.y, 1, gas.spreadChance);
-			}
-
-			if(gridPos.y - 1 > 0 && (!surrounds.top || ['player', 'monster'].includes(surrounds.top))){
-				Game.entities.gas.create(gas.x, gas.y - Game.blockPx, 1, gas.spreadChance);
-			}
-
-			gas.play('dissipate');
-		}
+		if(gas.x === x && gas.y === y) cb(gas, gas, gas);
 	});
+};
+
+Game.entities.gas.spread = function(x, y, gas){
+	if(gas){
+		var gridPos = {
+			x: Game.toGridPos(gas.x),
+			y: Game.toGridPos(gas.y)
+		};
+
+		var surrounds = {
+			left: Game.mapPosName(gridPos.x - 1, gridPos.y),
+			right: Game.mapPosName(gridPos.x + 1, gridPos.y),
+			top: Game.mapPosName(gridPos.x, gridPos.y - 1)
+		};
+
+		if(gridPos.x - 1 > 0 && (!surrounds.left || ['monster'].includes(surrounds.left))){
+			Game.entities.gas.create(gas.x - Game.blockPx, gas.y, 1, gas.spreadChance);
+		}
+
+		if(gridPos.x + 1 < Game.config.width && (!surrounds.right || ['monster'].includes(surrounds.right))){
+			Game.entities.gas.create(gas.x + Game.blockPx, gas.y, 1, gas.spreadChance);
+		}
+
+		if(gridPos.y - 1 > 0 && (!surrounds.top || ['monster'].includes(surrounds.top))){
+			Game.entities.gas.create(gas.x, gas.y - Game.blockPx, 1, gas.spreadChance);
+		}
+
+		gas.animations.play('dissipate');
+	}
+
+	else{
+		Game.entities.gas.find(x, y, Game.entities.gas.spread);
+	}
 };

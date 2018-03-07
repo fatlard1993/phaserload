@@ -278,7 +278,7 @@ function Load(){
 		}
 
 		else if(data.command === 'player_set_map_position'){
-			if(!document.hidden && !cyclingGroundQueue) return Game.setMapPos(data.pos, data.id, 1);
+			if(!document.hidden && !cyclingGroundQueue) return Game.setMapPos(data.pos, data.id, 1, data.animation);
 
 			groundChangeQueue[JSON.stringify(data.pos)] = data;
 		}

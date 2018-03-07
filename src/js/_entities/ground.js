@@ -58,8 +58,6 @@ Game.entities.ground.crush = function(pos, fromServer){
 
 			if(fromServer) return;
 
-			// Socket.active.emit('crush_ground', pos);
-
 			Game.setMapPos(pos, -1);
 
 			var gridPos = {

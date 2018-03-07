@@ -8,7 +8,7 @@ var HUDLayout = { // todo make this a player setting
 	hull: 'Hull'
 };
 
-var BaseGroundValue = 0.5;
+var BaseGroundValue = 0.5;	// todo make these a mode setting
 var BaseMineralValue = 2.5;
 
 Game.states.start = function(){};
@@ -168,7 +168,6 @@ Game.states.start.prototype.create = function(){
 
 			WS.send({ command: 'player_move', position: newPosition, moveTime: moveTime, direction: direction, invertTexture: invertTexture, angle: Game.player.sprite.angle });
 		}
-
 
 		if(Game.player.hull.space < 1.5) Game.notify('Your Hull is\nalmost full');
 
