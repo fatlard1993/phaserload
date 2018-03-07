@@ -60,29 +60,27 @@ Game.entities.lava.find = function(x, y, cb){
 
 Game.entities.lava.spread = function(x, y, lava){
 	if(lava){
-		if(lava.x === x && lava.y === y){
-			var gridPos = {
-				x: Game.toGridPos(lava.x),
-				y: Game.toGridPos(lava.y)
-			};
+		var gridPos = {
+			x: Game.toGridPos(lava.x),
+			y: Game.toGridPos(lava.y)
+		};
 
-			var surrounds = {
-				left: Game.mapPosName(gridPos.x - 1, gridPos.y),
-				right: Game.mapPosName(gridPos.x + 1, gridPos.y),
-				bottom: Game.mapPosName(gridPos.x, gridPos.y + 1)
-			};
+		var surrounds = {
+			left: Game.mapPosName(gridPos.x - 1, gridPos.y),
+			right: Game.mapPosName(gridPos.x + 1, gridPos.y),
+			bottom: Game.mapPosName(gridPos.x, gridPos.y + 1)
+		};
 
-			if(gridPos.x - 1 >= 0 && (!surrounds.left || ['monster'].includes(surrounds.left))){
-				Game.entities.lava.create(x - Game.blockPx, y, 1);
-			}
+		if(gridPos.x - 1 >= 0 && (!surrounds.left || ['monster'].includes(surrounds.left))){
+			Game.entities.lava.create(lava.x - Game.blockPx, lava.y, 1);
+		}
 
-			if(gridPos.x + 1 < Game.config.width && (!surrounds.right || ['monster'].includes(surrounds.right))){
-				Game.entities.lava.create(x + Game.blockPx, y, 1);
-			}
+		if(gridPos.x + 1 < Game.config.width && (!surrounds.right || ['monster'].includes(surrounds.right))){
+			Game.entities.lava.create(lava.x + Game.blockPx, lava.y, 1);
+		}
 
-			if(gridPos.y + 1 < Game.config.depth - 2 && (!surrounds.bottom || ['monster'].includes(surrounds.bottom))){
-				Game.entities.lava.create(x, y + Game.blockPx, 1);
-			}
+		if(gridPos.y + 1 < Game.config.depth - 2 && (!surrounds.bottom || ['monster'].includes(surrounds.bottom))){
+			Game.entities.lava.create(lava.x, lava.y + Game.blockPx, 1);
 		}
 	}
 
