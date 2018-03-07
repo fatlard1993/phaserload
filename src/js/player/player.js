@@ -235,6 +235,10 @@ function Load(){
 			delete Game.players[data.name];
 		}
 
+		else if(data.command === 'new_world'){
+			//todo load new map, draw, move players
+		}
+
 		if(View.current === 'join' || data.player === Player.name) return;
 
 		else if(data.command === 'player_move'){

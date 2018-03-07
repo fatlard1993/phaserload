@@ -51,12 +51,34 @@ var Sockets = {
 					Sockets.games[data.options.name] = {
 						name: data.options.name,
 						options: data.options,
-						mapData: Game.generateMap2('default', 'default', data.options.startingWorld),
 						players: {},
 						spaceco: {
 							damage: 0,
 							parts: {},
 							position: {}
+						},
+						genWorld: function(worldIndex){
+							this.mapData = Game.generateMap2('default', 'default', worldIndex || 'rand');
+
+							this.spaceco.position.x = Game.rand(3, this.mapData.width - 3);
+
+							var partCount = Game.rand(13, 21), part, x;
+							var playerNames = Object.keys(this.players), playerCount = playerNames.length;
+
+							for(x = 0; x < partCount; ++x){
+								part = Game.generatePart();
+
+								this.spaceco.parts[part.name] = part.price;
+							}
+
+							if(playerCount){
+								for(x = 0; x < playerCount; ++x){
+									this.players[playerNames[x]].position.x = Game.rand(1, this.mapData.width - 1);
+									this.players[playerNames[x]].position.y = 1;
+								}
+
+								Sockets.wss.broadcast(JSON.stringify({ command: 'new_world', room: this.name, players: this.players }));
+							}
 						},
 						addPlayer: function(playerName){
 							this.players[playerName] = {
@@ -88,15 +110,7 @@ var Sockets = {
 						}
 					};
 
-					Sockets.games[data.options.name].spaceco.position.x = Game.rand(3, Sockets.games[data.options.name].mapData.width - 3);
-
-					var partCount = Game.rand(13, 21), part;
-
-					for(var x = 0; x < partCount; ++x){
-						part = Game.generatePart();
-
-						Sockets.games[data.options.name].spaceco.parts[part.name] = part.price;
-					}
+					Sockets.games[data.options.name].genWorld(data.options.startingWorld);
 
 					Log(2)('socket', 'Created New Game: ', Sockets.games[data.options.name]);
 
@@ -151,6 +165,10 @@ var Sockets = {
 
 				else if(data.command === 'explosion'){
 					echo = true;
+				}
+
+				else if(data.command === 'purchase_transport'){
+					Sockets.games[Player.room].genWorld();
 				}
 
 				else if(data.command === 'crush_mineral'){

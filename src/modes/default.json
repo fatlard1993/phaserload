@@ -9,6 +9,8 @@
 			"teleporter": 12,
 			"responder_teleporter": 20,
 			"repair": 40,
+			"repair_nanites": 50,
+			"repair_spaceco": 100,
 			"transport": 300,
 			"timed_charge": 10,
 			"remote_charge": 15,

@@ -1001,7 +1001,7 @@ Game.states.start.prototype.create = function(){
 			}
 		}
 
-		else if(Game.hud.isOpen.name === 'spaceco'){
+		else if(Game.hud.isOpen.name === 'spaceco' && !Game.hud.isOpen.view.includes('rates')){
 			item = Game.hud.isOpen.pageItems[selection];
 
 			if(item){
@@ -1073,6 +1073,14 @@ Game.states.start.prototype.create = function(){
 
 					else if(item === 'repair'){
 						Game.effects.repair(100);
+					}
+
+					else if(item === 'repair_spaceco'){
+						Game.spaceco.hurt(-Game.spaceco.damage, 'repair');
+					}
+
+					else if(item === 'transport'){
+						WS.send({ command: 'purchase_transport' });
 					}
 
 					else if(Game.hud.isOpen.view.includes('shop')){
