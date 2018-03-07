@@ -387,10 +387,10 @@ var Game = {
 
 		Game.phaser.add.tween(Game.phaser.camera).to({ x: newX, y: newY }, time, Phaser.Easing.Sinusoidal.InOut, true);
 
-		clearTimeout(Game.cleanup_TO);
-		Game.cleanup_TO = setTimeout(function(){
-			Game.cleanupView();
-		}, time + 200);
+		// clearTimeout(Game.cleanup_TO);
+		// Game.cleanup_TO = setTimeout(function(){
+		// 	Game.cleanupView();
+		// }, time + 200);
 	},
 	drawCurrentView: function(){
 		Log()('drawCurrentView');
@@ -479,7 +479,7 @@ var Game = {
 		this.monsters.forEachAlive(cleanup);
 	},
 	cleanupView: function(force){
-		if(!force && Game.phaser.tweens.isTweening(Game.phaser.camera) || 1) return;
+		if(!force && Game.phaser.tweens.isTweening(Game.phaser.camera)) return;
 		Log()('cleanupView');
 
 		var viewTop = this.phaser.camera.y;
