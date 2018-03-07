@@ -158,19 +158,15 @@ var Game = {
 
 		var safeLevel = 8;
 
-		var holeChance, mineralChance, lavaChance, gasChance, monsterChance, groundDistribution, mineralDistribution;
-		var x, y;
+		var mineralChance, hazardChance, holeChance, layer, hazard, x, y;
 
 		for(x = 0; x < mapData.width; ++x){
 			for(y = 0; y < mapData.depth; ++y){
-				holeChance = y * (mapData.world.holeChance / 100);
-				lavaChance = y * (mapData.world.lavaChance / 100);
-				gasChance = y * (mapData.world.gasChance / 100);
-				monsterChance = y * (mapData.world.monsterChance / 100);
 				mineralChance = y * (mapData.world.mineralChance / 100);
+				holeChance = y * (mapData.world.holeChance / 100);
+				hazardChance = y * (mapData.world.hazardChance / 100);
 
-				groundDistribution = mapData.world.layers[Math.ceil(mapData.world.layers.length * (y / mapData.depth)) - 1];
-				mineralDistribution = mapData.world.layers[Math.ceil(mapData.world.layers.length * (y / mapData.depth)) - 1];
+				layer = mapData.world.layers[Math.ceil(mapData.world.layers.length * (y / mapData.depth)) - 1];
 
 				mapData.map[x] = mapData.map[x] || [];
 				mapData.map[x][y] = [-1, -1];
@@ -179,33 +175,25 @@ var Game = {
 				mapData.viewBufferMap[x][y] = [-1, -1];
 
 				if(y > 1 && !Game.chance(holeChance)){
-					// mapData.map[x][y] = ['ground_'+ Game.weightedChance(groundDistribution), -1];
-					mapData.map[x][y] = [Game.mapNames.indexOf('ground_'+ Game.weightedChance(groundDistribution)), -1];
+					// mapData.map[x][y][0] = 'ground_'+ Game.weightedChance(layer);
+					mapData.map[x][y][0] = Game.mapNames.indexOf('ground_'+ Game.weightedChance(layer));
 
 					if(y > safeLevel && Game.chance(mineralChance)){
-						// mapData.map[x][y][1] = 'mineral_'+ Game.weightedChance(mineralDistribution);
-						mapData.map[x][y][1] = Game.mapNames.indexOf('mineral_'+ Game.weightedChance(mineralDistribution));
+						// mapData.map[x][y][1] = 'mineral_'+ Game.weightedChance(layer);
+						mapData.map[x][y][1] = Game.mapNames.indexOf('mineral_'+ Game.weightedChance(layer));
 					}
 				}
 
-				else if(y > safeLevel && Game.chance(lavaChance)){
-					// mapData.map[x][y] = ['lava', -1];
-					mapData.map[x][y] = [Game.mapNames.indexOf('lava'), -1];
-				}
+				else if(y > safeLevel && Game.chance(hazardChance)){
+					hazard = Game.weightedChance(mapData.world.hazardDistribution);
 
-				else if(y > safeLevel && Game.chance(gasChance)){
-					// mapData.map[x][y] = ['gas', -1];
-					mapData.map[x][y] = [Game.mapNames.indexOf('gas'), -1];
-				}
-
-				else if(y > safeLevel && Game.chance(monsterChance)){
-					// mapData.map[x][y] = ['monster', -1];
-					mapData.map[x][y] = [Game.mapNames.indexOf('monster'), -1];
+					// mapData.map[x][y][0] = hazard;
+					mapData.map[x][y][0] = Game.mapNames.indexOf(hazard);
 				}
 
 				else if(y > safeLevel && Game.chance(mineralChance)){
-					// mapData.map[x][y][1] = 'mineral_'+ Game.weightedChance(mineralDistribution);
-					mapData.map[x][y][1] = Game.mapNames.indexOf('mineral_'+ Game.weightedChance(mineralDistribution));
+					// mapData.map[x][y][1] = 'mineral_'+ Game.weightedChance(layer);
+					mapData.map[x][y][1] = Game.mapNames.indexOf('mineral_'+ Game.weightedChance(layer));
 				}
 			}
 		}
