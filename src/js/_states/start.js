@@ -1310,49 +1310,69 @@ Game.states.start.prototype.update = function(){
 	// 	});
 	// }
 
-	Game.lava.forEachAlive(function checkLava(lava){
-		if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, lava.x, lava.y) < Game.blockPx/2){
-			Game.effects.hurt('lava', 12, 3);
-		}
+	var playerCollision = Game.mapPosName(Game.toGridPos(Game.player.sprite.x), Game.toGridPos(Game.player.sprite.y));
 
-		if(Game.phaser.math.distance(Game.spaceco.sprite.x, Game.spaceco.sprite.y, lava.x, lava.y) < Game.blockPx){
-			Game.spaceco.hurt(1, 'lava');
-		}
+	if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && playerCollision){
+		Log()('playerCollision', playerCollision);
 
-		Game.monsters.forEachAlive(function checkLava_monsters(monster){
-			if(Game.phaser.math.distance(monster.x, monster.y, lava.x, lava.y) < Game.blockPx){
-				monster.kill();
+		if(playerCollision === 'lava') Game.effects.hurt('lava', 12, 3);
+		else if(playerCollision === 'gas') Game.effects.hurt('gas', 10, 5);
+		else if(playerCollision === 'monster') Game.effects.hurt('monster', 8, 3);
+	}
 
-				Game.setMapPos({ x: monster.x, y: monster.y }, -1);
-			}
-		}, this);
-	}, this);
+	// Game.lava.forEachAlive(function checkLava(lava){
+	// 	if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, lava.x, lava.y) < Game.blockPx/2){
+	// 		Game.effects.hurt('lava', 12, 3);
+	// 	}
 
-	Game.gas.forEachAlive(function checkGas(gas){
-		if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, gas.x, gas.y) < Game.blockPx/2){
-			Game.effects.hurt('gas', 10, 5);
-		}
+	// 	if(Game.phaser.math.distance(Game.spaceco.sprite.x, Game.spaceco.sprite.y, lava.x, lava.y) < Game.blockPx){
+	// 		Game.spaceco.hurt(1, 'lava');
+	// 	}
 
-		Game.monsters.forEachAlive(function checkGas_monsters(monster){
-			if(Game.phaser.math.distance(monster.x, monster.y, gas.x, gas.y) < Game.blockPx){
-				monster.kill();
+	// 	Game.monsters.forEachAlive(function checkLava_monsters(monster){
+	// 		if(Game.phaser.math.distance(monster.x, monster.y, lava.x, lava.y) < Game.blockPx){
+	// 			monster.kill();
 
-				Game.setMapPos({ x: monster.x, y: monster.y }, -1);
-			}
-		}, this);
-	}, this);
+	// 			Game.setMapPos({ x: monster.x, y: monster.y }, -1);
+	// 		}
+	// 	}, this);
+	// }, this);
 
-	Game.monsters.forEachAlive(function checkMonsters(monster){
-		if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, monster.x, monster.y) < Game.blockPx/2){
-			Game.effects.hurt('monster', 8, 3);
-		}
-	}, this);
+	// Game.gas.forEachAlive(function checkGas(gas){
+	// 	if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, gas.x, gas.y) < Game.blockPx/2){
+	// 		Game.effects.hurt('gas', 10, 5);
+	// 	}
+
+	// 	Game.monsters.forEachAlive(function checkGas_monsters(monster){
+	// 		if(Game.phaser.math.distance(monster.x, monster.y, gas.x, gas.y) < Game.blockPx){
+	// 			monster.kill();
+
+	// 			Game.setMapPos({ x: monster.x, y: monster.y }, -1);
+	// 		}
+	// 	}, this);
+	// }, this);
+
+	// Game.monsters.forEachAlive(function checkMonsters(monster){
+	// 	if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, monster.x, monster.y) < Game.blockPx/2){
+	// 		Game.effects.hurt('monster', 8, 3);
+	// 	}
+	// }, this);
 
 	if(Game.spaceco.damage <= 10 && !Game.phaser.tweens.isTweening(Game.spaceco.sprite)){
 		var gridPos = {
 			x: Game.toGridPos(Game.spaceco.sprite.x),
 			y: Game.toGridPos(Game.spaceco.sprite.y)
 		};
+
+		var spacecoCollision = Game.mapPosName(Game.toGridPos(Game.spaceco.sprite.x), Game.toGridPos(Game.spaceco.sprite.y));
+
+		if(spacecoCollision){
+			Log()('spacecoCollision', spacecoCollision);
+
+			if(spacecoCollision === 'lava') Game.spaceco.hurt(1, 'lava');
+			else if(spacecoCollision === 'gas') Game.spaceco.hurt(1, 'gas');
+			else if(spacecoCollision === 'monster') Game.spaceco.hurt(1, 'monster');
+		}
 
 		var spacecoGroundBase = {
 			bottomRight: gridPos.x + 1 < Game.config.width ? Game.config.map[gridPos.x + 1][gridPos.y + 1][0] : -1,

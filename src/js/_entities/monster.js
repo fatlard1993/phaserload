@@ -30,14 +30,14 @@ Game.entities.monster.create = function(x, y){
 Game.entities.monster.prototype.update = function(){
 	if(!this.alive || Game.phaser.tweens.isTweening(this)) return;
 
-	var aggroDistance = Game.toPx(8);
-
-	if(Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, this.x, this.y) > aggroDistance) return;
-
 	var gridPos = {
 		x: Game.toGridPos(this.x),
 		y: Game.toGridPos(this.y)
 	};
+
+	var aggroDistance = Game.toPx(8);
+
+	if(Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, this.x, this.y) > aggroDistance) return;
 
 	var moving;
 
@@ -95,14 +95,31 @@ Game.entities.monster.prototype.update = function(){
 		moveDelay += 1000;
 	}
 
-	Game.phaser.add.tween(this).to(moving, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, moveDelay);
+	var newGridPos = {
+		x: Game.toGridPos(moving.x),
+		y: Game.toGridPos(moving.y)
+	};
 
-	// var newGridPos = {
-	// 	x: Game.toGridPos(moving.x),
-	// 	y: Game.toGridPos(moving.y)
-	// };
+	var monsterCollision = Game.mapPosName(newGridPos.x, newGridPos.y);
 
-	Game.setMapPos({ x: this.x, y: this.y }, -1);
+	if(monsterCollision && monsterCollision !== 'monster'){
+		Log()('monsterCollision', monsterCollision);
 
-	Game.setMapPos(moving, Game.mapNames.indexOf('monster'));
+		if(monsterCollision === 'lava'){
+			Game.setMapPos({ x: this.x, y: this.y }, -1);
+			this.kill();
+		}
+		else if(monsterCollision === 'gas'){
+			Game.setMapPos({ x: this.x, y: this.y }, -1);
+			this.kill();
+		}
+	}
+
+	else{
+		Game.setMapPos({ x: this.x, y: this.y }, -1);
+
+		Game.phaser.add.tween(this).to(moving, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, moveDelay);
+
+		Game.setMapPos(moving, Game.mapNames.indexOf('monster'));
+	}
 };
