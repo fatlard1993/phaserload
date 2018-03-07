@@ -77,7 +77,7 @@ var Sockets = {
 									this.players[playerNames[x]].position.y = 1;
 								}
 
-								Sockets.wss.broadcast(JSON.stringify({ command: 'new_world', room: this.name, players: this.players }));
+								Sockets.wss.broadcast(JSON.stringify({ command: 'new_world', room: this.name, players: this.players, spaceco: this.spaceco, mapData: this.mapData }));
 							}
 						},
 						addPlayer: function(playerName){

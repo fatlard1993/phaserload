@@ -236,7 +236,28 @@ function Load(){
 		}
 
 		else if(data.command === 'new_world'){
-			//todo load new map, draw, move players
+			Game.spaceco.position = data.spaceco.position;
+			Game.spaceco.parts = data.spaceco.parts;
+			Game.options = data.options;
+
+			Game.player.position = data.players[Player.name].position;
+
+			Game.ground.forEachAlive(function(ground){ ground.kill(); });
+			Game.minerals.forEachAlive(function(mineral){ mineral.kill(); });
+			Game.lava.forEachAlive(function(lava){ lava.kill(); });
+			Game.gas.forEachAlive(function(gas){ gas.kill(); });
+
+			Game.config = Object.assign(Game.config, data.mapData);
+
+			Game.drawView(0, 0, Game.config.width, Game.config.depth / 2);
+
+			Game.phaser.add.tween(Game.player.sprite).to({ x: Game.toPx(Game.player.position.x), y: Game.toPx(Game.player.position.y) }, 100, Phaser.Easing.Sinusoidal.InOut, true);
+
+			setTimeout(function(){
+				Game.hud.close();
+
+				Game.adjustViewPosition(Game.player.sprite.x - Game.viewWidth / 2, Game.player.sprite.y - Game.viewHeight / 2, Math.ceil(Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, Game.phaser.camera.x / 2, Game.phaser.camera.y / 2)));
+			}, 2000);
 		}
 
 		if(View.current === 'join' || data.player === Player.name) return;
