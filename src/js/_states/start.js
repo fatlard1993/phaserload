@@ -1266,15 +1266,11 @@ Game.states.start.prototype.create = function(){
 		var value;
 
 		if(name.startsWith('ground')){
-			value = BaseGroundValue + (((Game.config.densities[name.replace('ground_', '')] * 0.7) - (Game.spaceco.resourceBay[name] || 0)) / 500);
-
-			// if(name === 'ground_green' && Game.config.mode === 'normal') value *= 2;
+			value = BaseGroundValue + (((Game.config.densities[name.replace('ground_', '')] * 0.7) - ((Game.spaceco.resourceBay[name] || 0) / 2)) / 500);
 		}
 
 		else if(name.startsWith('mineral')){
-			value = BaseMineralValue + (((Game.config.densities[name.replace('mineral_', '')] * 0.7) - (Game.spaceco.resourceBay[name] || 0)) / 100);
-
-			// value = Game.config.spaceco.mineralValues[name.replace('mineral_', '')] - ((Game.spaceco.resourceBay[name] || 0) / 40);
+			value = BaseMineralValue + (((Game.config.densities[name.replace('mineral_', '')] * 0.7) - ((Game.spaceco.resourceBay[name] || 0) / 2)) / 100);
 		}
 
 		else if(Game.config.spaceco.fuel[name]){
