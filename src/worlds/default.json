@@ -160,11 +160,11 @@
 		"monsterChance": 20,
 		"mineralChance": 15,
 		"layers": [
-			{ "black": 65, "red": 25, "purple": 5, "pink": 5 },
-			{ "black": 50, "red": 30, "purple": 10, "pink": 10 },
-			{ "black": 40, "red": 35, "purple": 15, "pink": 5 },
-			{ "black": 30, "red": 40, "purple": 20, "pink": 10 },
-			{ "black": 20, "red": 40, "purple": 30, "pink": 10 },
+			{ "orange": 65, "red": 25, "purple": 5, "pink": 5 },
+			{ "orange": 50, "red": 30, "purple": 10, "pink": 10 },
+			{ "orange": 40, "red": 35, "purple": 15, "pink": 5 },
+			{ "orange": 30, "red": 40, "purple": 20, "pink": 10 },
+			{ "orange": 20, "red": 40, "purple": 30, "pink": 10 },
 			{ "black": 10, "red": 35, "purple": 35, "pink": 20 },
 			{ "black": 5, "red": 30, "purple": 45, "pink": 20 },
 			{ "black": 5, "red": 20, "purple": 45, "pink": 30 },
@@ -199,11 +199,11 @@
 			{ "white": 70, "red": 15, "black": 5 },
 			{ "white": 60, "red": 20, "black": 10 },
 			{ "white": 40, "red": 30, "black": 30 },
-			{ "white": 20, "red": 40, "black": 40 },
-			{ "white": 5, "red": 55, "black": 40 },
-			{ "green": 20, "red": 40, "black": 40 },
-			{ "green": 20, "red": 30, "black": 50 },
-			{ "green": 30, "red": 30, "black": 40 }
+			{ "white": 20, "red": 40, "blue": 40 },
+			{ "white": 5, "red": 55, "blue": 40 },
+			{ "green": 20, "red": 40, "blue": 40 },
+			{ "green": 20, "red": 30, "blue": 50 },
+			{ "green": 30, "red": 30, "blue": 40 }
 		]
 	},
 	{
@@ -214,9 +214,9 @@
 		"monsterChance": 80,
 		"mineralChance": 15,
 		"layers": [
-			{ "red": 75, "yellow": 20, "black": 5 },
-			{ "red": 50, "yellow": 40, "black": 10 },
-			{ "red": 40, "yellow": 50, "purple": 10 },
+			{ "teal": 75, "yellow": 20, "black": 5 },
+			{ "teal": 50, "yellow": 40, "black": 10 },
+			{ "teal": 40, "yellow": 50, "purple": 10 },
 			{ "red": 30, "yellow": 40, "purple": 30 },
 			{ "red": 20, "yellow": 30, "purple": 50 },
 			{ "red": 10, "yellow": 20, "purple": 70 },
