@@ -27,6 +27,8 @@ var Game = {
 			var intensity = Math.max(1, (radius * 2) + (radius - (distanceFromPlayer / Game.blockPx)));
 			Game.phaser.camera.shake(intensity / 1000, 1000);
 
+			if(!Game.player.isDisoriented && (distanceFromPlayer / Game.blockPx) < 10) Game.phaser.camera.flash(undefined, 1000, 1, 0.3);
+
 			WS.send({ command: 'explosion', pos: pos, radius: radius });
 
 			if(Game.phaser.math.distance(pos.x, pos.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) < Game.blockPx * (radius + 1)){
@@ -52,6 +54,8 @@ var Game = {
 			});
 		},
 		freeze: function(pos, radius){
+			if(!Game.player.isDisoriented) Game.phaser.camera.fade(0xFFFFFF, 3000, 1, 0.1);
+
 			Game.lava.forEachAlive(function(lava){
 				if(Game.phaser.math.distance(pos.x, pos.y, lava.x, lava.y) < Game.blockPx * radius){
 					lava.kill();
@@ -59,10 +63,14 @@ var Game = {
 					Game.entities.ground.create(lava.x, lava.y);
 				}
 			});
+
+			setTimeout(function(){
+				if(!Game.player.isDisoriented) Game.phaser.camera.flash(undefined, 1000, 1, 0.1);
+			}, 3000);
 		},
 		exploding: function(chance, pos){
 			if(Game.chance(chance)){
-				Game.effects.explode({ x: pos.x, y: pos.y }, Game.rand(2, 4));
+				Game.effects.explode({ x: pos.x, y: pos.y }, Game.rand(1, 2));
 			}
 		},
 		freezing: function(chance, pos){

@@ -314,6 +314,8 @@ function Load(){
 
 			var intensity = Math.max(1, (data.radius * 2) + (data.radius - (distanceFromPlayer / Game.blockPx)));
 			Game.phaser.camera.shake(intensity / 1000, 1000);
+
+			if(!Game.player.isDisoriented && (distanceFromPlayer / Game.blockPx) < 10) Game.phaser.camera.flash(undefined, 1000, 1, 0.3);
 		}
 	});
 
