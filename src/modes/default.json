@@ -21,6 +21,8 @@
 	"groundEffects": {
 		"red": "lava:~:35",
 		"green": "gas:~:15",
+		"blue": "freezing:~:30",
+		"pink": "exploding:~:20",
 		"black": "impenetrable"
 	},
 	"densities": {
