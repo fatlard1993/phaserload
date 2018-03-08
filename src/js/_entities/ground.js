@@ -80,8 +80,7 @@ Game.entities.ground.crush = function(pos, fromServer){
 Game.entities.ground.releaseSurrounds = function(ground, surrounds, delay){
 	setTimeout(function(){
 		if(['gas', 'lava'].includes(surrounds.left)){
-			Game.entities.lava.spread(ground.x - Game.blockPx, ground.y);
-			Game.entities.gas.spread(ground.x - Game.blockPx, ground.y);
+			Game.entities[surrounds.left].spread(ground.x - Game.blockPx, ground.y);
 		}
 
 		if(['lava'].includes(surrounds.top)){
@@ -89,8 +88,7 @@ Game.entities.ground.releaseSurrounds = function(ground, surrounds, delay){
 		}
 
 		if(['gas', 'lava'].includes(surrounds.right)){
-			Game.entities.lava.spread(ground.x + Game.blockPx, ground.y);
-			Game.entities.gas.spread(ground.x + Game.blockPx, ground.y);
+			Game.entities[surrounds.left].spread(ground.x + Game.blockPx, ground.y);
 		}
 
 		if(['gas'].includes(surrounds.bottom)){
