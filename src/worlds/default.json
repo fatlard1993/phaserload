@@ -1,5 +1,15 @@
 [
 	{
+		"name": "asteroid HW9B2-598",
+		"mineralChance": 15,
+		"holeChance": 40,
+		"hazardChance": 60,
+		"hazardDistribution": { "lava": 34, "gas": 33, "monster": 33 },
+		"layers": [
+			{ "white": 10, "orange": 10, "yellow": 10, "green": 10, "teal": 10, "blue": 10, "purple": 10, "pink": 10, "red": 10, "black": 10 }
+		]
+	},
+	{
 		"name": "asteroid CV64R-385",
 		"mineralChance": 5,
 		"holeChance": 20,
