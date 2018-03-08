@@ -387,6 +387,9 @@ var Game = {
 		// if(direction) Game.drawViewDirection(direction, Math.abs(oldX - newX), Math.abs(oldY - newY));
 		// Game.drawView(left, top, right, bottom);
 
+		// Game.drawCurrentView();
+		// Game.cleanupView();
+
 		Game.phaser.add.tween(Game.phaser.camera).to({ x: newX, y: newY }, time, Phaser.Easing.Sinusoidal.InOut, true);
 
 		// clearTimeout(Game.cleanup_TO);
@@ -427,9 +430,9 @@ var Game = {
 		for(var x = left; x <= right; x++){
 			for(var y = top; y <= bottom; y++){
 				var mapPos = Game.mapPos(x, y);
-				var viewBufferPos = Game.viewBufferPos(x, y);
+				// var viewBufferPos = Game.viewBufferPos(x, y);
 
-				if((viewBufferPos[0] === mapPos[0] && mapPos[1] < 0) || (mapPos[0] < 0 && mapPos[1] < 0)) continue;
+				if((mapPos[0] < 0 && mapPos[1] < 0)) continue;//(viewBufferPos[0] === mapPos[0] && mapPos[1] < 0) ||
 
 				var mapPos_0_name = Game.toName(mapPos[0]);
 
@@ -443,6 +446,28 @@ var Game = {
 		}
 
 		Log()('drew: ', drawn);
+	},
+	logMap: function(){
+		for(var y = 0; y <= Game.config.depth; ++y){
+			var line = '';
+
+			for(var x = 0; x <= Game.config.width; ++x){
+				line += (Game.config.map[x] && Game.config.map[x][y]) ? (String(Game.config.map[x][y][0]).replace('-1', '#')) : '#';
+			}
+
+			Log()(line);
+		}
+	},
+	logViewBuffer: function(){
+		for(var y = 0; y <= Game.config.depth; ++y){
+			var line = '';
+
+			for(var x = 0; x <= Game.config.width; ++x){
+				line += (Game.config.viewBufferMap[x] && Game.config.viewBufferMap[x][y]) ? (String(Game.config.viewBufferMap[x][y][0]).replace('-1', '#')) : '#';
+			}
+
+			Log()(line);
+		}
 	},
 	drawTile: function(x, y, mapPos_0_name, animation){
 		if(!mapPos_0_name) return;
@@ -467,14 +492,14 @@ var Game = {
 
 		if(animation) entity.animations.play(animation);
 
-		Game.config.viewBufferMap[x][y] = Game.config.map[x][y];
+		// Game.config.viewBufferMap[x][y] = Game.config.map[x][y];
 	},
 	cleanGroundSpriteAt: function(x, y, name){
 		Log()('cleanGroundSpriteAt', x, y);
 
 		function cleanup(entity){
 			if(entity.x === x && entity.y === y){
-				Game.config.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)][0] = -1;
+				// Game.config.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)][0] = -1;
 				Log()('killing: ', entity);
 
 				if(name.startsWith('ground')) entity.animations.play('crush');
@@ -511,14 +536,17 @@ var Game = {
 			}
 
 			if(clean){
-				Game.config.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)][0] = -1;
-				Log()('killing: ', entity);
+				// Log()('killing: ', entity);
+
+				// Game.config.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)][0] = -1;
+
 				entity.kill();
 			}
 		}
 
 		this.ground.forEachAlive(cleanup);
 		this.lava.forEachAlive(cleanup);
+		this.gas.forEachAlive(cleanup);
 		this.monsters.forEachAlive(cleanup);
 	},
 	dev: function(){
