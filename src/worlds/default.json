@@ -3,7 +3,7 @@
 		"name": "asteroid CV64R-385",
 		"mineralChance": 5,
 		"holeChance": 20,
-		"hazardChance": 25,
+		"hazardChance": 40,
 		"hazardDistribution": { "lava": 34, "gas": 33, "monster": 33 },
 		"layers": [
 			{ "blue": 75, "orange": 10, "teal": 10, "red": 5 },
@@ -32,7 +32,7 @@
 		"name": "asteroid GH734-1B2",
 		"mineralChance": 15,
 		"holeChance": 12,
-		"hazardChance": 10,
+		"hazardChance": 30,
 		"hazardDistribution": { "lava": 10, "gas": 10, "monster": 80 },
 		"layers": [
 			{ "teal": 5, "red": 20, "purple": 37.5, "pink": 37.5 },
@@ -48,7 +48,7 @@
 		"name": "asteroid SP425-13K",
 		"mineralChance": 15,
 		"holeChance": 12,
-		"hazardChance": 15,
+		"hazardChance": 35,
 		"hazardDistribution": { "lava": 1, "gas": 60, "monster": 49 },
 		"layers": [
 			{ "teal": 5, "red": 20, "purple": 37.5, "pink": 37.5 },
@@ -64,7 +64,7 @@
 		"name": "asteroid FR153-34R",
 		"mineralChance": 15,
 		"holeChance": 30,
-		"hazardChance": 25,
+		"hazardChance": 45,
 		"hazardDistribution": { "lava": 100 },
 		"layers": [
 			{ "white": 65, "orange": 25, "yellow": 5, "red": 5 },
@@ -98,7 +98,7 @@
 		"name": "metoerite AE02A-809",
 		"mineralChance": 8,
 		"holeChance": 5,
-		"hazardChance": 30,
+		"hazardChance": 40,
 		"hazardDistribution": { "gas": 100 },
 		"layers": [
 			{ "yellow": 80, "green": 10, "teal": 5, "red": 5 },
@@ -116,7 +116,7 @@
 		"name": "asteroid ZT542-21N",
 		"mineralChance": 10,
 		"holeChance": 50,
-		"hazardChance": 30,
+		"hazardChance": 45,
 		"hazardDistribution": { "monster": 100 },
 		"layers": [
 			{ "white": 70, "yellow": 15, "black": 5 },
@@ -133,7 +133,7 @@
 		"name": "moon CM12W-I13",
 		"mineralChance": 10,
 		"holeChance": 12,
-		"hazardChance": 25,
+		"hazardChance": 40,
 		"hazardDistribution": { "lava": 40, "gas": 30, "monster": 30 },
 		"layers": [
 			{ "teal": 50, "white": 20, "green": 30 },
@@ -147,7 +147,7 @@
 		"name": "asteroid CR417-13F",
 		"mineralChance": 15,
 		"holeChance": 10,
-		"hazardChance": 10,
+		"hazardChance": 30,
 		"hazardDistribution": { "lava": 1, "gas": 98, "monster": 1 },
 		"layers": [
 			{ "orange": 65, "red": 25, "purple": 5, "pink": 5 },
@@ -165,7 +165,7 @@
 		"name": "asteroid GS340-20S",
 		"mineralChance": 5,
 		"holeChance": 20,
-		"hazardChance": 10,
+		"hazardChance": 30,
 		"hazardDistribution": { "lava": 98, "gas": 1, "monster": 1 },
 		"layers": [
 			{ "green": 60, "purple": 30, "orange": 10 },
@@ -181,7 +181,7 @@
 		"name": "asteroid ZT546-3T1",
 		"mineralChance": 10,
 		"holeChance": 50,
-		"hazardChance": 20,
+		"hazardChance": 30,
 		"hazardDistribution": { "lava": 60, "gas": 25, "monster": 15 },
 		"layers": [
 			{ "white": 70, "red": 15, "black": 5 },
@@ -198,7 +198,7 @@
 		"name": "meteorite SP43N-72D",
 		"mineralChance": 15,
 		"holeChance": 2,
-		"hazardChance": 30,
+		"hazardChance": 45,
 		"hazardDistribution": { "lava": 30, "gas": 60, "monster": 10 },
 		"layers": [
 			{ "teal": 75, "yellow": 20, "black": 5 },
@@ -221,7 +221,7 @@
 		"name": "asteroid TR982-420",
 		"mineralChance": 4,
 		"holeChance": 10,
-		"hazardChance": 30,
+		"hazardChance": 45,
 		"hazardDistribution": { "lava": 50, "gas": 40, "monster": 10 },
 		"layers": [
 			{ "blue": 40, "purple": 60 },
@@ -235,7 +235,7 @@
 		"name": "asteroid AE02A-809",
 		"mineralChance": 5,
 		"holeChance": 20,
-		"hazardChance": 20,
+		"hazardChance": 35,
 		"hazardDistribution": { "lava": 40, "gas": 30, "monster": 30 },
 		"layers": [
 			{ "blue": 75, "pink": 10, "teal": 10, "purple": 5 },
@@ -249,7 +249,7 @@
 		"name": "asteroid ZPQ6D-N02",
 		"mineralChance": 7,
 		"holeChance": 20,
-		"hazardChance": 25,
+		"hazardChance": 40,
 		"hazardDistribution": { "lava": 30, "gas": 40, "monster": 30 },
 		"layers": [
 			{ "blue": 70, "yellow": 15, "orange": 10, "black": 5 },
@@ -265,7 +265,7 @@
 		"name": "moon D83R-W110",
 		"mineralChance": 10,
 		"holeChance": 10,
-		"hazardChance": 10,
+		"hazardChance": 30,
 		"hazardDistribution": { "lava": 20, "gas": 20, "monster": 60 },
 		"layers": [
 			{ "white": 60, "orange": 10, "yellow": 10, "teal": 10, "black": 10 },
