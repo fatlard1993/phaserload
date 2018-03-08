@@ -150,11 +150,11 @@ var Game = {
 		var mapData = Object.assign(Modes.list[mode], {
 			mode: mode,
 			world: Worlds.packs[worldPack][worldIndex !== 'rand' ? worldIndex : Game.rand(0, Worlds.packs[worldPack].length - 1)],
-			width: Game.rand(40, 60),
-			depth: Game.rand(180, 300),
+			width: Game.rand(30, 50),
+			depth: Game.rand(180, 250),
 			map: [],
-			viewBufferMap: []
 		});
+		// viewBufferMap: []
 
 		var safeLevel = 8;
 
@@ -171,8 +171,8 @@ var Game = {
 				mapData.map[x] = mapData.map[x] || [];
 				mapData.map[x][y] = [-1, -1];
 
-				mapData.viewBufferMap[x] = mapData.viewBufferMap[x] || [];
-				mapData.viewBufferMap[x][y] = [-1, -1];
+				// mapData.viewBufferMap[x] = mapData.viewBufferMap[x] || [];
+				// mapData.viewBufferMap[x][y] = [-1, -1];
 
 				if(y > 1 && !Game.chance(holeChance)){
 					// mapData.map[x][y][0] = 'ground_'+ Game.weightedChance(layer);
