@@ -88,7 +88,7 @@ Game.entities.ground.releaseSurrounds = function(ground, surrounds, delay){
 		}
 
 		if(['gas', 'lava'].includes(surrounds.right)){
-			Game.entities[surrounds.left].spread(ground.x + Game.blockPx, ground.y);
+			Game.entities[surrounds.right].spread(ground.x + Game.blockPx, ground.y);
 		}
 
 		if(['gas'].includes(surrounds.bottom)){
