@@ -71,15 +71,21 @@ Game.entities.lava.spread = function(x, y, lava){
 			bottom: Game.mapPosName(gridPos.x, gridPos.y + 1)
 		};
 
-		if(gridPos.x - 1 >= 0 && (!surrounds.left || ['monster'].includes(surrounds.left))){
+		if(gridPos.x - 1 >= 0 && (!surrounds.left || { monster: 1, ground_red: 1 }[surrounds.left])){
+			if(surrounds.left === 'ground_red' && Game.chance(80)) return;
+
 			Game.entities.lava.create(lava.x - Game.blockPx, lava.y, 1);
 		}
 
-		if(gridPos.x + 1 < Game.config.width && (!surrounds.right || ['monster'].includes(surrounds.right))){
+		if(gridPos.x + 1 < Game.config.width && (!surrounds.right || { monster: 1, ground_red: 1 }[surrounds.right])){
+			if(surrounds.right === 'ground_red' && Game.chance(80)) return;
+
 			Game.entities.lava.create(lava.x + Game.blockPx, lava.y, 1);
 		}
 
-		if(gridPos.y + 1 < Game.config.depth - 2 && (!surrounds.bottom || ['monster'].includes(surrounds.bottom))){
+		if(gridPos.y + 1 < Game.config.depth - 2 && (!surrounds.bottom || { monster: 1, ground_red: 1 }[surrounds.bottom])){
+			if(surrounds.bottom === 'ground_red' && Game.chance(40)) return;
+
 			Game.entities.lava.create(lava.x, lava.y + Game.blockPx, 1);
 		}
 	}
