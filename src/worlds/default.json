@@ -1,5 +1,15 @@
 [
 	{
+		"name": "asteroid ND57E-369",
+		"mineralChance": 15,
+		"holeChance": 40,
+		"hazardChance": 60,
+		"hazardDistribution": { "noxious_gas": 100 },
+		"layers": [
+			{ "white": 5, "orange": 5, "yellow": 5, "green": 5, "teal": 5, "blue": 5, "purple": 55, "pink": 5, "red": 5, "black": 5 }
+		]
+	},
+	{
 		"name": "asteroid HW9B2-598",
 		"mineralChance": 15,
 		"holeChance": 40,

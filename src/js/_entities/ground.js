@@ -79,19 +79,19 @@ Game.entities.ground.crush = function(pos, fromServer){
 
 Game.entities.ground.releaseSurrounds = function(ground, surrounds, delay){
 	setTimeout(function(){
-		if(['gas', 'lava'].includes(surrounds.left)){
+		if({ poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.left]){
 			Game.entities[surrounds.left].spread(ground.x - Game.blockPx, ground.y);
 		}
 
-		if(['lava'].includes(surrounds.top)){
+		if({ noxious_gas: 1, lava: 1 }[surrounds.top]){
 			Game.entities.lava.spread(ground.x, ground.y - Game.blockPx);
 		}
 
-		if(['gas', 'lava'].includes(surrounds.right)){
+		if({ poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.right]){
 			Game.entities[surrounds.right].spread(ground.x + Game.blockPx, ground.y);
 		}
 
-		if(['gas'].includes(surrounds.bottom)){
+		if({ poisonous_gas: 1 }[surrounds.bottom]){
 			Game.entities.gas.spread(ground.x, ground.y + Game.blockPx);
 		}
 	}, (delay || 100) + 1000);
@@ -129,7 +129,7 @@ Game.entities.ground.dig = function(pos){
 Game.entities.ground.applyBehavior = function(name, options, pos){
 	if(options) options = options.split(',');
 
-	if(['gas', 'lava', 'exploding', 'freezing'].includes(name)){
+	if(['poisonous_gas', 'noxious_gas', 'lava', 'exploding', 'freezing'].includes(name)){
 		if(!options) options = [null, pos];
 		else options.push(pos);
 	}

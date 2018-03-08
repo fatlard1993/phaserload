@@ -20,7 +20,8 @@
 	},
 	"groundEffects": {
 		"red": "lava:~:35",
-		"green": "gas:~:15",
+		"green": "poisonous_gas:~:15",
+		"purple": "noxious_gas:~:15",
 		"blue": "freezing:~:30",
 		"pink": "exploding:~:20",
 		"black": "impenetrable"

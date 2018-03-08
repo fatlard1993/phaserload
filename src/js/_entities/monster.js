@@ -51,19 +51,19 @@ Game.entities.monster.prototype.update = function(){
 
 	var canMove = {};
 
-	if(gridPos.x - 1 > 0 && (!Game.mapPosName(gridPos.x - 1, gridPos.y) || ['lava', 'gas'].includes(Game.mapPosName(gridPos.x - 1, gridPos.y)))){
+	if(gridPos.x - 1 > 0 && (!Game.mapPosName(gridPos.x - 1, gridPos.y) || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[Game.mapPosName(gridPos.x - 1, gridPos.y)])){
 		canMove.left = 1;
 	}
 
-	if(gridPos.x + 1 < Game.config.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || ['lava', 'gas'].includes(Game.mapPosName(gridPos.x + 1, gridPos.y)))){
+	if(gridPos.x + 1 < Game.config.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[Game.mapPosName(gridPos.x + 1, gridPos.y)])){
 		canMove.right = 1;
 	}
 
-	if(gridPos.y - 1 > 0 && (!Game.mapPosName(gridPos.x, gridPos.y - 1) || ['lava', 'gas'].includes(Game.mapPosName(gridPos.x, gridPos.y - 1)))){
+	if(gridPos.y - 1 > 0 && (!Game.mapPosName(gridPos.x, gridPos.y - 1) || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[Game.mapPosName(gridPos.x, gridPos.y - 1)])){
 		canMove.up = 1;
 	}
 
-	if(gridPos.y + 1 > 0 && (!Game.mapPosName(gridPos.x, gridPos.y + 1) || ['lava', 'gas'].includes(Game.mapPosName(gridPos.x, gridPos.y + 1)))){
+	if(gridPos.y + 1 > 0 && (!Game.mapPosName(gridPos.x, gridPos.y + 1) || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[Game.mapPosName(gridPos.x, gridPos.y + 1)])){
 		canMove.down = 1;
 	}
 
@@ -109,7 +109,7 @@ Game.entities.monster.prototype.update = function(){
 			Game.setMapPos({ x: this.x, y: this.y }, -1);
 			this.kill();
 		}
-		else if(monsterCollision === 'gas'){
+		else if(monsterCollision === 'poisonous_gas'){
 			Game.setMapPos({ x: this.x, y: this.y }, -1);
 			this.kill();
 		}

@@ -15,7 +15,7 @@ var Game = {
 		'esc to open hud',
 		'1, and 2 to use the item slots'
 	],
-	mapNames: ['monster', 'lava', 'gas', 'player', 'mineral_white', 'mineral_orange', 'mineral_yellow', 'mineral_green', 'mineral_teal', 'mineral_blue', 'mineral_purple', 'mineral_pink', 'mineral_red', 'mineral_black', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
+	mapNames: ['monster', 'lava', 'poisonous_gas', 'noxious_gas', 'mineral_white', 'mineral_orange', 'mineral_yellow', 'mineral_green', 'mineral_teal', 'mineral_blue', 'mineral_purple', 'mineral_pink', 'mineral_red', 'mineral_black', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
 	player: {},
 	players: {},
 	states: {},
@@ -75,9 +75,14 @@ var Game = {
 				Game.entities.lava.create(pos.x, pos.y, 1);
 			}
 		},
-		gas: function(chance, pos){
+		poisonous_gas: function(chance, pos){
 			if(Game.chance(chance)){
-				Game.entities.gas.create(pos.x, pos.y, 1);
+				Game.entities.poisonous_gas.create(pos.x, pos.y, 1);
+			}
+		},
+		noxious_gas: function(chance, pos){
+			if(Game.chance(chance)){
+				Game.entities.noxious_gas.create(pos.x, pos.y, 1);
 			}
 		},
 		lavaRelease: function(){
@@ -98,6 +103,22 @@ var Game = {
 			else{
 				Game.player.health = Math.min(Game.player.max_health, Game.player.health + Game.randFloat(1, Game.player.max_health / 2));
 			}
+		},
+		disorient: function(duration){
+			if(Game.player.isDisoriented) clearTimeout(Game.player.isDisoriented_TO);
+
+			else{
+				Game.phaser.camera.fade(undefined, duration, 1, 0.5);
+			}
+
+			Game.phaser.camera.shake(0.001, duration);
+
+			Game.player.isDisoriented = true;
+			Game.player.isDisoriented_TO = setTimeout(function(){
+				Game.player.isDisoriented = false;
+
+				Game.phaser.camera.flash(undefined, 1000, 1, 0.2);
+			}, duration);
 		},
 		hurt: function(by, amount, variation){
 			if(Game.player.justHurt) return; //todo make this depend on what the damage is from
@@ -482,8 +503,12 @@ var Game = {
 			entity = Game.entities.lava.create(Game.toPx(x), Game.toPx(y));
 		}
 
-		else if(mapPos_0_name === 'gas'){
-			entity = Game.entities.gas.create(Game.toPx(x), Game.toPx(y));
+		else if(mapPos_0_name === 'poisonous_gas'){
+			entity = Game.entities.poisonous_gas.create(Game.toPx(x), Game.toPx(y));
+		}
+
+		else if(mapPos_0_name === 'noxious_gas'){
+			entity = Game.entities.noxious_gas.create(Game.toPx(x), Game.toPx(y));
 		}
 
 		else if(mapPos_0_name === 'monster'){
@@ -510,7 +535,8 @@ var Game = {
 
 		if(name.startsWith('ground')) this.ground.forEachAlive(cleanup);
 		else if(name === 'lava') this.lava.forEachAlive(cleanup);
-		else if(name === 'gas') this.gas.forEachAlive(cleanup);
+		else if(name === 'poisonous_gas') this.poisonous_gas.forEachAlive(cleanup);
+		else if(name === 'noxious_gas') this.noxious_gas.forEachAlive(cleanup);
 		else if(name === 'monsters') this.monsters.forEachAlive(cleanup);
 		else Log.warn('cleanGroundSpriteAt: no defined name to search for');
 	},

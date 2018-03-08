@@ -24,7 +24,8 @@ Game.states.start.prototype.create = function(){
 
 	Game.ground = Game.phaser.add.group();
 	Game.lava = Game.phaser.add.group();
-	Game.gas = Game.phaser.add.group();
+	Game.poisonous_gas = Game.phaser.add.group();
+	Game.noxious_gas = Game.phaser.add.group();
 	Game.minerals = Game.phaser.add.group();
 	Game.monsters = Game.phaser.add.group();
 
@@ -1316,7 +1317,8 @@ Game.states.start.prototype.update = function(){
 		Log()('playerCollision', playerCollision);
 
 		if(playerCollision === 'lava') Game.effects.hurt('lava', 12, 3);
-		else if(playerCollision === 'gas') Game.effects.hurt('gas', 10, 5);
+		else if(playerCollision === 'poisonous_gas') Game.effects.hurt('poisonous_gas', 10, 5);
+		else if(playerCollision === 'noxious_gas') Game.effects.disorient(5000);
 		else if(playerCollision === 'monster') Game.effects.hurt('monster', 8, 3);
 	}
 
@@ -1370,7 +1372,7 @@ Game.states.start.prototype.update = function(){
 			Log()('spacecoCollision', spacecoCollision);
 
 			if(spacecoCollision === 'lava') Game.spaceco.hurt(1, 'lava');
-			else if(spacecoCollision === 'gas') Game.spaceco.hurt(1, 'gas');
+			else if(spacecoCollision === 'poisonous_gas') Game.spaceco.hurt(1, 'poisonous_gas');
 			else if(spacecoCollision === 'monster') Game.spaceco.hurt(1, 'monster');
 		}
 
@@ -1480,6 +1482,8 @@ Game.states.start.prototype.update = function(){
 		}
 
 		var canMove;
+
+		if(moving && Game.player.isDisoriented) moving = ['up', 'down', 'left', 'right'][Game.rand(0, 3)];
 
 		if(moving) canMove = Game.player.checkMove(moving, surrounds);
 

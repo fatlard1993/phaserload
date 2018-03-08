@@ -17,7 +17,7 @@ var Game = {
 		black: 'quadium'
 	},
 	mineralColors: ['white', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink', 'red', 'black'],
-	mapNames: ['monster', 'lava', 'gas', 'player', 'mineral_white', 'mineral_orange', 'mineral_yellow', 'mineral_green', 'mineral_teal', 'mineral_blue', 'mineral_purple', 'mineral_pink', 'mineral_red', 'mineral_black', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
+	mapNames: ['monster', 'lava', 'poisonous_gas', 'noxious_gas', 'mineral_white', 'mineral_orange', 'mineral_yellow', 'mineral_green', 'mineral_teal', 'mineral_blue', 'mineral_purple', 'mineral_pink', 'mineral_red', 'mineral_black', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
 	rand: function(min, max, excludes){
 		excludes = excludes || [];
 
@@ -90,61 +90,6 @@ var Game = {
 	toPx: function(gridPos){
 		return (gridPos * 64) + 32;
 	},
-	generateMap: function(mode, worldIndex){
-		var worlds = Worlds.categories[Modes[mode].worldCategory];
-		var settings = worlds[worldIndex !== 'rand' ? worldIndex : Game.rand(0, worlds.length - 1)];
-
-		var mapData = Object.assign(Modes[mode], {
-			mode: mode,
-			world: settings,
-			width: Game.rand(settings.size.width[0], settings.size.width[1]),
-			depth: Game.rand(settings.size.depth[0], settings.size.depth[1]),
-			map: [],
-			viewBufferMap: []
-		});
-
-		var mineralRareity = settings.mineralRareity;
-
-		for(var x = 0; x < mapData.width; x++){
-			for(var y = 0; y < mapData.depth; y++){
-				var holeChance = y * settings.holeChance;
-				var mineralChance = y * settings.mineralChance;
-				var lavaChance = y * settings.lavaChance;
-				var gasChance = y * settings.gasChance;
-				var monsterChance = y * settings.monsterChance;
-
-				var groundRareity = settings.layers[Math.ceil(settings.layers.length * (y / mapData.depth)) - 1];
-
-				mapData.map[x] = mapData.map[x] || [];
-				mapData.map[x][y] = [-1, -1];
-
-				mapData.viewBufferMap[x] = mapData.viewBufferMap[x] || [];
-				mapData.viewBufferMap[x][y] = [-1, -1];
-
-				if(y > 1 && !Game.chance(holeChance)){
-					mapData.map[x][y] = [Game.mapNames.indexOf('ground_'+ Game.weightedChance(groundRareity)), -1];
-
-					if(y > 5 && Game.chance(mineralChance)){
-						mapData.map[x][y][1] = Game.mapNames.indexOf('mineral_'+ Game.weightedChance(mineralRareity));
-					}
-				}
-
-				else if(y > 8 && Game.chance(lavaChance)){
-					mapData.map[x][y] = [Game.mapNames.indexOf('lava'), -1];
-				}
-
-				else if(y > 8 && Game.chance(gasChance)){
-					mapData.map[x][y] = [Game.mapNames.indexOf('gas'), -1];
-				}
-
-				else if(y > 8 && Game.chance(monsterChance)){
-					mapData.map[x][y] = [Game.mapNames.indexOf('monster'), -1];
-				}
-			}
-		}
-
-		return mapData;
-	},
 	generateMap2: function(mode, worldPack, worldIndex){
 		Log()(mode, worldPack, worldIndex);
 
@@ -190,6 +135,8 @@ var Game = {
 
 				else if(y > safeLevel && Game.chance(hazardChance)){
 					hazard = Game.weightedChance(mapData.world.hazardDistribution);
+
+					if(hazard === 'gas') hazard = Game.chance(50) ? 'poisonous_gas' : 'noxious_gas';
 
 					// mapData.map[x][y][0] = hazard;
 					mapData.map[x][y][0] = Game.mapNames.indexOf(hazard);

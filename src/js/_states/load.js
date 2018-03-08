@@ -27,7 +27,8 @@ Game.states.load.prototype.preload = function(){
 	Game.phaser.load.spritesheet('ground', '/assets/ground.png', 64, 64);
 	Game.phaser.load.spritesheet('drill', '/assets/drill.png', 64, 64);
 	Game.phaser.load.spritesheet('lava', '/assets/lava.png', 64, 64);
-	Game.phaser.load.spritesheet('gas', '/assets/gas.png', 64, 64);
+	Game.phaser.load.spritesheet('poisonous_gas', '/assets/poisonous_gas.png', 64, 64);
+	Game.phaser.load.spritesheet('noxious_gas', '/assets/noxious_gas.png', 64, 64);
 	Game.phaser.load.spritesheet('monster', '/assets/monster.png', 64, 64);
 };
 
