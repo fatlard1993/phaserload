@@ -1290,7 +1290,7 @@ Game.states.start.prototype.create = function(){
 	Game.itemSlot1 = Game.entities.itemSlot.create(Game.viewWidth - 32, 32);
 	Game.itemSlot2 = Game.entities.itemSlot.create(Game.viewWidth - 32, 106);
 
-	Game.drawView(0, 0, Game.config.width, Game.config.depth / 2);
+	Game.drawView(0, 0, Game.config.width, Game.config.depth);
 
 	Game.adjustViewPosition(Game.player.sprite.x - Game.viewWidth / 2, Game.player.sprite.y - Game.viewHeight / 2, Math.ceil(Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, Game.phaser.camera.x / 2, Game.phaser.camera.y / 2)));
 
