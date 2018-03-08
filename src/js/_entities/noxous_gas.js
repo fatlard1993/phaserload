@@ -38,7 +38,7 @@ Game.entities.noxious_gas.create = function(x, y, isNew, spawnChance, spreadChan
 	noxious_gas.animations.add('trapped', [3, 4, 5], 12, true);
 
 	if(isNew){
-		noxious_gas.spreadChance = spreadChance !== undefined ? spreadChance : spawnChance !== undefined ? spawnChance - Game.rand(0, 9) : 100;
+		noxious_gas.spreadChance = spreadChance !== undefined ? spreadChance : spawnChance !== undefined ? spawnChance - Game.rand(5, 17) : 100;
 
 		fullAnim.onComplete.add(function(){
 			Game.entities.noxious_gas.spread(null, null, noxious_gas);
