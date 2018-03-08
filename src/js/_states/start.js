@@ -1318,7 +1318,7 @@ Game.states.start.prototype.update = function(){
 
 		if(playerCollision === 'lava') Game.effects.hurt('lava', 12, 3);
 		else if(playerCollision === 'poisonous_gas') Game.effects.hurt('poisonous_gas', 10, 5);
-		else if(playerCollision === 'noxious_gas') Game.effects.disorient(5000);
+		else if(playerCollision === 'noxious_gas') Game.effects.disorient(3000);
 		else if(playerCollision === 'monster') Game.effects.hurt('monster', 8, 3);
 	}
 
