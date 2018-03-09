@@ -70,7 +70,7 @@ var Game = {
 		},
 		exploding: function(chance, pos){
 			if(Game.chance(chance)){
-				Game.effects.explode({ x: pos.x, y: pos.y }, Game.rand(1, 2));
+				Game.effects.explode({ x: pos.x, y: pos.y }, Game.rand(2, 3));
 			}
 		},
 		freezing: function(chance, pos){
