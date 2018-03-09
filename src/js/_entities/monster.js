@@ -5,7 +5,8 @@ Game.entities.monster = function(x, y){
 
 	this.anchor.setTo(0.5, 0.5);
 
-	this.animations.add('moving', [0, 1, 2], 10, true);
+	this.animations.add('sleeping', [0, 1, 2], Game.rand(2, 6), true);
+	this.animations.add('moving', [3, 4, 5], Game.rand(6, 12), true);
 };
 
 Game.entities.monster.prototype = Object.create(Phaser.Sprite.prototype);
@@ -22,7 +23,7 @@ Game.entities.monster.create = function(x, y){
 		monster.revive();
 	}
 
-	monster.animations.play('moving');
+	monster.animations.play('sleeping');
 
 	return monster;
 };
@@ -83,7 +84,7 @@ Game.entities.monster.prototype.update = function(){
 		moving = { x: this.x + Game.blockPx, y: this.y };
 	}
 
-	if(!moving) return;
+	if(!moving) return this.animations.play('sleeping');
 
 	this.justMoved = this.x !== moving.x ? (this.x - moving.x > 0 ? 'left' : 'right') : this.y !== moving.y > 0 ? 'up' : 'down';
 
@@ -117,6 +118,8 @@ Game.entities.monster.prototype.update = function(){
 
 	else{
 		Game.setMapPos({ x: this.x, y: this.y }, -1);
+
+		this.animations.play('moving');
 
 		Game.phaser.add.tween(this).to(moving, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, moveDelay);
 
