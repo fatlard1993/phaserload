@@ -37,12 +37,12 @@ Game.entities.mineral.crush = function(pos){
 };
 
 Game.entities.mineral.collect = function(pos){
-	var mineralWeight = 0.08;
-
-	if(Game.player.hull.space < mineralWeight) return;
-
 	Game.minerals.forEachAlive(function(mineral){
 		if(mineral.x === pos.x && mineral.y === pos.y){
+			var mineralWeight = Game.config.densities[mineral.type.replace('mineral_', '')] * 0.0001;
+
+			if(Game.player.hull.space < mineralWeight) return;
+
 			Game.player.hull[mineral.type] = Game.player.hull[mineral.type] !== undefined ? Game.player.hull[mineral.type] : 0;
 
 			Game.player.hull[mineral.type]++;

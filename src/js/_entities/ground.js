@@ -115,15 +115,23 @@ Game.entities.ground.dig = function(pos){
 		Game.entities.ground.applyBehavior(blockAction[0], blockAction[1], pos);
 	}
 
-	var groundWeight = 0.07 + (Game.config.densities[type] * 0.0001);
+	var densityMod = Game.config.densities[type] * 0.0001;
+	var groundWeight = 0.07 + densityMod;
+	var isMineral = false;
+
+	var drillPart = Game.player.configuration.drill.split(':~:');
+
+	if(drillPart[0].includes('precision')) isMineral = Game.chance(5 * parseInt(drillPart[0].split('_')[1]));
+
+	if(isMineral) groundWeight = densityMod;
 
 	if(Game.player.hull.space < groundWeight) return;
 
 	Game.player.hull.space -= groundWeight;
 
-	Game.player.hull['ground_'+ type] = Game.player.hull['ground_'+ type] !== undefined ? Game.player.hull['ground_'+ type] : 0;
+	Game.player.hull[(isMineral ? 'mineral_' : 'ground_') + type] = Game.player.hull[(isMineral ? 'mineral_' : 'ground_') + type] !== undefined ? Game.player.hull[(isMineral ? 'mineral_' : 'ground_') + type] : 0;
 
-	Game.player.hull['ground_'+ type]++;
+	Game.player.hull[(isMineral ? 'mineral_' : 'ground_') + type]++;
 };
 
 Game.entities.ground.applyBehavior = function(name, options, pos){
