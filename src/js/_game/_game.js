@@ -139,7 +139,7 @@ var Game = {
 			if(Game.player.health <= 0) Game.player.kill(by);
 
 			else if(Game.player.health <= 25){
-				Game.notify('Your health is\nrunning low');
+				Game.notify('Your health is\nrunning low', 1.5);
 			}
 
 			else Game.hud.update();
@@ -153,7 +153,7 @@ var Game = {
 			if(Game.player.fuel <= 0) Game.player.kill('fuel');
 
 			else if(Game.player.fuel <= 1){
-				Game.notify('Your fuel is\nrunning low');
+				Game.notify('Your fuel is\nrunning low', 1.5);
 			}
 
 			else Game.hud.update();
@@ -269,15 +269,14 @@ var Game = {
 		Game.player.health = Math.min(health, Game.player.health);
 	},
 	updateMaxFuel: function(){
-		var maxFuel = 0;
+		var maxFuel = 5;
 		var fuelTankPart = Game.player.configuration.fuel_tank.split(':~:');
 
-		if(fuelTankPart[0] === 'standard') maxFuel += 5;
-		else if(fuelTankPart[0] === 'large') maxFuel += 10;
-		else if(fuelTankPart[0] === 'oversized') maxFuel += 15;
-		else if(fuelTankPart[0] === 'pressurized') maxFuel += 20;
-		else if(fuelTankPart[0] === 'battery') maxFuel += 35;
-		else if(fuelTankPart[0] === 'condenser') maxFuel += 45;
+		if(fuelTankPart[0] === 'large') maxFuel = 10;
+		if(fuelTankPart[0] === 'oversized') maxFuel = 15;
+		if(fuelTankPart[0] === 'pressurized') maxFuel = 20;
+		if(fuelTankPart[0] === 'battery') maxFuel = 35;
+		if(fuelTankPart[0] === 'condenser') maxFuel = 45;
 
 		Game.player.max_fuel = maxFuel;
 
@@ -294,7 +293,7 @@ var Game = {
 		moveTime += materialSlowDown[hullPart[1]];
 		moveTime += materialSlowDown[drillPart[1]];
 
-		if(tracksPart[0].includes('boosted')) moveTime -= parseInt(tracksPart[0].split('_')) * 10;
+		if(tracksPart[0].includes('boosted')) moveTime -= parseInt(tracksPart[0].split('_')[1]) * 120;
 
 		Game.player.baseMoveTime = moveTime;
 	},
@@ -314,8 +313,8 @@ var Game = {
 		var drillSpeedMod = 0;
 		var drillPart = Game.player.configuration.drill.split(':~:');
 
-		if(drillPart[0].includes('precision')) drillSpeedMod += parseInt(drillPart[0].split('_')) * 10;
-		else if(drillPart[0] === 'quadratic') drillSpeedMod += 30;
+		if(drillPart[0].includes('precision')) drillSpeedMod = parseInt(drillPart[0].split('_')[1]) * 30;
+		if(drillPart[0] === 'quadratic') drillSpeedMod = 80;
 
 		Game.player.drillSpeedMod = drillSpeedMod;
 	},

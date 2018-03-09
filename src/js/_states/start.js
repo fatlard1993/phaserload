@@ -157,6 +157,8 @@ Game.states.start.prototype.create = function(){
 
 			if(Game.player.hull.space < 0) moveTime += 250;
 
+			moveTime = Math.max(150, moveTime);
+
 			if(!direction.includes('teleport')) Game.effects.useFuel(moveTime * 0.0001, 0.2);
 
 			Game.player.lastMove = direction;
@@ -202,10 +204,10 @@ Game.states.start.prototype.create = function(){
 		setTimeout(function(){
 			Game.hud.update();
 
-			if(Game.player.sprite.emitter){
-				Game.player.sprite.emitter.destroy();
-				Game.player.sprite.emitter = null;
-			}
+			// if(Game.player.sprite.emitter){
+			// 	Game.player.sprite.emitter.destroy();
+			// 	Game.player.sprite.emitter = null;
+			// }
 		}, moveTime + 150);
 	};
 

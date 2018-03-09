@@ -164,12 +164,12 @@ var Game = {
 		var subType = Game.weightedChance(subTypes[type]);
 
 		var typePrice = { tracks: 10, hull: 10, drill: 10, fuel_tank: 10 };
-		var materialPrice = { tritanium: 5, duranium: 10, pentrilium: 15, byzanium: 20, etherium: 25, mithril: 30, octanium: 35, saronite: 40, adamantite: 45, quadium: 50 };
+		var materialPrice = { tritanium: 10, duranium: 15, pentrilium: 25, byzanium: 30, etherium: 40, mithril: 45, octanium: 50, saronite: 55, adamantite: 65, quadium: 80 };
 		var subtypePrices = {
 			tracks: { boosted_1: 20, boosted_2: 30, boosted_3: 40, antigravidic: 50 },
 			hull: { large: 20, oversized: 40 },
 			drill: { quadratic: 20, precision_1: 30, precision_2: 50 },
-			fuel_tank: { large: 10, oversized: 20, pressurized: 30, battery: 45, condenser: 50 }
+			fuel_tank: { large: 20, oversized: 30, pressurized: 40, battery: 55, condenser: 70 }
 		};
 
 		var partName = subType +':~:'+ material +':~:'+ type;
