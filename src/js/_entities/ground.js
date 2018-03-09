@@ -84,15 +84,15 @@ Game.entities.ground.releaseSurrounds = function(ground, surrounds, delay){
 		}
 
 		if({ noxious_gas: 1, lava: 1 }[surrounds.top]){
-			Game.entities.lava.spread(ground.x, ground.y - Game.blockPx);
+			Game.entities[surrounds.top].spread(ground.x, ground.y - Game.blockPx);
 		}
 
 		if({ poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.right]){
 			Game.entities[surrounds.right].spread(ground.x + Game.blockPx, ground.y);
 		}
 
-		if({ poisonous_gas: 1 }[surrounds.bottom]){
-			Game.entities.gas.spread(ground.x, ground.y + Game.blockPx);
+		if({ poisonous_gas: 1, noxious_gas: 1 }[surrounds.bottom]){
+			Game.entities[surrounds.bottom].spread(ground.x, ground.y + Game.blockPx);
 		}
 	}, (delay || 100) + 1000);
 };
@@ -129,7 +129,7 @@ Game.entities.ground.dig = function(pos){
 Game.entities.ground.applyBehavior = function(name, options, pos){
 	if(options) options = options.split(',');
 
-	if(['poisonous_gas', 'noxious_gas', 'lava', 'exploding', 'freezing'].includes(name)){
+	if({ poisonous_gas: 1, noxious_gas: 1, lava: 1, exploding: 1, freezing: 1 }[name]){
 		if(!options) options = [null, pos];
 		else options.push(pos);
 	}
