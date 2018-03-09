@@ -955,7 +955,7 @@ Game.states.start.prototype.create = function(){
 
 					var itemBreakdown = item.split(':~:');
 
-					if(itemBreakdown[2] && ['tracks', 'hull', 'drill', 'fuel_tank'].includes(itemBreakdown[2])){
+					if(itemBreakdown[2] && { tracks: 1, hull: 1, drill: 1, fuel_tank: 1 }[itemBreakdown[2]]){
 						delete Game.player.inventory[item];
 
 						Game.player.inventory[Game.player.configuration[itemBreakdown[2]] +':~:'+ itemBreakdown[2]] = 1;
@@ -1023,7 +1023,7 @@ Game.states.start.prototype.create = function(){
 						bottomLineText = 'Full!';
 					}
 
-					else if((item === 'fuel' && !['standard', 'large', 'oversized', 'pressurized'].includes(fuelTankType)) || (item === 'energy' && fuelTankType !== 'battery') || (item === 'super_oxygen_liquid_nitrogen' && fuelTankType !== 'condenser')){
+					else if((item === 'fuel' && !{ standard: 1, large: 1, oversized: 1, pressurized: 1 }[fuelTankType]) || (item === 'energy' && fuelTankType !== 'battery') || (item === 'super_oxygen_liquid_nitrogen' && fuelTankType !== 'condenser')){
 						canUse = false;
 						bottomLineText = 'Cant use this fuel type!';
 					}
@@ -1319,7 +1319,8 @@ Game.states.start.prototype.update = function(){
 		if(playerCollision === 'lava') Game.effects.hurt('lava', 12, 3);
 		else if(playerCollision === 'poisonous_gas') Game.effects.hurt('poisonous_gas', 10, 5);
 		else if(playerCollision === 'noxious_gas') Game.effects.disorient(3000);
-		else if(playerCollision === 'monster') Game.effects.hurt('monster', 8, 3);
+		else if(playerCollision === 'red_monster') Game.effects.hurt('red_monster', 8, 3);
+		else if(playerCollision === 'purple_monster') Game.effects.hurt('purple_monster', 6, 2);
 	}
 
 	// Game.lava.forEachAlive(function checkLava(lava){
@@ -1373,7 +1374,8 @@ Game.states.start.prototype.update = function(){
 
 			if(spacecoCollision === 'lava') Game.spaceco.hurt(1, 'lava');
 			else if(spacecoCollision === 'poisonous_gas') Game.spaceco.hurt(1, 'poisonous_gas');
-			else if(spacecoCollision === 'monster') Game.spaceco.hurt(1, 'monster');
+			else if(spacecoCollision === 'red_monster') Game.spaceco.hurt(1, 'monster');
+			else if(spacecoCollision === 'purple_monster') Game.spaceco.hurt(1, 'monster');
 		}
 
 		var spacecoGroundBase = {

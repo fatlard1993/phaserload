@@ -17,7 +17,7 @@ var Game = {
 		black: 'quadium'
 	},
 	mineralColors: ['white', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink', 'red', 'black'],
-	mapNames: ['monster', 'lava', 'poisonous_gas', 'noxious_gas', 'mineral_white', 'mineral_orange', 'mineral_yellow', 'mineral_green', 'mineral_teal', 'mineral_blue', 'mineral_purple', 'mineral_pink', 'mineral_red', 'mineral_black', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
+	mapNames: ['red_monster', 'purple_monster', 'lava', 'poisonous_gas', 'noxious_gas', 'mineral_white', 'mineral_orange', 'mineral_yellow', 'mineral_green', 'mineral_teal', 'mineral_blue', 'mineral_purple', 'mineral_pink', 'mineral_red', 'mineral_black', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
 	rand: function(min, max, excludes){
 		excludes = excludes || [];
 
@@ -137,6 +137,7 @@ var Game = {
 					hazard = Game.weightedChance(mapData.world.hazardDistribution);
 
 					if(hazard === 'gas') hazard = Game.chance(50) ? 'poisonous_gas' : 'noxious_gas';
+					else if(hazard === 'monster') hazard = Game.chance(50) ? 'red_monster' : 'purple_monster';
 
 					// mapData.map[x][y][0] = hazard;
 					mapData.map[x][y][0] = Game.mapNames.indexOf(hazard);

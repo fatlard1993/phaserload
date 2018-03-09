@@ -4,9 +4,9 @@
 		"mineralChance": 15,
 		"holeChance": 40,
 		"hazardChance": 60,
-		"hazardDistribution": { "noxious_gas": 100 },
+		"hazardDistribution": { "monster": 100 },
 		"layers": [
-			{ "white": 5, "orange": 5, "yellow": 5, "green": 5, "teal": 5, "blue": 5, "purple": 55, "pink": 5, "red": 5, "black": 5 }
+			{ "white": 55, "orange": 5, "yellow": 5, "green": 5, "teal": 5, "blue": 5, "purple": 5, "pink": 5, "red": 5, "black": 5 }
 		]
 	},
 	{

@@ -1,7 +1,7 @@
 /* global Phaser, Game, Log */
 
-Game.entities.monster = function(x, y){
-	Phaser.Sprite.call(this, Game.phaser, x, y, 'monster');
+Game.entities.monster = function(x, y, type){
+	Phaser.Sprite.call(this, Game.phaser, x, y, type +'_monster');
 
 	this.anchor.setTo(0.5, 0.5);
 
@@ -12,16 +12,18 @@ Game.entities.monster = function(x, y){
 Game.entities.monster.prototype = Object.create(Phaser.Sprite.prototype);
 Game.entities.monster.prototype.constructor = Game.entities.monster;
 
-Game.entities.monster.create = function(x, y){
+Game.entities.monster.create = function(x, y, type){
 	var monster = Game.monsters.getFirstDead();
 
 	if(monster === null){
-		monster = Game.monsters.add(new Game.entities.monster(x, y));
+		monster = Game.monsters.add(new Game.entities.monster(x, y, type));
 	}
 	else{
 		monster.reset(x, y);
 		monster.revive();
 	}
+
+	monster.type = type;
 
 	monster.animations.play('sleeping');
 
@@ -36,7 +38,7 @@ Game.entities.monster.prototype.update = function(){
 		y: Game.toGridPos(this.y)
 	};
 
-	var aggroDistance = Game.toPx(8);
+	var aggroDistance = Game.toPx(this.type === 'red' ? 8 : 4);
 
 	if(Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, this.x, this.y) > aggroDistance) return;
 
@@ -89,7 +91,7 @@ Game.entities.monster.prototype.update = function(){
 	this.justMoved = this.x !== moving.x ? (this.x - moving.x > 0 ? 'left' : 'right') : this.y !== moving.y > 0 ? 'up' : 'down';
 
 	var moveDelay = 300;
-	var moveSpeed = 400;
+	var moveSpeed = this.type === 'red' ? 400 : 200;
 
 	if(!this.hadFirstMove){
 		this.hadFirstMove = 1;
@@ -103,14 +105,20 @@ Game.entities.monster.prototype.update = function(){
 
 	var monsterCollision = Game.mapPosName(newGridPos.x, newGridPos.y);
 
-	if(monsterCollision && monsterCollision !== 'monster'){
+	if(monsterCollision && monsterCollision !== 'red_monster' && monsterCollision !== 'purple_monster'){
 		Log()('monsterCollision', monsterCollision);
 
 		if(monsterCollision === 'lava'){
 			Game.setMapPos({ x: this.x, y: this.y }, -1);
 			this.kill();
 		}
+
 		else if(monsterCollision === 'poisonous_gas'){
+			Game.setMapPos({ x: this.x, y: this.y }, -1);
+			this.kill();
+		}
+
+		else if(monsterCollision === 'noxious_gas'){
 			Game.setMapPos({ x: this.x, y: this.y }, -1);
 			this.kill();
 		}

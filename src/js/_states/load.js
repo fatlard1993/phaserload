@@ -29,7 +29,8 @@ Game.states.load.prototype.preload = function(){
 	Game.phaser.load.spritesheet('lava', '/assets/lava.png', 64, 64);
 	Game.phaser.load.spritesheet('poisonous_gas', '/assets/poisonous_gas.png', 64, 64);
 	Game.phaser.load.spritesheet('noxious_gas', '/assets/noxious_gas.png', 64, 64);
-	Game.phaser.load.spritesheet('monster', '/assets/monster.png', 64, 64);
+	Game.phaser.load.spritesheet('red_monster', '/assets/red_monster.png', 64, 64);
+	Game.phaser.load.spritesheet('purple_monster', '/assets/purple_monster.png', 64, 64);
 };
 
 Game.states.load.prototype.create = function(){

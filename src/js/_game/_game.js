@@ -15,7 +15,7 @@ var Game = {
 		'esc to open hud',
 		'1, and 2 to use the item slots'
 	],
-	mapNames: ['monster', 'lava', 'poisonous_gas', 'noxious_gas', 'mineral_white', 'mineral_orange', 'mineral_yellow', 'mineral_green', 'mineral_teal', 'mineral_blue', 'mineral_purple', 'mineral_pink', 'mineral_red', 'mineral_black', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
+	mapNames: ['red_monster', 'purple_monster', 'lava', 'poisonous_gas', 'noxious_gas', 'mineral_white', 'mineral_orange', 'mineral_yellow', 'mineral_green', 'mineral_teal', 'mineral_blue', 'mineral_purple', 'mineral_pink', 'mineral_red', 'mineral_black', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
 	player: {},
 	players: {},
 	states: {},
@@ -231,7 +231,7 @@ var Game = {
 			Game.notifyText = '';
 		}
 
-		Game.phaser.add.tween(Game.hud.scale).to({ x: 0.8, y: 0.8 }, 400, Phaser.Easing.Back.Out, true);
+		Game.phaser.add.tween(Game.hud.scale).to({ x: 1.2, y: 1.2 }, 400, Phaser.Easing.Back.Out, true);
 
 		Game.hud.statusText.setText(text);
 
@@ -519,8 +519,8 @@ var Game = {
 			entity = Game.entities.noxious_gas.create(Game.toPx(x), Game.toPx(y));
 		}
 
-		else if(mapPos_0_name === 'monster'){
-			entity = Game.entities.monster.create(Game.toPx(x), Game.toPx(y));
+		else if(mapPos_0_name.endsWith('monster')){
+			entity = Game.entities.monster.create(Game.toPx(x), Game.toPx(y), mapPos_0_name.replace('_monster', ''));
 		}
 
 		if(animation) entity.animations.play(animation);
