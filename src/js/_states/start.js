@@ -159,7 +159,7 @@ Game.states.start.prototype.create = function(){
 
 			moveTime = Math.max(150, moveTime);
 
-			if(!direction.includes('teleport')) Game.effects.useFuel(moveTime * 0.0001, 0.2);
+			if(!direction.includes('teleport')) Game.effects.useFuel(moveTime * 0.0001, 0.01);
 
 			Game.player.lastMove = direction;
 
