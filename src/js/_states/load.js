@@ -40,5 +40,5 @@ Game.states.load.prototype.create = function(){
 };
 
 Game.states.load.prototype.fileComplete = function(progress, cacheKey, success, totalLoaded, totalFiles){
-	this.progress.text = 'Loading... '+ progress + '%';
+	this.progress.text = 'Loading... '+ progress + '%\n ( tap to help )';
 };
