@@ -157,7 +157,7 @@ Game.states.start.prototype.create = function(){
 
 			if(Game.player.hull.space < 0) moveTime += 250;
 
-			moveTime = Math.max(150, moveTime);
+			moveTime = Math.max(200, moveTime);
 
 			if(!direction.includes('teleport')) Game.effects.useFuel(moveTime * 0.0001, 0.01);
 

@@ -295,7 +295,7 @@ var Game = {
 
 		if(tracksPart[0].includes('boosted')) moveTime -= parseInt(tracksPart[0].split('_')[1]) * 120;
 
-		Game.player.baseMoveTime = Math.max(150, moveTime);
+		Game.player.baseMoveTime = Math.max(200, moveTime);
 	},
 	updateMaxHullSpace: function(){
 		var hullSpace = 10;
@@ -589,6 +589,8 @@ var Game = {
 		Game.player.health = Game.player.max_health;
 
 		Game.player.inventory = {
+			'quadratic:~:tritanium:~:drill': 1,
+			'precision_2:~:tritanium:~:drill': 1,
 			'boosted_3:~:tritanium:~:tracks': 1,
 			responder_teleporter: 99,
 			timed_charge: 99,
