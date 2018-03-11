@@ -213,7 +213,7 @@ var Cjs = {
 	randFromArr: function randFromArr(arr){
 		var arrLen = arr.length;
 
-		return arr[Cjs.rand(0, arrLen - 1)];
+		return arr[Cjs.randInt(0, arrLen)];
 	},
 	incChar: function incChar(char, inc){
 		return String.fromCharCode(char.charCodeAt(0) + (inc === 0 ? 0 : inc || 1));
