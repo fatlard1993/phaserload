@@ -48,7 +48,7 @@ Game.states.start.prototype.create = function(){
 	Game.updateMaxHullSpace();
 	Game.updateDrillSpeedMod();
 
-	Game.player.move = function(direction, surrounds){
+	Game.player.move = function(direction, surrounds, position){
 		Log()('player moving: ', direction);
 
 		if(Game.hud.isOpen) Game.hud.close();
@@ -57,26 +57,24 @@ Game.states.start.prototype.create = function(){
 
 		var newPosition = {}, newCameraPosition, moveTime, canMove = true;
 
-		if(direction.includes('teleport')){
+		if(direction === 'teleport'){
 			Game.player.sprite.animations.play('teleporting');
 
-			var teleportPos = direction.includes('responder') ? { x: Game.player.responder.x, y: Game.player.responder.y } : { x: Game.spaceco.sprite.x, y: Game.spaceco.sprite.y };
+			newPosition = position;
 
-			moveTime = Math.ceil(Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, teleportPos.x, teleportPos.y));
+			newCameraPosition = { x: newPosition.x - Game.viewWidth / 2, y: newPosition.y - Game.viewHeight / 2 };
+
+			moveTime = Math.ceil(Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, newPosition.x, newPosition.y));
 
 			setTimeout(function(){
 				// Game.drawCurrentView();
 
 				Game.player.sprite.animations.play('normal');
 
-				if(!direction.includes('responder')) Game.notify('Open to connect\nto Spaceco', 4);
+				// if(!direction.includes('responder')) Game.notify('Open to connect\nto Spaceco', 4);
 			}, 200 + moveTime);
-
-			newCameraPosition = { x: teleportPos.x - Game.viewWidth / 2, y: teleportPos.y - Game.viewHeight / 2 };
-
-			newPosition.x = teleportPos.x;
-			newPosition.y = teleportPos.y;
 		}
+
 		else{
 			newPosition = {
 				x: Game.player.sprite.x + (direction === 'left' ? -Game.blockPx : direction === 'right' ? Game.blockPx : 0),
@@ -170,6 +168,12 @@ Game.states.start.prototype.create = function(){
 			if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime, direction);
 
 			WS.send({ command: 'player_move', position: newPosition, moveTime: moveTime, direction: direction, invertTexture: invertTexture, angle: Game.player.sprite.angle });
+
+			if(direction === 'down'){
+				var newDepth = Game.toGridPos(newPosition.y);
+
+				if(Game.achievements['depth'+ newDepth]) Game.getAchievement('depth'+ newDepth);
+			}
 		}
 
 		if(Game.player.hull.space < 1.5) Game.notify('Your Hull is\nalmost full');
@@ -263,7 +267,7 @@ Game.states.start.prototype.create = function(){
 		}
 
 		if(item === 'teleporter'){
-			Game.player.move('teleport');
+			Game.effects.teleport('spaceco');
 		}
 
 		else if(item === 'repair_nanites'){
@@ -336,11 +340,11 @@ Game.states.start.prototype.create = function(){
 				Game.player.responder.animations.add('active', [0, 1], 5, true);
 				Game.player.responder.animations.play('active');
 
-				Game.player.move('teleport');
+				Game.effects.teleport('spaceco');
 			}
 
 			else{
-				Game.player.move('responder_teleport');
+				Game.effects.teleport('responder');
 
 				Game.player.responder.destroy();
 				Game.player.responder = null;
@@ -354,13 +358,9 @@ Game.states.start.prototype.create = function(){
 		if(item !== 'detonator'){
 			if(item === 'responder_teleporter' && Game.player.responder) return;
 
-			Game.player.inventory[item]--;
+			Game.effects.loseInvItem(item);
 
-			if(!Game.player.inventory[item]){
-				delete Game.player.inventory[item];
-
-				if(!item.includes('remote')) Game.entities.itemSlot.setItem(slotNum, '');
-			}
+			if(!Game.player.inventory[item] && !item.includes('remote')) Game.entities.itemSlot.setItem(slotNum, '');
 		}
 	};
 
@@ -387,17 +387,13 @@ Game.states.start.prototype.create = function(){
 		var itemNames = Object.keys(Game.player.tradeFor), x;
 
 		for(x = 0; x < itemNames.length; ++x){
-			Game.player.inventory[itemNames[x]] = Game.player.inventory[itemNames[x]] || 0;
-
-			Game.player.inventory[itemNames[x]] += Game.player.tradeFor[itemNames[x]];
+			Game.effects.getInvItem(itemNames[x], Game.player.tradeFor[itemNames[x]]);
 		}
 
 		itemNames = Object.keys(Game.player.offer);
 
 		for(x = 0; x < itemNames.length; ++x){
-			Game.player.inventory[itemNames[x]] -= Game.player.offer[itemNames[x]];
-
-			if(!Game.player.inventory[itemNames[x]]) delete Game.player.inventory[itemNames[x]];
+			Game.effects.loseInvItem(itemNames[x], Game.player.offer[itemNames[x]]);
 		}
 
 		Game.player.tradee = null;
@@ -1081,13 +1077,11 @@ Game.states.start.prototype.create = function(){
 					}
 
 					else if(Game.hud.isOpen.view.includes('shop')){
-						Game.player.inventory[item] = Game.player.inventory[item] || 0;
-						Game.player.inventory[item]++;
+						Game.effects.getInvItem(item);
 					}
 
 					else if(Game.hud.isOpen.view.includes('parts')){
-						Game.player.inventory[item] = Game.player.inventory[item] || 0;
-						Game.player.inventory[item]++;
+						Game.effects.getInvItem(item);
 
 						delete Game.spaceco.parts[item];
 
@@ -1206,6 +1200,8 @@ Game.states.start.prototype.create = function(){
 				Game.player.credits += Game.player.hull[hullItemNames[x]] * Game.spaceco.getValue(hullItemNames[x]);
 			}
 
+			WS.send({ command: 'player_sell_minerals', resourceBay: Game.spaceco.resourceBay });
+
 			output.pageItems.push('Sold:');
 
 			var soldItemNames = Object.keys(soldItems);
@@ -1296,8 +1292,6 @@ Game.states.start.prototype.create = function(){
 	Game.drawView(0, 0, Game.config.width, Game.config.depth);
 
 	Game.adjustViewPosition(Game.player.sprite.x - Game.viewWidth / 2, Game.player.sprite.y - Game.viewHeight / 2, Math.ceil(Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, Game.phaser.camera.x / 2, Game.phaser.camera.y / 2)));
-
-	Game.spaceco.resourceBay = {};
 
 	Game.entities.itemSlot.setItem(1, 'teleporter');
 

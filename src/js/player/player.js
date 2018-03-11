@@ -238,6 +238,7 @@ function Load(){
 		else if(data.command === 'new_world'){
 			Game.spaceco.position = data.spaceco.position;
 			Game.spaceco.parts = data.spaceco.parts;
+			Game.spaceco.resourceBay = data.spaceco.resourceBay;
 			Game.options = data.options;
 
 			Game.player.position = data.players[Player.name].position;
@@ -316,6 +317,10 @@ function Load(){
 			Game.phaser.camera.shake(intensity / 1000, 1000);
 
 			if(!Game.player.isDisoriented && (distanceFromPlayer / Game.blockPx) < 10) Game.phaser.camera.flash(undefined, 1000, 1, 0.3);
+		}
+
+		else if(data.command === 'player_sell_minerals'){
+			Game.spaceco.resourceBay = data.resourceBay;
 		}
 	});
 

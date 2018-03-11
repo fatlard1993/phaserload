@@ -110,10 +110,10 @@ var Game = {
 
 		for(x = 0; x < mapData.width; ++x){
 			for(y = 0; y < mapData.depth; ++y){
-				mineralChance = y * (mapData.world.mineralChance / 100);
-				randMineralChance = (y / 2) * (randMineralChanceBase / 100);
-				holeChance = y * (mapData.world.holeChance / 100);
-				hazardChance = y * (mapData.world.hazardChance / 100);
+				mineralChance = Math.min(70, y * (mapData.world.mineralChance / 100));
+				randMineralChance = Math.min(50, (y / 2) * (randMineralChanceBase / 100));
+				holeChance = Math.min(25, y * (mapData.world.holeChance / 100));
+				hazardChance = Math.min(30, y * (mapData.world.hazardChance / 100));
 
 				layer = mapData.world.layers[Math.ceil(mapData.world.layers.length * (y / mapData.depth)) - 1];
 

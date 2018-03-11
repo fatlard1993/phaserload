@@ -19,12 +19,16 @@
 		}
 	},
 	"groundEffects": {
-		"red": "lava:~:35",
-		"green": "poisonous_gas:~:15",
-		"purple": "noxious_gas:~:15",
-		"blue": "freezing:~:30",
-		"pink": "exploding:~:20",
-		"black": "impenetrable"
+		"white": ["bonus:~:2:~:white:~:[1,2]"],
+		"orange": ["bonus:~:2:~:orange:~:[1,2]"],
+		"yellow": ["bonus:~:2:~:yellow:~:[1,2]"],
+		"green": ["poisonous_gas:~:15"],
+		"teal": ["teleporting:~:5"],
+		"blue": ["freezing:~:20"],
+		"purple": ["noxious_gas:~:15"],
+		"pink": ["bonus:~:10:~:pink:~:1", "exploding:~:15"],
+		"red": ["bonus:~:2:~:red:~:[1,2]", "lava:~:35", "exploding:~:5"],
+		"black": ["impenetrable"]
 	},
 	"densities": {
 		"white": 400,

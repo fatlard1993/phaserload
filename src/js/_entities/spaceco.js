@@ -11,7 +11,5 @@ Game.entities.spaceco.create = function(settings){
 
 	spaceco.scale.setTo(0.25, 0.25);
 
-	Game.spaceco.resourceBay = {};
-
 	return spaceco;
 };

@@ -55,6 +55,7 @@ var Sockets = {
 						spaceco: {
 							damage: 0,
 							parts: {},
+							resourceBay: {},
 							position: {}
 						},
 						genWorld: function(worldIndex){
@@ -179,6 +180,12 @@ var Sockets = {
 
 				else if(data.command === 'hurt_spaceco'){
 					// Sockets.games[Player.room].spaceco.damage += data.amount;
+				}
+
+				else if(data.command === 'player_sell_minerals'){
+					Sockets.games[Player.room].spaceco.resourceBay = data.resourceBay;
+
+					echo = true;
 				}
 
 				if(echo){

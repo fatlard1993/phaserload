@@ -1,4 +1,4 @@
-/* global Phaser, Log, WS */
+/* global Phaser, Log, WS, Cjs */
 
 var Game = {
 	blockPx: 64,
@@ -15,6 +15,7 @@ var Game = {
 		'esc to open hud',
 		'1, and 2 to use the item slots'
 	],
+	mineralColors: ['white', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink', 'red', 'black'],
 	mapNames: ['red_monster', 'purple_monster', 'lava', 'poisonous_gas', 'noxious_gas', 'mineral_white', 'mineral_orange', 'mineral_yellow', 'mineral_green', 'mineral_teal', 'mineral_blue', 'mineral_purple', 'mineral_pink', 'mineral_red', 'mineral_black', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
 	player: {},
 	players: {},
@@ -76,6 +77,20 @@ var Game = {
 		freezing: function(chance, pos){
 			if(Game.chance(chance)){
 				Game.effects.freeze({ x: pos.x, y: pos.y }, Game.rand(2, 4));
+			}
+		},
+		teleporting: function(chance){
+			if(Game.chance(chance)){
+				var gridPos = Game.findInMap(-1)[Game.rand(100, 300)];
+
+				Game.effects.teleport({ x: Game.toPx(gridPos.x), y: Game.toPx(gridPos.y) });
+			}
+		},
+		bonus: function(chance, color, count){
+			if(Game.chance(chance)){
+				if(color === 'rand') color = Cjs.randFromArr(Game.mineralColors);
+
+				Game.effects.getHullItem('mineral_'+ color, typeof count === 'number' ? count : (typeof count === 'object' ? Game.rand.apply(null, count) : 1));
 			}
 		},
 		lava: function(chance, pos){
@@ -157,7 +172,92 @@ var Game = {
 			}
 
 			else Game.hud.update();
+		},
+		getInvItem: function(itemName, count){
+			Game.player.inventory[itemName] = Game.player.inventory[itemName] !== undefined ? Game.player.inventory[itemName] : 0;
+
+			Game.player.inventory[itemName] += count || 1;
+		},
+		loseInvItem: function(itemName, count){
+			if(!Game.player.inventory[itemName]) return;
+
+			Game.player.inventory[itemName] -= count || 1;
+
+			if(Game.player.inventory[itemName] < 1) delete Game.player.inventory[itemName];
+		},
+		getHullItem: function(itemName, count){
+			count = count || 1;
+
+			var weight, isMineral = itemName.startsWith('mineral');
+			var densityMod = Game.config.densities[itemName.replace('mineral_', '').replace('ground_', '')] * 0.0001;
+
+			if(isMineral) weight = densityMod;
+			else weight = 0.07 + densityMod;
+
+			if(Game.player.hull.space < (weight * count)) return;
+
+			Game.player.hull.space -= (weight * count);
+
+			Game.player.hull[itemName] = Game.player.hull[itemName] !== undefined ? Game.player.hull[itemName] : 0;
+
+			Game.player.hull[itemName] += count;
+		},
+		teleport: function(pos){
+			var teleportPos;
+
+			Game.player.sprite.animations.play('teleporting');
+
+			if(pos === 'spaceco'){
+				teleportPos = { x: Game.spaceco.sprite.x, y: Game.spaceco.sprite.y };
+			}
+
+			else if(pos === 'responder'){
+				teleportPos = { x: Game.player.responder.x, y: Game.player.responder.y };
+			}
+
+			else if(typeof pos === 'object'){
+				teleportPos = pos;
+			}
+
+			Game.player.move('teleport', null, teleportPos);
 		}
+	},
+	applyEffects: function(effects, pos){
+		for(var x = 0; x < effects.length; ++x){
+			var params = effects[x].split(':~:');
+
+			if({ poisonous_gas: 1, noxious_gas: 1, lava: 1, exploding: 1, freezing: 1 }[params[0]]) params[2] = pos;
+
+			else if({ bonus: 1 }[params[0]]) params[3] = JSON.parse(params[3]);
+
+			Game.effects[params.shift()].apply(null, params);
+		}
+	},
+	achievements: {
+		depth10: {
+			text: 'Congratulations\nyouve made it to\nlevel 10',
+			effects: ['bonus:~:100:~:rand:~:[1,3]']
+		},
+		depth50: {
+			text: 'Congratulations\nyouve made it to\nlevel 50',
+			effects: ['bonus:~:100:~:rand:~:[5,7]']
+		},
+		depth100: {
+			text: 'Congratulations\nyouve made it to\nlevel 100',
+			effects: ['bonus:~:100:~:rand:~:[7,9]']
+		},
+		depth200: {
+			text: 'Congratulations\nyouve made it to\nlevel 200',
+			effects: ['bonus:~:100:~:rand:~:[9,13]']
+		}
+	},
+	getAchievement: function(name){
+		if(Game.achievements[name].achieved) return;
+		Game.achievements[name].achieved = true;
+
+		Game.notify(Game.achievements[name].text);
+
+		Game.applyEffects(Game.achievements[name].effects);
 	},
 	rand: function(min, max, excludes){
 		excludes = excludes || [];
