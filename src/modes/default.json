@@ -1,5 +1,19 @@
 {
 	"spaceco": {
+		"services": {
+			"repair": {
+				"price": 40,
+				"effects": ["repair:~:100"]
+			},
+			"repair_spaceco": {
+				"price": 100,
+				"effects": ["repairSpaceco"]
+			},
+			"transport": {
+				"price": 300,
+				"effects": ["transport"]
+			}
+		},
 		"fuel": {
 			"gas": 3,
 			"energy": 6,
@@ -16,6 +30,36 @@
 			"remote_charge": 15,
 			"timed_freeze_charge": 8,
 			"remote_freeze_charge": 12
+		}
+	},
+	"items": {
+		"teleporter": {
+			"price": 15,
+			"effects": ["teleport:~:spaceco"]
+		},
+		"responder_teleporter": {
+			"price": 22,
+			"effects": ["teleport:~:responder"]
+		},
+		"repair_nanites": {
+			"price": 50,
+			"effects": ["repair:~:100"]
+		},
+		"timed_charge": {
+			"price": 10,
+			"effects": ["explode:~:3"]
+		},
+		"remote_charge": {
+			"price": 15,
+			"effects": ["explode:~:5"]
+		},
+		"timed_freeze_charge": {
+			"price": 10,
+			"effects": ["freeze:~:3"]
+		},
+		"remote_freeze_charge": {
+			"price": 15,
+			"effects": ["freeze:~:5"]
 		}
 	},
 	"groundEffects": {

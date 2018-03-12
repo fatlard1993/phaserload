@@ -123,9 +123,9 @@ var Game = {
 				Game.player.health = Game.player.max_health;
 			}
 
-			else{
-				Game.player.health = Math.min(Game.player.max_health, Game.player.health + Game.randFloat(1, Game.player.max_health / 2));
-			}
+			// else{
+			// 	Game.player.health = Math.min(Game.player.max_health, Game.player.health + Game.randFloat(1, Game.player.max_health / 2));
+			// }
 		},
 		disorient: function(duration){
 			if(Game.player.isDisoriented) clearTimeout(Game.player.isDisoriented_TO);
