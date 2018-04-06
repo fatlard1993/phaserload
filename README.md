@@ -25,4 +25,4 @@
 
 More in ```./screenshots```
 
-![game_play](./screenshots/game_play.png)
+![game_play](./etc/screenshots/game_play.png)

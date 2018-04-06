@@ -1,0 +1,14 @@
+{
+	"preIncludes": [
+		"../swiss-army-knife/client/html/_0_start.html",
+		"../swiss-army-knife/client/html/_1_miniStylesDark.html"
+	],
+	"postIncludes": [
+		"../swiss-army-knife/client/html/_2_endHead.html",
+		"../swiss-army-knife/client/html/_4_endError.html",
+		"../swiss-army-knife/client/html/_5_end.html"
+	],
+	"includes": [
+		"_self"
+	]
+}

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+git pull &&
+((cd ../swiss-army-knife && git pull) || (cd ../ && git clone https://github.com/fatlard1993/swiss-army-knife.git)) &&
+gulp compile

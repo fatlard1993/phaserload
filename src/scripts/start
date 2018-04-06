@@ -1,3 +1,0 @@
-#!/bin/bash
-
-sudo DBG=1 DIR=$(pwd)/out PORT=$1 node ./out/app.js

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+if [[ `whoami` != "root" ]]; then
+	echo "This script needs to be run as root.."
+	echo "Restarting with sudo"
+	SCRIPT="$(dirname $(readlink -f $0))/$(basename $0) $@"
+	echo "$SCRIPT"
+	exec sudo $SCRIPT
+	exit #?
+fi
+
+if [ "$1" == "dbg" ]; then
+	if [ "$2" == "lvl" ]; then
+		echo "Starting in DBG mode with DBG set to $3..."
+		DBG=$3 COLOR=1 PORT=$4 node ./server/app.js
+	else
+		echo "Starting in DBG mode..."
+		DBG=3 COLOR=1 PORT=$2 node ./server/app.js
+	fi
+elif [ "$1" == "DBG" ]; then
+	echo "Starting in DBG mode with MAXIMUM LOGGING..."
+	DBG=9001 COLOR=1 PORT=$2 node ./server/app.js
+elif [ "$1" == "dist" ]; then
+	if [ "$2" == "dbg" ]; then
+		if [ "$3" == "lvl" ]; then
+			echo "Starting in DBG mode with DBG set to $4..."
+			DIST=1 DBG=$4 COLOR=1 PORT=$5 node app.js
+		else
+			echo "Starting in DBG mode..."
+			DIST=1 DBG=3 COLOR=1 PORT=$3 node app.js
+		fi
+	else
+		echo "Starting, piping output to logger..."
+		DIST=1 DBG=1 PORT=$2 node app.js | logger
+	fi
+else
+	echo "Starting, piping output to logger..."
+	DBG=1 PORT=$1 node ./server/app.js | logger
+fi
