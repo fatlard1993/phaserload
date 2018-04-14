@@ -1,4 +1,4 @@
-/* global Phaser, Game */
+/* global Phaser, Game, Cjs */
 
 Game.entities.ground = function(x, y){
 	Phaser.Sprite.call(this, Game.phaser, x, y, 'ground');
@@ -23,10 +23,10 @@ Game.entities.ground.create = function(x, y, type){
 	}
 
 	if(!type){
-		// type = Game.weightedChance(Game.config.world.layers[Math.ceil(Game.config.world.layers.length * (Game.toGridPos(y) / Game.config.depth)) - 1]);
-		type = Game.weightedChance({ white: 90, red: 10 });
+		// type = Cjs.weightedChance(Game.config.world.layers[Math.ceil(Game.config.world.layers.length * (Game.toGridPos(y) / Game.config.depth)) - 1]);
+		type = Cjs.weightedChance({ white: 90, red: 10 });
 
-		Game.setMapPos({ x: x, y: y }, Game.mapNames.indexOf('ground_'+ type));
+		Game.setMapPos({ x: x, y: y }, 'ground_'+ type);
 	}
 
 	type = type.replace('ground_', '');
@@ -66,10 +66,10 @@ Game.entities.ground.crush = function(pos, fromServer){
 			};
 
 			var surrounds = {
-				left: Game.mapPosName(gridPos.x - 1, gridPos.y),
-				top: Game.mapPosName(gridPos.x, gridPos.y - 1),
-				right: Game.mapPosName(gridPos.x + 1, gridPos.y),
-				bottom: Game.mapPosName(gridPos.x, gridPos.y + 1)
+				left: Game.mapPos(gridPos.x - 1, gridPos.y)[0],
+				top: Game.mapPos(gridPos.x, gridPos.y - 1)[0],
+				right: Game.mapPos(gridPos.x + 1, gridPos.y)[0],
+				bottom: Game.mapPos(gridPos.x, gridPos.y + 1)[0]
 			};
 
 			Game.entities.ground.releaseSurrounds(ground, surrounds, Game.config.densities[groundType]);
@@ -120,7 +120,7 @@ Game.entities.ground.dig = function(pos){
 
 	var drillPart = Game.player.configuration.drill.split(':~:');
 
-	if(drillPart[0].includes('precision')) isMineral = Game.chance(5 * parseInt(drillPart[0].split('_')[1]));
+	if(drillPart[0].includes('precision')) isMineral = Cjs.chance(5 * parseInt(drillPart[0].split('_')[1]));
 
 	Game.effects.getHullItem((isMineral ? 'mineral_' : 'ground_') + type);
 };

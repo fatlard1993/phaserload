@@ -1,4 +1,4 @@
-/* global Phaser, Game, Log */
+/* global Phaser, Game, Log, Cjs */
 
 Game.entities.noxious_gas = function(x, y){
 	Phaser.Sprite.call(this, Game.phaser, x, y, 'noxious_gas');
@@ -10,7 +10,7 @@ Game.entities.noxious_gas.prototype = Object.create(Phaser.Sprite.prototype);
 Game.entities.noxious_gas.prototype.constructor = Game.entities.noxious_gas;
 
 Game.entities.noxious_gas.create = function(x, y, isNew, spawnChance, spreadChance){
-	if(isNew && spawnChance !== undefined && !Game.chance(spawnChance)) return;
+	if(isNew && spawnChance !== undefined && !Cjs.chance(spawnChance)) return;
 
 	var noxious_gas = Game.noxious_gas.getFirstDead();
 
@@ -38,7 +38,7 @@ Game.entities.noxious_gas.create = function(x, y, isNew, spawnChance, spreadChan
 	noxious_gas.animations.add('trapped', [3, 4, 5], 12, true);
 
 	if(isNew){
-		noxious_gas.spreadChance = spreadChance !== undefined ? spreadChance : spawnChance !== undefined ? spawnChance - Game.rand(5, 17) : 100;
+		noxious_gas.spreadChance = spreadChance !== undefined ? spreadChance : spawnChance !== undefined ? spawnChance - Cjs.randInt(5, 17) : 100;
 
 		fullAnim.onComplete.add(function(){
 			Game.entities.noxious_gas.spread(null, null, noxious_gas);
@@ -48,7 +48,7 @@ Game.entities.noxious_gas.create = function(x, y, isNew, spawnChance, spreadChan
 			Game.setMapPos({ x: noxious_gas.x, y: noxious_gas.y }, -1);
 		}, noxious_gas);
 
-		Game.setMapPos({ x: x, y: y }, Game.mapNames.indexOf('noxious_gas'), null, 'filling');
+		Game.setMapPos({ x: x, y: y }, 'noxious_gas', null, 'filling');
 
 		noxious_gas.animations.play('filling');
 	}
@@ -78,10 +78,10 @@ Game.entities.noxious_gas.spread = function(x, y, noxious_gas){
 		};
 
 		var surrounds = {
-			left: Game.mapPosName(gridPos.x - 1, gridPos.y),
-			right: Game.mapPosName(gridPos.x + 1, gridPos.y),
-			top: Game.mapPosName(gridPos.x, gridPos.y - 1),
-			bottom: Game.mapPosName(gridPos.x, gridPos.y + 1)
+			left: Game.mapPos(gridPos.x - 1, gridPos.y)[0],
+			right: Game.mapPos(gridPos.x + 1, gridPos.y)[0],
+			top: Game.mapPos(gridPos.x, gridPos.y - 1)[0],
+			bottom: Game.mapPos(gridPos.x, gridPos.y + 1)[0]
 		};
 
 		if(gridPos.x - 1 > 0 && (!surrounds.left || !!{ purple_monster: 1, red_monster: 1 }[surrounds.left])){
@@ -93,7 +93,7 @@ Game.entities.noxious_gas.spread = function(x, y, noxious_gas){
 		}
 
 		if(gridPos.y - 1 > 0 && (!surrounds.top || !!{ purple_monster: 1, red_monster: 1 }[surrounds.top])){
-			if(Game.chance(30)) Game.entities.noxious_gas.create(noxious_gas.x, noxious_gas.y - Game.blockPx, 1, noxious_gas.spreadChance);
+			if(Cjs.chance(30)) Game.entities.noxious_gas.create(noxious_gas.x, noxious_gas.y - Game.blockPx, 1, noxious_gas.spreadChance);
 		}
 
 		if(gridPos.y + 1 > 0 && (!surrounds.bottom || !!{ purple_monster: 1, red_monster: 1 }[surrounds.bottom])){

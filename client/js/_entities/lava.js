@@ -1,4 +1,4 @@
-/* global Phaser, Game, Log */
+/* global Phaser, Game, Log, Cjs */
 
 Game.entities.lava = function(x, y){
 	Phaser.Sprite.call(this, Game.phaser, x, y, 'lava');
@@ -37,7 +37,7 @@ Game.entities.lava.create = function(x, y, isNew){
 
 		lava.animations.play('filling');
 
-		Game.setMapPos({ x: x, y: y }, Game.mapNames.indexOf('lava'), null, 'filling');
+		Game.setMapPos({ x: x, y: y }, 'lava', null, 'filling');
 	}
 
 	else{
@@ -66,13 +66,13 @@ Game.entities.lava.spread = function(x, y, lava){
 		};
 
 		var surrounds = {
-			left: Game.mapPosName(gridPos.x - 1, gridPos.y),
-			right: Game.mapPosName(gridPos.x + 1, gridPos.y),
-			bottom: Game.mapPosName(gridPos.x, gridPos.y + 1)
+			left: Game.mapPos(gridPos.x - 1, gridPos.y)[0],
+			right: Game.mapPos(gridPos.x + 1, gridPos.y)[0],
+			bottom: Game.mapPos(gridPos.x, gridPos.y + 1)[0]
 		};
 
 		if(gridPos.x - 1 >= 0 && (!surrounds.left || { purple_monster: 1, red_monster: 1, ground_red: 1 }[surrounds.left])){
-			if(surrounds.left === 'ground_red' && Game.chance(80)) return;
+			if(surrounds.left === 'ground_red' && Cjs.chance(80)) return;
 
 			if(surrounds.left === 'ground_red') Game.entities.ground.crush({ x: lava.x - Game.blockPx, y: lava.y });
 
@@ -80,7 +80,7 @@ Game.entities.lava.spread = function(x, y, lava){
 		}
 
 		if(gridPos.x + 1 < Game.config.width && (!surrounds.right || { purple_monster: 1, red_monster: 1, ground_red: 1 }[surrounds.right])){
-			if(surrounds.right === 'ground_red' && Game.chance(80)) return;
+			if(surrounds.right === 'ground_red' && Cjs.chance(80)) return;
 
 			if(surrounds.right === 'ground_red') Game.entities.ground.crush({ x: lava.x + Game.blockPx, y: lava.y });
 
@@ -88,7 +88,7 @@ Game.entities.lava.spread = function(x, y, lava){
 		}
 
 		if(gridPos.y + 1 < Game.config.depth - 2 && (!surrounds.bottom || { purple_monster: 1, red_monster: 1, ground_red: 1 }[surrounds.bottom])){
-			if(surrounds.bottom === 'ground_red' && Game.chance(40)) return;
+			if(surrounds.bottom === 'ground_red' && Cjs.chance(40)) return;
 
 			if(surrounds.bottom === 'ground_red') Game.entities.ground.crush({ x: lava.x, y: lava.y + Game.blockPx });
 

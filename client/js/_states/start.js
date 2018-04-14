@@ -113,7 +113,7 @@ Game.states.start.prototype.create = function(){
 
 				// Game.player.sprite.emitter.setScale(0.1, 0.3, 0.1, 0.3);
 
-				// Game.player.sprite.emitter.start(true, canMove ? moveTime + 100 : 150, null, Math.round(Game.rand(3, 7)));
+				// Game.player.sprite.emitter.start(true, canMove ? moveTime + 100 : 150, null, Math.round(Cjs.randInt(3, 7)));
 			}
 
 			var invertTexture = false;
@@ -165,7 +165,7 @@ Game.states.start.prototype.create = function(){
 
 			Game.phaser.add.tween(Game.player.sprite).to(newPosition, moveTime, Phaser.Easing.Sinusoidal.InOut, true);
 
-			if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime, direction);
+			if(newCameraPosition) Game.adjustViewPosition(newCameraPosition.x, newCameraPosition.y, moveTime);
 
 			WS.send({ command: 'player_move', position: newPosition, moveTime: moveTime, direction: direction, invertTexture: invertTexture, angle: Game.player.sprite.angle });
 
@@ -425,10 +425,10 @@ Game.states.start.prototype.create = function(){
 			else statusText = value[0] + spacer;
 
 			if(item === 'position') statusText += 'x'+ Game.toGridPos(Game.player.sprite.x) +' y'+ Game.toGridPos(Game.player.sprite.y);
-			else if(item === 'health') statusText += Game.toFixed(Game.player.health, 2) +'/'+ Game.player.max_health;
-			else if(item === 'fuel') statusText += Game.toFixed(Game.player.fuel, 2) +'/'+ Game.player.max_fuel;
-			else if(item === 'credits') statusText += Game.toFixed(Game.player.credits, 2);
-			else if(item === 'hull') statusText += Game.toFixed(Game.player.hull.space, 2) +'/'+ Game.player.max_hullSpace;
+			else if(item === 'health') statusText += Cjs.toFixed(Game.player.health, 2) +'/'+ Game.player.max_health;
+			else if(item === 'fuel') statusText += Cjs.toFixed(Game.player.fuel, 2) +'/'+ Game.player.max_fuel;
+			else if(item === 'credits') statusText += Cjs.toFixed(Game.player.credits, 2);
+			else if(item === 'hull') statusText += Cjs.toFixed(Game.player.hull.space, 2) +'/'+ Game.player.max_hullSpace;
 			else{
 				if(item.startsWith('mineral') && Game.player.hull[item]) statusText += Game.player.hull[item];
 			}
@@ -687,7 +687,7 @@ Game.states.start.prototype.create = function(){
 				var inventoryItems = Object.keys(Game.player.inventory), inventoryItemCount = inventoryItems.length;
 
 				for(x = 0; x < inventoryItemCount; ++x){
-					inventoryItems[x] = Game.capitalize(Game.capitalize(inventoryItems[x], 1, ':~:'), 1, '_') +':~:'+ Game.player.inventory[inventoryItems[x]];
+					inventoryItems[x] = Cjs.capitalize(Cjs.capitalize(inventoryItems[x], 1, ':~:'), 1, '_') +':~:'+ Game.player.inventory[inventoryItems[x]];
 
 					if(Game.itemSlot1.item === inventoryItems[x]) inventoryItems[x] = '[ 1 ] '+ inventoryItems[x];
 					else if(Game.itemSlot2.item === inventoryItems[x]) inventoryItems[x] = '[ 2 ] '+ inventoryItems[x];
@@ -714,8 +714,8 @@ Game.states.start.prototype.create = function(){
 				var hullItems = Object.keys(Game.player.hull), hullItemCount = hullItems.length;
 
 				for(x = 0; x < hullItemCount; ++x){
-					if(hullItems[x] === 'space') hullItems[x] = 'Space:~:'+ Game.toFixed(Game.player.hull[hullItems[x]], 2);
-					else hullItems[x] = (hullItems[x].startsWith('ground') ? 'Trace ' : 'Concentrated ') + Game.capitalize(mineralNames[hullItems[x].replace('ground_', '').replace('mineral_', '')]) +':~:'+ Game.toFixed(Game.player.hull[hullItems[x]], 2);
+					if(hullItems[x] === 'space') hullItems[x] = 'Space:~:'+ Cjs.toFixed(Game.player.hull[hullItems[x]], 2);
+					else hullItems[x] = (hullItems[x].startsWith('ground') ? 'Trace ' : 'Concentrated ') + Cjs.capitalize(mineralNames[hullItems[x].replace('ground_', '').replace('mineral_', '')]) +':~:'+ Cjs.toFixed(Game.player.hull[hullItems[x]], 2);
 				}
 
 				if(Game.hud.view === 'hull' && hullItemCount > 7){
@@ -739,7 +739,7 @@ Game.states.start.prototype.create = function(){
 				var configurationParts = Object.keys(Game.player.configuration), drillItemCount = configurationParts.length;
 
 				for(x = 0; x < drillItemCount; ++x){
-					configurationParts[x] = Game.capitalize(configurationParts[x], 1, '_') +':~:'+ Game.capitalize(Game.player.configuration[configurationParts[x]], 1, ':~:');
+					configurationParts[x] = Cjs.capitalize(configurationParts[x], 1, '_') +':~:'+ Cjs.capitalize(Game.player.configuration[configurationParts[x]], 1, ':~:');
 				}
 
 				Game.hud.isOpen.view = 'config';
@@ -757,7 +757,7 @@ Game.states.start.prototype.create = function(){
 				var rawMaterialCount = rawMaterials.length;
 
 				for(x = 0; x < rawMaterialCount; ++x){
-					rawMaterials[x] = (rawMaterials[x].startsWith('ground') ? 'Trace ' : 'Concentrated ') + Game.capitalize(materialNames[x % 8]) +':~:$'+ Game.spaceco.getValue(rawMaterials[x]).toFixed(2);
+					rawMaterials[x] = (rawMaterials[x].startsWith('ground') ? 'Trace ' : 'Concentrated ') + Cjs.capitalize(materialNames[x % 8]) +':~:$'+ Game.spaceco.getValue(rawMaterials[x]).toFixed(2);
 				}
 
 				if(Game.hud.isOpen.view === 'rates' && rawMaterialCount > 7){
@@ -782,7 +782,7 @@ Game.states.start.prototype.create = function(){
 				var fuelCount = fuels.length;
 
 				for(x = 0; x < fuelCount; ++x){
-					fuels[x] = Game.capitalize(fuels[x], 1, '_') +':~:$'+ Game.spaceco.getValue(fuels[x]);
+					fuels[x] = Cjs.capitalize(fuels[x], 1, '_') +':~:$'+ Game.spaceco.getValue(fuels[x]);
 				}
 
 				Game.hud.isOpen.view = 'fuel';
@@ -795,7 +795,7 @@ Game.states.start.prototype.create = function(){
 				var partCount = parts.length;
 
 				for(x = 0; x < partCount; ++x){
-					parts[x] = Game.capitalize(parts[x], 1, ':~:') +':~:$'+ Game.spaceco.getValue(parts[x]);
+					parts[x] = Cjs.capitalize(parts[x], 1, ':~:') +':~:$'+ Game.spaceco.getValue(parts[x]);
 				}
 
 				if(Game.hud.isOpen.view === 'parts' && partCount > 7){
@@ -820,7 +820,7 @@ Game.states.start.prototype.create = function(){
 				var shopCount = shopItems.length;
 
 				for(x = 0; x < shopCount; ++x){
-					shopItems[x] = Game.capitalize(shopItems[x], 1, '_') +':~:$'+ Game.spaceco.getValue(shopItems[x]);
+					shopItems[x] = Cjs.capitalize(shopItems[x], 1, '_') +':~:$'+ Game.spaceco.getValue(shopItems[x]);
 				}
 
 				if(Game.hud.isOpen.view === 'shop' && shopCount > 7){
@@ -848,7 +848,7 @@ Game.states.start.prototype.create = function(){
 				var tradeInventoryItems = Object.keys(Game.player.inventory), tradeInventoryItemCount = tradeInventoryItems.length;
 
 				for(x = 0; x < tradeInventoryItemCount; ++x){
-					tradeInventoryItems[x] = Game.capitalize(Game.capitalize(tradeInventoryItems[x], 1, ':~:'), 1, '_') +':~:'+ Game.player.inventory[tradeInventoryItems[x]];
+					tradeInventoryItems[x] = Cjs.capitalize(Cjs.capitalize(tradeInventoryItems[x], 1, ':~:'), 1, '_') +':~:'+ Game.player.inventory[tradeInventoryItems[x]];
 				}
 
 				if(Game.hud.isOpen.view === 'tradeInventory' && tradeInventoryItemCount > 7){
@@ -872,7 +872,7 @@ Game.states.start.prototype.create = function(){
 				var tradeOfferItems = Object.keys(Game.player.offer), tradeOfferItemCount = tradeOfferItems.length;
 
 				for(x = 0; x < tradeOfferItemCount; ++x){
-					tradeOfferItems[x] = Game.capitalize(Game.capitalize(tradeOfferItems[x], 1, ':~:'), 1, '_') +':~:'+ Game.player.offer[tradeOfferItems[x]];
+					tradeOfferItems[x] = Cjs.capitalize(Cjs.capitalize(tradeOfferItems[x], 1, ':~:'), 1, '_') +':~:'+ Game.player.offer[tradeOfferItems[x]];
 				}
 
 				if(Game.hud.isOpen.view === 'tradeOffer' && tradeOfferItemCount > 7){
@@ -896,7 +896,7 @@ Game.states.start.prototype.create = function(){
 				var tradeForItems = Object.keys(Game.player.tradeFor), tradeForItemCount = tradeForItems.length;
 
 				for(x = 0; x < tradeForItemCount; ++x){
-					tradeForItems[x] = Game.capitalize(Game.capitalize(tradeForItems[x], 1, ':~:'), 1, '_') +':~:'+ Game.player.tradeFor[tradeForItems[x]];
+					tradeForItems[x] = Cjs.capitalize(Cjs.capitalize(tradeForItems[x], 1, ':~:'), 1, '_') +':~:'+ Game.player.tradeFor[tradeForItems[x]];
 				}
 
 				if(Game.hud.isOpen.view === 'tradeFor' && tradeForItemCount > 7){
@@ -949,7 +949,7 @@ Game.states.start.prototype.create = function(){
 				item = Object.keys(Game.player.inventory)[selection + (Game.hud.isOpen.view.includes('pg') ? (parseInt(Game.hud.isOpen.view.slice(-1)) - 1) * 7 : 0)];
 
 				if(item){
-					bottomLineText = 'Equipping '+ Game.capitalize((item.includes(':~:') ? item.split(':~:')[2] : item), 1, '_');
+					bottomLineText = 'Equipping '+ Cjs.capitalize((item.includes(':~:') ? item.split(':~:')[2] : item), 1, '_');
 
 					var itemBreakdown = item.split(':~:');
 
@@ -1100,7 +1100,7 @@ Game.states.start.prototype.create = function(){
 				item = Object.keys(Game.player.inventory)[selection + (Game.hud.isOpen.view.includes('pg') ? (parseInt(Game.hud.isOpen.view.slice(-1)) - 1) * 7 : 0)];
 
 				if(item){
-					bottomLineText = 'Offering '+ Game.capitalize((item.includes(':~:') ? item.split(':~:')[2] : item), 1, '_');
+					bottomLineText = 'Offering '+ Cjs.capitalize((item.includes(':~:') ? item.split(':~:')[2] : item), 1, '_');
 
 					Game.player.offer[item] = Game.player.offer[item] || 0;
 
@@ -1118,7 +1118,7 @@ Game.states.start.prototype.create = function(){
 				item = Object.keys(Game.player.offer)[selection + (Game.hud.isOpen.view.includes('pg') ? (parseInt(Game.hud.isOpen.view.slice(-1)) - 1) * 7 : 0)];
 
 				if(item){
-					bottomLineText = 'Revoking '+ Game.capitalize((item.includes(':~:') ? item.split(':~:')[2] : item), 1, '_');
+					bottomLineText = 'Revoking '+ Cjs.capitalize((item.includes(':~:') ? item.split(':~:')[2] : item), 1, '_');
 
 					--Game.player.offer[item];
 
@@ -1210,7 +1210,7 @@ Game.states.start.prototype.create = function(){
 				output.pageItems.push(' '+ soldItems[soldItemNames[x]] +' x '+ soldItemNames[x] +'s');
 			}
 
-			output.pageItems.push('For '+ Game.toFixed(Game.player.credits - statingCredits, 2) +' credits');
+			output.pageItems.push('For '+ Cjs.toFixed(Game.player.credits - statingCredits, 2) +' credits');
 
 			Game.player.hull = {
 				space: Game.player.max_hullSpace
@@ -1228,7 +1228,7 @@ Game.states.start.prototype.create = function(){
 		if(Game.hud.isOpen.name !== 'spaceco') return;
 
 		var credits = String(parseInt(Game.player.credits));
-		var fuel = Game.toFixed(Game.player.fuel, 2);
+		var fuel = Cjs.toFixed(Game.player.fuel, 2);
 		var health = String(parseInt(Game.player.health));
 
 		var creditsText = ' '.repeat(7 - (credits.length / 2)) +'$:'+ credits;
@@ -1307,9 +1307,9 @@ Game.states.start.prototype.update = function(){
 	// 	});
 	// }
 
-	var playerCollision = Game.mapPosName(Game.toGridPos(Game.player.sprite.x), Game.toGridPos(Game.player.sprite.y));
+	var playerCollision = Game.mapPos(Game.toGridPos(Game.player.sprite.x), Game.toGridPos(Game.player.sprite.y))[0];
 
-	if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && playerCollision){
+	if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && typeof playerCollision === 'string'){
 		Log()('playerCollision', playerCollision);
 
 		if(playerCollision === 'lava') Game.effects.hurt('lava', 12, 3);
@@ -1363,9 +1363,9 @@ Game.states.start.prototype.update = function(){
 			y: Game.toGridPos(Game.spaceco.sprite.y)
 		};
 
-		var spacecoCollision = Game.mapPosName(Game.toGridPos(Game.spaceco.sprite.x), Game.toGridPos(Game.spaceco.sprite.y));
+		var spacecoCollision = Game.mapPos(Game.toGridPos(Game.spaceco.sprite.x), Game.toGridPos(Game.spaceco.sprite.y))[0];
 
-		if(spacecoCollision){
+		if(typeof spacecoCollision === 'string'){
 			Log()('spacecoCollision', spacecoCollision);
 
 			if(spacecoCollision === 'lava') Game.spaceco.hurt(1, 'lava');
@@ -1481,7 +1481,7 @@ Game.states.start.prototype.update = function(){
 
 		var canMove;
 
-		if(moving && Game.player.isDisoriented) moving = ['up', 'down', 'left', 'right'][Game.rand(0, 3)];
+		if(moving && Game.player.isDisoriented) moving = ['up', 'down', 'left', 'right'][Cjs.randInt(0, 3)];
 
 		if(moving) canMove = Game.player.checkMove(moving, surrounds);
 

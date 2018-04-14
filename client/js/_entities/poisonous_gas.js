@@ -1,4 +1,4 @@
-/* global Phaser, Game, Log */
+/* global Phaser, Game, Log, Cjs */
 
 Game.entities.poisonous_gas = function(x, y){
 	Phaser.Sprite.call(this, Game.phaser, x, y, 'poisonous_gas');
@@ -10,7 +10,7 @@ Game.entities.poisonous_gas.prototype = Object.create(Phaser.Sprite.prototype);
 Game.entities.poisonous_gas.prototype.constructor = Game.entities.poisonous_gas;
 
 Game.entities.poisonous_gas.create = function(x, y, isNew, spawnChance, spreadChance){
-	if(isNew && spawnChance !== undefined && !Game.chance(spawnChance)) return;
+	if(isNew && spawnChance !== undefined && !Cjs.chance(spawnChance)) return;
 
 	var poisonous_gas = Game.poisonous_gas.getFirstDead();
 
@@ -38,7 +38,7 @@ Game.entities.poisonous_gas.create = function(x, y, isNew, spawnChance, spreadCh
 	poisonous_gas.animations.add('trapped', [3, 4, 5], 12, true);
 
 	if(isNew){
-		poisonous_gas.spreadChance = spreadChance !== undefined ? spreadChance : spawnChance !== undefined ? spawnChance - Game.rand(0, 9) : 100;
+		poisonous_gas.spreadChance = spreadChance !== undefined ? spreadChance : spawnChance !== undefined ? spawnChance - Cjs.randInt(0, 9) : 100;
 
 		fullAnim.onComplete.add(function(){
 			Game.entities.poisonous_gas.spread(null, null, poisonous_gas);
@@ -48,7 +48,7 @@ Game.entities.poisonous_gas.create = function(x, y, isNew, spawnChance, spreadCh
 			Game.setMapPos({ x: poisonous_gas.x, y: poisonous_gas.y }, -1);
 		}, poisonous_gas);
 
-		Game.setMapPos({ x: x, y: y }, Game.mapNames.indexOf('poisonous_gas'), null, 'filling');
+		Game.setMapPos({ x: x, y: y }, 'poisonous_gas', null, 'filling');
 
 		poisonous_gas.animations.play('filling');
 	}
@@ -78,9 +78,9 @@ Game.entities.poisonous_gas.spread = function(x, y, poisonous_gas){
 		};
 
 		var surrounds = {
-			left: Game.mapPosName(gridPos.x - 1, gridPos.y),
-			right: Game.mapPosName(gridPos.x + 1, gridPos.y),
-			top: Game.mapPosName(gridPos.x, gridPos.y - 1)
+			left: Game.mapPos(gridPos.x - 1, gridPos.y)[0],
+			right: Game.mapPos(gridPos.x + 1, gridPos.y)[0],
+			top: Game.mapPos(gridPos.x, gridPos.y - 1)[0]
 		};
 
 		if(gridPos.x - 1 > 0 && (!surrounds.left || !!{ purple_monster: 1, red_monster: 1 }[surrounds.left])){

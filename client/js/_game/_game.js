@@ -16,7 +16,6 @@ var Game = {
 		'1, and 2 to use the item slots'
 	],
 	mineralColors: ['white', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink', 'red', 'black'],
-	mapNames: ['red_monster', 'purple_monster', 'lava', 'poisonous_gas', 'noxious_gas', 'mineral_white', 'mineral_orange', 'mineral_yellow', 'mineral_green', 'mineral_teal', 'mineral_blue', 'mineral_purple', 'mineral_pink', 'mineral_red', 'mineral_black', 'ground_white', 'ground_orange', 'ground_yellow', 'ground_green', 'ground_teal', 'ground_blue', 'ground_purple', 'ground_pink', 'ground_red', 'ground_black'],
 	player: {},
 	players: {},
 	states: {},
@@ -37,7 +36,7 @@ var Game = {
 			}
 
 			if(distanceFromPlayer < Game.blockPx * radius){
-				Game.effects.hurt('explosion', Game.randFloat(radius, radius * 2) * (radius - (distanceFromPlayer / Game.blockPx)), 3);
+				Game.effects.hurt('explosion', Cjs.rand(radius, radius * 2) * (radius - (distanceFromPlayer / Game.blockPx)), 3);
 			}
 
 			Game.ground.forEachAlive(function(ground){
@@ -70,48 +69,48 @@ var Game = {
 			}, 3000);
 		},
 		exploding: function(chance, pos){
-			if(Game.chance(chance)){
-				Game.effects.explode({ x: pos.x, y: pos.y }, Game.rand(2, 3));
+			if(Cjs.chance(chance)){
+				Game.effects.explode({ x: pos.x, y: pos.y }, Cjs.randInt(2, 3));
 			}
 		},
 		freezing: function(chance, pos){
-			if(Game.chance(chance)){
-				Game.effects.freeze({ x: pos.x, y: pos.y }, Game.rand(2, 4));
+			if(Cjs.chance(chance)){
+				Game.effects.freeze({ x: pos.x, y: pos.y }, Cjs.randInt(2, 4));
 			}
 		},
 		teleporting: function(chance){
-			if(Game.chance(chance)){
-				var gridPos = Game.findInMap(-1)[Game.rand(100, 300)];
+			if(Cjs.chance(chance)){
+				var gridPos = Game.findInMap(-1)[Cjs.randInt(100, 300)];
 
 				Game.effects.teleport({ x: Game.toPx(gridPos.x), y: Game.toPx(gridPos.y) });
 			}
 		},
 		bonus: function(chance, color, count){
-			if(Game.chance(chance)){
+			if(Cjs.chance(chance)){
 				if(color === 'rand') color = Cjs.randFromArr(Game.mineralColors);
 
-				Game.effects.getHullItem('mineral_'+ color, typeof count === 'number' ? count : (typeof count === 'object' ? Game.rand.apply(null, count) : 1));
+				Game.effects.getHullItem('mineral_'+ color, typeof count === 'number' ? count : (typeof count === 'object' ? Cjs.randInt.apply(null, count) : 1));
 			}
 		},
 		lava: function(chance, pos){
-			if(Game.chance(chance)){
+			if(Cjs.chance(chance)){
 				Game.entities.lava.create(pos.x, pos.y, 1);
 			}
 		},
 		poisonous_gas: function(chance, pos){
-			if(Game.chance(chance)){
+			if(Cjs.chance(chance)){
 				Game.entities.poisonous_gas.create(pos.x, pos.y, 1);
 			}
 		},
 		noxious_gas: function(chance, pos){
-			if(Game.chance(chance)){
+			if(Cjs.chance(chance)){
 				Game.entities.noxious_gas.create(pos.x, pos.y, 1);
 			}
 		},
 		lavaRelease: function(){
 			for(var x = Game.blockPx / 2; x < Game.phaser.config.width; x += Game.blockPx){
 				for(var y = Game.groundDepth - Game.viewHeight; y < Game.groundDepth; y += Game.blockPx){
-					if(Game.chance(90) && Game.mapPos(x, y) === 'ground_red'){
+					if(Cjs.chance(90) && Game.mapPos(x, y) === 'ground_red'){
 						Game.entities.ground.crush({ x: x, y: y });
 						Game.entities.lava.create(x, y, 1);
 					}
@@ -119,12 +118,12 @@ var Game = {
 			}
 		},
 		repair: function(chance){
-			if(Game.chance(chance)){
+			if(Cjs.chance(chance)){
 				Game.player.health = Game.player.max_health;
 			}
 
 			// else{
-			// 	Game.player.health = Math.min(Game.player.max_health, Game.player.health + Game.randFloat(1, Game.player.max_health / 2));
+			// 	Game.player.health = Math.min(Game.player.max_health, Game.player.health + Cjs.rand(1, Game.player.max_health / 2));
 			// }
 		},
 		disorient: function(duration){
@@ -149,7 +148,7 @@ var Game = {
 			Game.player.justHurt = true;
 			Game.player.justHurt_TO = setTimeout(function(){ Game.player.justHurt = false; }, 800);
 
-			Game.player.health = Math.max(0, Game.player.health - (variation ? Game.randFloat(amount - variation, amount + variation) : amount));
+			Game.player.health = Math.max(0, Game.player.health - (variation ? Cjs.rand(amount - variation, amount + variation) : amount));
 
 			if(Game.player.health <= 0) Game.player.kill(by);
 
@@ -160,10 +159,10 @@ var Game = {
 			else Game.hud.update();
 		},
 		refuel: function(amount, variation){
-			Game.player.fuel = Math.min(Game.player.max_fuel, Game.player.fuel + (variation ? Game.randFloat(amount - variation, amount + variation) : amount));
+			Game.player.fuel = Math.min(Game.player.max_fuel, Game.player.fuel + (variation ? Cjs.rand(amount - variation, amount + variation) : amount));
 		},
 		useFuel: function(amount, variation){
-			Game.player.fuel = Math.max(0, Game.player.fuel - (variation ? Game.randFloat(amount - variation, amount + variation) : amount));
+			Game.player.fuel = Math.max(0, Game.player.fuel - (variation ? Cjs.rand(amount - variation, amount + variation) : amount));
 
 			if(Game.player.fuel <= 0) Game.player.kill('fuel');
 
@@ -258,61 +257,6 @@ var Game = {
 		Game.notify(Game.achievements[name].text);
 
 		Game.applyEffects(Game.achievements[name].effects);
-	},
-	rand: function(min, max, excludes){
-		excludes = excludes || [];
-
-		var num = Math.round(Math.random() * (max - min) + min);
-
-		if(excludes.includes(num)) return Game.rand(min, max, excludes);
-
-		return num;
-	},
-	randFloat: function(min, max){
-		var num = Math.random() * (max - min) + min;
-
-		return num;
-	},
-	chance: function(chance){
-		if(chance === undefined){ chance = 50; }
-		return chance > 0 && (Math.random() * 100 <= chance);
-	},
-	weightedChance: function(items){
-		var sum = 0, rand = Math.random() * 100;
-
-		var itemNames = Object.keys(items);
-
-		for(var x = 0; x < itemNames.length; x++){
-			sum += items[itemNames[x]];
-
-			if(rand <= sum) return itemNames[x];
-		}
-	},
-	addRectangle: function(color, width, height){
-		var rect = Game.phaser.add.graphics(0, 0);
-		rect.beginFill(color, 1);
-		rect.drawRect(0, 0, width || Game.phaser.config.width, height || Game.phaser.height);
-		rect.endFill();
-
-		return rect;
-	},
-	fadeIn: function(length, color, delay){
-		if(delay === undefined) delay = 0;
-		if(color === undefined) color = 0x000000;
-		if(length === undefined) length = 500;
-
-		var curtain = Game.addRectangle(color);
-		curtain.alpha = 1;
-		Game.phaser.add.tween(curtain).to({ alpha: 0 }, length, Phaser.Easing.Quadratic.In, true, delay);
-	},
-	fadeOut: function(length, color, delay){
-		if(delay === undefined) delay = 0;
-		if(color === undefined) color = 0x000000;
-		if(length === undefined) length = 500;
-
-		var curtain = Game.addRectangle(color);
-		curtain.alpha = 0;
-		Game.phaser.add.tween(curtain).to({ alpha: 1 }, length, Phaser.Easing.Quadratic.In, true, delay);
 	},
 	normalizePosition: function(x, y){
 		x = Math.floor(x / (Game.blockPx / 2)) * (Game.blockPx / 2);
@@ -421,34 +365,10 @@ var Game = {
 	mapPos: function(x, y){
 		return Game.config.map[x] !== undefined ? (Game.config.map[x][y] !== undefined ? Game.config.map[x][y] : [-1, -1]) : [-1, -1];
 	},
-	mapPosName: function(x, y){
-		return Game.mapNames[Game.mapPos(x, y)[0]];
-	},
-	viewBufferPos: function(x, y){
-		return Game.config.viewBufferMap[x] !== undefined ? (Game.config.viewBufferMap[x][y] !== undefined ? Game.config.viewBufferMap[x][y] : [-1, -1]) : [-1, -1];
-	},
 	groundAt(pxX, pxY){
-		return Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0] > 3 ? Game.mapNames[Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0]] : undefined;
-	},
-	toId: function(name){
-		return Game.mapNames.indexOf(name);
-	},
-	toName: function(id){
-		return Game.mapNames[id];
-	},
-	toFixed: function(num, decimalPlaces, outputAsNumber){// no rounding, yay!
-		var floatRegex = new RegExp('(^[0-9]*)\\.?([0-9]{0,' + (decimalPlaces - 1|| -1) + '}[1-9]{1}(?=.+?0*$))?');
-		var output = String(num).match(floatRegex);
-		output = output[1] + (output[2] ? '.'+ output[2] : '');
+		var mapPos = Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0];
 
-		return outputAsNumber ? parseFloat(output) : output;
-	},
-	capitalize: function(str, recursive, split){
-		for(var i = 0, words = str.split(split || ' '); i < (recursive ? words.length : 1); i++){
-			words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
-		}
-
-		return words.join(' ');
+		return (typeof mapPos === 'string' && mapPos.startsWith('ground')) ? mapPos : undefined;
 	},
 	toGridPos: function(px){
 		return Math.round((px - 32) / 64);
@@ -456,8 +376,8 @@ var Game = {
 	toPx: function(gridPos){
 		return (gridPos * 64) + 32;
 	},
-	findInMap: function(nameOrId){
-		var found = [], id = typeof nameOrId === 'string' ? Game.mapNames.indexOf(nameOrId) : nameOrId;
+	findInMap: function(id){
+		var found = [];
 
 		for(var x = 0; x < Game.config.width; x++){
 			for(var y = 0; y < Game.config.depth; y++){
@@ -481,67 +401,31 @@ var Game = {
 			y: Game.toGridPos(pos.y)
 		};
 
-		var oldName = Game.mapPosName(gridPos.x, gridPos.y);
+		var oldName = Game.mapPos(gridPos.x, gridPos.y)[0];
 
-		Log()('setMapPos', gridPos, 'from', oldName, 'to', Game.mapNames[id], animation ? 'playing '+ animation : '');
+		Log()('setMapPos', gridPos, 'from', oldName, 'to', id, animation ? 'playing '+ animation : '');
 
 		Game.config.map[gridPos.x][gridPos.y][0] = id;
-		// Game.config.viewBufferMap[gridPos.x][gridPos.y][0] = id;
 
 		if(fromServer){
 			if(id === -1) Game.cleanGroundSpriteAt(pos.x, pos.y, oldName);
 
-			else Game.drawTile(gridPos.x, gridPos.y, Game.toName(id), animation);
+			else Game.drawTile(gridPos.x, gridPos.y, id, animation);
 		}
 
 		else WS.send({ command: 'player_set_map_position', pos: pos, id: id, animation: animation });
 	},
-	viewBufferMap: [],
-	viewBufferSize: 3,
-	adjustViewPosition: function(newX, newY, time, direction){
+	adjustViewPosition: function(newX, newY, time){
 		// Log()('adjustViewPosition');
 
-		// var oldX = Game.phaser.camera.x;
-		// var oldY = Game.phaser.camera.y;
-
-		// var left = Math.max(0, Game.toGridPos(oldX > newX ? newX : oldX) - Game.viewBufferSize);
-		// var top = Game.toGridPos(oldY > newY ? newY : oldY) - Game.viewBufferSize;
-		// var right = Math.min(Game.config.width, Game.toGridPos((oldX < newX ? newX : oldX) + Game.viewWidth) + Game.viewBufferSize);
-		// var bottom = Game.toGridPos((oldY < newY ? newY : oldY) + Game.viewHeight) + Game.viewBufferSize;
-
-		// left = Math.max(0, Math.min(Game.toPx(Game.config.width) - Game.viewWidth - 32, left));
 		newX = Math.max(0, Math.min(Game.toPx(Game.config.width) - Game.viewWidth - 32, newX));
 
-		// if(direction) Game.drawViewDirection(direction, Math.abs(oldX - newX), Math.abs(oldY - newY));
-		// Game.drawView(left, top, right, bottom);
-
-		// Game.drawCurrentView();
-		// Game.cleanupView();
-
 		Game.phaser.add.tween(Game.phaser.camera).to({ x: newX, y: newY }, time, Phaser.Easing.Sinusoidal.InOut, true);
-
-		// clearTimeout(Game.cleanup_TO);
-		// Game.cleanup_TO = setTimeout(function(){
-		// 	Game.cleanupView();
-		// }, time + 200);
 	},
 	drawCurrentView: function(){
 		Log()('drawCurrentView');
 
 		Game.drawView(Game.toGridPos(Game.phaser.camera.x) - Game.viewBufferSize, Game.toGridPos(Game.phaser.camera.y) - Game.viewBufferSize, Game.toGridPos(Game.phaser.camera.x + Game.viewWidth) + Game.viewBufferSize, Game.toGridPos(Game.phaser.camera.y + Game.viewHeight) + Game.viewBufferSize);
-	},
-	drawViewDirection: function(direction, distanceX, distanceY){
-		Log()('drawViewDirection');
-
-		var modX = (distanceX || 0) + Game.viewBufferSize;
-		var modY = (distanceY || 0) + Game.viewBufferSize;
-
-		var left = direction === 'left' ? Game.toGridPos(Game.phaser.camera.x) - modX : Game.toGridPos(Game.phaser.camera.x + Game.viewWidth);
-		var top = direction === 'up' ? Game.toGridPos(Game.phaser.camera.y) - modY : Game.toGridPos(Game.phaser.camera.y + Game.viewHeight);
-		var right = direction === 'right' ? Game.toGridPos(Game.phaser.camera.x + Game.viewWidth) + modX : Game.toGridPos(Game.phaser.camera.x + Game.viewWidth);
-		var bottom = direction === 'down' ? Game.toGridPos(Game.phaser.camera.y + Game.viewHeight) + modY : Game.toGridPos(Game.phaser.camera.y + Game.viewHeight);
-
-		Game.drawView(left, top, right, bottom);
 	},
 	drawView: function(left, top, right, bottom){
 		Log()('drawView');
@@ -558,14 +442,13 @@ var Game = {
 		for(var x = left; x <= right; x++){
 			for(var y = top; y <= bottom; y++){
 				var mapPos = Game.mapPos(x, y);
-				// var viewBufferPos = Game.viewBufferPos(x, y);
 
-				if((mapPos[0] < 0 && mapPos[1] < 0)) continue;//(viewBufferPos[0] === mapPos[0] && mapPos[1] < 0) ||
+				if((mapPos[0] < 0 && mapPos[1] < 0)) continue;
 
-				var mapPos_0_name = Game.toName(mapPos[0]);
+				var mapPos_0_name = mapPos[0];
 
 				if(mapPos[1] > 0){
-					Game.entities.mineral.create(Game.toPx(x), Game.toPx(y), Game.toName(mapPos[1]));
+					Game.entities.mineral.create(Game.toPx(x), Game.toPx(y), mapPos[1]);
 				}
 
 				Game.drawTile(x, y, mapPos_0_name);
@@ -586,19 +469,8 @@ var Game = {
 			Log()(line);
 		}
 	},
-	logViewBuffer: function(){
-		for(var y = 0; y <= Game.config.depth; ++y){
-			var line = '';
-
-			for(var x = 0; x <= Game.config.width; ++x){
-				line += (Game.config.viewBufferMap[x] && Game.config.viewBufferMap[x][y]) ? (String(Game.config.viewBufferMap[x][y][0]).replace('-1', '#')) : '#';
-			}
-
-			Log()(line);
-		}
-	},
 	drawTile: function(x, y, mapPos_0_name, animation){
-		if(!mapPos_0_name) return;
+		if(typeof mapPos_0_name !== 'string') return;
 
 		var entity;
 
@@ -646,41 +518,6 @@ var Game = {
 		else if(name === 'noxious_gas') this.noxious_gas.forEachAlive(cleanup);
 		else if(name === 'monsters') this.monsters.forEachAlive(cleanup);
 		else Log.warn('cleanGroundSpriteAt: no defined name to search for');
-	},
-	cleanupView: function(force){
-		if(!force && Game.phaser.tweens.isTweening(Game.phaser.camera)) return;
-		Log()('cleanupView');
-
-		var viewTop = this.phaser.camera.y;
-		var viewLeft = this.phaser.camera.x;
-		var viewBottom = this.phaser.camera.y + this.viewHeight;
-		var viewRight = this.phaser.camera.x + this.viewWidth;
-
-		function cleanup(entity){
-			var clean = false;
-
-			if(force) clean = true;
-			else{
-				var pxViewBuffer = Game.toPx(Game.viewBufferSize);
-
-				if(entity.y > viewBottom + pxViewBuffer || entity.y < viewTop - pxViewBuffer) clean = true;
-				else if(entity.x > viewRight + pxViewBuffer || entity.x < viewLeft - pxViewBuffer) clean = true;
-				// else if(Game.config.map[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)][0] === -1 && Game.config.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)][0] >= 0) clean = true;
-			}
-
-			if(clean){
-				// Log()('killing: ', entity);
-
-				// Game.config.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)][0] = -1;
-
-				entity.kill();
-			}
-		}
-
-		this.ground.forEachAlive(cleanup);
-		this.lava.forEachAlive(cleanup);
-		this.gas.forEachAlive(cleanup);
-		this.monsters.forEachAlive(cleanup);
 	},
 	dev: function(){
 		Game.player.credits = 999;

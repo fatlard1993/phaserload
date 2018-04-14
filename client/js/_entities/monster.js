@@ -1,12 +1,12 @@
-/* global Phaser, Game, Log */
+/* global Phaser, Game, Log, Cjs */
 
 Game.entities.monster = function(x, y, type){
 	Phaser.Sprite.call(this, Game.phaser, x, y, type +'_monster');
 
 	this.anchor.setTo(0.5, 0.5);
 
-	this.animations.add('sleeping', [0, 1, 2], Game.rand(2, 6), true);
-	this.animations.add('moving', [3, 4, 5], Game.rand(6, 12), true);
+	this.animations.add('sleeping', [0, 1, 2], Cjs.randInt(2, 6), true);
+	this.animations.add('moving', [3, 4, 5], Cjs.randInt(6, 12), true);
 };
 
 Game.entities.monster.prototype = Object.create(Phaser.Sprite.prototype);
@@ -52,21 +52,27 @@ Game.entities.monster.prototype.update = function(){
 
 	// var wantToMove = Math.abs(xDiff) > Math.abs(yDiff) ? xDirection : yDirection;
 
+	var surrounds = {
+		left: Game.mapPos(gridPos.x - 1, gridPos.y)[0],
+		top: Game.mapPos(gridPos.x, gridPos.y - 1)[0],
+		right: Game.mapPos(gridPos.x + 1, gridPos.y)[0],
+		bottom: Game.mapPos(gridPos.x, gridPos.y + 1)[0]
+	};
 	var canMove = {};
 
-	if(gridPos.x - 1 > 0 && (!Game.mapPosName(gridPos.x - 1, gridPos.y) || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[Game.mapPosName(gridPos.x - 1, gridPos.y)])){
+	if(gridPos.x - 1 > 0 && (surrounds.left === -1 || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.left])){
 		canMove.left = 1;
 	}
 
-	if(gridPos.x + 1 < Game.config.width && (!Game.mapPosName(gridPos.x + 1, gridPos.y) || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[Game.mapPosName(gridPos.x + 1, gridPos.y)])){
+	if(gridPos.x + 1 < Game.config.width && (surrounds.right === -1 || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.right])){
 		canMove.right = 1;
 	}
 
-	if(gridPos.y - 1 > 0 && (!Game.mapPosName(gridPos.x, gridPos.y - 1) || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[Game.mapPosName(gridPos.x, gridPos.y - 1)])){
+	if(gridPos.y - 1 > 0 && (surrounds.top === -1 || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.top])){
 		canMove.up = 1;
 	}
 
-	if(gridPos.y + 1 > 0 && (!Game.mapPosName(gridPos.x, gridPos.y + 1) || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[Game.mapPosName(gridPos.x, gridPos.y + 1)])){
+	if(gridPos.y + 1 > 0 && (surrounds.bottom === -1 || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.bottom])){
 		canMove.down = 1;
 	}
 
@@ -103,9 +109,9 @@ Game.entities.monster.prototype.update = function(){
 		y: Game.toGridPos(moving.y)
 	};
 
-	var monsterCollision = Game.mapPosName(newGridPos.x, newGridPos.y);
+	var monsterCollision = Game.mapPos(newGridPos.x, newGridPos.y)[0];
 
-	if(monsterCollision && monsterCollision !== 'red_monster' && monsterCollision !== 'purple_monster'){
+	if(typeof monsterCollision === 'string' && monsterCollision !== 'red_monster' && monsterCollision !== 'purple_monster'){
 		Log()('monsterCollision', monsterCollision);
 
 		if(monsterCollision === 'lava'){
@@ -131,6 +137,6 @@ Game.entities.monster.prototype.update = function(){
 
 		Game.phaser.add.tween(this).to(moving, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, moveDelay);
 
-		Game.setMapPos(moving, Game.mapNames.indexOf('monster'));
+		Game.setMapPos(moving, 'monster');
 	}
 };

@@ -15,8 +15,6 @@ Game.entities.player.create = function(settings){
 
 	playerSprite.animations.play('normal');
 
-	// Game.config.map[settings.position.x][1][0] = Game.mapNames.indexOf('player');
-
 	Game.config.defaultPlayerScale = playerSprite.scale.x;
 
 	Game.playersGroup.add(playerSprite);
