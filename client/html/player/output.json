@@ -9,6 +9,7 @@
 	],
 	"includes": [
 		"_main.js",
+		"_phaser.js",
 		"_game.js",
 		"_entities.js",
 		"_states.js",
