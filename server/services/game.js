@@ -91,7 +91,7 @@ var Game = {
 	toPx: function(gridPos){
 		return (gridPos * 64) + 32;
 	},
-	generateMap2: function(mode, worldPack, worldIndex){
+	generateMap: function(mode, worldPack, worldIndex){
 		Log()(mode, worldPack, worldIndex);
 
 		var mapData = Object.assign(Modes.list[mode], {

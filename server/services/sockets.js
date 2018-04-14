@@ -60,7 +60,7 @@ var Sockets = {
 							position: {}
 						},
 						genWorld: function(worldIndex){
-							this.mapData = Game.generateMap2('default', 'default', worldIndex || 'rand');
+							this.mapData = Game.generateMap('default', 'default', worldIndex || 'rand');
 
 							this.spaceco.position.x = Game.rand(3, this.mapData.width - 3);
 
