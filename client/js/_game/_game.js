@@ -193,7 +193,7 @@ var Game = {
 			if(isMineral) weight = densityMod;
 			else weight = 0.07 + densityMod;
 
-			if(Game.player.hull.space < (weight * count)) return;
+			if(Game.player.hull.space < (weight * count)) return -1;
 
 			Game.player.hull.space -= (weight * count);
 
@@ -219,6 +219,9 @@ var Game = {
 			}
 
 			Game.player.move('teleport', null, teleportPos);
+		},
+		interactable: function(){
+			//todo notify and provide a custom interaction screen for things like bomb disarm, loot drop, responder disarm
 		}
 	},
 	applyEffects: function(effects, pos){
