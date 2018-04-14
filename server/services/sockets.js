@@ -62,9 +62,9 @@ var Sockets = {
 						genWorld: function(worldIndex){
 							this.mapData = Game.generateMap('default', 'default', worldIndex || 'rand');
 
-							this.spaceco.position.x = Game.rand(3, this.mapData.width - 3);
+							this.spaceco.position.x = Cjs.randInt(3, this.mapData.width - 3);
 
-							var partCount = Game.rand(13, 21), part, x;
+							var partCount = Cjs.randInt(13, 21), part, x;
 							var playerNames = Object.keys(this.players), playerCount = playerNames.length;
 
 							for(x = 0; x < partCount; ++x){
@@ -75,7 +75,7 @@ var Sockets = {
 
 							if(playerCount){
 								for(x = 0; x < playerCount; ++x){
-									this.players[playerNames[x]].position.x = Game.rand(1, this.mapData.width - 1);
+									this.players[playerNames[x]].position.x = Cjs.randInt(1, this.mapData.width - 1);
 									this.players[playerNames[x]].position.y = 1;
 								}
 
@@ -86,7 +86,7 @@ var Sockets = {
 							this.players[playerName] = {
 								name: playerName,
 								position: {
-									x: Game.rand(1, this.mapData.width - 1),
+									x: Cjs.randInt(1, this.mapData.width - 1),
 									y: 1
 								},
 								hull: {},
