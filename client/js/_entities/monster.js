@@ -116,17 +116,17 @@ Game.entities.monster.prototype.update = function(){
 
 		if(monsterCollision === 'lava'){
 			Game.setMapPos({ x: this.x, y: this.y }, -1);
-			this.kill();
+			this.destroy();
 		}
 
 		else if(monsterCollision === 'poisonous_gas'){
 			Game.setMapPos({ x: this.x, y: this.y }, -1);
-			this.kill();
+			this.destroy();
 		}
 
 		else if(monsterCollision === 'noxious_gas'){
 			Game.setMapPos({ x: this.x, y: this.y }, -1);
-			this.kill();
+			this.destroy();
 		}
 	}
 

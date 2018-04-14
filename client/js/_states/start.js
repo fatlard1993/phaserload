@@ -378,7 +378,7 @@ Game.states.start.prototype.create = function(){
 
 		WS.send({ command: 'player_death', by: by, at: Game.loseDepth });
 
-		Game.player.sprite.kill();
+		Game.player.sprite.destroy();
 
 		return Game.phaser.time.events.add(200, function(){ Game.phaser.state.start('end'); }, this);
 	};
@@ -1251,7 +1251,7 @@ Game.states.start.prototype.create = function(){
 			Game.spaceco.dead = 1;
 
 			setTimeout(function(){
-				Game.spaceco.sprite.kill();
+				Game.spaceco.sprite.destroy();
 
 				Game.notify('Spaceco was killed\nby '+ by);
 			}, 400);
@@ -1318,44 +1318,6 @@ Game.states.start.prototype.update = function(){
 		else if(playerCollision === 'red_monster') Game.effects.hurt('red_monster', 8, 3);
 		else if(playerCollision === 'purple_monster') Game.effects.hurt('purple_monster', 6, 2);
 	}
-
-	// Game.lava.forEachAlive(function checkLava(lava){
-	// 	if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, lava.x, lava.y) < Game.blockPx/2){
-	// 		Game.effects.hurt('lava', 12, 3);
-	// 	}
-
-	// 	if(Game.phaser.math.distance(Game.spaceco.sprite.x, Game.spaceco.sprite.y, lava.x, lava.y) < Game.blockPx){
-	// 		Game.spaceco.hurt(1, 'lava');
-	// 	}
-
-	// 	Game.monsters.forEachAlive(function checkLava_monsters(monster){
-	// 		if(Game.phaser.math.distance(monster.x, monster.y, lava.x, lava.y) < Game.blockPx){
-	// 			monster.kill();
-
-	// 			Game.setMapPos({ x: monster.x, y: monster.y }, -1);
-	// 		}
-	// 	}, this);
-	// }, this);
-
-	// Game.gas.forEachAlive(function checkGas(gas){
-	// 	if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, gas.x, gas.y) < Game.blockPx/2){
-	// 		Game.effects.hurt('gas', 10, 5);
-	// 	}
-
-	// 	Game.monsters.forEachAlive(function checkGas_monsters(monster){
-	// 		if(Game.phaser.math.distance(monster.x, monster.y, gas.x, gas.y) < Game.blockPx){
-	// 			monster.kill();
-
-	// 			Game.setMapPos({ x: monster.x, y: monster.y }, -1);
-	// 		}
-	// 	}, this);
-	// }, this);
-
-	// Game.monsters.forEachAlive(function checkMonsters(monster){
-	// 	if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, monster.x, monster.y) < Game.blockPx/2){
-	// 		Game.effects.hurt('monster', 8, 3);
-	// 	}
-	// }, this);
 
 	if(Game.spaceco.damage <= 10 && !Game.phaser.tweens.isTweening(Game.spaceco.sprite)){
 		var gridPos = {

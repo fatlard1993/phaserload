@@ -47,7 +47,7 @@ var Game = {
 
 			Game.monsters.forEachAlive(function(monster){
 				if(Game.phaser.math.distance(pos.x, pos.y, monster.x, monster.y) < Game.blockPx * radius){
-					monster.kill();
+					monster.destroy();
 
 					Game.setMapPos({ x: monster.x, y: monster.y }, -1);
 				}
@@ -58,7 +58,7 @@ var Game = {
 
 			Game.lava.forEachAlive(function(lava){
 				if(Game.phaser.math.distance(pos.x, pos.y, lava.x, lava.y) < Game.blockPx * radius){
-					lava.kill();
+					lava.destroy();
 
 					Game.entities.ground.create(lava.x, lava.y);
 				}
@@ -508,7 +508,7 @@ var Game = {
 
 				if(name.startsWith('ground')) entity.animations.play('crush');
 
-				else entity.kill();
+				else entity.destroy();
 			}
 		}
 

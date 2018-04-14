@@ -230,7 +230,7 @@ function Load(){
 		}
 
 		else if(data.command === 'player_leave'){
-			Game.players[data.name].sprite.kill();
+			Game.players[data.name].sprite.destroy();
 
 			delete Game.players[data.name];
 		}
@@ -243,10 +243,10 @@ function Load(){
 
 			Game.player.position = data.players[Player.name].position;
 
-			Game.ground.forEachAlive(function(ground){ ground.kill(); });
-			Game.minerals.forEachAlive(function(mineral){ mineral.kill(); });
-			Game.lava.forEachAlive(function(lava){ lava.kill(); });
-			Game.gas.forEachAlive(function(gas){ gas.kill(); });
+			Game.ground.forEachAlive(function(ground){ ground.destroy(); });
+			Game.minerals.forEachAlive(function(mineral){ mineral.destroy(); });
+			Game.lava.forEachAlive(function(lava){ lava.destroy(); });
+			Game.gas.forEachAlive(function(gas){ gas.destroy(); });
 
 			Game.config = Object.assign(Game.config, data.mapData);
 

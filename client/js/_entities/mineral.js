@@ -31,7 +31,7 @@ Game.entities.mineral.create = function(x, y, type){
 Game.entities.mineral.crush = function(pos){
 	Game.minerals.forEachAlive(function(mineral){
 		if(mineral.x === pos.x && mineral.y === pos.y){
-			mineral.kill();
+			mineral.destroy();
 		}
 	});
 };
@@ -58,7 +58,7 @@ Game.entities.mineral.collect = function(pos){
 
 				WS.send({ command: 'crush_mineral', pos: pos });
 
-				mineral.kill();
+				mineral.destroy();
 			}, animationTime);
 		}
 	});
