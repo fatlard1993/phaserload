@@ -83,15 +83,15 @@ Game.entities.poisonous_gas.spread = function(x, y, poisonous_gas){
 			top: Game.mapPos(gridPos.x, gridPos.y - 1)[0]
 		};
 
-		if(gridPos.x - 1 > 0 && (!surrounds.left || !!{ purple_monster: 1, red_monster: 1 }[surrounds.left])){
+		if(gridPos.x - 1 > 0 && (surrounds.left === -1 || { purple_monster: 1, red_monster: 1 }[surrounds.left])){
 			Game.entities.poisonous_gas.create(poisonous_gas.x - Game.blockPx, poisonous_gas.y, 1, poisonous_gas.spreadChance);
 		}
 
-		if(gridPos.x + 1 < Game.config.width && (!surrounds.right || !!{ purple_monster: 1, red_monster: 1 }[surrounds.right])){
+		if(gridPos.x + 1 < Game.config.width && (surrounds.right === -1 || { purple_monster: 1, red_monster: 1 }[surrounds.right])){
 			Game.entities.poisonous_gas.create(poisonous_gas.x + Game.blockPx, poisonous_gas.y, 1, poisonous_gas.spreadChance);
 		}
 
-		if(gridPos.y - 1 > 0 && (!surrounds.top || !!{ purple_monster: 1, red_monster: 1 }[surrounds.top])){
+		if(gridPos.y - 1 > 0 && (surrounds.top === -1 || { purple_monster: 1, red_monster: 1 }[surrounds.top])){
 			Game.entities.poisonous_gas.create(poisonous_gas.x, poisonous_gas.y - Game.blockPx, 1, poisonous_gas.spreadChance);
 		}
 
