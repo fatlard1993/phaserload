@@ -22,67 +22,51 @@ var Game = {
 	entities: {},
 	effects: {
 		explode: function(pos, radius){
-			var distanceFromPlayer = Game.phaser.math.distance(pos.x, pos.y, Game.player.sprite.x, Game.player.sprite.y);
+			var distanceFromPlayer = Game.phaser.math.distance(pos.x, pos.y, Game.toGridPos(Game.player.sprite.x), Game.toGridPos(Game.player.sprite.y));
 
-			var intensity = Math.max(1, (radius * 2) + (radius - (distanceFromPlayer / Game.blockPx)));
+			var intensity = Math.max(1, (radius * 2) + (radius - distanceFromPlayer));
 			Game.phaser.camera.shake(intensity / 1000, 1000);
 
-			if(!Game.player.isDisoriented && (distanceFromPlayer / Game.blockPx) < 10) Game.phaser.camera.flash(undefined, 1000, 1, 0.3);
+			if(!Game.player.isDisoriented && distanceFromPlayer < 10) Game.phaser.camera.flash(undefined, 1000, 1, 0.3);
 
 			WS.send({ command: 'explosion', pos: pos, radius: radius });
 
-			if(Game.phaser.math.distance(pos.x, pos.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) < Game.blockPx * (radius + 1)){
-				Game.spaceco.hurt((radius + 1) - (Game.phaser.math.distance(pos.x, pos.y, Game.spaceco.sprite.x, Game.spaceco.sprite.y) / Game.blockPx), 'an explosion');
+			if(Game.phaser.math.distance(pos.x, pos.y, Game.toGridPos(Game.spaceco.sprite.x), Game.toGridPos(Game.spaceco.sprite.y)) < Game.blockPx * (radius + 1)){
+				Game.spaceco.hurt((radius + 1) - (Game.phaser.math.distance(pos.x, pos.y, Game.toGridPos(Game.spaceco.sprite.x), Game.toGridPos(Game.spaceco.sprite.y)) / Game.blockPx), 'an explosion');
 			}
 
-			if(distanceFromPlayer < Game.blockPx * radius){
-				Game.effects.hurt('explosion', Cjs.rand(radius, radius * 2) * (radius - (distanceFromPlayer / Game.blockPx)), 3);
+			if(distanceFromPlayer < radius){
+				Game.effects.hurt('explosion', Cjs.rand(radius, radius * 2) * (radius - distanceFromPlayer), 3);
 			}
 
-			Game.ground.forEachAlive(function(ground){
-				if(Game.phaser.math.distance(pos.x, pos.y, ground.x, ground.y) < Game.blockPx * radius){
-					Game.entities.ground.crush({ x: ground.x, y: ground.y });
-				}
-			});
+			var surroundingGround = Game.getSurroundingRadius(pos, radius);
 
-			Game.monsters.forEachAlive(function(monster){
-				if(Game.phaser.math.distance(pos.x, pos.y, monster.x, monster.y) < Game.blockPx * radius){
-					monster.destroy();
-
-					Game.setMapPos({ x: monster.x, y: monster.y }, -1);
-				}
+			surroundingGround.forEach(function(pos){
+				Game.setMapPos(pos);
 			});
 		},
 		freeze: function(pos, radius){
-			if(!Game.player.isDisoriented) Game.phaser.camera.fade(0xFFFFFF, 3000, 1, 0.1);
+			if(!Game.player.isDisoriented) Game.phaser.camera.flash(undefined, 1000, 1, 0.1);
 
-			Game.lava.forEachAlive(function(lava){
-				if(Game.phaser.math.distance(pos.x, pos.y, lava.x, lava.y) < Game.blockPx * radius){
-					lava.destroy();
+			var surroundingGround = Game.getSurroundingRadius(pos, radius);
 
-					Game.entities.ground.create(lava.x, lava.y);
-				}
+			surroundingGround.forEach(function(pos){
+				var ground = Game.mapPos(pos).ground;
+
+				if(ground.name === 'lava') Game.setMapPos(pos, 'ground_'+ Cjs.weightedChance({ white: 90, red: 10 }));
 			});
-
-			setTimeout(function(){
-				if(!Game.player.isDisoriented) Game.phaser.camera.flash(undefined, 1000, 1, 0.1);
-			}, 3000);
 		},
 		exploding: function(chance, pos){
-			if(Cjs.chance(chance)){
-				Game.effects.explode({ x: pos.x, y: pos.y }, Cjs.randInt(2, 3));
-			}
+			if(Cjs.chance(chance)) Game.effects.explode(pos, Cjs.randInt(2, 3));
 		},
 		freezing: function(chance, pos){
-			if(Cjs.chance(chance)){
-				Game.effects.freeze({ x: pos.x, y: pos.y }, Cjs.randInt(2, 4));
-			}
+			if(Cjs.chance(chance)) Game.effects.freeze(pos, Cjs.randInt(2, 4));
 		},
 		teleporting: function(chance){
 			if(Cjs.chance(chance)){
-				var gridPos = Game.findInMap(-1)[Cjs.randInt(100, 300)];
+				var pos = Cjs.randFromArr(Game.findGround('ground_teal'));//todo use dynamic ground name
 
-				Game.effects.teleport({ x: Game.toPx(gridPos.x), y: Game.toPx(gridPos.y) });
+				if(pos) Game.effects.teleport(pos);
 			}
 		},
 		bonus: function(chance, color, count){
@@ -93,38 +77,27 @@ var Game = {
 			}
 		},
 		lava: function(chance, pos){
-			if(Cjs.chance(chance)){
-				Game.entities.lava.create(pos.x, pos.y, 1);
-			}
+			if(Cjs.chance(chance)) Game.setMapPos(pos, 'lava');
 		},
 		poisonous_gas: function(chance, pos){
-			if(Cjs.chance(chance)){
-				Game.entities.poisonous_gas.create(pos.x, pos.y, 1);
-			}
+			if(Cjs.chance(chance)) Game.setMapPos(pos, 'poisonous_gas', 'fill');
 		},
 		noxious_gas: function(chance, pos){
-			if(Cjs.chance(chance)){
-				Game.entities.noxious_gas.create(pos.x, pos.y, 1);
-			}
+			if(Cjs.chance(chance)) Game.entities.noxious_gas.create(pos.x, pos.y, 100);
 		},
 		lavaRelease: function(){
-			for(var x = Game.blockPx / 2; x < Game.phaser.config.width; x += Game.blockPx){
-				for(var y = Game.groundDepth - Game.viewHeight; y < Game.groundDepth; y += Game.blockPx){
-					if(Cjs.chance(90) && Game.mapPos(x, y) === 'ground_red'){
-						Game.entities.ground.crush({ x: x, y: y });
-						Game.entities.lava.create(x, y, 1);
+			for(var x = 0; x < Game.config.width; ++x){
+				for(var y = Game.config.depth - Game.toGridPos(Game.viewHeight); y < Game.config.depth; ++y){
+					if(Cjs.chance(90) && Game.mapPos(x, y).ground.name === 'ground_red'){
+						Game.setMapPos({ x: x, y: y }, 'lava');
 					}
 				}
 			}
 		},
-		repair: function(chance){
-			if(Cjs.chance(chance)){
-				Game.player.health = Game.player.max_health;
-			}
+		repair: function(chance, variation){
+			if(!Cjs.chance(chance)) return;
 
-			// else{
-			// 	Game.player.health = Math.min(Game.player.max_health, Game.player.health + Cjs.rand(1, Game.player.max_health / 2));
-			// }
+			Game.player.health = Game.effects.heal(Game.player.max_health, variation);
 		},
 		disorient: function(duration){
 			if(Game.player.isDisoriented) clearTimeout(Game.player.isDisoriented_TO);
@@ -141,6 +114,13 @@ var Game = {
 
 				Game.phaser.camera.flash(undefined, 1000, 1, 0.2);
 			}, duration);
+		},
+		heal: function(amount, variation){
+			amount = amount || Game.player.max_health;
+
+			Game.player.health = Math.min(Game.player.max_health, Game.player.health + (variation ? Cjs.rand(amount - variation, amount + variation) : amount));
+
+			Game.hud.update();
 		},
 		hurt: function(by, amount, variation){
 			if(Game.player.justHurt) return; //todo make this depend on what the damage is from
@@ -193,13 +173,15 @@ var Game = {
 			if(isMineral) weight = densityMod;
 			else weight = 0.07 + densityMod;
 
-			if(Game.player.hull.space < (weight * count)) return -1;
+			if(Game.player.hull.space < (weight * count)) return false;
 
 			Game.player.hull.space -= (weight * count);
 
 			Game.player.hull[itemName] = Game.player.hull[itemName] !== undefined ? Game.player.hull[itemName] : 0;
 
 			Game.player.hull[itemName] += count;
+
+			return true;
 		},
 		teleport: function(pos){
 			var teleportPos;
@@ -207,11 +189,11 @@ var Game = {
 			Game.player.sprite.animations.play('teleporting');
 
 			if(pos === 'spaceco'){
-				teleportPos = { x: Game.spaceco.sprite.x, y: Game.spaceco.sprite.y };
+				teleportPos = Game.toGridPos(Game.spaceco.sprite);
 			}
 
 			else if(pos === 'responder'){
-				teleportPos = { x: Game.player.responder.x, y: Game.player.responder.y };
+				teleportPos = Game.toGridPos(Game.player.responder);
 			}
 
 			else if(typeof pos === 'object'){
@@ -220,19 +202,40 @@ var Game = {
 
 			Game.player.move('teleport', null, teleportPos);
 		},
-		interactable: function(){
+		intractable: function(){
 			//todo notify and provide a custom interaction screen for things like bomb disarm, loot drop, responder disarm
+		},
+		collect: function(itemSprite){
+			if(itemSprite.startsWith('mineral_')){
+				var gotIt = Game.effects.getHullItem(itemSprite);
+
+				if(!gotIt) return;
+			}
+
+			var animationTime = 200 + Math.ceil(Game.phaser.math.distance(Game.phaser.camera.x, Game.phaser.camera.y, itemSprite.x, itemSprite.y));
+
+			Game.phaser.add.tween(itemSprite).to({ x: Game.phaser.camera.x, y: Game.phaser.camera.y }, animationTime, Phaser.Easing.Quadratic.Out, true);
+
+			setTimeout(itemSprite.kill, animationTime);
+
+		},
+		dropItem: function(itemName, pos){
+			//todo create item at pos
 		}
 	},
 	applyEffects: function(effects, pos){
+		pos = pos && pos.x && pos.y ? pos : Game.toGridPos(Game.player.sprite);
+
 		for(var x = 0; x < effects.length; ++x){
-			var params = effects[x].split(':~:');
+			var params = effects[x].split(':~:'), effect = params.shift();
 
-			if({ poisonous_gas: 1, noxious_gas: 1, lava: 1, exploding: 1, freezing: 1 }[params[0]]) params[2] = pos;
+			if({ poisonous_gas: 1, noxious_gas: 1, lava: 1, exploding: 1, freezing: 1, dropItem: 1 }[effect]) params[1] = pos;
 
-			else if({ bonus: 1 }[params[0]]) params[3] = JSON.parse(params[3]);
+			else if({ bonus: 1 }[effect]) params[3] = JSON.parse(params[2]);
 
-			Game.effects[params.shift()].apply(null, params);
+			else if({ collect: 1 }[effect]) params[1] = arguments[2];
+
+			Game.effects[effect].apply(null, params);
 		}
 	},
 	achievements: {
@@ -365,26 +368,69 @@ var Game = {
 
 		Game.player.drillSpeedMod = drillSpeedMod;
 	},
-	mapPos: function(x, y){
-		return Game.config.map[x] !== undefined ? (Game.config.map[x][y] !== undefined ? Game.config.map[x][y] : [-1, -1]) : [-1, -1];
-	},
-	groundAt(pxX, pxY){
-		var mapPos = Game.mapPos(Game.toGridPos(pxX), Game.toGridPos(pxY))[0];
+	getSurrounds: function(pos, directionList, baseFilter){
+		directionList = directionList || { left: 1, right: 1, farLeft: 1, farRight: 1, top: 1, topLeft: 1, topRight: 1, bottom: 1, bottomLeft: 1, bottomRight: 1 };
 
-		return (typeof mapPos === 'string' && mapPos.startsWith('ground')) ? mapPos : undefined;
+		var directions = Object.keys(directionList), count = directions.length, direction, xMod, yMod, ground;
+
+		for(var x = 0; x < count; ++x){
+			direction = directions[x];
+			xMod = 0;
+			yMod = 0;
+
+			if({ left: 1, topLeft: 1, bottomLeft: 1, farLeft: 1 }[direction]) --xMod;
+			if({ right: 1, topRight: 1, bottomRight: 1, farRight: 1 }[direction]) ++xMod;
+			if({ farLeft: 1 }[direction]) --xMod;
+			if({ farRight: 1 }[direction]) ++xMod;
+			if({ top: 1, topLeft: 1, topRight: 1 }[direction]) --yMod;
+			if({ bottom: 1, bottomLeft: 1, bottomRight: 1 }[direction]) ++yMod;
+
+			ground = Game.mapPos(pos.x + xMod, pos.y + yMod).ground;
+
+			directionList[direction] = baseFilter ? (baseFilter === ground.base ? ground.name : undefined) : ground.name;
+		}
+
+		return directionList;
 	},
-	toGridPos: function(px){
-		return Math.round((px - 32) / 64);
+	getSurroundingRadius: function(pos, radius){
+		var x_from = pos.x - radius, x_to = pos.x + radius;
+		var y_from = pos.y - radius, y_to = pos.y + radius;
+		var out = [];
+
+		for(var x = x_from; x <= x_to; ++x){
+			for(var y = y_from; y <= y_to; ++y){
+				out.push({ x: x, y: y });
+			}
+		}
+
+		return out;
 	},
-	toPx: function(gridPos){
-		return (gridPos * 64) + 32;
+	mapPos: function(x, y){
+		if(typeof x === 'object'){
+			y = x.y;
+			x = x.x;
+		}
+
+		return Game.config.map[x] !== undefined ? (Game.config.map[x][y] !== undefined ? Game.config.map[x][y] : Game.config.map[0][0]) : Game.config.map[0][0];
 	},
-	findInMap: function(id){
+	toGridPos: function(pos){
+		if(typeof pos === 'object') pos = { x: Math.round((pos.x - 32) / 64), y: Math.round((pos.y - 32) / 64) };
+		else pos = Math.round((pos - 32) / 64);
+
+		return pos;
+	},
+	toPx: function(pos){
+		if(typeof pos === 'object') pos = { x: (pos.x * 64) + 32, y: (pos.y * 64) + 32 };
+		else pos = (pos * 64) + 32;
+
+		return pos;
+	},
+	findGround: function(name){
 		var found = [];
 
 		for(var x = 0; x < Game.config.width; x++){
 			for(var y = 0; y < Game.config.depth; y++){
-				if(Game.config.map[x][y][0] === id || Game.config.map[x][y][1] === id) found.push({ x: x, y: y });
+				if(Game.mapPos(x, y).ground.name === name) found.push({ x: x, y: y });
 			}
 		}
 
@@ -398,25 +444,41 @@ var Game = {
 		if(data.invertTexture) Game.players[data.player].sprite.scale.x = -Game.config.defaultPlayerScale;
 		else Game.players[data.player].sprite.scale.x = Game.config.defaultPlayerScale;
 	},
-	setMapPos: function(pos, id, fromServer, animation){
-		var gridPos = {
-			x: Game.toGridPos(pos.x),
-			y: Game.toGridPos(pos.y)
-		};
+	setMapPos: function(pos, id, animation, fromServer){
+		var oldGround = Game.mapPos(pos).ground, drawDelay = 0, drawVar;
 
-		var oldName = Game.mapPos(gridPos.x, gridPos.y)[0];
+		Log()('setMapPos', pos, 'from', oldGround.name, 'to', id, animation ? 'playing '+ animation : '');
 
-		Log()('setMapPos', gridPos, 'from', oldName, 'to', id, animation ? 'playing '+ animation : '');
+		if(id === undefined || (oldGround.sprite && oldGround.sprite.alive)){
+			if(oldGround.base === 'ground'){
+				drawDelay = Game.config.densities[oldGround.variant];
 
-		Game.config.map[gridPos.x][gridPos.y][0] = id;
+				oldGround.sprite.tween = Game.phaser.add.tween(oldGround.sprite).to({ alpha: 0 }, drawDelay, Phaser.Easing.Cubic.In, true);
+				oldGround.sprite.animations.play('crush');
+			}
 
-		if(fromServer){
-			if(id === -1) Game.cleanGroundSpriteAt(pos.x, pos.y, oldName);
+			else if({ lava: 1, noxious_gas: 1, poisonous_gas: 1 }[oldGround.name]){
+				oldGround.sprite.kill();
+			}
 
-			else Game.drawTile(gridPos.x, gridPos.y, id, animation);
+			else if(oldGround.base === 'monster'){
+				//
+			}
+
+			else oldGround.sprite.destroy();
 		}
 
-		else WS.send({ command: 'player_set_map_position', pos: pos, id: id, animation: animation });
+		if({ lava: 1, noxious_gas: 1, poisonous_gas: 1 }[id]) drawVar = oldGround.sprite.spreadChance;
+
+		setTimeout(function(){
+			if(id) Game.drawTile(pos.x, pos.y, id, animation, drawVar);
+
+			else{
+				oldGround.sprite = oldGround.base = oldGround.variant = oldGround.name = undefined;
+			}
+		}, drawDelay + 100);
+
+		if(!fromServer) WS.send({ command: 'player_set_map_position', pos: pos, id: id, animation: animation });
 	},
 	adjustViewPosition: function(newX, newY, time){
 		// Log()('adjustViewPosition');
@@ -425,18 +487,13 @@ var Game = {
 
 		Game.phaser.add.tween(Game.phaser.camera).to({ x: newX, y: newY }, time, Phaser.Easing.Sinusoidal.InOut, true);
 	},
-	drawCurrentView: function(){
-		Log()('drawCurrentView');
-
-		Game.drawView(Game.toGridPos(Game.phaser.camera.x) - Game.viewBufferSize, Game.toGridPos(Game.phaser.camera.y) - Game.viewBufferSize, Game.toGridPos(Game.phaser.camera.x + Game.viewWidth) + Game.viewBufferSize, Game.toGridPos(Game.phaser.camera.y + Game.viewHeight) + Game.viewBufferSize);
-	},
-	drawView: function(left, top, right, bottom){
+	drawMap: function(){
 		Log()('drawView');
 
-		if(top - 3 < 0) top = 0;
-		if(left - 3 < 0) left = 0;
-		if(bottom + 3 > Game.config.depth) bottom = Game.config.depth;
-		if(right + 3 > Game.config.width) right = Game.config.width;
+		var top = 0;
+		var left = 0;
+		var bottom = Game.config.depth;
+		var right = Game.config.width;
 
 		Log()('drawing '+ (((bottom - top) + 1) * ((right - left) + 1)) +' sprites, from: x'+ left +' y'+ top +' TO x'+ right +' y'+ bottom);
 
@@ -446,31 +503,15 @@ var Game = {
 			for(var y = top; y <= bottom; y++){
 				var mapPos = Game.mapPos(x, y);
 
-				if((mapPos[0] < 0 && mapPos[1] < 0)) continue;
+				if(mapPos.ground.name) Game.drawTile(x, y, mapPos.ground.name);
 
-				var mapPos_0_name = mapPos[0];
+				if(mapPos.items.names[0]) Game.entities.mineral.create(x, y, mapPos.items.names[0]);
 
-				if(mapPos[1] > 0){
-					Game.entities.mineral.create(Game.toPx(x), Game.toPx(y), mapPos[1]);
-				}
-
-				Game.drawTile(x, y, mapPos_0_name);
 				drawn++;
 			}
 		}
 
 		Log()('drew: ', drawn);
-	},
-	logMap: function(){
-		for(var y = 0; y <= Game.config.depth; ++y){
-			var line = '';
-
-			for(var x = 0; x <= Game.config.width; ++x){
-				line += (Game.config.map[x] && Game.config.map[x][y]) ? (String(Game.config.map[x][y][0]).replace('-1', '#')) : '#';
-			}
-
-			Log()(line);
-		}
 	},
 	drawTile: function(x, y, mapPos_0_name, animation){
 		if(typeof mapPos_0_name !== 'string') return;
@@ -478,49 +519,28 @@ var Game = {
 		var entity;
 
 		if(mapPos_0_name.startsWith('ground')){
-			entity = Game.entities.ground.create(Game.toPx(x), Game.toPx(y), mapPos_0_name);
+			entity = Game.entities.ground.create(x, y, mapPos_0_name);
 		}
 
 		else if(mapPos_0_name === 'lava'){
-			entity = Game.entities.lava.create(Game.toPx(x), Game.toPx(y));
+			entity = Game.entities.lava.create(x, y, animation ? (arguments[4] || 100) : undefined);
 		}
 
 		else if(mapPos_0_name === 'poisonous_gas'){
-			entity = Game.entities.poisonous_gas.create(Game.toPx(x), Game.toPx(y));
+			entity = Game.entities.poisonous_gas.create(x, y, animation ? (arguments[4] || 100) : undefined);
 		}
 
 		else if(mapPos_0_name === 'noxious_gas'){
-			entity = Game.entities.noxious_gas.create(Game.toPx(x), Game.toPx(y));
+			entity = Game.entities.noxious_gas.create(x, y, animation ? (arguments[4] || 100) : undefined);
 		}
 
 		else if(mapPos_0_name.endsWith('monster')){
-			entity = Game.entities.monster.create(Game.toPx(x), Game.toPx(y), mapPos_0_name.replace('_monster', ''));
+			entity = Game.entities.monster.create(x, y, mapPos_0_name.replace('_monster', ''));
 		}
+
+		Game.config.map[x][y].ground.sprite = entity;
 
 		if(animation) entity.animations.play(animation);
-
-		// Game.config.viewBufferMap[x][y] = Game.config.map[x][y];
-	},
-	cleanGroundSpriteAt: function(x, y, name){
-		Log()('cleanGroundSpriteAt', x, y);
-
-		function cleanup(entity){
-			if(entity.x === x && entity.y === y){
-				// Game.config.viewBufferMap[Game.toGridPos(entity.x)][Game.toGridPos(entity.y)][0] = -1;
-				Log()('killing: ', entity);
-
-				if(name.startsWith('ground')) entity.animations.play('crush');
-
-				else entity.destroy();
-			}
-		}
-
-		if(name.startsWith('ground')) this.ground.forEachAlive(cleanup);
-		else if(name === 'lava') this.lava.forEachAlive(cleanup);
-		else if(name === 'poisonous_gas') this.poisonous_gas.forEachAlive(cleanup);
-		else if(name === 'noxious_gas') this.noxious_gas.forEachAlive(cleanup);
-		else if(name === 'monsters') this.monsters.forEachAlive(cleanup);
-		else Log.warn('cleanGroundSpriteAt: no defined name to search for');
 	},
 	dev: function(){
 		Game.player.credits = 999;

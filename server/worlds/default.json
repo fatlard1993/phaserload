@@ -1,5 +1,42 @@
 [
 	{
+		"name": "asteroid TEST",
+		"mineralChance": 30,
+		"holeChance": 40,
+		"hazardChance": 80,
+		"hazardDistribution": { "poisonous_gas": 100 },
+		"layers": [
+			{ "white": 25, "green": 75 }
+		]
+	},
+	{
+		"name": "asteroid TEST",
+		"mineralChance": 30,
+		"holeChance": 40,
+		"hazardChance": 60,
+		"hazardDistribution": { "monster": 20, "lava": 30, "poisonous_gas": 30, "noxious_gas": 20 },
+		"layers": [
+			{ "white": 85, "orange": 10, "yellow": 5 },
+			{ "white": 55, "orange": 30, "yellow": 15 },
+			{ "orange": 85, "yellow": 10, "green": 5 },
+			{ "orange": 55, "yellow": 30, "green": 15 },
+			{ "yellow": 85, "green": 10, "teal": 5 },
+			{ "yellow": 55, "green": 30, "teal": 15 },
+			{ "green": 85, "teal": 10, "blue": 5 },
+			{ "green": 55, "teal": 30, "blue": 15 },
+			{ "teal": 85, "blue": 10, "purple": 5 },
+			{ "teal": 55, "blue": 30, "purple": 15 },
+			{ "blue": 85, "purple": 10, "pink": 5 },
+			{ "blue": 55, "purple": 30, "pink": 15 },
+			{ "purple": 85, "pink": 10, "red": 5 },
+			{ "purple": 55, "pink": 30, "red": 15 },
+			{ "red": 85, "pink": 10, "black": 5 },
+			{ "red": 55, "pink": 30, "black": 15 },
+			{ "pink": 55, "black": 45 },
+			{ "black": 100 }
+		]
+	},
+	{
 		"name": "asteroid ND57E-369",
 		"mineralChance": 15,
 		"holeChance": 40,

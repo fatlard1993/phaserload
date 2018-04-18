@@ -1,7 +1,7 @@
 /* global Phaser, Game, Cjs */
 
 Game.entities.ground = function(x, y){
-	Phaser.Sprite.call(this, Game.phaser, x, y, 'ground');
+	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'ground');
 
 	this.anchor.setTo(0.5, 0.5);
 };
@@ -12,109 +12,44 @@ Game.entities.ground.prototype.constructor = Game.entities.ground;
 Game.entities.ground.types = ['white', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink', 'red', 'black'];
 
 Game.entities.ground.create = function(x, y, type){
-	var ground = null;//Game.ground.getFirstDead();//causes issues
+	var ground = Game.ground.add(new Game.entities.ground(x, y));
 
-	if(ground === null){
-		ground = Game.ground.add(new Game.entities.ground(x, y));
-	}
-	else{
-		ground.reset(x, y);
-		ground.revive();
-	}
-
-	if(!type){
-		// type = Cjs.weightedChance(Game.config.world.layers[Math.ceil(Game.config.world.layers.length * (Game.toGridPos(y) / Game.config.depth)) - 1]);
-		type = Cjs.weightedChance({ white: 90, red: 10 });
-
-		Game.setMapPos({ x: x, y: y }, 'ground_'+ type);
-	}
+	Game.config.map[x][y].ground.name = type;
 
 	type = type.replace('ground_', '');
 
-	ground.ground_type = type;
-	ground.ground_type_ID = Game.entities.ground.types.indexOf(type);
+	Game.config.map[x][y].ground.base = 'ground';
+	Game.config.map[x][y].ground.variant = type;
+	Game.config.map[x][y].ground.sprite = ground;
 
-	var frameMod = ground.ground_type_ID * 4;
+	ground.frameMod = Game.entities.ground.types.indexOf(type) * 4;
+	ground.frame = 0 + ground.frameMod;
 
-	ground.frame = 0 + frameMod;
-
-	var animation = ground.animations.add('crush', [0 + frameMod, 1 + frameMod, 2 + frameMod, 3 + frameMod], 10, false);
-	animation.killOnComplete = true;
+	var crushAnimation = ground.animations.add('crush', [0 + ground.frameMod, 1 + ground.frameMod, 2 + ground.frameMod, 3 + ground.frameMod], 10, false);
+	crushAnimation.onComplete.add(function(){
+		ground.destroy();
+	}, ground);
 
 	return ground;
 };
 
-Game.entities.ground.crush = function(pos, fromServer){
-	// console.log('crush: ', groundType, pos);
-	Game.ground.forEachAlive(function(ground){
-		if(ground.x === pos.x && ground.y === pos.y && !ground.animations.getAnimation('crush').isPlaying){//+ ground.ground_type
-			var groundAt = Game.groundAt(pos.x, pos.y);
-			if(!groundAt) return;
-
-			var groundType = groundAt.replace('ground_', '');
-
-			ground.tween = Game.phaser.add.tween(ground).to({ alpha: 0 }, Game.config.densities[groundType], Phaser.Easing.Cubic.In, true);
-			ground.animations.play('crush');
-
-			if(fromServer) return;
-
-			Game.setMapPos(pos, -1);
-
-			var gridPos = {
-				x: Game.toGridPos(ground.x),
-				y: Game.toGridPos(ground.y)
-			};
-
-			var surrounds = {
-				left: Game.mapPos(gridPos.x - 1, gridPos.y)[0],
-				top: Game.mapPos(gridPos.x, gridPos.y - 1)[0],
-				right: Game.mapPos(gridPos.x + 1, gridPos.y)[0],
-				bottom: Game.mapPos(gridPos.x, gridPos.y + 1)[0]
-			};
-
-			Game.entities.ground.releaseSurrounds(ground, surrounds, Game.config.densities[groundType]);
-		}
-	});
-};
-
-Game.entities.ground.releaseSurrounds = function(ground, surrounds, delay){
-	setTimeout(function(){
-		if({ poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.left]){
-			Game.entities[surrounds.left].spread(ground.x - Game.blockPx, ground.y);
-		}
-
-		if({ noxious_gas: 1, lava: 1 }[surrounds.top]){
-			Game.entities[surrounds.top].spread(ground.x, ground.y - Game.blockPx);
-		}
-
-		if({ poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.right]){
-			Game.entities[surrounds.right].spread(ground.x + Game.blockPx, ground.y);
-		}
-
-		if({ poisonous_gas: 1, noxious_gas: 1 }[surrounds.bottom]){
-			Game.entities[surrounds.bottom].spread(ground.x, ground.y + Game.blockPx);
-		}
-	}, (delay || 100) + 1000);
-};
-
 Game.entities.ground.dig = function(pos){
-	var type = Game.groundAt(pos.x, pos.y);
+	var ground = Game.mapPos(pos).ground;
 
-	// console.log('dig: ', type, pos);
-	if(!type) return;
+	// Log()('dig: ', type, pos);
+	if(!ground.name || ground.base !== 'ground') return;
 
-	type = type.replace('ground_', '');
+	var blockActions = Game.config.groundEffects[ground.variant];
 
-	var blockActions = Game.config.groundEffects[type];
 	if(blockActions && blockActions.includes('impenetrable')) return;
 
-	Game.entities.ground.crush(pos);
+	if(blockActions) Game.applyEffects(blockActions, pos);
 
-	if(blockActions){
-		Game.applyEffects(blockActions, pos);
-		// blockAction = blockAction.split(':~:');
-		// Game.entities.ground.applyBehavior(blockAction[0], blockAction[1], pos);
-	}
+	// var surrounds = Game.getSurrounds(pos, { left: 1, top: 1, right: 1, bottom: 1 });
+
+	// Game.releaseSurrounds(pos, surrounds, Game.config.densities[ground.variant]);
+
+	Game.setMapPos(pos);
 
 	var isMineral = false;
 
@@ -122,16 +57,5 @@ Game.entities.ground.dig = function(pos){
 
 	if(drillPart[0].includes('precision')) isMineral = Cjs.chance(5 * parseInt(drillPart[0].split('_')[1]));
 
-	Game.effects.getHullItem((isMineral ? 'mineral_' : 'ground_') + type);
+	Game.effects.getHullItem((isMineral ? 'mineral_' : 'ground_') + ground.variant);
 };
-
-// Game.entities.ground.applyBehavior = function(name, options, pos){
-// 	if(options) options = options.split(',');
-
-// 	if({ poisonous_gas: 1, noxious_gas: 1, lava: 1, exploding: 1, freezing: 1 }[name]){
-// 		if(!options) options = [null, pos];
-// 		else options.push(pos);
-// 	}
-
-// 	if(Game.effects[name]) Game.effects[name].apply(null, options);
-// };

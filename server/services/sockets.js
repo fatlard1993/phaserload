@@ -127,7 +127,7 @@ var Sockets = {
 
 					Sockets.games[Player.room].addPlayer(Player.name);
 
-					socket.send(JSON.stringify({ command: 'player_join_accept', players: Sockets.games[Player.room].players, mapData: Sockets.games[Player.room].mapData, spaceco: Sockets.games[Player.room].spaceco, briefing: Sockets.games[Player.room].mapData.world.briefing }));
+					socket.send(JSON.stringify({ command: 'player_join_accept', items: Game.items, players: Sockets.games[Player.room].players, mapData: Sockets.games[Player.room].mapData, spaceco: Sockets.games[Player.room].spaceco, briefing: Sockets.games[Player.room].mapData.world.briefing }));
 				}
 
 				else if(data.command === 'player_move'){

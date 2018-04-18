@@ -1,7 +1,7 @@
 /* global Phaser, Game, Log, Cjs */
 
 Game.entities.lava = function(x, y){
-	Phaser.Sprite.call(this, Game.phaser, x, y, 'lava');
+	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'lava');
 
 	this.anchor.setTo(0.5, 0.5);
 
@@ -22,7 +22,7 @@ Game.entities.lava.create = function(x, y, isNew){
 	}
 
 	else{
-		lava.reset(x, y);
+		lava.reset(Game.toPx(x), Game.toPx(y));
 		lava.revive();
 		lava.animations.stop();
 	}
@@ -32,12 +32,12 @@ Game.entities.lava.create = function(x, y, isNew){
 		fillingAnim.onComplete.add(function(){
 			lava.play('full');
 
-			Game.entities.lava.spread(null, null, lava);
+			Game.entities.lava.spread(lava);
 		}, lava);
 
 		lava.animations.play('filling');
 
-		Game.setMapPos({ x: x, y: y }, 'lava', null, 'filling');
+		// Game.setMapPos({ x: x, y: y }, 'lava', null, 'filling');
 	}
 
 	else{
@@ -49,52 +49,34 @@ Game.entities.lava.create = function(x, y, isNew){
 		lava.animations.play('full');
 	}
 
+	Game.config.map[x][y].ground.name = 'lava';
+	Game.config.map[x][y].ground.base = 'lava';
+	Game.config.map[x][y].ground.variant = 'lava';
+	Game.config.map[x][y].ground.sprite = lava;
+
 	return lava;
 };
 
-Game.entities.lava.find = function(x, y, cb){
-	Game.lava.forEachAlive(function(lava){
-		if(lava.x === x && lava.y === y) cb(lava, lava, lava);
-	});
-};
+Game.entities.lava.spread = function(lava){
+	var gridPos = Game.toGridPos(lava);
 
-Game.entities.lava.spread = function(x, y, lava){
-	if(lava){
-		var gridPos = {
-			x: Game.toGridPos(lava.x),
-			y: Game.toGridPos(lava.y)
-		};
+	var surrounds = Game.getSurrounds(gridPos, { left: 1, right: 1, bottom: 1 });
 
-		var surrounds = {
-			left: Game.mapPos(gridPos.x - 1, gridPos.y)[0],
-			right: Game.mapPos(gridPos.x + 1, gridPos.y)[0],
-			bottom: Game.mapPos(gridPos.x, gridPos.y + 1)[0]
-		};
+	if(gridPos.x - 1 >= 0 && (surrounds.left === undefined || { purple_monster: 1, red_monster: 1, ground_red: 1 }[surrounds.left])){
+		if(surrounds.left === 'ground_red' && Cjs.chance(80)) return;
 
-		if(gridPos.x - 1 >= 0 && (surrounds.left === -1 || { purple_monster: 1, red_monster: 1, ground_red: 1 }[surrounds.left])){
-			if(surrounds.left === 'ground_red' && Cjs.chance(80)) return;
-
-			if(surrounds.left === 'ground_red') Game.entities.ground.crush({ x: lava.x - Game.blockPx, y: lava.y });
-
-			Game.entities.lava.create(lava.x - Game.blockPx, lava.y, 1);
-		}
-
-		if(gridPos.x + 1 < Game.config.width && (surrounds.right === -1 || { purple_monster: 1, red_monster: 1, ground_red: 1 }[surrounds.right])){
-			if(surrounds.right === 'ground_red' && Cjs.chance(80)) return;
-
-			if(surrounds.right === 'ground_red') Game.entities.ground.crush({ x: lava.x + Game.blockPx, y: lava.y });
-
-			Game.entities.lava.create(lava.x + Game.blockPx, lava.y, 1);
-		}
-
-		if(gridPos.y + 1 < Game.config.depth - 2 && (surrounds.bottom === -1 || { purple_monster: 1, red_monster: 1, ground_red: 1 }[surrounds.bottom])){
-			if(surrounds.bottom === 'ground_red' && Cjs.chance(40)) return;
-
-			if(surrounds.bottom === 'ground_red') Game.entities.ground.crush({ x: lava.x, y: lava.y + Game.blockPx });
-
-			Game.entities.lava.create(lava.x, lava.y + Game.blockPx, 1);
-		}
+		if(surrounds.left === 'ground_red') Game.setMapPos({ x: gridPos.x - 1, y: gridPos.y }, 'lava');
 	}
 
-	else Game.entities.lava.find(x, y, Game.entities.lava.spread);
+	if(gridPos.x + 1 < Game.config.width && (surrounds.right === undefined || { purple_monster: 1, red_monster: 1, ground_red: 1 }[surrounds.right])){
+		if(surrounds.right === 'ground_red' && Cjs.chance(80)) return;
+
+		if(surrounds.right === 'ground_red') Game.setMapPos({ x: gridPos.x + 1, y: gridPos.y }, 'lava');
+	}
+
+	if(gridPos.y + 1 < Game.config.depth - 2 && (surrounds.bottom === undefined || { purple_monster: 1, red_monster: 1, ground_red: 1 }[surrounds.bottom])){
+		if(surrounds.bottom === 'ground_red' && Cjs.chance(40)) return;
+
+		if(surrounds.bottom === 'ground_red') Game.setMapPos({ x: gridPos.x, y: gridPos.y + 1 }, 'lava');
+	}
 };

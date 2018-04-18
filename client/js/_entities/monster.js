@@ -1,7 +1,7 @@
 /* global Phaser, Game, Log, Cjs */
 
 Game.entities.monster = function(x, y, type){
-	Phaser.Sprite.call(this, Game.phaser, x, y, type +'_monster');
+	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), type +'_monster');
 
 	this.anchor.setTo(0.5, 0.5);
 
@@ -19,7 +19,7 @@ Game.entities.monster.create = function(x, y, type){
 		monster = Game.monsters.add(new Game.entities.monster(x, y, type));
 	}
 	else{
-		monster.reset(x, y);
+		monster.reset(Game.toPx(x), Game.toPx(y));
 		monster.revive();
 	}
 
@@ -27,16 +27,18 @@ Game.entities.monster.create = function(x, y, type){
 
 	monster.animations.play('sleeping');
 
+	Game.config.map[x][y].ground.name = type +'_monster';
+	Game.config.map[x][y].ground.base = 'monster';
+	Game.config.map[x][y].ground.variant = type;
+	Game.config.map[x][y].ground.sprite = monster;
+
 	return monster;
 };
 
 Game.entities.monster.prototype.update = function(){
 	if(!this.alive || Game.phaser.tweens.isTweening(this)) return;
 
-	var gridPos = {
-		x: Game.toGridPos(this.x),
-		y: Game.toGridPos(this.y)
-	};
+	var gridPos = Game.toGridPos(this);
 
 	var aggroDistance = Game.toPx(this.type === 'red' ? 8 : 4);
 
@@ -52,27 +54,23 @@ Game.entities.monster.prototype.update = function(){
 
 	// var wantToMove = Math.abs(xDiff) > Math.abs(yDiff) ? xDirection : yDirection;
 
-	var surrounds = {
-		left: Game.mapPos(gridPos.x - 1, gridPos.y)[0],
-		top: Game.mapPos(gridPos.x, gridPos.y - 1)[0],
-		right: Game.mapPos(gridPos.x + 1, gridPos.y)[0],
-		bottom: Game.mapPos(gridPos.x, gridPos.y + 1)[0]
-	};
+	var surrounds = Game.getSurrounds(gridPos, { left: 1, top: 1, right: 1, bottom: 1 });
+
 	var canMove = {};
 
-	if(gridPos.x - 1 > 0 && (surrounds.left === -1 || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.left])){
+	if(gridPos.x - 1 > 0 && (surrounds.left === undefined || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.left])){
 		canMove.left = 1;
 	}
 
-	if(gridPos.x + 1 < Game.config.width && (surrounds.right === -1 || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.right])){
+	if(gridPos.x + 1 < Game.config.width && (surrounds.right === undefined || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.right])){
 		canMove.right = 1;
 	}
 
-	if(gridPos.y - 1 > 0 && (surrounds.top === -1 || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.top])){
+	if(gridPos.y - 1 > 0 && (surrounds.top === undefined || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.top])){
 		canMove.up = 1;
 	}
 
-	if(gridPos.y + 1 > 0 && (surrounds.bottom === -1 || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.bottom])){
+	if(gridPos.y + 1 > 0 && (surrounds.bottom === undefined || { poisonous_gas: 1, noxious_gas: 1, lava: 1 }[surrounds.bottom])){
 		canMove.down = 1;
 	}
 
@@ -104,39 +102,26 @@ Game.entities.monster.prototype.update = function(){
 		moveDelay += 1000;
 	}
 
-	var newGridPos = {
-		x: Game.toGridPos(moving.x),
-		y: Game.toGridPos(moving.y)
-	};
+	var newGridPos = Game.toGridPos(moving);
 
-	var monsterCollision = Game.mapPos(newGridPos.x, newGridPos.y)[0];
+	var monsterCollision = Game.mapPos(newGridPos).ground.name;
 
-	if(typeof monsterCollision === 'string' && monsterCollision !== 'red_monster' && monsterCollision !== 'purple_monster'){
+	if(monsterCollision && monsterCollision !== 'red_monster' && monsterCollision !== 'purple_monster'){
 		Log()('monsterCollision', monsterCollision);
 
-		if(monsterCollision === 'lava'){
-			Game.setMapPos({ x: this.x, y: this.y }, -1);
-			this.destroy();
-		}
-
-		else if(monsterCollision === 'poisonous_gas'){
-			Game.setMapPos({ x: this.x, y: this.y }, -1);
-			this.destroy();
-		}
-
-		else if(monsterCollision === 'noxious_gas'){
-			Game.setMapPos({ x: this.x, y: this.y }, -1);
+		if(monsterCollision === 'lava' || monsterCollision === 'poisonous_gas' || monsterCollision === 'noxious_gas'){
+			Game.setMapPos(gridPos);
 			this.destroy();
 		}
 	}
 
 	else{
-		Game.setMapPos({ x: this.x, y: this.y }, -1);
+		Game.setMapPos(Game.toGridPos(this));
 
 		this.animations.play('moving');
 
 		Game.phaser.add.tween(this).to(moving, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, moveDelay);
 
-		Game.setMapPos(moving, 'monster');
+		Game.setMapPos(newGridPos, 'monster');
 	}
 };

@@ -19,6 +19,40 @@ var Game = {
 		black: 'quadium'
 	},
 	mineralColors: ['white', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink', 'red', 'black'],
+	items: {
+		teleporter: {
+			useEffects: ['teleport:~:spaceco']
+		},
+		responder_teleporter: {
+			useEffects: ['teleport:~:responder']
+		},
+		repair_nanites: {
+			useEffects: ['heal'],
+			interactEffects: ['repair:~:95:~:25']
+		},
+		timed_charge: {
+			useEffects: ['explode:~:3'],
+			interactEffects: ['intractable:~:disarm']
+		},
+		remote_charge: {
+			useEffects: ['explode:~:5'],
+			interactEffects: ['intractable:~:disarm']
+		},
+		timed_freeze_charge: {
+			useEffects: ['freeze:~:3'],
+			interactEffects: ['intractable:~:disarm']
+		},
+		remote_freeze_charge: {
+			useEffects: ['freeze:~:5'],
+			interactEffects: ['intractable:~:disarm']
+		},
+		tombstone: {
+			interactEffects: ['intractable:~:tombstone']
+		},
+		satchel: {
+			interactEffects: ['intractable:~:satchel']
+		}
+	},
 	normalizePosition: function(x, y){
 		x = Math.floor(x / (Game.blockPx / 2)) * (Game.blockPx / 2);
 		y = Math.floor(y / (Game.blockPx / 2)) * (Game.blockPx / 2);
@@ -41,7 +75,6 @@ var Game = {
 			depth: Cjs.randInt(180, 250),
 			map: []
 		});
-		// viewBufferMap: []
 
 		var safeLevel = 8;
 
@@ -59,15 +92,22 @@ var Game = {
 				layer = mapData.world.layers[Math.ceil(mapData.world.layers.length * (y / mapData.depth)) - 1];
 
 				mapData.map[x] = mapData.map[x] || [];
-				mapData.map[x][y] = [-1, -1];
+				mapData.map[x][y] = {
+					ground: {
+						name: undefined,
+						sprite: undefined
+					},
+					items: {
+						names: [],
+						sprites: []
+					}
+				};
 
 				if(y > 1 && !Cjs.chance(holeChance)){
-					mapData.map[x][y][0] = 'ground_'+ (Cjs.chance(randMineralChance) ? Cjs.randFromArr(Game.mineralColors) : Cjs.weightedChance(layer));
-					// mapData.map[x][y][0] = Game.mapNames.indexOf('ground_'+ (Cjs.chance(randMineralChance) ? Cjs.randFromArr(Game.mineralColors) : Cjs.weightedChance(layer)));
+					mapData.map[x][y].ground.name = 'ground_'+ (Cjs.chance(randMineralChance) ? Cjs.randFromArr(Game.mineralColors) : Cjs.weightedChance(layer));
 
 					if(y > safeLevel && Cjs.chance(mineralChance)){
-						mapData.map[x][y][1] = 'mineral_'+ (Cjs.chance(randMineralChance) ? Cjs.randFromArr(Game.mineralColors) : Cjs.weightedChance(layer));
-						// mapData.map[x][y][1] = Game.mapNames.indexOf('mineral_'+ (Cjs.chance(randMineralChance) ? Cjs.randFromArr(Game.mineralColors) : Cjs.weightedChance(layer)));
+						mapData.map[x][y].items.names[0] = 'mineral_'+ (Cjs.chance(randMineralChance) ? Cjs.randFromArr(Game.mineralColors) : Cjs.weightedChance(layer));
 					}
 				}
 
@@ -77,13 +117,11 @@ var Game = {
 					if(hazard === 'gas') hazard = Cjs.chance() ? 'poisonous_gas' : 'noxious_gas';
 					else if(hazard === 'monster') hazard = Cjs.chance() ? 'red_monster' : 'purple_monster';
 
-					mapData.map[x][y][0] = hazard;
-					// mapData.map[x][y][0] = Game.mapNames.indexOf(hazard);
+					mapData.map[x][y].ground.name = hazard;
 				}
 
 				else if(y > safeLevel && Cjs.chance(mineralChance)){
-					mapData.map[x][y][1] = 'mineral_'+ (Cjs.chance(randMineralChance) ? Cjs.randFromArr(Game.mineralColors) : Cjs.weightedChance(layer));
-					// mapData.map[x][y][1] = Game.mapNames.indexOf('mineral_'+ (Cjs.chance(randMineralChance) ? Cjs.randFromArr(Game.mineralColors) : Cjs.weightedChance(layer)));
+					mapData.map[x][y].items.names[0] = 'mineral_'+ (Cjs.chance(randMineralChance) ? Cjs.randFromArr(Game.mineralColors) : Cjs.weightedChance(layer));
 				}
 			}
 		}

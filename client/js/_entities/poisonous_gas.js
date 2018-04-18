@@ -1,104 +1,76 @@
 /* global Phaser, Game, Log, Cjs */
 
 Game.entities.poisonous_gas = function(x, y){
-	Phaser.Sprite.call(this, Game.phaser, x, y, 'poisonous_gas');
+	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'poisonous_gas');
 
 	this.anchor.setTo(0.5, 0.5);
+
+	var fillAnim = this.animations.add('fill', [2, 1, 0], 3, false);
+	fillAnim.onComplete.add(function(){
+		this.animations.play('full');
+	}, this);
+
+	var dissipateAnim = this.animations.add('dissipate', [0, 1, 2], 3, false);
+	dissipateAnim.killOnComplete = true;
 };
 
 Game.entities.poisonous_gas.prototype = Object.create(Phaser.Sprite.prototype);
 Game.entities.poisonous_gas.prototype.constructor = Game.entities.poisonous_gas;
 
-Game.entities.poisonous_gas.create = function(x, y, isNew, spawnChance, spreadChance){
-	if(isNew && spawnChance !== undefined && !Cjs.chance(spawnChance)) return;
-
+Game.entities.poisonous_gas.create = function(x, y, spreadChance){
 	var poisonous_gas = Game.poisonous_gas.getFirstDead();
-
-	var fillingAnim, dissipateAnim, fullAnim;
 
 	if(!poisonous_gas){
 		poisonous_gas = Game.poisonous_gas.add(new Game.entities.poisonous_gas(x, y));
 	}
 	else{
-		poisonous_gas.reset(x, y);
+		poisonous_gas.reset(Game.toPx(x), Game.toPx(y));
 		poisonous_gas.revive();
 		poisonous_gas.animations.stop();
+		poisonous_gas.animations.getAnimation('full').destroy();
 	}
 
-	fillingAnim = poisonous_gas.animations.add('filling', [2, 1, 0], 3, false);
-	fillingAnim.onComplete.add(function(){
-		poisonous_gas.animations.play('full');
-	}, poisonous_gas);
+	var fullAnim = poisonous_gas.animations.add('full', [3, 4, 5], 5, spreadChance === undefined);
 
-	fullAnim = poisonous_gas.animations.add('full', [3, 4, 5], 6, false);
-
-	dissipateAnim = poisonous_gas.animations.add('dissipate', [0, 1, 2], 3, false);
-	dissipateAnim.killOnComplete = true;
-
-	poisonous_gas.animations.add('trapped', [3, 4, 5], 12, true);
-
-	if(isNew){
-		poisonous_gas.spreadChance = spreadChance !== undefined ? spreadChance : spawnChance !== undefined ? spawnChance - Cjs.randInt(0, 9) : 100;
+	if(spreadChance !== undefined){
+		poisonous_gas.spreadChance = spreadChance - Cjs.randInt(5, 20);
 
 		fullAnim.onComplete.add(function(){
-			Game.entities.poisonous_gas.spread(null, null, poisonous_gas);
+			Game.entities.poisonous_gas.spread(poisonous_gas);
 		}, poisonous_gas);
-
-		dissipateAnim.onComplete.add(function(){
-			Game.setMapPos({ x: poisonous_gas.x, y: poisonous_gas.y }, -1);
-		}, poisonous_gas);
-
-		Game.setMapPos({ x: x, y: y }, 'poisonous_gas', null, 'filling');
-
-		poisonous_gas.animations.play('filling');
 	}
 
 	else{
-		fullAnim.onComplete.add(function(){
-			poisonous_gas.animations.play('dissipate');
-		}, poisonous_gas);
+		poisonous_gas.spreadChance = 100;
 
-		poisonous_gas.animations.play('trapped');
+		poisonous_gas.animations.play('full');
 	}
+
+	Game.config.map[x][y].ground.name = 'poisonous_gas';
+	Game.config.map[x][y].ground.base = 'gas';
+	Game.config.map[x][y].ground.variant = 'poisonous';
+	Game.config.map[x][y].ground.sprite = poisonous_gas;
 
 	return poisonous_gas;
 };
 
-Game.entities.poisonous_gas.find = function(x, y, cb){
-	Game.poisonous_gas.forEachAlive(function(poisonous_gas){
-		if(poisonous_gas.x === x && poisonous_gas.y === y) cb(poisonous_gas, poisonous_gas, poisonous_gas);
-	});
-};
+Game.entities.poisonous_gas.spread = function(poisonous_gas){
+	var pos = Game.toGridPos(poisonous_gas);
+	var spreadChance = poisonous_gas.spreadChance;
 
-Game.entities.poisonous_gas.spread = function(x, y, poisonous_gas){
-	if(poisonous_gas){
-		var gridPos = {
-			x: Game.toGridPos(poisonous_gas.x),
-			y: Game.toGridPos(poisonous_gas.y)
-		};
+	var surrounds = Game.getSurrounds(pos, { left: 1, top: 1, right: 1 }, 'ground');
 
-		var surrounds = {
-			left: Game.mapPos(gridPos.x - 1, gridPos.y)[0],
-			right: Game.mapPos(gridPos.x + 1, gridPos.y)[0],
-			top: Game.mapPos(gridPos.x, gridPos.y - 1)[0]
-		};
-
-		if(gridPos.x - 1 > 0 && (surrounds.left === -1 || { purple_monster: 1, red_monster: 1 }[surrounds.left])){
-			Game.entities.poisonous_gas.create(poisonous_gas.x - Game.blockPx, poisonous_gas.y, 1, poisonous_gas.spreadChance);
-		}
-
-		if(gridPos.x + 1 < Game.config.width && (surrounds.right === -1 || { purple_monster: 1, red_monster: 1 }[surrounds.right])){
-			Game.entities.poisonous_gas.create(poisonous_gas.x + Game.blockPx, poisonous_gas.y, 1, poisonous_gas.spreadChance);
-		}
-
-		if(gridPos.y - 1 > 0 && (surrounds.top === -1 || { purple_monster: 1, red_monster: 1 }[surrounds.top])){
-			Game.entities.poisonous_gas.create(poisonous_gas.x, poisonous_gas.y - Game.blockPx, 1, poisonous_gas.spreadChance);
-		}
-
-		poisonous_gas.animations.play('dissipate');
+	if(pos.x - 1 > 0 && !surrounds.left && Cjs.chance(spreadChance)){
+		Game.entities.poisonous_gas.create(pos.x - 1, pos.y, spreadChance);
 	}
 
-	else{
-		Game.entities.poisonous_gas.find(x, y, Game.entities.poisonous_gas.spread);
+	if(pos.x + 1 < Game.config.width && !surrounds.right && Cjs.chance(spreadChance)){
+		Game.entities.poisonous_gas.create(pos.x + 1, pos.y, spreadChance);
 	}
+
+	if(pos.y - 1 > 0 && !surrounds.top && Cjs.chance(spreadChance)){
+		Game.entities.poisonous_gas.create(pos.x, pos.y - 1, spreadChance);
+	}
+
+	poisonous_gas.animations.play('dissipate');
 };

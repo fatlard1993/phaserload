@@ -1,43 +1,53 @@
-/* global Game, Log */
+/* global Game, Log, Phaser */
 
-Game.entities.itemSlot = function(){};
+Game.entities.itemSlot = function(x, y){
+	Phaser.Sprite.call(this, Game.phaser, x, y, 'itemSlot');
+
+	this.anchor.setTo(0.5, 0.5);
+
+	this.fixedToCamera = true;
+
+	this.frame = 0;
+};
+
+Game.entities.itemSlot.prototype = Object.create(Phaser.Sprite.prototype);
+Game.entities.itemSlot.prototype.constructor = Game.entities.itemSlot;
 
 Game.entities.itemSlot.create = function(x, y){
-	var itemSlot =	Game.phaser.add.sprite(x, y, 'itemSlot', 2);
+	var itemSlot = Game.foreground.add(new Game.entities.itemSlot(x, y));
 
-	itemSlot.anchor.setTo(0.5, 0.5);
-
-	itemSlot.fixedToCamera = true;
-
-	itemSlot.frame = 0;
 	itemSlot.item = '';
 
 	return itemSlot;
 };
 
+Game.entities.itemSlot.init = function(){
+	Game.itemSlot1 = Game.entities.itemSlot.create(Game.viewWidth - 32, 32);
+	Game.itemSlot2 = Game.entities.itemSlot.create(Game.viewWidth - 32, 106);
+};
+
 Game.entities.itemSlot.setItem = function(slotNum, item){
 	Log()(slotNum, item);
-	Game['itemSlot'+ slotNum].item = item;
 
-	Game['itemSlot'+ slotNum].frame = item === '' ? 0 : 1;
+	var slot = 'itemSlot'+ slotNum;
 
-	if(Game['itemSlot'+ slotNum].itemSprite) Game['itemSlot'+ slotNum].itemSprite.destroy();
+	Game[slot].item = item;
+
+	Game[slot].frame = item === '' ? 0 : 1;
+
 	if(item !== ''){
-		var frame = 0;
+		if(!Game[slot].itemSprite){
+			Game[slot].itemSprite = Game.phaser.add.sprite(0, 0, 'item');
 
-		Game['itemSlot'+ slotNum].itemSprite = Game.phaser.add.sprite(0, 0, item.includes('charge') ? 'explosive' : item);
-		Game['itemSlot'+ slotNum].itemSprite.anchor.setTo(0.5, 0.5);
+			Game[slot].itemSprite.anchor.setTo(0.5, 0.5);
 
-		Game['itemSlot'+ slotNum].addChild(Game['itemSlot'+ slotNum].itemSprite);
-
-		if(item.includes('charge')){
-			if(item.includes('freeze')) frame += 4;
-			if(item.includes('remote')) frame += 2;
-		}
-		else if(item === 'detonator'){
-			Game['itemSlot'+ slotNum].itemSprite.animations.add('use', [1, 2, 3], 3, false);
+			Game[slot].addChild(Game[slot].itemSprite);
 		}
 
-		Game['itemSlot'+ slotNum].itemSprite.frame = frame;
+		Game[slot].itemSprite.frame = Game.entities.item.spriteNames.indexOf(item);
+
+		if(item === 'detonator'){
+			Game[slot].itemSprite.animations.add('use_detonator', [Game[slot].itemSprite.frame + 1, Game[slot].itemSprite.frame + 2, Game[slot].itemSprite.frame + 3], 3, false);
+		}
 	}
 };

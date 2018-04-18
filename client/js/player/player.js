@@ -204,7 +204,7 @@ function Load(){
 		else if(data.command === 'player_join_accept'){
 			Game.players = data.players;
 			Game.spaceco = data.spaceco;
-			Game.options = data.options;
+			Game.items = data.items;
 
 			Game.player = data.players[Player.name];
 
@@ -250,7 +250,7 @@ function Load(){
 
 			Game.config = Object.assign(Game.config, data.mapData);
 
-			Game.drawView(0, 0, Game.config.width, Game.config.depth / 2);
+			Game.drawMap(0, 0, Game.config.width, Game.config.depth / 2);
 
 			Game.phaser.add.tween(Game.player.sprite).to({ x: Game.toPx(Game.player.position.x), y: Game.toPx(Game.player.position.y) }, 100, Phaser.Easing.Sinusoidal.InOut, true);
 
