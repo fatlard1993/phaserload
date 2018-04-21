@@ -1,7 +1,7 @@
 /* global Phaser, Game, WS, Log */
 
 Game.entities.item = function(x, y, baseType){
-	Phaser.Sprite.call(this, Game.phaser, x, y, baseType, 10);
+	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), baseType, 10);
 
 	this.anchor.setTo(0.5, 0.5);
 };
@@ -34,7 +34,7 @@ Game.entities.item.spriteNames = [
 
 Game.entities.item.create = function(x, y, type){
 	var baseType = type.split('_')[0];
-	baseType = baseType === 'mineral' ? 'item' : baseType;
+	if(baseType !== 'mineral') baseType = 'item';
 
 	var item = Game.items.getFirstDead();
 
@@ -42,7 +42,7 @@ Game.entities.item.create = function(x, y, type){
 		item = Game.items.add(new Game.entities.item(x, y, baseType));
 	}
 	else{
-		item.reset(x, y);
+		item.reset(Game.toPx(x), Game.toPx(y));
 		item.revive();
 	}
 
@@ -55,23 +55,15 @@ Game.entities.item.create = function(x, y, type){
 	return item;
 };
 
-Game.entities.item.crush = function(pos){
-	Game.items.forEachAlive(function(item){
-		if(item.x === pos.x && item.y === pos.y){
-			item.destroy();
-		}
-	});
-};
-
 Game.entities.item.interact = function(pos){
-	var items = Game.mapPos(pos).items, count = items.length;
+	var items = Game.mapPos(pos).items, count = items.names.length;
 	var itemName, itemSprite, interactEffects;
 
 	for(var x = 0; x < count; ++x){
 		itemName = items.names[x];
 		itemSprite = items.sprites[x];
-		interactEffects = Game.items[itemName].interactEffects || ['collect'];
+		interactEffects = Game.config.items[itemName] && Game.config.items[itemName].interactEffects ? Game.config.items[itemName].interactEffects : ['collect'];
 
-		Game.applyEffects(interactEffects, pos, itemSprite);
+		Game.applyEffects(interactEffects, pos, { name: itemName, sprite: itemSprite });
 	}
 };

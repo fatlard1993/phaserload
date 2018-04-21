@@ -204,7 +204,7 @@ function Load(){
 		else if(data.command === 'player_join_accept'){
 			Game.players = data.players;
 			Game.spaceco = data.spaceco;
-			Game.items = data.items;
+			Game.config.items = data.items;
 
 			Game.player = data.players[Player.name];
 

@@ -295,7 +295,7 @@ Game.entities.player.init = function(){
 
 			// if(['gas', 'lava'].includes(targetType)) Game.entities[targetType].spread(newPosition.x, newPosition.y, 1);
 
-			if(Game.mapPos(newGridPos.x, newGridPos.y).items.length) Game.entities.item.interact(newGridPos);
+			if(Game.mapPos(newGridPos.x, newGridPos.y).items.names.length) Game.entities.item.interact(newGridPos);
 
 			if(Game.player.hull.space < 0) moveTime += 250;
 
@@ -396,7 +396,7 @@ Game.entities.player.init = function(){
 		}
 
 		if(item === 'teleporter' || item === 'repair_nanites'){
-			Game.applyEffects(Game.items[item] && Game.items[item].useEffects ? Game.items[item].useEffects : [Cjs.randFromArr(Object.keys(Game.effects))]);
+			Game.applyEffects(Game.config.items[item] && Game.config.items[item].useEffects ? Game.config.items[item].useEffects : [Cjs.randFromArr(Object.keys(Game.effects))]);
 		}
 
 		else if(item.includes('charge')){

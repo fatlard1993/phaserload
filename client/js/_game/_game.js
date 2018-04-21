@@ -205,18 +205,18 @@ var Game = {
 		intractable: function(){
 			//todo notify and provide a custom interaction screen for things like bomb disarm, loot drop, responder disarm
 		},
-		collect: function(itemSprite){
-			if(itemSprite.startsWith('mineral_')){
-				var gotIt = Game.effects.getHullItem(itemSprite);
+		collect: function(item){
+			if(item.name.startsWith('mineral_')){
+				var gotIt = Game.effects.getHullItem(item.name);
 
 				if(!gotIt) return;
 			}
 
-			var animationTime = 200 + Math.ceil(Game.phaser.math.distance(Game.phaser.camera.x, Game.phaser.camera.y, itemSprite.x, itemSprite.y));
+			var animationTime = 200 + Math.ceil(Game.phaser.math.distance(Game.phaser.camera.x, Game.phaser.camera.y, item.sprite.x, item.sprite.y));
 
-			Game.phaser.add.tween(itemSprite).to({ x: Game.phaser.camera.x, y: Game.phaser.camera.y }, animationTime, Phaser.Easing.Quadratic.Out, true);
+			Game.phaser.add.tween(item.sprite).to({ x: Game.phaser.camera.x, y: Game.phaser.camera.y }, animationTime, Phaser.Easing.Quadratic.Out, true);
 
-			setTimeout(itemSprite.kill, animationTime);
+			setTimeout(item.sprite.kill, animationTime);
 
 		},
 		dropItem: function(itemName, pos){
@@ -233,7 +233,7 @@ var Game = {
 
 			else if({ bonus: 1 }[effect]) params[3] = JSON.parse(params[2]);
 
-			else if({ collect: 1 }[effect]) params[1] = arguments[2];
+			else if({ collect: 1 }[effect]) params[0] = arguments[2];
 
 			Game.effects[effect].apply(null, params);
 		}
@@ -505,7 +505,7 @@ var Game = {
 
 				if(mapPos.ground.name) Game.drawTile(x, y, mapPos.ground.name);
 
-				if(mapPos.items.names[0]) Game.entities.mineral.create(x, y, mapPos.items.names[0]);
+				if(mapPos.items.names[0]) Game.entities.item.create(x, y, mapPos.items.names.pop());
 
 				drawn++;
 			}
