@@ -77,19 +77,19 @@ var Game = {
 			}
 		},
 		lava: function(chance, pos){
-			if(Cjs.chance(chance)) Game.setMapPos(pos, 'lava');
+			if(Cjs.chance(chance)) Game.setMapPos(pos, 'lava', 'fill');
 		},
 		poisonous_gas: function(chance, pos){
 			if(Cjs.chance(chance)) Game.setMapPos(pos, 'poisonous_gas', 'fill');
 		},
 		noxious_gas: function(chance, pos){
-			if(Cjs.chance(chance)) Game.entities.noxious_gas.create(pos.x, pos.y, 100);
+			if(Cjs.chance(chance)) Game.setMapPos(pos, 'noxious_gas', 'fill');
 		},
 		lavaRelease: function(){
 			for(var x = 0; x < Game.config.width; ++x){
 				for(var y = Game.config.depth - Game.toGridPos(Game.viewHeight); y < Game.config.depth; ++y){
 					if(Cjs.chance(90) && Game.mapPos(x, y).ground.name === 'ground_red'){
-						Game.setMapPos({ x: x, y: y }, 'lava');
+						Game.setMapPos({ x: x, y: y }, 'lava', 'fill');
 					}
 				}
 			}
@@ -465,10 +465,12 @@ var Game = {
 				//
 			}
 
-			else oldGround.sprite.destroy();
+			else if(oldGround.sprite) oldGround.sprite.destroy();
 		}
 
-		if({ lava: 1, noxious_gas: 1, poisonous_gas: 1 }[id]) drawVar = oldGround.sprite.spreadChance;
+		if({ noxious_gas: 1, poisonous_gas: 1 }[id]) drawVar = arguments[4] || 100;
+
+		else if({ lava: 1 }[id]) drawVar = true;
 
 		setTimeout(function(){
 			if(id) Game.drawTile(pos.x, pos.y, id, animation, drawVar);
@@ -523,7 +525,7 @@ var Game = {
 		}
 
 		else if(mapPos_0_name === 'lava'){
-			entity = Game.entities.lava.create(x, y, animation ? (arguments[4] || 100) : undefined);
+			entity = Game.entities.lava.create(x, y, !!animation);
 		}
 
 		else if(mapPos_0_name === 'poisonous_gas'){

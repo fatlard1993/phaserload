@@ -11,7 +11,9 @@ Game.entities.poisonous_gas = function(x, y){
 	}, this);
 
 	var dissipateAnim = this.animations.add('dissipate', [0, 1, 2], 3, false);
-	dissipateAnim.killOnComplete = true;
+	dissipateAnim.onComplete.add(function(){
+		Game.setMapPos(Game.toGridPos(this));
+	}, this);
 };
 
 Game.entities.poisonous_gas.prototype = Object.create(Phaser.Sprite.prototype);
@@ -61,15 +63,15 @@ Game.entities.poisonous_gas.spread = function(poisonous_gas){
 	var surrounds = Game.getSurrounds(pos, { left: 1, top: 1, right: 1 }, 'ground');
 
 	if(pos.x - 1 > 0 && !surrounds.left && Cjs.chance(spreadChance)){
-		Game.entities.poisonous_gas.create(pos.x - 1, pos.y, spreadChance);
+		Game.setMapPos({ x: pos.x - 1, y: pos.y }, 'poisonous_gas', 'fill', null, spreadChance);
 	}
 
 	if(pos.x + 1 < Game.config.width && !surrounds.right && Cjs.chance(spreadChance)){
-		Game.entities.poisonous_gas.create(pos.x + 1, pos.y, spreadChance);
+		Game.setMapPos({ x: pos.x + 1, y: pos.y }, 'poisonous_gas', 'fill', null, spreadChance);
 	}
 
 	if(pos.y - 1 > 0 && !surrounds.top && Cjs.chance(spreadChance)){
-		Game.entities.poisonous_gas.create(pos.x, pos.y - 1, spreadChance);
+		Game.setMapPos({ x: pos.x, y: pos.y - 1 }, 'poisonous_gas', 'fill', null, spreadChance);
 	}
 
 	poisonous_gas.animations.play('dissipate');

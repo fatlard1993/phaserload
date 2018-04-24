@@ -293,8 +293,6 @@ Game.entities.player.init = function(){
 		if(canMove){
 			//if(targetGroundType && targetGroundType.startsWith('ground')) Game.phaser.camera.shake((moveTime * 0.00001) * 0.42, moveTime);
 
-			// if(['gas', 'lava'].includes(targetType)) Game.entities[targetType].spread(newPosition.x, newPosition.y, 1);
-
 			if(Game.mapPos(newGridPos.x, newGridPos.y).items.names.length) Game.entities.item.interact(newGridPos);
 
 			if(Game.player.hull.space < 0) moveTime += 250;

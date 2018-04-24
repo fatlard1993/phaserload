@@ -49,7 +49,7 @@ function Load(){
 		Log(1)('cycling ground queue: ', queue);
 
 		for(var x = 0; x < queueLen; ++x){
-			Game.setMapPos(queue[ids[x]].pos, queue[ids[x]].id, 1);
+			Game.setMapPos(queue[ids[x]].pos, queue[ids[x]].id, queue[ids[x]].animation, 1);
 		}
 
 		cyclingGroundQueue = false;
@@ -279,7 +279,7 @@ function Load(){
 		}
 
 		else if(data.command === 'player_set_map_position'){
-			if(!document.hidden && !cyclingGroundQueue) return Game.setMapPos(data.pos, data.id, 1, data.animation);
+			if(!document.hidden && !cyclingGroundQueue) return Game.setMapPos(data.pos, data.id, data.animation, 1);
 
 			groundChangeQueue[JSON.stringify(data.pos)] = data;
 		}
