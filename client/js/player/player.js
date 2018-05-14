@@ -108,7 +108,7 @@ function Load(){
 			Game.viewWidth = Math.max(minViewWidth, clientWidth * scale);
 			Game.viewHeight = clientHeight * scale;
 
-			Game.phaser = new Phaser.Game(Game.viewWidth, Game.viewHeight, null, 'Game');
+			Game.phaser = new Phaser.Game(Game.viewWidth, Game.viewHeight, Phaser.AUTO, 'Game');//WEBGL_MULTI
 
 			Game.phaser.state.add('load', Game.states.load);
 			Game.phaser.state.add('start', Game.states.start);
@@ -134,6 +134,12 @@ function Load(){
 				Game.phaser.add.plugin(Phaser.Plugin.Debug);
 
 				Game.phaser.stage.backgroundColor = Game.config.backgroundColor;
+
+				Game.phaser.load.crossOrigin = 'anonymous';
+				Game.phaser.load.maxParallelDownloads = Infinity;
+
+				Game.phaser.stage.disableVisibilityChange = true;
+				Game.phaser.clearBeforeRender = false;
 
 				Game.phaser.state.start('load');
 			}, 1000);
