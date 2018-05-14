@@ -131,6 +131,8 @@ function Load(){
 					gameCanvas.style.marginLeft = -marginLeft + 'px';
 				}
 
+				Game.phaser.add.plugin(Phaser.Plugin.Debug);
+
 				Game.phaser.stage.backgroundColor = Game.config.backgroundColor;
 
 				Game.phaser.state.start('load');
