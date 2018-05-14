@@ -4,14 +4,14 @@ var BaseGroundValue = 0.5;	// todo make these a mode setting
 var BaseMineralValue = 2.5;
 
 Game.entities.spaceco = function(x, y){
-	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'spaceco');
+	Phaser.Image.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'spaceco');
 
 	this.anchor.setTo(0.5, 0.65);
 
 	this.scale.setTo(0.25, 0.25);
 };
 
-Game.entities.spaceco.prototype = Object.create(Phaser.Sprite.prototype);
+Game.entities.spaceco.prototype = Object.create(Phaser.Image.prototype);
 Game.entities.spaceco.prototype.constructor = Game.entities.spaceco;
 
 Game.entities.spaceco.create = function(settings){

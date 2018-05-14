@@ -1,7 +1,7 @@
 /* global Game, Log, Phaser */
 
 Game.entities.itemSlot = function(x, y){
-	Phaser.Sprite.call(this, Game.phaser, x, y, 'itemSlot');
+	Phaser.Image.call(this, Game.phaser, x, y, 'itemSlot');
 
 	this.anchor.setTo(0.5, 0.5);
 
@@ -10,7 +10,7 @@ Game.entities.itemSlot = function(x, y){
 	this.frame = 0;
 };
 
-Game.entities.itemSlot.prototype = Object.create(Phaser.Sprite.prototype);
+Game.entities.itemSlot.prototype = Object.create(Phaser.Image.prototype);
 Game.entities.itemSlot.prototype.constructor = Game.entities.itemSlot;
 
 Game.entities.itemSlot.create = function(x, y){
@@ -36,18 +36,18 @@ Game.entities.itemSlot.setItem = function(slotNum, item){
 	Game[slot].frame = item === '' ? 0 : 1;
 
 	if(item !== ''){
-		if(!Game[slot].itemSprite){
-			Game[slot].itemSprite = Game.phaser.add.sprite(0, 0, 'item');
+		if(!Game[slot].itemIcon){
+			Game[slot].itemIcon = Game.phaser.add.image(0, 0, 'item');
 
-			Game[slot].itemSprite.anchor.setTo(0.5, 0.5);
+			Game[slot].itemIcon.anchor.setTo(0.5, 0.5);
 
-			Game[slot].addChild(Game[slot].itemSprite);
+			Game[slot].addChild(Game[slot].itemIcon);
 		}
 
-		Game[slot].itemSprite.frame = Game.entities.item.spriteNames.indexOf(item);
+		Game[slot].itemIcon.frame = Game.entities.item.spriteNames.indexOf(item);
 
 		if(item === 'detonator'){
-			Game[slot].itemSprite.animations.add('use_detonator', [Game[slot].itemSprite.frame + 1, Game[slot].itemSprite.frame + 2, Game[slot].itemSprite.frame + 3], 3, false);
+			Game[slot].itemIcon.animations.add('use_detonator', [Game[slot].itemIcon.frame + 1, Game[slot].itemIcon.frame + 2, Game[slot].itemIcon.frame + 3], 3, false);
 		}
 	}
 };

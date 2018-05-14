@@ -1,12 +1,12 @@
 /* global Phaser, Game, WS, Log */
 
 Game.entities.item = function(x, y, baseType){
-	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), baseType, 10);
+	Phaser.Image.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), baseType, 10);
 
 	this.anchor.setTo(0.5, 0.5);
 };
 
-Game.entities.item.prototype = Object.create(Phaser.Sprite.prototype);
+Game.entities.item.prototype = Object.create(Phaser.Image.prototype);
 Game.entities.item.prototype.constructor = Game.entities.item;
 
 Game.entities.item.spriteNames = [

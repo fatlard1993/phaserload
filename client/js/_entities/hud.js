@@ -9,14 +9,14 @@ var HUDLayout = { // todo make this a player setting
 };
 
 Game.entities.hud = function(){
-	Phaser.Sprite.call(this, Game.phaser, 0, 0, 'hud');
+	Phaser.Image.call(this, Game.phaser, 0, 0, 'hud');
 
 	this.scale.setTo(0.4, 0.4);
 
 	this.fixedToCamera = true;
 };
 
-Game.entities.hud.prototype = Object.create(Phaser.Sprite.prototype);
+Game.entities.hud.prototype = Object.create(Phaser.Image.prototype);
 Game.entities.hud.prototype.constructor = Game.entities.hud;
 
 Game.entities.hud.create = function(){
