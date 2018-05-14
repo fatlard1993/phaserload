@@ -7,5 +7,5 @@ npm i
 (cd ../swiss-army-knife && ./SETUP)
 gulp compile
 mkdir -p ./client/public &&
-(cd ./client/public && ln -sT ../../../swiss-army-knife/client/fonts fonts)
-(cd ./client/public && ln -sT ../assets assets)
+(cd ./client/public && [[ ! -e ./fonts ]] && ln -sT ../../../swiss-army-knife/client/fonts fonts)
+(cd ./client/public && [[ ! -e ./assets ]] && ln -sT ../assets assets)
