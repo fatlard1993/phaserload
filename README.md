@@ -2,8 +2,9 @@
 
 ## Prerequisites
 
-1. Linux or UNIX
+1. Linux, UNIX, Mac OS
 2. node.js >= V6.10.1 [Check out NVM](https://github.com/creationix/nvm)
+3. ```npm i -g eslint gulp```
 
 
 ## Setup and/or update the project and dependencies
@@ -37,7 +38,7 @@ A dist folder contains a copy of all of the required files, which can be extract
 
 ## Run from a dist
 
-All aforementioned options are available, simply prepended with "dist" eg:
+All aforementioned options are available, simply prepend with "dist" eg:
 
 /dist$ ```./start dist <other_options>```
 
