@@ -1,7 +1,7 @@
 /* global Phaser, Game, WS, Log */
 
-Game.entities.item = function(x, y, baseType){
-	Phaser.Image.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), baseType, 10);
+Game.entities.item = function(x, y, type){
+	Phaser.Image.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'map', type);
 
 	this.anchor.setTo(0.5, 0.5);
 };
@@ -36,17 +36,21 @@ Game.entities.item.create = function(x, y, type){
 	var baseType = type.split('_')[0];
 	if(baseType !== 'mineral') baseType = 'item';
 
+	Log()(type);
+
 	var item = Game.items.getFirstDead();
 
 	if(item === null){
-		item = Game.items.add(new Game.entities.item(x, y, baseType));
+		item = Game.items.add(new Game.entities.item(x, y, type));
 	}
 	else{
 		item.reset(Game.toPx(x), Game.toPx(y));
 		item.revive();
 	}
 
-	item.frame = baseType === 'mineral' ? Game.mineralColors.indexOf(type.replace('mineral_', '')) : Game.entities.item.spriteNames.indexOf(type);
+	item.frameName = type;
+
+	// item.frame = baseType === 'mineral' ? Game.mineralColors.indexOf(type.replace('mineral_', '')) : Game.entities.item.spriteNames.indexOf(type);
 	item.type = type;
 
 	Game.config.map[x][y].items.sprites.push(item);

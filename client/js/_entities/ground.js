@@ -1,7 +1,7 @@
 /* global Phaser, Game, Cjs */
 
-Game.entities.ground = function(x, y){
-	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'ground');
+Game.entities.ground = function(x, y, type){
+	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'map', type);
 
 	this.anchor.setTo(0.5, 0.5);
 };
@@ -12,7 +12,7 @@ Game.entities.ground.prototype.constructor = Game.entities.ground;
 Game.entities.ground.types = ['white', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink', 'red', 'black'];
 
 Game.entities.ground.create = function(x, y, type){
-	var ground = Game.ground.add(new Game.entities.ground(x, y));
+	var ground = Game.ground.add(new Game.entities.ground(x, y, type));
 
 	Game.config.map[x][y].ground.name = type;
 
@@ -22,11 +22,12 @@ Game.entities.ground.create = function(x, y, type){
 	Game.config.map[x][y].ground.variant = type;
 	Game.config.map[x][y].ground.sprite = ground;
 
-	ground.frameMod = Game.entities.ground.types.indexOf(type) * 4;
-	ground.frame = 0 + ground.frameMod;
+	// ground.frameMod = Game.entities.ground.types.indexOf(type) * 4;
+	// ground.frame = 0 + ground.frameMod;
 
-	var crushAnimation = ground.animations.add('crush', [0 + ground.frameMod, 1 + ground.frameMod, 2 + ground.frameMod, 3 + ground.frameMod], 10, false);
-	crushAnimation.onComplete.add(function(){
+	// var digAnimation = ground.animations.add('dig', [0 + ground.frameMod, 1 + ground.frameMod, 2 + ground.frameMod, 3 + ground.frameMod], 10, false);
+	var digAnimation = ground.animations.add('dig', Phaser.Animation.generateFrameNames('ground_'+ type +'_dig', 1, 3), 10, false);
+	digAnimation.onComplete.add(function(){
 		ground.destroy();
 	}, ground);
 

@@ -1,12 +1,12 @@
 /* global Phaser, Game, Log, Cjs */
 
 Game.entities.monster = function(x, y, type){
-	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), type +'_monster');
+	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'map', type +'_monster_sleep1');
 
 	this.anchor.setTo(0.5, 0.5);
 
-	this.animations.add('sleeping', [0, 1, 2], Cjs.randInt(2, 6), true);
-	this.animations.add('moving', [3, 4, 5], Cjs.randInt(6, 12), true);
+	this.animations.add('sleep', Phaser.Animation.generateFrameNames(type +'_monster_sleep', 1, 3), Cjs.randInt(2, 6), true);
+	this.animations.add('awake', Phaser.Animation.generateFrameNames(type +'_monster_awake', 1, 3), Cjs.randInt(6, 12), true);
 };
 
 Game.entities.monster.prototype = Object.create(Phaser.Sprite.prototype);
@@ -25,7 +25,7 @@ Game.entities.monster.create = function(x, y, type){
 
 	monster.type = type;
 
-	monster.animations.play('sleeping');
+	monster.animations.play('sleep');
 
 	Game.config.map[x][y].ground.name = type +'_monster';
 	Game.config.map[x][y].ground.base = 'monster';
@@ -90,7 +90,7 @@ Game.entities.monster.prototype.update = function(){
 		moving = { x: this.x + Game.blockPx, y: this.y };
 	}
 
-	if(!moving) return this.animations.play('sleeping');
+	if(!moving) return this.animations.play('sleep');
 
 	this.justMoved = this.x !== moving.x ? (this.x - moving.x > 0 ? 'left' : 'right') : this.y !== moving.y > 0 ? 'up' : 'down';
 
@@ -118,7 +118,7 @@ Game.entities.monster.prototype.update = function(){
 	else{
 		Game.setMapPos(Game.toGridPos(this));
 
-		this.animations.play('moving');
+		this.animations.play('awake');
 
 		Game.phaser.add.tween(this).to(moving, moveSpeed, Phaser.Easing.Sinusoidal.InOut, true, moveDelay);
 

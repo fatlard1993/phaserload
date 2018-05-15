@@ -1,7 +1,7 @@
 /* global Phaser, Game, Log, Cjs */
 
 Game.entities.noxious_gas = function(x, y){
-	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'noxious_gas');
+	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'map', 'noxious_gas_fill1');
 
 	this.anchor.setTo(0.5, 0.5);
 };
@@ -25,14 +25,14 @@ Game.entities.noxious_gas.create = function(x, y, isNew, spawnChance, spreadChan
 		noxious_gas.animations.stop();
 	}
 
-	fillAnim = noxious_gas.animations.add('fill', [2, 1, 0], 3, false);
+	fillAnim = noxious_gas.animations.add('fill', Phaser.Animation.generateFrameNames('noxious_gas_fill', 1, 3), 3, false);
 	fillAnim.onComplete.add(function(){
 		noxious_gas.animations.play('full');
 	}, noxious_gas);
 
-	fullAnim = noxious_gas.animations.add('full', [3, 4, 5], 6, false);
+	fullAnim = noxious_gas.animations.add('full', Phaser.Animation.generateFrameNames('noxious_gas_full', 1, 3), 6, false);
 
-	dissipateAnim = noxious_gas.animations.add('dissipate', [0, 1, 2], 3, false);
+	dissipateAnim = noxious_gas.animations.add('dissipate', Phaser.Animation.generateFrameNames('noxious_gas_fill', 3, 1), 3, false);
 	dissipateAnim.killOnComplete = true;
 
 	if(isNew){

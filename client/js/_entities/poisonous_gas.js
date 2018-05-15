@@ -1,16 +1,16 @@
 /* global Phaser, Game, Log, Cjs */
 
 Game.entities.poisonous_gas = function(x, y){
-	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'poisonous_gas');
+	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'map', 'poisonous_gas_fill1');
 
 	this.anchor.setTo(0.5, 0.5);
 
-	var fillAnim = this.animations.add('fill', [2, 1, 0], 3, false);
+	var fillAnim = this.animations.add('fill', Phaser.Animation.generateFrameNames('poisonous_gas_fill', 1, 3), 3, false);
 	fillAnim.onComplete.add(function(){
 		this.animations.play('full');
 	}, this);
 
-	var dissipateAnim = this.animations.add('dissipate', [0, 1, 2], 3, false);
+	var dissipateAnim = this.animations.add('dissipate', Phaser.Animation.generateFrameNames('poisonous_gas_fill', 3, 1), 3, false);
 	dissipateAnim.onComplete.add(function(){
 		Game.setMapPos(Game.toGridPos(this));
 	}, this);
@@ -32,7 +32,7 @@ Game.entities.poisonous_gas.create = function(x, y, spreadChance){
 		poisonous_gas.animations.getAnimation('full').destroy();
 	}
 
-	var fullAnim = poisonous_gas.animations.add('full', [3, 4, 5], 5, spreadChance === undefined);
+	var fullAnim = poisonous_gas.animations.add('full', Phaser.Animation.generateFrameNames('poisonous_gas_full', 1, 3), 5, spreadChance === undefined);
 
 	if(spreadChance !== undefined){
 		poisonous_gas.spreadChance = spreadChance - Cjs.randInt(5, 20);

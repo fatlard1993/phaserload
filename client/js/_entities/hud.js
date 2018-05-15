@@ -9,7 +9,7 @@ var HUDLayout = { // todo make this a player setting
 };
 
 Game.entities.hud = function(){
-	Phaser.Image.call(this, Game.phaser, 0, 0, 'hud');
+	Phaser.Image.call(this, Game.phaser, 0, 0, 'map', 'hud');
 
 	this.scale.setTo(0.4, 0.4);
 

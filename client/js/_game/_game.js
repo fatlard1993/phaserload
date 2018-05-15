@@ -454,7 +454,7 @@ var Game = {
 				drawDelay = Game.config.densities[oldGround.variant];
 
 				oldGround.sprite.tween = Game.phaser.add.tween(oldGround.sprite).to({ alpha: 0 }, drawDelay, Phaser.Easing.Cubic.In, true);
-				oldGround.sprite.animations.play('crush');
+				oldGround.sprite.animations.play('dig');
 			}
 
 			else if({ lava: 1, noxious_gas: 1, poisonous_gas: 1 }[oldGround.name]){

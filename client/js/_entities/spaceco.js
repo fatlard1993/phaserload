@@ -4,11 +4,11 @@ var BaseGroundValue = 0.5;	// todo make these a mode setting
 var BaseMineralValue = 2.5;
 
 Game.entities.spaceco = function(x, y){
-	Phaser.Image.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'spaceco');
+	Phaser.Image.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'map', 'spaceco_hurt0');
 
 	this.anchor.setTo(0.5, 0.65);
 
-	this.scale.setTo(0.25, 0.25);
+	// this.scale.setTo(0.25, 0.25);
 };
 
 Game.entities.spaceco.prototype = Object.create(Phaser.Image.prototype);
@@ -17,7 +17,7 @@ Game.entities.spaceco.prototype.constructor = Game.entities.spaceco;
 Game.entities.spaceco.create = function(settings){
 	var spaceco = Game.buildings.add(new Game.entities.spaceco(settings.position.x, settings.position.y || 1));
 
-	spaceco.frame = spaceco.damage = spaceco.damage || 0;
+	spaceco.frameName = 'spaceco_hurt'+ (spaceco.damage = spaceco.damage || 0);
 
 	return spaceco;
 };
@@ -165,7 +165,7 @@ Game.entities.spaceco.init = function(){
 			}, 400);
 		}
 
-		else Game.spaceco.sprite.frame = Game.spaceco.damage;
+		else Game.spaceco.sprite.frame = 'spaceco_hurt'+ Game.spaceco.damage;
 	};
 
 	Game.spaceco.getValue = function(name){

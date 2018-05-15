@@ -1,15 +1,12 @@
 /* global Game, Log, Cjs, WS, Phaser */
 
 Game.entities.player = function(x, y){
-	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'player');
+	Phaser.Sprite.call(this, Game.phaser, Game.toPx(x), Game.toPx(y), 'map', 'drill_move1');
 
 	this.anchor.setTo(0.5, 0.5);
 
-	this.animations.add('normal', [0, 1, 2], 10, true);
-	this.animations.add('upgrade_1', [3, 4, 5], 10, true);
-	this.animations.add('upgrade_2', [6, 7, 8], 10, true);
-	this.animations.add('upgrade_3', [9, 10, 11], 10, true);
-	this.animations.add('teleporting', [12, 13, 14], 10, true);
+	this.animations.add('move', Phaser.Animation.generateFrameNames('drill_move', 1, 3), 10, true);
+	this.animations.add('teleport', Phaser.Animation.generateFrameNames('drill_teleport', 1, 3), 10, true);
 };
 
 Game.entities.player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -27,7 +24,7 @@ Game.entities.player.prototype.update = function(){
 
 	var playerCollision = Game.mapPos(spriteGridPos).ground.name;
 
-	if(!Game.player.sprite.animations.getAnimation('teleporting').isPlaying && typeof playerCollision === 'string'){
+	if(!Game.player.sprite.animations.getAnimation('teleport').isPlaying && typeof playerCollision === 'string'){
 		Log()('playerCollision', playerCollision);
 
 		if(playerCollision === 'lava') Game.effects.hurt('lava', 12, 3);
@@ -169,21 +166,10 @@ Game.entities.player.prototype.update = function(){
 
 Game.entities.player.create = function(settings){
 	var playerSprite = Game.playersGroup.add(new Game.entities.player(settings.position.x, settings.position.y || 1));
-	// var playerSprite = Game.phaser.add.sprite(Game.toPx(settings.position.x), Game.toPx(1), 'drill', 15);
 
-	// playerSprite.anchor.setTo(0.5, 0.5);
-
-	// playerSprite.animations.add('normal', [0, 1, 2], 10, true);
-	// playerSprite.animations.add('upgrade_1', [3, 4, 5], 10, true);
-	// playerSprite.animations.add('upgrade_2', [6, 7, 8], 10, true);
-	// playerSprite.animations.add('upgrade_3', [9, 10, 11], 10, true);
-	// playerSprite.animations.add('teleporting', [12, 13, 14], 10, true);
-
-	playerSprite.animations.play('normal');
+	playerSprite.animations.play('move');
 
 	Game.config.defaultPlayerScale = playerSprite.scale.x;
-
-	// Game.playersGroup.add(playerSprite);
 
 	return playerSprite;
 };
@@ -199,7 +185,7 @@ Game.entities.player.init = function(){
 		var newPosition = {}, newGridPos, newCameraPosition, moveTime, canMove = true;
 
 		if(direction === 'teleport'){
-			Game.player.sprite.animations.play('teleporting');
+			Game.player.sprite.animations.play('teleport');
 
 			newPosition = Game.toPx(position);
 			newGridPos = Game.toGridPos(newPosition);
@@ -209,7 +195,7 @@ Game.entities.player.init = function(){
 			moveTime = Math.ceil(Game.phaser.math.distance(Game.player.sprite.x, Game.player.sprite.y, newPosition.x, newPosition.y));
 
 			setTimeout(function(){
-				Game.player.sprite.animations.play('normal');
+				Game.player.sprite.animations.play('move');
 			}, 200 + moveTime);
 		}
 
