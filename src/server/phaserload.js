@@ -55,12 +55,13 @@ const phaserload = module.exports = {
 			}
 		}
 	},
+	rootFolder: path.resolve(__dirname, '../..'),
 	init: function(options){
 		this.options = Object.assign(this.options, options);
 
 		require('./debugPrompt');
 
-		const { app } = require('http-server').init(options.port, options.rootFolder);
+		const { app } = require('http-server').init(options.port, this.rootFolder);
 
 		require('./router');
 
@@ -72,7 +73,7 @@ const phaserload = module.exports = {
 	loadDataPack: function(name, done){
 		//todo add parts datapacks
 
-		const packPath = path.join(phaserload.options.rootFolder, 'src', name);
+		const packPath = path.join(this.rootFolder, 'src', name);
 
 		this[name] = this[name] = {};
 

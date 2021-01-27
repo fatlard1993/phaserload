@@ -28,7 +28,6 @@
     "@fortawesome/fontawesome-free": "^5.15.1",
     "argi": "github:fatlard1993/argi",
     "augmented-ui": "^2.0.0",
-    "find-root": "^1.1.0",
     "http-server": "github:fatlard1993/http-server#4.x.x",
     "js-util": "github:fatlard1993/js-util#2.x.x",
     "lang": "github:fatlard1993/lang",

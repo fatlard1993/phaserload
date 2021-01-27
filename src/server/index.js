@@ -1,15 +1,10 @@
 #!/usr/bin/env node
 
-const rootFolder = require('find-root')(__dirname);
 const argi = require('argi').parse({
 	port: {
 		type: 'int',
 		defaultValue: 80,
 		alias: 'p'
-	},
-	rootFolder: {
-		type: 'string',
-		defaultValue: rootFolder
 	},
 	verbosity: {
 		type: 'number',
