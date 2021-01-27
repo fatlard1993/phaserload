@@ -20,7 +20,7 @@ const argi = require('argi').parse({
 
 const options = argi.options.named;
 
-const log = new (require('log'))({ tag: 'phaserload', color: true, defaultVerbosity: options.verbosity });
+const log = new (require('log'))({ tag: 'phaserload', defaults: { verbosity: options.verbosity, color: true } });
 
 log(1)('Options', options);
 
