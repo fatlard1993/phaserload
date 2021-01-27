@@ -215,7 +215,7 @@ var phaserload = {
 				if(direction !== lastDirection){
 					phaserload.view.players[name].lastDirection = direction;
 					phaserload.view.players[name].flipX = positions[direction].flipX;
-					phaserload.view.players.testName.rotation = positions[direction].rotation;
+					phaserload.view.players[name].rotation = positions[direction].rotation;
 				}
 
 				phaserload.scene.tweens.add({
