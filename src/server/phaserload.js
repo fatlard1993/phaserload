@@ -283,7 +283,7 @@ const phaserload = module.exports = {
 			}
 		}
 
-		log()('fall', fall, pos.y);
+		log(1)('checkMobFall', fall, pos.y);
 
 		if(fall) return phaserload.checkMobFall({ x: pos.x, y: pos.y + 1 }, map);
 

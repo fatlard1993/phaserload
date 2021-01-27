@@ -45,8 +45,6 @@ class SocketServer extends WebsocketServer {
 				if(this.roomName && server.rooms[this.roomName]) server.rooms[this.roomName].removeClient(this);
 			},
 			player_move: function(data){
-				log('player_move', data);
-
 				server.rooms[this.roomName].playerMove(data);
 			}
 		});
