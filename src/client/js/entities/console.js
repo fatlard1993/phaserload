@@ -13,7 +13,7 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 
 		phaserload.groups.interfaces.add(this, true);
 
-		this.setDepth(4);
+		this.setDepth(phaserload.layers.interfaces);
 		this.setScrollFactor(0, 0);
 		this.setOrigin(0);
 		this.setScale(0.4);
@@ -68,6 +68,8 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		['position', 'credits', 'health', 'fuel', 'hull'].forEach((name, index) => {
 			const elem = this.elem.children[index] || dom.createElem('div', { appendTo: this.elem });
 
+			//todo {fuel, hull, health} account for max values and display a percentage and/or a bar
+
 			elem.textContent = (name === 'position' ? `GPS: x${phaserload.player[name].x} y${phaserload.player[name].y}` : `${name === 'credits' ? '$' : util.capitalize(name)}: ${phaserload.player[name]}`);
 		});
 	}
@@ -85,19 +87,42 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		});
 	}
 
+	draw_briefing(){
+		log()('draw_briefing');
+
+		//todo add briefing text for this world
+		//todo add general help info
+	}
+
 	draw_inventory(){
 		log()('draw_inventory');
+
+		//todo add inventory items
+		//todo add hull contents
+		//todo add drill configuration editor
+		//todo add general help info
 	}
 
 	draw_spaceco(){
 		log()('draw_spaceco');
+
+		//todo add price list (the more of a particular mineral they have the less they will buy it for. Also price list starts out based on the world config (what colors are available))
+		//todo add fuel products (prices are based on world config)
+		//todo add drill part products (availability and price based on world config)
+		//todo add purchaseable items (availability and price based on world config)
 	}
 
 	draw_trade(){
 		log()('draw_trade');
+
+		//todo add inventory items
+		//todo add hull contents
+		//todo add trade page that shows the current offer from both sides
 	}
 
 	draw_load_item_slot(){
 		log()('draw_load_item_slot');
+
+		//todo add itemSlot-able inventory items
 	}
 }
