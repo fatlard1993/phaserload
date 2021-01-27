@@ -36,7 +36,7 @@
         <key>dataFormat</key>
         <string>phaser-json-hash</string>
         <key>textureFileName</key>
-        <filename>../client/assets/map.png</filename>
+        <filename>../src/client/resources/map.png</filename>
         <key>flipPVR</key>
         <false/>
         <key>pvrCompressionQuality</key>
@@ -134,7 +134,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>../client/assets/map.json</filename>
+                <filename>../src/client/resources/map.json</filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -183,84 +183,84 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">../client/assets/un_atlas/drill_move1.png</key>
-            <key type="filename">../client/assets/un_atlas/drill_move2.png</key>
-            <key type="filename">../client/assets/un_atlas/drill_move3.png</key>
-            <key type="filename">../client/assets/un_atlas/drill_teleport1.png</key>
-            <key type="filename">../client/assets/un_atlas/drill_teleport2.png</key>
-            <key type="filename">../client/assets/un_atlas/drill_teleport3.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_black.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_black_dig1.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_black_dig2.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_black_dig3.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_blue.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_blue_dig1.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_blue_dig2.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_blue_dig3.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_green.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_green_dig1.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_green_dig2.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_green_dig3.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_orange.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_orange_dig1.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_orange_dig2.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_orange_dig3.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_pink.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_pink_dig1.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_pink_dig2.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_pink_dig3.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_purple.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_purple_dig1.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_purple_dig2.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_purple_dig3.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_red.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_red_dig1.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_red_dig2.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_red_dig3.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_teal.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_teal_dig1.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_teal_dig2.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_teal_dig3.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_white.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_white_dig1.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_white_dig2.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_white_dig3.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_yellow.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_yellow_dig1.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_yellow_dig2.png</key>
-            <key type="filename">../client/assets/un_atlas/ground_yellow_dig3.png</key>
-            <key type="filename">../client/assets/un_atlas/itemSlot_empty.png</key>
-            <key type="filename">../client/assets/un_atlas/itemSlot_inuse.png</key>
-            <key type="filename">../client/assets/un_atlas/lava_fill1.png</key>
-            <key type="filename">../client/assets/un_atlas/lava_fill2.png</key>
-            <key type="filename">../client/assets/un_atlas/lava_fill3.png</key>
-            <key type="filename">../client/assets/un_atlas/lava_full1.png</key>
-            <key type="filename">../client/assets/un_atlas/lava_full2.png</key>
-            <key type="filename">../client/assets/un_atlas/lava_full3.png</key>
-            <key type="filename">../client/assets/un_atlas/noxious_gas_fill1.png</key>
-            <key type="filename">../client/assets/un_atlas/noxious_gas_fill2.png</key>
-            <key type="filename">../client/assets/un_atlas/noxious_gas_fill3.png</key>
-            <key type="filename">../client/assets/un_atlas/noxious_gas_full1.png</key>
-            <key type="filename">../client/assets/un_atlas/noxious_gas_full2.png</key>
-            <key type="filename">../client/assets/un_atlas/noxious_gas_full3.png</key>
-            <key type="filename">../client/assets/un_atlas/poisonous_gas_fill1.png</key>
-            <key type="filename">../client/assets/un_atlas/poisonous_gas_fill2.png</key>
-            <key type="filename">../client/assets/un_atlas/poisonous_gas_fill3.png</key>
-            <key type="filename">../client/assets/un_atlas/poisonous_gas_full1.png</key>
-            <key type="filename">../client/assets/un_atlas/poisonous_gas_full2.png</key>
-            <key type="filename">../client/assets/un_atlas/poisonous_gas_full3.png</key>
-            <key type="filename">../client/assets/un_atlas/purple_monster_awake1.png</key>
-            <key type="filename">../client/assets/un_atlas/purple_monster_awake2.png</key>
-            <key type="filename">../client/assets/un_atlas/purple_monster_awake3.png</key>
-            <key type="filename">../client/assets/un_atlas/purple_monster_sleep1.png</key>
-            <key type="filename">../client/assets/un_atlas/purple_monster_sleep2.png</key>
-            <key type="filename">../client/assets/un_atlas/purple_monster_sleep3.png</key>
-            <key type="filename">../client/assets/un_atlas/red_monster_awake1.png</key>
-            <key type="filename">../client/assets/un_atlas/red_monster_awake2.png</key>
-            <key type="filename">../client/assets/un_atlas/red_monster_awake3.png</key>
-            <key type="filename">../client/assets/un_atlas/red_monster_sleep1.png</key>
-            <key type="filename">../client/assets/un_atlas/red_monster_sleep2.png</key>
-            <key type="filename">../client/assets/un_atlas/red_monster_sleep3.png</key>
+            <key type="filename">./un_atlas/drill_move1.png</key>
+            <key type="filename">./un_atlas/drill_move2.png</key>
+            <key type="filename">./un_atlas/drill_move3.png</key>
+            <key type="filename">./un_atlas/drill_teleport1.png</key>
+            <key type="filename">./un_atlas/drill_teleport2.png</key>
+            <key type="filename">./un_atlas/drill_teleport3.png</key>
+            <key type="filename">./un_atlas/ground_black.png</key>
+            <key type="filename">./un_atlas/ground_black_dig1.png</key>
+            <key type="filename">./un_atlas/ground_black_dig2.png</key>
+            <key type="filename">./un_atlas/ground_black_dig3.png</key>
+            <key type="filename">./un_atlas/ground_blue.png</key>
+            <key type="filename">./un_atlas/ground_blue_dig1.png</key>
+            <key type="filename">./un_atlas/ground_blue_dig2.png</key>
+            <key type="filename">./un_atlas/ground_blue_dig3.png</key>
+            <key type="filename">./un_atlas/ground_green.png</key>
+            <key type="filename">./un_atlas/ground_green_dig1.png</key>
+            <key type="filename">./un_atlas/ground_green_dig2.png</key>
+            <key type="filename">./un_atlas/ground_green_dig3.png</key>
+            <key type="filename">./un_atlas/ground_orange.png</key>
+            <key type="filename">./un_atlas/ground_orange_dig1.png</key>
+            <key type="filename">./un_atlas/ground_orange_dig2.png</key>
+            <key type="filename">./un_atlas/ground_orange_dig3.png</key>
+            <key type="filename">./un_atlas/ground_pink.png</key>
+            <key type="filename">./un_atlas/ground_pink_dig1.png</key>
+            <key type="filename">./un_atlas/ground_pink_dig2.png</key>
+            <key type="filename">./un_atlas/ground_pink_dig3.png</key>
+            <key type="filename">./un_atlas/ground_purple.png</key>
+            <key type="filename">./un_atlas/ground_purple_dig1.png</key>
+            <key type="filename">./un_atlas/ground_purple_dig2.png</key>
+            <key type="filename">./un_atlas/ground_purple_dig3.png</key>
+            <key type="filename">./un_atlas/ground_red.png</key>
+            <key type="filename">./un_atlas/ground_red_dig1.png</key>
+            <key type="filename">./un_atlas/ground_red_dig2.png</key>
+            <key type="filename">./un_atlas/ground_red_dig3.png</key>
+            <key type="filename">./un_atlas/ground_teal.png</key>
+            <key type="filename">./un_atlas/ground_teal_dig1.png</key>
+            <key type="filename">./un_atlas/ground_teal_dig2.png</key>
+            <key type="filename">./un_atlas/ground_teal_dig3.png</key>
+            <key type="filename">./un_atlas/ground_white.png</key>
+            <key type="filename">./un_atlas/ground_white_dig1.png</key>
+            <key type="filename">./un_atlas/ground_white_dig2.png</key>
+            <key type="filename">./un_atlas/ground_white_dig3.png</key>
+            <key type="filename">./un_atlas/ground_yellow.png</key>
+            <key type="filename">./un_atlas/ground_yellow_dig1.png</key>
+            <key type="filename">./un_atlas/ground_yellow_dig2.png</key>
+            <key type="filename">./un_atlas/ground_yellow_dig3.png</key>
+            <key type="filename">./un_atlas/itemSlot_empty.png</key>
+            <key type="filename">./un_atlas/itemSlot_inuse.png</key>
+            <key type="filename">./un_atlas/lava_fill1.png</key>
+            <key type="filename">./un_atlas/lava_fill2.png</key>
+            <key type="filename">./un_atlas/lava_fill3.png</key>
+            <key type="filename">./un_atlas/lava_full1.png</key>
+            <key type="filename">./un_atlas/lava_full2.png</key>
+            <key type="filename">./un_atlas/lava_full3.png</key>
+            <key type="filename">./un_atlas/noxious_gas_fill1.png</key>
+            <key type="filename">./un_atlas/noxious_gas_fill2.png</key>
+            <key type="filename">./un_atlas/noxious_gas_fill3.png</key>
+            <key type="filename">./un_atlas/noxious_gas_full1.png</key>
+            <key type="filename">./un_atlas/noxious_gas_full2.png</key>
+            <key type="filename">./un_atlas/noxious_gas_full3.png</key>
+            <key type="filename">./un_atlas/poisonous_gas_fill1.png</key>
+            <key type="filename">./un_atlas/poisonous_gas_fill2.png</key>
+            <key type="filename">./un_atlas/poisonous_gas_fill3.png</key>
+            <key type="filename">./un_atlas/poisonous_gas_full1.png</key>
+            <key type="filename">./un_atlas/poisonous_gas_full2.png</key>
+            <key type="filename">./un_atlas/poisonous_gas_full3.png</key>
+            <key type="filename">./un_atlas/purple_monster_awake1.png</key>
+            <key type="filename">./un_atlas/purple_monster_awake2.png</key>
+            <key type="filename">./un_atlas/purple_monster_awake3.png</key>
+            <key type="filename">./un_atlas/purple_monster_sleep1.png</key>
+            <key type="filename">./un_atlas/purple_monster_sleep2.png</key>
+            <key type="filename">./un_atlas/purple_monster_sleep3.png</key>
+            <key type="filename">./un_atlas/red_monster_awake1.png</key>
+            <key type="filename">./un_atlas/red_monster_awake2.png</key>
+            <key type="filename">./un_atlas/red_monster_awake3.png</key>
+            <key type="filename">./un_atlas/red_monster_sleep1.png</key>
+            <key type="filename">./un_atlas/red_monster_sleep2.png</key>
+            <key type="filename">./un_atlas/red_monster_sleep3.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -273,7 +273,7 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">../client/assets/un_atlas/hud.png</key>
+            <key type="filename">./un_atlas/hud.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -286,35 +286,35 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">../client/assets/un_atlas/item_detonator.png</key>
-            <key type="filename">../client/assets/un_atlas/item_detonator1.png</key>
-            <key type="filename">../client/assets/un_atlas/item_detonator2.png</key>
-            <key type="filename">../client/assets/un_atlas/item_detonator3.png</key>
-            <key type="filename">../client/assets/un_atlas/item_energy.png</key>
-            <key type="filename">../client/assets/un_atlas/item_explosion.png</key>
-            <key type="filename">../client/assets/un_atlas/item_freeze_explosion.png</key>
-            <key type="filename">../client/assets/un_atlas/item_gas.png</key>
-            <key type="filename">../client/assets/un_atlas/item_remote_charge.png</key>
-            <key type="filename">../client/assets/un_atlas/item_remote_freeze_charge.png</key>
-            <key type="filename">../client/assets/un_atlas/item_repair_nanites.png</key>
-            <key type="filename">../client/assets/un_atlas/item_responder.png</key>
-            <key type="filename">../client/assets/un_atlas/item_responder_teleporter.png</key>
-            <key type="filename">../client/assets/un_atlas/item_satchel.png</key>
-            <key type="filename">../client/assets/un_atlas/item_super_oxygen_liquid_nitrogen.png</key>
-            <key type="filename">../client/assets/un_atlas/item_teleporter.png</key>
-            <key type="filename">../client/assets/un_atlas/item_timed_charge.png</key>
-            <key type="filename">../client/assets/un_atlas/item_timed_freeze_charge.png</key>
-            <key type="filename">../client/assets/un_atlas/item_tombstone.png</key>
-            <key type="filename">../client/assets/un_atlas/mineral_black.png</key>
-            <key type="filename">../client/assets/un_atlas/mineral_blue.png</key>
-            <key type="filename">../client/assets/un_atlas/mineral_green.png</key>
-            <key type="filename">../client/assets/un_atlas/mineral_orange.png</key>
-            <key type="filename">../client/assets/un_atlas/mineral_pink.png</key>
-            <key type="filename">../client/assets/un_atlas/mineral_purple.png</key>
-            <key type="filename">../client/assets/un_atlas/mineral_red.png</key>
-            <key type="filename">../client/assets/un_atlas/mineral_teal.png</key>
-            <key type="filename">../client/assets/un_atlas/mineral_white.png</key>
-            <key type="filename">../client/assets/un_atlas/mineral_yellow.png</key>
+            <key type="filename">./un_atlas/item_detonator.png</key>
+            <key type="filename">./un_atlas/item_detonator1.png</key>
+            <key type="filename">./un_atlas/item_detonator2.png</key>
+            <key type="filename">./un_atlas/item_detonator3.png</key>
+            <key type="filename">./un_atlas/item_energy.png</key>
+            <key type="filename">./un_atlas/item_explosion.png</key>
+            <key type="filename">./un_atlas/item_freeze_explosion.png</key>
+            <key type="filename">./un_atlas/item_gas.png</key>
+            <key type="filename">./un_atlas/item_remote_charge.png</key>
+            <key type="filename">./un_atlas/item_remote_freeze_charge.png</key>
+            <key type="filename">./un_atlas/item_repair_nanites.png</key>
+            <key type="filename">./un_atlas/item_responder.png</key>
+            <key type="filename">./un_atlas/item_responder_teleporter.png</key>
+            <key type="filename">./un_atlas/item_satchel.png</key>
+            <key type="filename">./un_atlas/item_super_oxygen_liquid_nitrogen.png</key>
+            <key type="filename">./un_atlas/item_teleporter.png</key>
+            <key type="filename">./un_atlas/item_timed_charge.png</key>
+            <key type="filename">./un_atlas/item_timed_freeze_charge.png</key>
+            <key type="filename">./un_atlas/item_tombstone.png</key>
+            <key type="filename">./un_atlas/mineral_black.png</key>
+            <key type="filename">./un_atlas/mineral_blue.png</key>
+            <key type="filename">./un_atlas/mineral_green.png</key>
+            <key type="filename">./un_atlas/mineral_orange.png</key>
+            <key type="filename">./un_atlas/mineral_pink.png</key>
+            <key type="filename">./un_atlas/mineral_purple.png</key>
+            <key type="filename">./un_atlas/mineral_red.png</key>
+            <key type="filename">./un_atlas/mineral_teal.png</key>
+            <key type="filename">./un_atlas/mineral_white.png</key>
+            <key type="filename">./un_atlas/mineral_yellow.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -327,7 +327,7 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">../client/assets/un_atlas/spaceco.png</key>
+            <key type="filename">./un_atlas/spaceco.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -340,15 +340,15 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">../client/assets/un_atlas/spaceco_hurt0.png</key>
-            <key type="filename">../client/assets/un_atlas/spaceco_hurt2.png</key>
-            <key type="filename">../client/assets/un_atlas/spaceco_hurt3.png</key>
-            <key type="filename">../client/assets/un_atlas/spaceco_hurt4.png</key>
-            <key type="filename">../client/assets/un_atlas/spaceco_hurt5.png</key>
-            <key type="filename">../client/assets/un_atlas/spaceco_hurt6.png</key>
-            <key type="filename">../client/assets/un_atlas/spaceco_hurt7.png</key>
-            <key type="filename">../client/assets/un_atlas/spaceco_hurt8.png</key>
-            <key type="filename">../client/assets/un_atlas/spaceco_hurt9.png</key>
+            <key type="filename">./un_atlas/spaceco_hurt0.png</key>
+            <key type="filename">./un_atlas/spaceco_hurt2.png</key>
+            <key type="filename">./un_atlas/spaceco_hurt3.png</key>
+            <key type="filename">./un_atlas/spaceco_hurt4.png</key>
+            <key type="filename">./un_atlas/spaceco_hurt5.png</key>
+            <key type="filename">./un_atlas/spaceco_hurt6.png</key>
+            <key type="filename">./un_atlas/spaceco_hurt7.png</key>
+            <key type="filename">./un_atlas/spaceco_hurt8.png</key>
+            <key type="filename">./un_atlas/spaceco_hurt9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -364,7 +364,7 @@
         </map>
         <key>fileList</key>
         <array>
-            <filename>../client/assets/un_atlas</filename>
+            <filename>./un_atlas</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

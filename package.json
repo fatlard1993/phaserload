@@ -1,13 +1,43 @@
 {
-	"name": "phaserload",
-	"version": "1.0.0",
-	"description": "",
-	"main": "",
-	"scripts": {},
-	"author": "",
-	"license": "ISC",
-	"devDependencies": {
-		"gulp": "^3.9.1",
-		"babel-preset-env": "^1.6.1"
-	}
+  "name": "phaserload",
+  "version": "1.0.0",
+  "description": "A Motherload inspired game built on Phaser.js",
+  "main": "src/server/index.js",
+  "scripts": {
+    "start": "src/server/index.js"
+  },
+  "author": "justfatlard",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fatlard1993/phaserload.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fatlard1993/phaserload/issues"
+  },
+  "homepage": "https://github.com/fatlard1993/phaserload#readme",
+  "eslintConfig": {
+    "extends": "rules"
+  },
+  "devDependencies": {
+    "eslint-config-rules": "github:fatlard1993/eslint-config-rules#2.x.x",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.11.0"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.1",
+    "argi": "github:fatlard1993/argi",
+    "augmented-ui": "^2.0.0",
+    "find-root": "^1.1.0",
+    "http-server": "github:fatlard1993/http-server#4.x.x",
+    "js-util": "github:fatlard1993/js-util#2.x.x",
+    "lang": "github:fatlard1993/lang",
+    "dom": "github:fatlard1993/dom#2.x.x",
+    "log": "github:fatlard1993/log#3.x.x",
+    "page-compiler": "github:fatlard1993/page-compiler#1.x.x",
+    "phaser": "^3.50.1",
+    "fs-extended": "github:fatlard1993/fs-extended#2.x.x",
+    "socket-client": "github:fatlard1993/socket-client#2.x.x",
+    "websocket-server": "github:fatlard1993/websocket-server#2.x.x"
+  }
 }

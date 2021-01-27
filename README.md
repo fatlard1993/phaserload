@@ -60,3 +60,6 @@ Run the following snippet to fix it: ```sudo ln -s "$NVM_DIR/versions/node/$(nvm
 More in [etc/screenshots](https://github.com/fatlard1993/phaserload/tree/master/etc/screenshots)
 
 ![game_play](./etc/screenshots/game_play.png)
+
+
+Build in pallet swapping instead of separate image source for each color difference: https://github.com/Colbydude/phaser-3-palette-swapping-example

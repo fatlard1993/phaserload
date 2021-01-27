@@ -1,0 +1,47 @@
+// includes phaserload
+
+div#joinGameForm {
+	width: 90%;
+	margin: 1% auto;
+
+	input {
+		display: block;
+		font-size: 20px;
+		width: 75%;
+		margin: 10px auto 0;
+	}
+
+	button {
+		display: block;
+		font-size: 30px;
+		width: 40%;
+		margin: 10px auto;
+	}
+}
+
+div#game {
+	box-shadow: 0 0 13px #000;
+	width: 100%;
+	height: 100%;
+}
+
+div#console {
+	position: absolute;
+	color: $green;
+
+	&.small {
+		font-size: 15px;
+		top: 5px;
+		left: 5px;
+		width: 118px;
+		height: 85px;
+	}
+
+	&.big {
+		font-size: 20px;
+		top: 25px;
+		left: 25px;
+		width: 590px;
+		height: 425px;
+	}
+}
