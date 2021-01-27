@@ -9,7 +9,7 @@ class GroundEntity extends Phaser.GameObjects.Sprite {
 
 		phaserload.groups.ground.add(this, true);
 
-		this.setDepth(1);
+		this.setDepth(phaserload.layers.ground);
 
 		this.type = type;
 

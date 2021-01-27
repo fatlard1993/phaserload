@@ -10,7 +10,7 @@ class MineralEntity extends Phaser.GameObjects.Image {
 
 		this.type = type;
 
-		this.setDepth(2);
+		this.setDepth(phaserload.layers.ground + 1);
 	}
 
 	collect(){

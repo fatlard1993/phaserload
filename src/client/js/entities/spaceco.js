@@ -15,7 +15,7 @@ class SpacecoEntity extends Phaser.GameObjects.Sprite {
 
 		this.setOrigin(0.5, 0.65);
 
-		this.setDepth(2);
+		this.setDepth(phaserload.layers.ground + 1);
 	}
 }
 

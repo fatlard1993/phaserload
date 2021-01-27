@@ -10,7 +10,7 @@ class DrillEntity extends Phaser.GameObjects.Sprite {
 
 		phaserload.groups.mobs.add(this, true);
 
-		this.setDepth(3);
+		this.setDepth(phaserload.layers.ground + 2);
 
 		this.anims.create({
 			key: 'move',
