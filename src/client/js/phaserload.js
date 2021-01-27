@@ -19,6 +19,10 @@ var phaserload = {
 	options: {},
 	player: {},
 	groups: {},
+	layers: {
+		ground: 1,
+		interfaces: 10
+	},
 	view: {
 		map: [],
 		players: {}
