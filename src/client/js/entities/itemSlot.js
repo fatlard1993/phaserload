@@ -13,7 +13,7 @@ class ItemSlotEntity extends Phaser.GameObjects.Image {
 		this.setScrollFactor(0, 0);
 		this.setOrigin(0);
 		this.setInteractive();
-		this.on('pointerdown', this[this.itemLink ? 'use' : 'load'].bind(this));
+		this.on('pointerdown', () => { this[this.linkedItem ? 'use' : 'load'](); });
 
 		this.itemIcon = new Phaser.GameObjects.Image(phaserload.scene, this.x, this.y, 'map', null);
 		this.itemIcon.setDepth(phaserload.layers.interfaces + 1);
@@ -26,7 +26,7 @@ class ItemSlotEntity extends Phaser.GameObjects.Image {
 	}
 
 	set(item){
-		this.item = item;
+		this.linkedItem = item;
 
 		this.setFrame(item === '' ? 'itemSlot_empty' : 'itemSlot_inuse');
 
@@ -34,6 +34,6 @@ class ItemSlotEntity extends Phaser.GameObjects.Image {
 	}
 
 	use(){
-
+		log()('use', this.linkedItem);
 	}
 }
