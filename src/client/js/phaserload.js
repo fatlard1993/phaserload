@@ -57,7 +57,7 @@ var phaserload = {
 
 		return pos;
 	},
-	toPx: function(pos){
+	toPxPos: function(pos){
 		if(typeof pos === 'object') pos = { x: (pos.x * 64) + 32, y: (pos.y * 64) + 32 };
 		else pos = (pos * 64) + 32;
 
