@@ -1,13 +1,10 @@
 import log from './logger';
 import lang from './lang/index';
 import GroundEntity from './entities/ground';
-import ItemEntity from './entities/item';
 import MineralEntity from './entities/mineral';
 import PlayerEntity from './entities/player';
 import SpacecoEntity from './entities/spaceco';
 
-import util from 'js-util';
-import socketClient from 'socket-client';
 import Phaser from './node_modules/phaser/dist/phaser.min.js';
 
 var phaserload = {
@@ -78,43 +75,6 @@ var phaserload = {
 
 			phaserload.hud.update();
 		}, (timeout || 3) * 1000);
-	},
-	getSurrounds: function(pos, directionList, baseFilter){
-		directionList = directionList || { left: 1, right: 1, farLeft: 1, farRight: 1, top: 1, topLeft: 1, topRight: 1, bottom: 1, bottomLeft: 1, bottomRight: 1 };
-
-		var directions = Object.keys(directionList), count = directions.length, direction, xMod, yMod, ground;
-
-		for(var x = 0; x < count; ++x){
-			direction = directions[x];
-			xMod = 0;
-			yMod = 0;
-
-			if({ left: 1, topLeft: 1, bottomLeft: 1, farLeft: 1 }[direction]) --xMod;
-			if({ right: 1, topRight: 1, bottomRight: 1, farRight: 1 }[direction]) ++xMod;
-			if({ farLeft: 1 }[direction]) --xMod;
-			if({ farRight: 1 }[direction]) ++xMod;
-			if({ top: 1, topLeft: 1, topRight: 1 }[direction]) --yMod;
-			if({ bottom: 1, bottomLeft: 1, bottomRight: 1 }[direction]) ++yMod;
-
-			ground = phaserload.mapPos(pos.x + xMod, pos.y + yMod).ground;
-
-			directionList[direction] = baseFilter ? (baseFilter === ground.base ? ground.name : undefined) : ground.name;
-		}
-
-		return directionList;
-	},
-	getSurroundingRadius: function(pos, radius){
-		var x_from = pos.x - radius, x_to = pos.x + radius;
-		var y_from = pos.y - radius, y_to = pos.y + radius;
-		var out = [];
-
-		for(var x = x_from; x <= x_to; ++x){
-			for(var y = y_from; y <= y_to; ++y){
-				out.push({ x: x, y: y });
-			}
-		}
-
-		return out;
 	},
 	mapPos: function(x, y){
 		if(typeof x === 'object'){
