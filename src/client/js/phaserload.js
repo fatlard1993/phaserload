@@ -172,8 +172,26 @@ var phaserload = {
 	},
 	drawSpaceco: function(){
 		const { x, y } = phaserload.state.world.spaceco.position;
+		const px_x = phaserload.toPxPos(x), px_y = phaserload.toPxPos(y);
 
 		if(!phaserload.view.spaceco) phaserload.view.spaceco = new SpacecoEntity(x, y);
+
+		else{
+			if(phaserload.view.spaceco.x !== px_x || phaserload.view.spaceco.y !== px_y){
+				const old_x = phaserload.toGridPos(phaserload.view.spaceco.x), old_y = phaserload.toGridPos(phaserload.view.spaceco.y);
+
+				phaserload.scene.tweens.add({
+					targets: phaserload.view.spaceco,
+					x: px_x,
+					y: px_y,
+					duration: phaserload.state.world.moveSpeed * (Math.abs(old_x - x) + Math.abs(old_y - y)),
+					ease: 'Linear',
+					onComplete: () => { phaserload.view.spaceco.setFrame(`spaceco_hurt${phaserload.state.world.spaceco.damage}`); }
+				});
+			}
+
+			else phaserload.view.spaceco.setFrame(`spaceco_hurt${phaserload.state.world.spaceco.damage}`);
+		}
 	},
 	adjustViewPosition: function(px_x, px_y, time = 3000){
 		log()('adjustViewPosition', px_x, px_y, time);

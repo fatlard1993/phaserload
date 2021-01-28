@@ -124,9 +124,16 @@ class SocketGame extends SocketRoom {
 		if(phaserload.spacecoAt(this.state.world.spaceco, { x, y: y - 1 })){
 			const spacecoFallY = phaserload.checkMobFall(this.state.world.map, this.state.world.spaceco.position);
 
-			log('Check spaceco fall', this.state.world.spaceco.position.y - spacecoFallY);
+			log('Check spaceco fall', spacecoFallY - this.state.world.spaceco.position.y);
 
-			if(spacecoFallY) this.state.world.spaceco.position.y = spacecoFallY;
+			if(spacecoFallY - this.state.world.spaceco.position.y){
+				this.state.world.spaceco.position.y = spacecoFallY;
+
+				++this.state.world.spaceco.damage;//todo track health not damage
+				//todo hurt is chance based on fall distance
+
+				if(this.state.world.spaceco.damage > 9) this.state.world.spaceco.damage = 9;
+			}
 		}
 
 		return true;
