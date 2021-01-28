@@ -96,6 +96,9 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 
 	draw_notification(){
 		log()('draw_notification');
+
+		//todo add notification (stay small || add notification ui to the pre-existing big ui structure)
+		// eg: open to trade with spaceco/player.name || spaceco/player.name died || hull almost full || almost out of fuel || health is low || ect..
 	}
 
 	draw_inventory(){

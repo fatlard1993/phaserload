@@ -43,39 +43,6 @@ var phaserload = {
 	update: function(){
 		phaserload.drawView();
 	},
-	notify: function(text, timeout){
-		if(phaserload.notifyText === text) return;
-
-		if(phaserload.notify_TO){
-			clearTimeout(phaserload.notify_TO);
-
-			phaserload.hud.statusText.setText('');
-
-			phaserload.notifyText = '';
-		}
-
-		phaserload.game.add.tween(phaserload.hud.scale).to({ x: 1.2, y: 1.2 }, 400, Phaser.Easing.Back.Out, true);
-
-		phaserload.hud.statusText.setText(text);
-
-		phaserload.notifyText = text;
-
-		setTimeout(function(){
-			if(phaserload.hud.isOpen) return;
-
-			phaserload.game.add.tween(phaserload.hud.scale).to({ x: 0.5, y: 0.5 }, 400, Phaser.Easing.Circular.Out, true);
-		}, 350);
-
-		phaserload.notify_TO = setTimeout(function(){
-			phaserload.notify_TO = null;
-
-			phaserload.notifyText = null;
-
-			if(phaserload.hud.isOpen) return;
-
-			phaserload.hud.update();
-		}, (timeout || 3) * 1000);
-	},
 	mapPos: function(x, y){
 		if(typeof x === 'object'){
 			y = x.y;
