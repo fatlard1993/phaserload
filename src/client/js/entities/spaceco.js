@@ -9,7 +9,7 @@ var BaseMineralValue = 2.5;
 
 class SpacecoEntity extends Phaser.GameObjects.Sprite {
 	constructor(x, y){
-		super(phaserload.scene, phaserload.toPx(x), phaserload.toPx(y), 'map', `spaceco_hurt${phaserload.state.world.spaceco.damage}`);
+		super(phaserload.scene, phaserload.toPxPos(x), phaserload.toPxPos(y), 'map', `spaceco_hurt${phaserload.state.world.spaceco.damage}`);
 
 		phaserload.groups.mobs.add(this, true);
 
@@ -37,7 +37,7 @@ class SpacecoEntity extends Phaser.GameObjects.Sprite {
 // 		var spacecoGroundBase = phaserload.getSurrounds(gridPos, { bottomRight: 1, bottom: 1, bottomLeft: 1 }, 'ground');
 
 // 		if(!spacecoGroundBase.bottomRight && !spacecoGroundBase.bottom && !spacecoGroundBase.bottomLeft){
-// 			phaserload.game.add.tween(phaserload.spaceco.sprite).to({ y: phaserload.toPx(gridPos.y + 1) }, 300, Phaser.Easing.Sinusoidal.InOut, true);
+// 			phaserload.game.add.tween(phaserload.spaceco.sprite).to({ y: phaserload.toPxPos(gridPos.y + 1) }, 300, Phaser.Easing.Sinusoidal.InOut, true);
 
 // 			phaserload.spaceco.hurt(1, 'falling');
 // 		}

@@ -4,7 +4,7 @@ import Phaser from './node_modules/phaser/dist/phaser.min.js';
 
 class ItemEntity extends Phaser.GameObjects.Image {
 	constructor(x, y, type){
-		super(phaserload.scene, phaserload.toPx(x), phaserload.toPx(y), 'map', type);
+		super(phaserload.scene, phaserload.toPxPos(x), phaserload.toPxPos(y), 'map', type);
 
 		phaserload.scene.add.existing(this);
 
@@ -17,7 +17,7 @@ class ItemEntity extends Phaser.GameObjects.Image {
 		// 	item = phaserload.items.add(new phaserload.entities.item(x, y, type));
 		// }
 		// else{
-		// 	item.reset(phaserload.toPx(x), phaserload.toPx(y));
+		// 	item.reset(phaserload.toPxPos(x), phaserload.toPxPos(y));
 		// 	item.revive();
 		// }
 
@@ -47,7 +47,7 @@ class ItemEntity extends Phaser.GameObjects.Image {
 
 
 // phaserload.entities.item = function(x, y, type){
-// 	Phaser.Image.call(this, phaserload.game, phaserload.toPx(x), phaserload.toPx(y), 'map', type);
+// 	Phaser.Image.call(this, phaserload.game, phaserload.toPxPos(x), phaserload.toPxPos(y), 'map', type);
 
 // 	this.anchor.setTo(0.5, 0.5);
 // };
@@ -88,7 +88,7 @@ class ItemEntity extends Phaser.GameObjects.Image {
 // 		item = phaserload.items.add(new phaserload.entities.item(x, y, type));
 // 	}
 // 	else{
-// 		item.reset(phaserload.toPx(x), phaserload.toPx(y));
+// 		item.reset(phaserload.toPxPos(x), phaserload.toPxPos(y));
 // 		item.revive();
 // 	}
 

@@ -126,7 +126,7 @@ var phaserload = {
 			if(name === phaserload.player.name) phaserload.player = Object.assign(phaserload.player, phaserload.state.players[name]);
 
 			const { x, y } = phaserload.state.players[name].position;
-			const px_x = phaserload.toPx(x), px_y = phaserload.toPx(y);
+			const px_x = phaserload.toPxPos(x), px_y = phaserload.toPxPos(y);
 
 			if(!phaserload.view.players[name]){
 				if(name === phaserload.player.name) phaserload.player.sprite = phaserload.view.players[name] = new PlayerEntity(x, y, name);
@@ -211,8 +211,8 @@ var phaserload = {
 	adjustViewPosition: function(px_x, px_y, time = 3000){
 		log()('adjustViewPosition', px_x, px_y, time);
 
-		var scrollX = Math.max(0, Math.min(phaserload.toPx(phaserload.state.world.width) - phaserload.config.width - 32, px_x - (phaserload.config.width / 2)));
-		var scrollY = Math.max(0, Math.min(phaserload.toPx(phaserload.state.world.depth) - phaserload.config.height - 32, px_y - (phaserload.config.height / 2)));;
+		var scrollX = Math.max(0, Math.min(phaserload.toPxPos(phaserload.state.world.width) - phaserload.config.width - 32, px_x - (phaserload.config.width / 2)));
+		var scrollY = Math.max(0, Math.min(phaserload.toPxPos(phaserload.state.world.depth) - phaserload.config.height - 32, px_y - (phaserload.config.height / 2)));;
 
 		//todo kill any sprites that arent in view
 

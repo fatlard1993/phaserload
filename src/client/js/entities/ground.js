@@ -5,7 +5,7 @@ import Phaser from './node_modules/phaser/dist/phaser.min.js';
 
 class GroundEntity extends Phaser.GameObjects.Sprite {
 	constructor(x, y, type){
-		super(phaserload.scene, phaserload.toPx(x), phaserload.toPx(y), 'map', `ground_${type}`);
+		super(phaserload.scene, phaserload.toPxPos(x), phaserload.toPxPos(y), 'map', `ground_${type}`);
 
 		phaserload.groups.ground.add(this, true);
 
@@ -52,7 +52,7 @@ class GroundEntity extends Phaser.GameObjects.Sprite {
 
 
 // phaserload.entities.ground = function(x, y, type){
-// 	Phaser.Sprite.call(this, phaserload.game, phaserload.toPx(x), phaserload.toPx(y), 'map', type);
+// 	Phaser.Sprite.call(this, phaserload.game, phaserload.toPxPos(x), phaserload.toPxPos(y), 'map', type);
 
 // 	this.anchor.setTo(0.5, 0.5);
 // };

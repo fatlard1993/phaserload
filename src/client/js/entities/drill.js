@@ -4,7 +4,7 @@ import Phaser from './node_modules/phaser/dist/phaser.min.js';
 
 class DrillEntity extends Phaser.GameObjects.Sprite {
 	constructor(x, y, playerName){
-		super(phaserload.scene, phaserload.toPx(x), phaserload.toPx(y), 'map', 'drill_move1');
+		super(phaserload.scene, phaserload.toPxPos(x), phaserload.toPxPos(y), 'map', 'drill_move1');
 
 		this.playerName = playerName;
 

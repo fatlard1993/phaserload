@@ -5,7 +5,7 @@ import Phaser from './node_modules/phaser/dist/phaser.min.js';
 
 class Entity extends Phaser.GameObjects.Sprite {
 	constructor(x, y, type){
-		super(phaserload.scene, phaserload.toPx(x), phaserload.toPx(y), 'map', type);
+		super(phaserload.scene, phaserload.toPxPos(x), phaserload.toPxPos(y), 'map', type);
 
 		phaserload.scene.add.existing(this);
 	}
@@ -14,7 +14,7 @@ class Entity extends Phaser.GameObjects.Sprite {
 
 
 phaserload.entities.lava = function(x, y){
-	Phaser.Sprite.call(this, phaserload.game, phaserload.toPx(x), phaserload.toPx(y), 'lava');
+	Phaser.Sprite.call(this, phaserload.game, phaserload.toPxPos(x), phaserload.toPxPos(y), 'lava');
 
 	this.anchor.setTo(0.5, 0.5);
 
@@ -37,7 +37,7 @@ phaserload.entities.lava.create = function(x, y, spread){
 	}
 
 	else{
-		lava.reset(phaserload.toPx(x), phaserload.toPx(y));
+		lava.reset(phaserload.toPxPos(x), phaserload.toPxPos(y));
 		lava.revive();
 		lava.animations.stop();
 		lava.animations.getAnimation('full').destroy();

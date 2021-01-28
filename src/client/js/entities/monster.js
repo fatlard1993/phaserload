@@ -5,7 +5,7 @@ import Phaser from './node_modules/phaser/dist/phaser.min.js';
 
 class Entity extends Phaser.GameObjects.Sprite {
 	constructor(x, y, type){
-		super(phaserload.scene, phaserload.toPx(x), phaserload.toPx(y), 'map', type);
+		super(phaserload.scene, phaserload.toPxPos(x), phaserload.toPxPos(y), 'map', type);
 
 		phaserload.scene.add.existing(this);
 	}
@@ -13,7 +13,7 @@ class Entity extends Phaser.GameObjects.Sprite {
 
 
 phaserload.entities.monster = function(x, y, type){
-	Phaser.Sprite.call(this, phaserload.game, phaserload.toPx(x), phaserload.toPx(y), 'map', type +'_monster_sleep1');
+	Phaser.Sprite.call(this, phaserload.game, phaserload.toPxPos(x), phaserload.toPxPos(y), 'map', type +'_monster_sleep1');
 
 	this.anchor.setTo(0.5, 0.5);
 
@@ -31,7 +31,7 @@ phaserload.entities.monster.create = function(x, y, type){
 		monster = phaserload.monsters.add(new phaserload.entities.monster(x, y, type));
 	}
 	else{
-		monster.reset(phaserload.toPx(x), phaserload.toPx(y));
+		monster.reset(phaserload.toPxPos(x), phaserload.toPxPos(y));
 		monster.revive();
 	}
 
@@ -52,7 +52,7 @@ phaserload.entities.monster.prototype.update = function(){
 
 	var gridPos = phaserload.toGridPos(this);
 
-	var aggroDistance = phaserload.toPx(this.type === 'red' ? 8 : 4);
+	var aggroDistance = phaserload.toPxPos(this.type === 'red' ? 8 : 4);
 
 	if(phaserload.game.math.distance(phaserload.player.sprite.x, phaserload.player.sprite.y, this.x, this.y) > aggroDistance) return;
 

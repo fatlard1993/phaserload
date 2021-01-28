@@ -201,7 +201,7 @@ class PlayerEntity extends DrillEntity {
 
 
 // phaserload.entities.player = function(x, y){
-// 	Phaser.Sprite.call(this, phaserload.game, phaserload.toPx(x), phaserload.toPx(y), 'map', 'drill_move1');
+// 	Phaser.Sprite.call(this, phaserload.game, phaserload.toPxPos(x), phaserload.toPxPos(y), 'map', 'drill_move1');
 
 // 	this.anchor.setTo(0.5, 0.5);
 
@@ -387,7 +387,7 @@ class PlayerEntity extends DrillEntity {
 // 		if(direction === 'teleport'){
 // 			phaserload.player.sprite.animations.play('teleport');
 
-// 			newPosition = phaserload.toPx(position);
+// 			newPosition = phaserload.toPxPos(position);
 // 			newGridPos = phaserload.toGridPos(newPosition);
 
 // 			newCameraPosition = { x: newPosition.x - phaserload.config.width / 2, y: newPosition.y - phaserload.config.height / 2 };
@@ -552,7 +552,7 @@ class PlayerEntity extends DrillEntity {
 // 		else if(direction === 'right' && (phaserload.player.sprite.x >= (phaserload.state.mapData.width * 64) - 32 || (!surrounds.bottomRight && !surrounds.bottom && !surrounds.farRight))){
 // 			canMove = 0;
 // 		}
-// 		else if(direction === 'down' && phaserload.player.sprite.y === phaserload.toPx(phaserload.state.mapData.depth - 2)){
+// 		else if(direction === 'down' && phaserload.player.sprite.y === phaserload.toPxPos(phaserload.state.mapData.depth - 2)){
 // 			canMove = 0;
 // 		}
 // 		else if(direction === 'up' && (!surrounds.left && !surrounds.right && !surrounds.topLeft && !surrounds.topRight)){

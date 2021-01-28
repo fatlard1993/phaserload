@@ -4,7 +4,7 @@ import Phaser from './node_modules/phaser/dist/phaser.min.js';
 
 class MineralEntity extends Phaser.GameObjects.Image {
 	constructor(x, y, type){
-		super(phaserload.scene, phaserload.toPx(x), phaserload.toPx(y), 'map', `mineral_${type}`);
+		super(phaserload.scene, phaserload.toPxPos(x), phaserload.toPxPos(y), 'map', `mineral_${type}`);
 
 		phaserload.scene.add.existing(this);
 

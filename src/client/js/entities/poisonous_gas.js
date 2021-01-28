@@ -5,7 +5,7 @@ import Phaser from './node_modules/phaser/dist/phaser.min.js';
 
 class Entity extends Phaser.GameObjects.Sprite {
 	constructor(x, y, type){
-		super(phaserload.scene, phaserload.toPx(x), phaserload.toPx(y), 'map', type);
+		super(phaserload.scene, phaserload.toPxPos(x), phaserload.toPxPos(y), 'map', type);
 
 		phaserload.scene.add.existing(this);
 	}
@@ -13,7 +13,7 @@ class Entity extends Phaser.GameObjects.Sprite {
 
 
 phaserload.entities.poisonous_gas = function(x, y){
-	Phaser.Sprite.call(this, phaserload.game, phaserload.toPx(x), phaserload.toPx(y), 'map', 'poisonous_gas_fill1');
+	Phaser.Sprite.call(this, phaserload.game, phaserload.toPxPos(x), phaserload.toPxPos(y), 'map', 'poisonous_gas_fill1');
 
 	this.anchor.setTo(0.5, 0.5);
 
@@ -38,7 +38,7 @@ phaserload.entities.poisonous_gas.create = function(x, y, spreadChance){
 		poisonous_gas = phaserload.poisonous_gas.add(new phaserload.entities.poisonous_gas(x, y));
 	}
 	else{
-		poisonous_gas.reset(phaserload.toPx(x), phaserload.toPx(y));
+		poisonous_gas.reset(phaserload.toPxPos(x), phaserload.toPxPos(y));
 		poisonous_gas.revive();
 		poisonous_gas.animations.stop();
 		poisonous_gas.animations.getAnimation('full').destroy();
