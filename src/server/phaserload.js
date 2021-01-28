@@ -272,20 +272,60 @@ const phaserload = module.exports = {
 
 		return { name: partName, price: partPrice };
 	},
-	checkMobFall: function(pos, map){
+	getImmediateSurrounds: function(map, pos, directionMap){
+		if(!directionMap) directionMap = { left: 1, right: 1, farLeft: 1, farRight: 1, top: 1, topLeft: 1, topRight: 1, bottom: 1, bottomLeft: 1, bottomRight: 1 };
+
+		Object.keys(directionMap).forEach((direction) => {
+			let xMod = 0, yMod = 0;
+
+			if({ left: 1, topLeft: 1, bottomLeft: 1, farLeft: 1 }[direction]) --xMod;
+			if({ right: 1, topRight: 1, bottomRight: 1, farRight: 1 }[direction]) ++xMod;
+			if({ farLeft: 1 }[direction]) --xMod;
+			if({ farRight: 1 }[direction]) ++xMod;
+			if({ top: 1, topLeft: 1, topRight: 1 }[direction]) --yMod;
+			if({ bottom: 1, bottomLeft: 1, bottomRight: 1 }[direction]) ++yMod;
+
+			const x = pos.x + xMod, y = pos.y + yMod;
+
+			directionMap[direction] = { x, y, ...phaserload.mapPos(map, x, y).ground };
+		});
+
+		return directionMap;
+	},
+	getSurroundingRadiusPositions: function(pos, radius){
+		const x_from = pos.x - radius, x_to = pos.x + radius;
+		const y_from = pos.y - radius, y_to = pos.y + radius;
+		let surroundingRadius = [];
+
+		for(let x = x_from, y; x <= x_to; ++x) for(y = y_from; y <= y_to; ++y) surroundingRadius.push({ x: x, y: y });
+
+		return surroundingRadius;
+	},
+	mapPos: function(map, x, y){
+		if(typeof x === 'object'){
+			y = x.y;
+			x = x.x;
+		}
+
+		return map[x] !== undefined ? (map[x][y] !== undefined ? map[x][y] : map[0][0]) : map[0][0];
+	},
+	spacecoAt: function({ position }, { x, y }){
+		return position.y === y && (position.x === x || position.x === x - 1 || position.x === x + 1);
+	},
+	playersAt: function(map, pos){
+
+	},
+	checkMobFall: function(map, pos){
+		const surrounds = phaserload.getImmediateSurrounds(map, pos, { bottomLeft: 1, bottom: 1, bottomRight: 1 });
 		let fall = true;
 
-		for(let x = pos.x - 1; x <= (pos.x + 1); ++x){
-			if(!map[x] || !map[x][pos.y + 1] || map[x][pos.y + 1].ground.type){
-				fall = false;
+		log('test', pos, surrounds);
 
-				break;
-			}
-		}
+		if(surrounds.bottomLeft.type || surrounds.bottom.type || surrounds.bottomRight.type) fall = false;
 
 		log(1)('checkMobFall', fall, pos.y);
 
-		if(fall) return phaserload.checkMobFall({ x: pos.x, y: pos.y + 1 }, map);
+		if(fall) return phaserload.checkMobFall(map, { x: pos.x, y: pos.y + 1 });
 
 		return pos.y;
 	}

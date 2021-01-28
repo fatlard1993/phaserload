@@ -44,7 +44,7 @@ class SocketGame extends SocketRoom {
 			health: 100,
 			fuel: 5,
 			hull: 100,
-			moveSpeed: game.state.world.moveSpeed,
+			moveSpeed: game.state.world.moveSpeed,// change world setting to "gravity"
 			getMoveSpeed: function(){
 				let speed = game.state.world.moveSpeed;
 
@@ -85,35 +85,51 @@ class SocketGame extends SocketRoom {
 
 		if(x < 0 || y < 0 || (oldPos.x === x && oldPos.y === y)) return;
 
-		y = phaserload.checkMobFall({ x, y }, this.state.world.map); //todo hurt mob based on fall distance
-
-		if(this.state.world.map[x][y].ground.type){
-			const { type, mineral } = this.state.world.map[x][y].ground;
-
-			if(!this.state.players[name].inventory[`trace_${type}`]) this.state.players[name].inventory[`trace_${type}`] = 1;
-			else ++this.state.players[name].inventory[`trace_${type}`];
-
-			if(mineral){
-				if(!this.state.players[name].inventory[`pure_${type}`]) this.state.players[name].inventory[`pure_${type}`] = 1;
-				else ++this.state.players[name].inventory[`pure_${type}`];
-			}
-
-			//todo consume hull space (based on density)
-
-			this.state.world.map[x][y].ground = {};
-		}
+		if(!this.dig({ x, y }, this.state.players[name])) y = phaserload.checkMobFall(this.state.world.map, { x, y }); //todo hurt mob based on fall distance
 
 		//todo account for dig speed and material density when digging
 
-		//todo if this move causes another player to lose footing make them fall
-
-		//todo use gas
+		this.state.players[name].fuel -= 0.1;//todo use more or less gas based on dig speed
 
 		log(`Player move from ${oldPos.x} ${oldPos.y} to ${x} ${y}`);
 
 		this.state.players[name].position = { x, y };
 
 		this.broadcastState();
+	}
+
+	dig({ x, y }, player){
+		if(!this.state.world.map[x][y].ground.type) return false;
+
+		if(player){
+			const { type, mineral } = this.state.world.map[x][y].ground;
+
+			if(!player.inventory[`trace_${type}`]) player.inventory[`trace_${type}`] = 1;
+			else ++player.inventory[`trace_${type}`];
+
+			if(mineral){
+				if(!player.inventory[`pure_${type}`]) player.inventory[`pure_${type}`] = 1;
+				else ++player.inventory[`pure_${type}`];
+			}
+
+			//todo consume hull space (based on density)
+		}
+
+		this.state.world.map[x][y].ground = {};
+
+		//todo touching grounds have a chance to fall based on density
+
+		//todo if this move causes another player to lose footing make them fall
+
+		if(phaserload.spacecoAt(this.state.world.spaceco, { x, y: y - 1 })){
+			const spacecoFallY = phaserload.checkMobFall(this.state.world.map, this.state.world.spaceco.position);
+
+			log('Check spaceco fall', this.state.world.spaceco.position.y - spacecoFallY);
+
+			if(spacecoFallY) this.state.world.spaceco.position.y = spacecoFallY;
+		}
+
+		return true;
 	}
 }
 
