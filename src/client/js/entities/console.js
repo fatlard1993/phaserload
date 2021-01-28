@@ -94,6 +94,10 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		//todo add general help info
 	}
 
+	draw_notification(){
+		log()('draw_notification');
+	}
+
 	draw_inventory(){
 		log()('draw_inventory');
 
