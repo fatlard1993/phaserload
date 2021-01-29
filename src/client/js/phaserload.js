@@ -160,7 +160,7 @@ var phaserload = {
 					onComplete: () => {
 						if(name === phaserload.player.name){
 							clearTimeout(phaserload.player.moveUnlock);
-							phaserload.player.midMove = false;
+							phaserload.player.midMove = false;//todo make this a server side variable so players cant cheat move speed
 							phaserload.adjustViewPosition(px_x, px_y);
 						}
 					}
