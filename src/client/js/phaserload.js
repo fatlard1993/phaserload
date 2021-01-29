@@ -153,20 +153,16 @@ var phaserload = {
 					targets: phaserload.view.players[name],
 					x: px_x,
 					y: px_y,
-					duration: phaserload.player.moveSpeed,
-					ease: 'Linear'
+					duration: phaserload.state.players[name].moveSpeed,
+					ease: 'Linear',
+					onComplete: () => {
+						if(name === phaserload.player.name){
+							clearTimeout(phaserload.player.moveUnlock);
+							phaserload.player.midMove = false;
+							phaserload.adjustViewPosition(px_x, px_y);
+						}
+					}
 				});
-
-				clearTimeout(phaserload.player.moveUnlock);
-
-				setTimeout(() => { phaserload.player.midMove = false; }, phaserload.player.moveSpeed);
-			}
-
-			if(name === phaserload.player.name){
-				phaserload.adjustViewPosition(px_x, px_y);
-
-				//todo kill any sprites that arent in view
-				//todo world wrap?
 			}
 		});
 	},
@@ -184,7 +180,7 @@ var phaserload = {
 					targets: phaserload.view.spaceco,
 					x: px_x,
 					y: px_y,
-					duration: phaserload.state.world.moveSpeed * (Math.abs(old_x - x) + Math.abs(old_y - y)),
+					duration: phaserload.state.world.gravity * (Math.abs(old_x - x) + Math.abs(old_y - y)),
 					ease: 'Linear',
 					onComplete: () => { phaserload.view.spaceco.setFrame(`spaceco_hurt${phaserload.state.world.spaceco.damage}`); }
 				});
@@ -200,6 +196,7 @@ var phaserload = {
 		var scrollY = Math.max(0, Math.min(phaserload.toPxPos(phaserload.state.world.depth) - phaserload.config.height - 32, px_y - (phaserload.config.height / 2)));;
 
 		//todo kill any sprites that arent in view
+		//todo world wrap?
 
 		phaserload.scene.tweens.add({
 			targets: phaserload.scene.cameras.main,

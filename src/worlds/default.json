@@ -5,7 +5,7 @@
 		"depth": [80, 110],
 		"holeChance": 40,
 		"mineralChance": 30,
-		"moveSpeed": 250,
+		"gravity": 250,
 		"layers": [
 			{
 				"ground": { "white": 35, "green": 65 }

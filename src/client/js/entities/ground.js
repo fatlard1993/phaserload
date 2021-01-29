@@ -20,7 +20,7 @@ class GroundEntity extends Phaser.GameObjects.Sprite {
 				start: 1,
 				end: 3
 			}),
-			duration: phaserload.state.world.moveSpeed,//todo account for mineral density and player drill parts
+			duration: phaserload.state.world.gravity,//todo account for mineral density and player drill parts
 			repeat: 0
 		});
 	}
@@ -44,7 +44,7 @@ class GroundEntity extends Phaser.GameObjects.Sprite {
 
 		this.anims.play('dig', false);
 
-		setTimeout(() => { this.destroy(); }, phaserload.state.world.moveSpeed);
+		setTimeout(() => { this.destroy(); }, phaserload.state.world.gravity);
 	}
 }
 

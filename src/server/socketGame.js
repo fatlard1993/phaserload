@@ -44,9 +44,8 @@ class SocketGame extends SocketRoom {
 			health: 100,
 			fuel: 5,
 			hull: 100,
-			moveSpeed: game.state.world.moveSpeed,// change world setting to "gravity"
-			getMoveSpeed: function(){
-				let speed = game.state.world.moveSpeed;
+			updateMoveSpeed: function(){
+				let speed = game.state.world.gravity;
 
 				// todo account for: tracks, hull size, material weight
 
@@ -55,6 +54,8 @@ class SocketGame extends SocketRoom {
 		}, phaserload.modes[this.options.mode].player || {}, this.state.players[client.name]);
 
 		if(!player.position) player.position = { x: util.randInt(1, this.state.world.width - 1), y: this.state.world.airGap };
+
+		player.updateMoveSpeed();
 
 		this.state.players[player.name] = player;
 		this.state.playerNames = this.clientNames;

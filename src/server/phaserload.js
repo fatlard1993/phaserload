@@ -130,7 +130,7 @@ const phaserload = module.exports = {
 			airGap: options.airGap,
 			map: [],
 			width: [30, 50],
-			moveSpeed: [300, 900],
+			gravity: [300, 900],
 			depth: [180, 250],
 			groundEffects: Object.assign({
 				white: ['bonus:~:2:~:white:~:[1,2]'],
@@ -168,7 +168,7 @@ const phaserload = module.exports = {
 
 		if(world.width instanceof Array) world.width = util.randInt.apply(null, world.width);
 		if(world.depth instanceof Array) world.depth = util.randInt.apply(null, world.depth);
-		if(world.moveSpeed instanceof Array) world.moveSpeed = util.randInt.apply(null, world.moveSpeed);
+		if(world.gravity instanceof Array) world.gravity = util.randInt.apply(null, world.gravity);
 
 		if(!world.spaceco.position) world.spaceco.position = { x: util.randInt(3, world.width - 3), y: options.airGap };
 
