@@ -3,7 +3,7 @@ const log = new (require('log'))({ tag: 'phaserload' });
 process.on('exit', function(code){ log.error('EXIT', code); });
 
 process.on('SIGINT', () => {
-	log.warn('Exiting via Ctrl + C');
+	log.warn('Clean Exit');
 
 	process.exit(130);
 });

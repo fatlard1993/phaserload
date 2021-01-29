@@ -7,5 +7,5 @@ process.openStdin().addListener('data', function(data){
 
 	log.info(`STDIN: ${data}`);
 
-	if(data === 'stop') process.exit(130);
+	if(data === 'stop') process.kill(process.pid, 'SIGTERM');
 });

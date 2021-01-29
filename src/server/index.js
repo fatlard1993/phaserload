@@ -7,7 +7,7 @@ const argi = require('argi').parse({
 		alias: 'p'
 	},
 	verbosity: {
-		type: 'number',
+		type: 'int',
 		defaultValue: 1,
 		alias: 'v'
 	}
