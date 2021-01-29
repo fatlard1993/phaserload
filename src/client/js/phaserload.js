@@ -149,11 +149,13 @@ var phaserload = {
 					phaserload.view.players[name].rotation = positions[direction].rotation;
 				}
 
+				const old_x = phaserload.toGridPos(phaserload.view.players[name].x), old_y = phaserload.toGridPos(phaserload.view.players[name].y);
+
 				phaserload.scene.tweens.add({
 					targets: phaserload.view.players[name],
 					x: px_x,
 					y: px_y,
-					duration: phaserload.state.players[name].moveSpeed,
+					duration: phaserload.state.players[name].moveSpeed * Math.max(1, Math.abs(old_x - x) + Math.abs(old_y - y) - 1),
 					ease: 'Linear',
 					onComplete: () => {
 						if(name === phaserload.player.name){
