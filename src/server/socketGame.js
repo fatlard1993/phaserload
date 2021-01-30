@@ -75,13 +75,15 @@ class SocketGame extends SocketRoom {
 				const fuelTankPart = this.configuration.fuelTank.split(':~:');
 				const maxFuel = { standard: 5, large: 10, oversized: 15, pressurized: 20, battery: 35, condenser: 45 }[fuelTankPart[0]];
 				let availableFuel = typeof this.fuel.available === 'undefined' ? maxFuel : (this.fuel.available / 100) * this.fuel.max;
+				let fuelConsumption = this.moveTime / 2e4;
 
-				if(use) availableFuel -= this.moveTime / 1e5;
+				if(use) availableFuel -= fuelConsumption;
 
 				availableFuel = (availableFuel / maxFuel) * 100;
 
 				log(1)(`Fuel from ${this.fuel.max} to ${maxFuel} | ${availableFuel}% available`);
 
+				this.fuel.consumption = fuelConsumption;
 				this.fuel.max = maxFuel;
 				this.fuel.available = availableFuel;
 			},
@@ -176,11 +178,16 @@ class SocketGame extends SocketRoom {
 
 		const groundResistance = this.state.world.densities[this.state.world.map[x][y].ground.type];
 
-		this.state.players[name].updateHull();
 		this.state.players[name].updateMoveTime(groundResistance);
+		this.state.players[name].updateFuel();
+
+		if(this.state.players[name].fuel.available - this.state.players[name].fuel.consumption <= 0) return this.server.users[name].reply('invalid_move', 'Out of fuel');
+
 		this.state.players[name].updateFuel(true);
 
 		if(!this.dig({ x, y }, this.state.players[name])) y = phaserload.checkMobFall(this.state.world.map, { x, y }); //todo hurt mob based on fall distance
+
+		this.state.players[name].updateHull();
 
 		if(oldPos.x === x && oldPos.y === y){
 			this.state.players[name].moving = false;
