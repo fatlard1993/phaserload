@@ -151,6 +151,8 @@ var phaserload = {
 
 				const old_x = phaserload.toGridPos(phaserload.view.players[name].x), old_y = phaserload.toGridPos(phaserload.view.players[name].y);
 
+				if(name === phaserload.player.name) phaserload.adjustViewPosition(px_x, px_y, phaserload.player.moveTime);
+
 				phaserload.scene.tweens.add({
 					targets: phaserload.view.players[name],
 					x: px_x,
@@ -158,10 +160,7 @@ var phaserload = {
 					duration: phaserload.state.players[name].moveTime,// * Math.max(1, Math.abs(old_x - x) + Math.abs(old_y - y) - 1),
 					ease: 'Linear',
 					onComplete: () => {
-						if(name === phaserload.player.name){
-							phaserload.player.midMove = false;
-							phaserload.adjustViewPosition(px_x, px_y, phaserload.player.moveTime);
-						}
+						if(name === phaserload.player.name) phaserload.player.midMove = false;
 					}
 				});
 			}
