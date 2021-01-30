@@ -233,22 +233,5 @@ var phaserload = {
 		}
 
 		if(animation) entity.anims.play(animation);
-	},
-	god: function(){
-		phaserload.player.credits = 999;
-
-		phaserload.player.fuel = phaserload.player.max_fuel;
-		phaserload.player.health = phaserload.player.max_health;
-
-		phaserload.player.inventory = {
-			'quadratic:~:tritanium:~:drill': 1,
-			'precision_2:~:tritanium:~:drill': 1,
-			'boosted_3:~:tritanium:~:tracks': 1,
-			responder_teleporter: 99,
-			timed_charge: 99,
-			remote_charge: 99,
-			timed_freeze_charge: 99,
-			remote_freeze_charge: 99
-		};
 	}
 };
