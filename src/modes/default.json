@@ -4,11 +4,9 @@
 			"tracks": "standard:~:tritanium",
 			"hull": "standard:~:tritanium",
 			"drill": "standard:~:tritanium",
-			"fuel_tank": "standard:~:tritanium"
+			"fuelTank": "standard:~:tritanium"
 		},
 		"inventory": { "teleporter": 1 },
-		"fuel": 5,
-		"health": 100,
 		"credits": 0
 	},
 	"spaceco": {

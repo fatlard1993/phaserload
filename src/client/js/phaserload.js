@@ -155,13 +155,12 @@ var phaserload = {
 					targets: phaserload.view.players[name],
 					x: px_x,
 					y: px_y,
-					duration: phaserload.state.players[name].moveSpeed * Math.max(1, Math.abs(old_x - x) + Math.abs(old_y - y) - 1),
+					duration: phaserload.state.players[name].moveTime,// * Math.max(1, Math.abs(old_x - x) + Math.abs(old_y - y) - 1),
 					ease: 'Linear',
 					onComplete: () => {
 						if(name === phaserload.player.name){
-							clearTimeout(phaserload.player.moveUnlock);
-							phaserload.player.midMove = false;//todo make this a server side variable so players cant cheat move speed
-							phaserload.adjustViewPosition(px_x, px_y);
+							phaserload.player.midMove = false;
+							phaserload.adjustViewPosition(px_x, px_y, phaserload.player.moveTime);
 						}
 					}
 				});
@@ -191,7 +190,7 @@ var phaserload = {
 			else phaserload.view.spaceco.setFrame(`spaceco_hurt${phaserload.state.world.spaceco.damage}`);
 		}
 	},
-	adjustViewPosition: function(px_x, px_y, time = 3000){
+	adjustViewPosition: function(px_x, px_y, time = 2000){
 		log()('adjustViewPosition', px_x, px_y, time);
 
 		var scrollX = Math.max(0, Math.min(phaserload.toPxPos(phaserload.state.world.width) - phaserload.config.width - 32, px_x - (phaserload.config.width / 2)));
@@ -204,7 +203,7 @@ var phaserload = {
 			targets: phaserload.scene.cameras.main,
 			scrollX,
 			scrollY,
-			duration: phaserload.player.moveSpeed,
+			duration: time,
 			ease: 'Linear'
 		});
 	},

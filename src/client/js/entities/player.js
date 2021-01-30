@@ -22,6 +22,8 @@ class PlayerEntity extends DrillEntity {
 
 			else if(evt.keyPressed === 'ESCAPE') phaserload.player.console.toggle();
 		});
+
+		phaserload.adjustViewPosition(phaserload.toPxPos(x), phaserload.toPxPos(y), 0);
 	}
 
 	move(direction){
@@ -36,8 +38,6 @@ class PlayerEntity extends DrillEntity {
 		phaserload.player.midMove = true;
 
 		socketClient.reply('player_move', { name: this.playerName, x, y });
-
-		phaserload.player.moveUnlock = setTimeout(() => { phaserload.player.midMove = false; }, phaserload.player.moveSpeed * 1.6);
 	}
 
 	preUpdate(time, delta){

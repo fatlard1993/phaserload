@@ -129,9 +129,9 @@ const phaserload = module.exports = {
 			pack: worldPack,
 			airGap: options.airGap,
 			map: [],
-			width: [30, 50],
-			gravity: [300, 900],
-			depth: [180, 250],
+			width: options.width || [30, 50],
+			depth: options.depth || [180, 250],
+			gravity: options.gravity || [350, 500],
 			groundEffects: Object.assign({
 				white: ['bonus:~:2:~:white:~:[1,2]'],
 				orange: ['bonus:~:2:~:orange:~:[1,2]'],
@@ -248,23 +248,23 @@ const phaserload = module.exports = {
 		return world;
 	},
 	generatePart: function(){
-		var type = util.randFromArr(['tracks', 'hull', 'drill', 'fuel_tank']);
+		var type = util.randFromArr(['tracks', 'hull', 'drill', 'fuelTank']);
 		var material = util.weightedChance({ tritanium: 20, duranium: 18, pentrilium: 16, byzanium: 14, etherium: 12, mithril: 8, octanium: 5, saronite: 4, adamantite: 1, quadium: 2 });
 		var subTypes = {
 			tracks: { boosted_1: 40, boosted_2: 30, boosted_3: 20, antigravidic: 10 },
 			hull: { large: 70, oversized: 30 },
 			drill: { quadratic: 50, precision_1: 30, precision_2: 20 },
-			fuel_tank: { large: 30, oversized: 20, pressurized: 25, battery: 15, condenser: 10 }
+			fuelTank: { large: 30, oversized: 20, pressurized: 25, battery: 15, condenser: 10 }
 		};
 		var subType = util.weightedChance(subTypes[type]);
 
-		var typePrice = { tracks: 10, hull: 10, drill: 10, fuel_tank: 10 };
+		var typePrice = { tracks: 10, hull: 10, drill: 10, fuelTank: 10 };
 		var materialPrice = { tritanium: 10, duranium: 15, pentrilium: 25, byzanium: 30, etherium: 40, mithril: 45, octanium: 50, saronite: 55, adamantite: 65, quadium: 80 };
 		var subtypePrices = {
 			tracks: { boosted_1: 20, boosted_2: 30, boosted_3: 40, antigravidic: 50 },
 			hull: { large: 20, oversized: 40 },
 			drill: { quadratic: 20, precision_1: 30, precision_2: 50 },
-			fuel_tank: { large: 20, oversized: 30, pressurized: 40, battery: 55, condenser: 70 }
+			fuelTank: { large: 20, oversized: 30, pressurized: 40, battery: 55, condenser: 70 }
 		};
 
 		var partName = subType +':~:'+ material +':~:'+ type;
@@ -318,8 +318,6 @@ const phaserload = module.exports = {
 	checkMobFall: function(map, pos){
 		const surrounds = phaserload.getImmediateSurrounds(map, pos, { bottomLeft: 1, bottom: 1, bottomRight: 1 });
 		let fall = true;
-
-		log('test', pos, surrounds);
 
 		if(surrounds.bottomLeft.type || surrounds.bottom.type || surrounds.bottomRight.type) fall = false;
 

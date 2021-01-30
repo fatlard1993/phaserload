@@ -69,8 +69,19 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 			const elem = this.elem.children[index] || dom.createElem('div', { appendTo: this.elem });
 
 			//todo {fuel, hull, health} account for max values and display a percentage and/or a bar
+			if(name === 'hull'){
+				elem.textContent = `Hull: ${util.toFixed(phaserload.player.hull.available, 1, true)}%`;
+			}
 
-			elem.textContent = (name === 'position' ? `GPS: x${phaserload.player[name].x} y${phaserload.player[name].y}` : `${name === 'credits' ? '$' : util.capitalize(name)}: ${phaserload.player[name]}`);
+			else if(name === 'fuel'){
+				elem.textContent = `Fuel: ${util.toFixed(phaserload.player.fuel.available, 1, true)}%`;
+			}
+
+			else if(name === 'health'){
+				elem.textContent = `Health: ${util.toFixed(phaserload.player.health.available, 1, true)}%`;
+			}
+
+			else elem.textContent = (name === 'position' ? `GPS: x${phaserload.player[name].x} y${phaserload.player[name].y}` : `${name === 'credits' ? '$' : util.capitalize(name)}: ${phaserload.player[name]}`);
 		});
 	}
 
@@ -82,8 +93,16 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		//todo if near spaceco open spaceco console
 		//todo if near another player open the player trade console
 
+		dom.createElem('div', { textContent: 'Inventory', appendTo: this.elem });
+
 		Object.keys(phaserload.player.inventory).forEach((name) => {
 			dom.createElem('div', { textContent: `${name}: ${phaserload.player.inventory[name]}`, appendTo: this.elem });
+		});
+
+		dom.createElem('div', { textContent: 'Hull Material', appendTo: this.elem });
+
+		Object.keys(phaserload.player.hull.material).forEach((name) => {
+			dom.createElem('div', { textContent: `${name}: ${phaserload.player.hull.material[name]}`, appendTo: this.elem });
 		});
 	}
 

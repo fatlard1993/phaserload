@@ -35,6 +35,12 @@ const game = {
 			phaserload.player = Object.assign(phaserload.player, state);
 		});
 
+		socketClient.on('invalid_move', () => {
+			log()('invalid_move');
+
+			phaserload.player.midMove = false;
+		});
+
 		socketClient.on('state', (state) => {
 			log()('state', state);
 
