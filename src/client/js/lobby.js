@@ -36,7 +36,11 @@ const lobby = {
 		});
 
 		dom.interact.on('keyUp', ({ keyPressed }) => {
-			if(keyPressed === 'ENTER' && document.getElementById('newGameCreateButton')) lobby.createNewGame();
+			if(keyPressed === 'ENTER'){
+				if(document.getElementById('newGameCreateButton')) lobby.createNewGame();
+				else if(document.getElementById('gamesList').children.length > 1) dom.location.change(`/game?room=${document.getElementById('gamesList').children[1].children[0].textContent}`);
+				else if(document.getElementById('newGame')) lobby.draw('new_game');
+			}
 		});
 
 		dom.setTitle('Phaserload - lobby');
