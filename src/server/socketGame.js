@@ -36,6 +36,7 @@ class SocketGame extends SocketRoom {
 			configuration: {
 				tracks: 'standard:~:tritanium',
 				hull: 'standard:~:tritanium',
+				cargoBay: 'standard:~:tritanium',
 				drill: 'standard:~:tritanium',
 				fuelTank: 'standard:~:tritanium'
 			},
@@ -44,21 +45,23 @@ class SocketGame extends SocketRoom {
 			credits: [0, 9],
 			health: {},
 			fuel: {},
-			hull: {
+			cargoBay: {
 				material: {}
 			},
 			updateHealth: function(hurt = 0){
 				const tracksPart = this.configuration.tracks.split(':~:');
 				const hullPart = this.configuration.hull.split(':~:');
+				const cargoBayPart = this.configuration.cargoBay.split(':~:');
 				const drillPart = this.configuration.drill.split(':~:');
 				const fuelTankPart = this.configuration.fuelTank.split(':~:');
 				let maxHealth = 5;
 
 				//todo base the health on the part types and material
-				// if(tracksPart[1] === 'standard') maxHealth += 5;
-				// if(hullPart[1] === 'standard') maxHealth += 5;
-				// if(drillPart[1] === 'standard') maxHealth += 5;
-				// if(fuelTankPart[1] === 'standard') maxHealth += 5;
+				// if(tracksPart[1] === 'standard') maxHealth += 1;
+				// if(hullPart[1] === 'standard') maxHealth += 1;
+				// if(cargoBayPart[1] === 'standard') maxHealth += 1;
+				// if(drillPart[1] === 'standard') maxHealth += 1;
+				// if(fuelTankPart[1] === 'standard') maxHealth += 1;
 
 				let availableHealth = typeof this.health.available === 'undefined' ? maxHealth : (this.health.available / 100) * this.health.max;
 
@@ -87,35 +90,35 @@ class SocketGame extends SocketRoom {
 				this.fuel.max = maxFuel;
 				this.fuel.available = availableFuel;
 			},
-			updateHull: function(){
-				const hullPart = this.configuration.hull.split(':~:');
-				let maxSpace = { standard: 5, large: 10, oversized: 20 }[hullPart[0]];
+			updateCargoBay: function(){
+				const cargoBayPart = this.configuration.cargoBay.split(':~:');
+				let maxSpace = { standard: 5, large: 10, oversized: 20 }[cargoBayPart[0]];
 
 				let availableSpace = maxSpace;
 
-				Object.keys(this.hull.material).forEach((item) => {
+				Object.keys(this.cargoBay.material).forEach((item) => {
 					const type = item.split('_');
 
-					availableSpace -= (game.state.world.densities[type[1]] * (type[0] === 'pure' ? 0.00005 : 0.00008)) * this.hull.material[item];
+					availableSpace -= (game.state.world.densities[type[1]] * (type[0] === 'pure' ? 0.00005 : 0.00008)) * this.cargoBay.material[item];
 				});
 
 				availableSpace = (availableSpace / maxSpace) * 100;
 
-				log(1)(`Hull from ${this.hull.max} to ${maxSpace} | ${availableSpace}% available`);
+				log(1)(`Cargo bay .. from ${this.cargoBay.max} to ${maxSpace} | ${availableSpace}% available`);
 
-				this.hull.max = maxSpace;
-				this.hull.available = availableSpace;
+				this.cargoBay.max = maxSpace;
+				this.cargoBay.available = availableSpace;
 			},
 			updateMoveTime: function(resistance = 0){
 				let time = 0;
 
 				time += game.state.world.gravity;
 				time += resistance;
-				time += ((100 - this.hull.available) / 100) * 300;//todo max hull resistance based on size and material
+				time += ((100 - this.cargoBay.available) / 100) * 300;//todo max cargoBay resistance based on size and material
 
 				// todo account for: track type and configuration materials
 
-				log(1)(`Move time from ${this.moveTime} to ${time}`, game.state.world.gravity, resistance, this.hull.available);
+				log(1)(`Move time from ${this.moveTime} to ${time}`, game.state.world.gravity, resistance, this.cargoBay.available);
 
 				this.moveTime = time;
 			}
@@ -126,7 +129,7 @@ class SocketGame extends SocketRoom {
 
 		player.updateHealth();
 		player.updateFuel();
-		player.updateHull();
+		player.updateCargoBay();
 		player.updateMoveTime();
 
 		this.state.players[name] = player;
@@ -158,9 +161,9 @@ class SocketGame extends SocketRoom {
 		};
 
 		playerNames.forEach((name) => {
-			const { configuration, inventory, moveTime, credits, health, fuel, hull, position } = players[name];
+			const { configuration, inventory, moveTime, credits, health, fuel, cargoBay, position } = players[name];
 
-			viewState.players[name] = { name, configuration, inventory, moveTime, credits, health, fuel, hull, position };
+			viewState.players[name] = { name, configuration, inventory, moveTime, credits, health, fuel, cargoBay, position };
 		});
 
 		this.broadcast('state', viewState);
@@ -184,7 +187,7 @@ class SocketGame extends SocketRoom {
 
 		if(!this.dig({ x, y }, this.state.players[name])) y = phaserload.checkMobFall(this.state.world.map, { x, y }); //todo hurt mob based on fall distance
 
-		this.state.players[name].updateHull();
+		this.state.players[name].updateCargoBay();
 
 		if(oldPos.x === x && oldPos.y === y){
 			this.state.players[name].moving = false;
@@ -209,15 +212,15 @@ class SocketGame extends SocketRoom {
 		if(player){
 			const { type, mineral } = this.state.world.map[x][y].ground;
 
-			if(!player.hull.material[`trace_${type}`]) player.hull.material[`trace_${type}`] = 1;
-			else ++player.hull.material[`trace_${type}`];
+			if(!player.cargoBay.material[`trace_${type}`]) player.cargoBay.material[`trace_${type}`] = 1;
+			else ++player.cargoBay.material[`trace_${type}`];
 
 			if(mineral){
-				if(!player.hull.material[`pure_${type}`]) player.hull.material[`pure_${type}`] = 1;
-				else ++player.hull.material[`pure_${type}`];
+				if(!player.cargoBay.material[`pure_${type}`]) player.cargoBay.material[`pure_${type}`] = 1;
+				else ++player.cargoBay.material[`pure_${type}`];
 			}
 
-			//todo consume hull space (based on density)
+			//todo consume cargoBay space (based on density)
 		}
 
 		this.state.world.map[x][y].ground = {};

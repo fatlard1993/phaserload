@@ -3,6 +3,7 @@
 		"configuration": {
 			"tracks": "standard:~:tritanium",
 			"hull": "standard:~:tritanium",
+			"cargoBay": "standard:~:tritanium",
 			"drill": "standard:~:tritanium",
 			"fuelTank": "standard:~:tritanium"
 		},

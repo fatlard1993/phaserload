@@ -65,11 +65,11 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 
 		log()('draw_small');
 
-		['position', 'credits', 'health', 'fuel', 'hull'].forEach((name, index) => {
+		['position', 'credits', 'health', 'fuel', 'cargoBay'].forEach((name, index) => {
 			const elem = this.elem.children[index] || dom.createElem('div', { appendTo: this.elem });
 
-			if(name === 'hull'){
-				elem.textContent = `Hull: ${util.toFixed(phaserload.player.hull.available, 1, true)}%`;
+			if(name === 'cargoBay'){
+				elem.textContent = `Cargo: ${util.toFixed(phaserload.player.cargoBay.available, 1, true)}%`;
 			}
 
 			else if(name === 'fuel'){
@@ -92,16 +92,16 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		//todo if near spaceco open spaceco console
 		//todo if near another player open the player trade console
 
-		dom.createElem('div', { textContent: 'Inventory', appendTo: this.elem });
+		dom.createElem('div', { textContent: '[Inventory]', appendTo: this.elem });
 
 		Object.keys(phaserload.player.inventory).forEach((name) => {
 			dom.createElem('div', { textContent: `${name}: ${phaserload.player.inventory[name]}`, appendTo: this.elem });
 		});
 
-		dom.createElem('div', { textContent: 'Hull Material', appendTo: this.elem });
+		dom.createElem('div', { textContent: '[Cargo Bay Material]', appendTo: this.elem });
 
-		Object.keys(phaserload.player.hull.material).forEach((name) => {
-			dom.createElem('div', { textContent: `${name}: ${phaserload.player.hull.material[name]}`, appendTo: this.elem });
+		Object.keys(phaserload.player.cargoBay.material).forEach((name) => {
+			dom.createElem('div', { textContent: `${name}: ${phaserload.player.cargoBay.material[name]}`, appendTo: this.elem });
 		});
 	}
 
@@ -116,14 +116,14 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		log()('draw_notification');
 
 		//todo add notification (stay small || add notification ui to the pre-existing big ui structure)
-		// eg: open to trade with spaceco/player.name || spaceco/player.name died || hull almost full || almost out of fuel || health is low || ect..
+		// eg: open to trade with spaceco/player.name || spaceco/player.name died || cargoBay almost full || almost out of fuel || health is low || ect..
 	}
 
 	draw_inventory(){
 		log()('draw_inventory');
 
 		//todo add inventory items
-		//todo add hull contents
+		//todo add cargoBay contents
 		//todo add drill configuration editor
 		//todo add general help info
 	}
@@ -142,7 +142,7 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		log()('draw_trade');
 
 		//todo add inventory items
-		//todo add hull contents
+		//todo add cargoBay contents
 		//todo add trade page that shows the current offer from both sides
 	}
 

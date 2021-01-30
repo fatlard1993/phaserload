@@ -248,11 +248,12 @@ const phaserload = module.exports = {
 		return world;
 	},
 	generatePart: function(){
-		var type = util.randFromArr(['tracks', 'hull', 'drill', 'fuelTank']);
+		var type = util.randFromArr(['tracks', 'hull', 'cargoBay', 'drill', 'fuelTank']);
 		var material = util.weightedChance({ tritanium: 20, duranium: 18, pentrilium: 16, byzanium: 14, etherium: 12, mithril: 8, octanium: 5, saronite: 4, adamantite: 1, quadium: 2 });
 		var subTypes = {
 			tracks: { boosted_1: 40, boosted_2: 30, boosted_3: 20, antigravidic: 10 },
-			hull: { large: 70, oversized: 30 },
+			hull: { enhanced: 70, reinforced: 30 },
+			cargoBay: { large: 70, oversized: 30 },
 			drill: { quadratic: 50, precision_1: 30, precision_2: 20 },
 			fuelTank: { large: 30, oversized: 20, pressurized: 25, battery: 15, condenser: 10 }
 		};
@@ -262,7 +263,8 @@ const phaserload = module.exports = {
 		var materialPrice = { tritanium: 10, duranium: 15, pentrilium: 25, byzanium: 30, etherium: 40, mithril: 45, octanium: 50, saronite: 55, adamantite: 65, quadium: 80 };
 		var subtypePrices = {
 			tracks: { boosted_1: 20, boosted_2: 30, boosted_3: 40, antigravidic: 50 },
-			hull: { large: 20, oversized: 40 },
+			hull: { enhanced: 20, reinforced: 40 },
+			cargoBay: { large: 20, oversized: 40 },
 			drill: { quadratic: 20, precision_1: 30, precision_2: 50 },
 			fuelTank: { large: 20, oversized: 30, pressurized: 40, battery: 55, condenser: 70 }
 		};
