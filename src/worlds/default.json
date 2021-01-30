@@ -11,7 +11,7 @@
 				"ground": { "white": 35, "green": 65 }
 			},
 			{
-				"holeChance": 70,
+				"holeChance": 50,
 				"ground": "random",
 				"hazards": "random"
 			},
