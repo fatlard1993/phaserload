@@ -89,23 +89,19 @@ class SocketGame extends SocketRoom {
 			},
 			updateHull: function(){
 				const hullPart = this.configuration.hull.split(':~:');
-				let maxSpace = 0;
-
-				if(hullPart[0] === 'standard') maxSpace = 5;
-				if(hullPart[0] === 'large') maxSpace = 10;
-				if(hullPart[0] === 'oversized') maxSpace = 20;
+				let maxSpace = { standard: 5, large: 10, oversized: 20 }[hullPart[0]];
 
 				let availableSpace = maxSpace;
 
 				Object.keys(this.hull.material).forEach((item) => {
-					item = item.split('_');
+					const type = item.split('_');
 
-					availableSpace -= game.state.world.densities[item[1]] * (item[0] === 'pure' ? 0.00005 : 0.00008);
+					availableSpace -= (game.state.world.densities[type[1]] * (type[0] === 'pure' ? 0.00005 : 0.00008)) * this.hull.material[item];
 				});
 
 				availableSpace = (availableSpace / maxSpace) * 100;
 
-				log(1)(`Hull from ${this.hull.max} to ${maxSpace} | ${availableSpace}% available`);
+				log()(`Hull from ${this.hull.max} to ${maxSpace} | ${availableSpace}% available`);
 
 				this.hull.max = maxSpace;
 				this.hull.available = availableSpace;
