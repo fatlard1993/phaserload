@@ -6,8 +6,7 @@
 			"drill": "standard:~:tritanium",
 			"fuelTank": "standard:~:tritanium"
 		},
-		"inventory": { "teleporter": 1 },
-		"credits": 0
+		"inventory": { "teleporter": 1 }
 	},
 	"spaceco": {
 		"services": {

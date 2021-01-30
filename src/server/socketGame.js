@@ -41,7 +41,7 @@ class SocketGame extends SocketRoom {
 			},
 			inventory: { teleporter: 1 },
 			moveTime: 0,
-			credits: 0,
+			credits: [0, 9],
 			health: {},
 			fuel: {},
 			hull: {
@@ -101,7 +101,7 @@ class SocketGame extends SocketRoom {
 
 				availableSpace = (availableSpace / maxSpace) * 100;
 
-				log()(`Hull from ${this.hull.max} to ${maxSpace} | ${availableSpace}% available`);
+				log(1)(`Hull from ${this.hull.max} to ${maxSpace} | ${availableSpace}% available`);
 
 				this.hull.max = maxSpace;
 				this.hull.available = availableSpace;
@@ -121,6 +121,7 @@ class SocketGame extends SocketRoom {
 			}
 		}, phaserload.modes[this.options.mode].player || {}, this.state.players[client.name]);
 
+		if(player.credits instanceof Array) player.credits = util.randInt.apply(null, player.credits);
 		if(!player.position) player.position = { x: util.randInt(1, this.state.world.width - 1), y: this.state.world.airGap };
 
 		player.updateHealth();
