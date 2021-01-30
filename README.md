@@ -20,3 +20,5 @@ More in [etc/screenshots](https://github.com/fatlard1993/phaserload/tree/master/
 * spaceco_hurt1 frame is missing
 * add mouse/touch control
 * handle player/spaceco deaths
+* make spaceco supplies finite
+* add a spaceco refresh event where the spaceco items get refreshed and the materials are reset
