@@ -19,31 +19,6 @@ class SpacecoEntity extends Phaser.GameObjects.Sprite {
 	}
 }
 
-// phaserload.entities.spaceco.prototype.update = function(){
-// 	if(!phaserload.initialized) return;
-
-// 	if(phaserload.spaceco.damage <= 10 && !phaserload.game.tweens.isTweening(phaserload.spaceco.sprite)){
-// 		var gridPos = phaserload.toGridPos(phaserload.spaceco.sprite);
-
-// 		var spacecoCollision = phaserload.mapPos(gridPos).ground.name;
-
-// 		if(spacecoCollision){
-// 			if(spacecoCollision === 'lava') phaserload.spaceco.hurt(1, 'lava');
-// 			else if(spacecoCollision === 'poisonous_gas') phaserload.spaceco.hurt(1, 'poisonous_gas');
-// 			else if(spacecoCollision === 'red_monster') phaserload.spaceco.hurt(1, 'monster');
-// 			else if(spacecoCollision === 'purple_monster') phaserload.spaceco.hurt(1, 'monster');
-// 		}
-
-// 		var spacecoGroundBase = phaserload.getSurrounds(gridPos, { bottomRight: 1, bottom: 1, bottomLeft: 1 }, 'ground');
-
-// 		if(!spacecoGroundBase.bottomRight && !spacecoGroundBase.bottom && !spacecoGroundBase.bottomLeft){
-// 			phaserload.game.add.tween(phaserload.spaceco.sprite).to({ y: phaserload.toPxPos(gridPos.y + 1) }, 300, Phaser.Easing.Sinusoidal.InOut, true);
-
-// 			phaserload.spaceco.hurt(1, 'falling');
-// 		}
-// 	}
-// };
-
 // phaserload.entities.spaceco.init = function(){
 // 	phaserload.spaceco.sprite = phaserload.entities.spaceco.create(phaserload.spaceco);
 
@@ -125,42 +100,6 @@ class SpacecoEntity extends Phaser.GameObjects.Sprite {
 
 // 			phaserload.hud.open(output);
 // 		}, 1500);
-// 	};
-
-// 	phaserload.spaceco.updateBottomLine = function(){
-// 		if(phaserload.hud.isOpen.name !== 'spaceco') return;
-
-// 		var credits = String(parseInt(phaserload.player.credits));
-// 		var fuel = util.toFixed(phaserload.player.fuel, 2);
-// 		var health = String(parseInt(phaserload.player.health));
-
-// 		var creditsText = ' '.repeat(7 - (credits.length / 2)) +'$:'+ credits;
-// 		var fuelText = ' '.repeat(7 - (fuel.length / 2)) +'Fuel:'+ fuel;
-// 		var healthText = ' '.repeat(7 - (health.length / 2)) +'Health:'+ health;
-
-// 		phaserload.hud.bottomLine.setText(creditsText + fuelText + healthText);
-// 	};
-
-// 	phaserload.spaceco.hurt = function(amount, by){
-// 		if(phaserload.spaceco.justHurt) return; //todo make this depend on what the damage is from
-// 		phaserload.spaceco.justHurt = true;
-// 		phaserload.spaceco.justHurt_TO = setTimeout(function(){ phaserload.spaceco.justHurt = false; }, 500);
-
-// 		phaserload.spaceco.damage += amount;
-
-// 		socketClient.reply('hurt_spaceco', { amount: amount });
-
-// 		if(!phaserload.spaceco.dead && phaserload.spaceco.damage > 9){
-// 			phaserload.spaceco.dead = 1;
-
-// 			setTimeout(function(){
-// 				phaserload.spaceco.sprite.destroy();
-
-// 				phaserload.notify('Spaceco was killed\nby '+ by);
-// 			}, 400);
-// 		}
-
-// 		else phaserload.spaceco.sprite.frame = 'spaceco_hurt'+ phaserload.spaceco.damage;
 // 	};
 
 // 	phaserload.spaceco.getValue = function(name){

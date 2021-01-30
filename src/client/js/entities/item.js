@@ -42,19 +42,6 @@ class ItemEntity extends Phaser.GameObjects.Image {
 }
 
 
-
-
-
-
-// phaserload.entities.item = function(x, y, type){
-// 	Phaser.Image.call(this, phaserload.game, phaserload.toPxPos(x), phaserload.toPxPos(y), 'map', type);
-
-// 	this.anchor.setTo(0.5, 0.5);
-// };
-
-// phaserload.entities.item.prototype = Object.create(Phaser.Image.prototype);
-// phaserload.entities.item.prototype.constructor = phaserload.entities.item;
-
 // phaserload.entities.item.spriteNames = [
 // 	'teleporter',
 // 	'responder_teleporter',
@@ -78,30 +65,6 @@ class ItemEntity extends Phaser.GameObjects.Image {
 // 	'detonator_1'
 // ];
 
-// phaserload.entities.item.create = function(x, y, type){
-// 	var baseType = type.split('_')[0];
-// 	if(baseType !== 'mineral') baseType = 'item';
-
-// 	var item = phaserload.items.getFirstDead();
-
-// 	if(item === null){
-// 		item = phaserload.items.add(new phaserload.entities.item(x, y, type));
-// 	}
-// 	else{
-// 		item.reset(phaserload.toPxPos(x), phaserload.toPxPos(y));
-// 		item.revive();
-// 	}
-
-// 	item.frameName = type;
-
-// 	// item.frame = baseType === 'mineral' ? phaserload.options.mineralColors.indexOf(type.replace('mineral_', '')) : phaserload.entities.item.spriteNames.indexOf(type);
-// 	item.type = type;
-
-// 	phaserload.state.world.map[x][y].items.sprites.push(item);
-// 	phaserload.state.world.map[x][y].items.names.push(type);
-
-// 	return item;
-// };
 
 // phaserload.entities.item.interact = function(pos){
 // 	var items = phaserload.mapPos(pos).items, count = items.names.length;

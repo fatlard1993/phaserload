@@ -68,7 +68,6 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		['position', 'credits', 'health', 'fuel', 'hull'].forEach((name, index) => {
 			const elem = this.elem.children[index] || dom.createElem('div', { appendTo: this.elem });
 
-			//todo {fuel, hull, health} account for max values and display a percentage and/or a bar
 			if(name === 'hull'){
 				elem.textContent = `Hull: ${util.toFixed(phaserload.player.hull.available, 1, true)}%`;
 			}
@@ -135,7 +134,8 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		//todo add price list (the more of a particular mineral they have the less they will buy it for. Also price list starts out based on the world config (what colors are available))
 		//todo add fuel products (prices are based on world config)
 		//todo add drill part products (availability and price based on world config)
-		//todo add purchaseable items (availability and price based on world config)
+		//todo add purchaseable items (availability and price based on world config)\
+		//todo add player stats: health, fuel, credits
 	}
 
 	draw_trade(){

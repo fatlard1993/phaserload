@@ -1,4 +1,4 @@
-import phaserload from '../phaserload';
+import phaserload from '../../phaserload';
 
 import util from 'js-util';
 import Phaser from './node_modules/phaser/dist/phaser.min.js';
