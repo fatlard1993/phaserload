@@ -15,7 +15,6 @@ More in [etc/screenshots](https://github.com/fatlard1993/phaserload/tree/master/
 * allow discarding material to lighten load
 * add refurbished teleporters that sometimes don't work and sometimes aren't very accurate
 * add engine upgrade to increase base speed
-* initial fuel tank and cargo bay need to be MUCH less capacity
 * player orientation should be decided and tracked server side
 * spaceco_hurt1 frame is missing
 * add mouse/touch control

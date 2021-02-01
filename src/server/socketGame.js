@@ -78,7 +78,7 @@ class SocketGame extends SocketRoom {
 				const fuelTankPart = this.configuration.fuelTank.split(':~:');
 				const maxFuel = { standard: 5, large: 10, oversized: 15, pressurized: 20, battery: 35, condenser: 45 }[fuelTankPart[0]];
 				let availableFuel = typeof this.fuel.available === 'undefined' ? maxFuel : (this.fuel.available / 100) * this.fuel.max;
-				let fuelConsumption = this.moveTime / 2e4;
+				let fuelConsumption = this.moveTime / 10500;
 
 				if(use) availableFuel -= fuelConsumption;
 
@@ -96,10 +96,12 @@ class SocketGame extends SocketRoom {
 
 				let availableSpace = maxSpace;
 
+				//todo dont pick up material if theres not enough space
+
 				Object.keys(this.cargoBay.material).forEach((item) => {
 					const type = item.split('_');
 
-					availableSpace -= (game.state.world.densities[type[1]] * (type[0] === 'pure' ? 0.00005 : 0.00008)) * this.cargoBay.material[item];
+					availableSpace -= (game.state.world.densities[type[1]] * (type[0] === 'pure' ? 0.00025 : 0.00028)) * this.cargoBay.material[item];
 				});
 
 				availableSpace = (availableSpace / maxSpace) * 100;
