@@ -1,10 +1,10 @@
 # Phaserload
 
-A little phaser game that was inspired by the original flash-based motherload game on miniclip and penny arcade.
+Inspired by the countless hours I spent playing [Motherload](http://www.xgenstudios.com/motherload-goldium/)
+
+![comic](http://art.penny-arcade.com/photos/i-pxNH7Mz/0/XL/i-pxNH7Mz-X3.jpg)
 
 ## Screenshots
-
-More in [etc/screenshots](https://github.com/fatlard1993/phaserload/tree/master/etc/screenshots)
 
 ![game_play](./etc/screenshots/game_play.png)
 
