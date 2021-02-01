@@ -328,5 +328,10 @@ const phaserload = module.exports = {
 		if(fall) return phaserload.checkMobFall(map, { x: pos.x, y: pos.y + 1 });
 
 		return pos.y;
+	},
+	getMineralConsumption: function(mineral, world){
+		const type = mineral.split('_');
+
+		return world.densities[type[1]] * (type[0] === 'pure' ? 0.00015 : 0.00028);
 	}
 };

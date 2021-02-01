@@ -96,12 +96,8 @@ class SocketGame extends SocketRoom {
 
 				let availableSpace = maxSpace;
 
-				//todo dont pick up material if theres not enough space
-
-				Object.keys(this.cargoBay.material).forEach((item) => {
-					const type = item.split('_');
-
-					availableSpace -= (game.state.world.densities[type[1]] * (type[0] === 'pure' ? 0.00025 : 0.00028)) * this.cargoBay.material[item];
+				Object.keys(this.cargoBay.material).forEach((mineral) => {
+					availableSpace -= phaserload.getMineralConsumption(mineral, game.state.world) * this.cargoBay.material[mineral];
 				});
 
 				availableSpace = (availableSpace / maxSpace) * 100;
@@ -211,19 +207,27 @@ class SocketGame extends SocketRoom {
 	dig({ x, y }, player){
 		if(!this.state.world.map[x][y].ground.type) return false;
 
+		let dig = true;
+
 		if(player){
 			const { type, mineral } = this.state.world.map[x][y].ground;
 
-			if(!player.cargoBay.material[`trace_${type}`]) player.cargoBay.material[`trace_${type}`] = 1;
-			else ++player.cargoBay.material[`trace_${type}`];
+			if(((player.cargoBay.available / 100) * player.cargoBay.max) - phaserload.getMineralConsumption(`trace_${type}`, this.state.world) > 0){
+				if(!player.cargoBay.material[`trace_${type}`]) player.cargoBay.material[`trace_${type}`] = 1;
+				else ++player.cargoBay.material[`trace_${type}`];
 
-			if(mineral){
-				if(!player.cargoBay.material[`pure_${type}`]) player.cargoBay.material[`pure_${type}`] = 1;
-				else ++player.cargoBay.material[`pure_${type}`];
+				if(mineral){
+					if(!player.cargoBay.material[`pure_${type}`]) player.cargoBay.material[`pure_${type}`] = 1;
+					else ++player.cargoBay.material[`pure_${type}`];
+				}
+
+				player.updateCargoBay();
 			}
 
-			//todo consume cargoBay space (based on density)
+			else dig = false;
 		}
+
+		if(!dig) return false;
 
 		this.state.world.map[x][y].ground = {};
 
