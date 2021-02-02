@@ -195,8 +195,48 @@ var phaserload = {
 		var scrollX = Math.max(0, Math.min(phaserload.toPxPos(phaserload.state.world.width) - phaserload.config.width - 32, px_x - (phaserload.config.width / 2)));
 		var scrollY = Math.max(0, Math.min(phaserload.toPxPos(phaserload.state.world.depth) - phaserload.config.height - 32, px_y - (phaserload.config.height / 2)));;
 
-		//todo kill any sprites that arent in view
 		//todo world wrap?
+
+		if(phaserload.initialized){
+			const xDiff = phaserload.scene.cameras.main.scrollX - scrollX;
+			const yDiff = phaserload.scene.cameras.main.scrollY - scrollY;
+
+			log()(`Moving from ${phaserload.scene.cameras.main.scrollX} ${phaserload.scene.cameras.main.scrollY} to ${scrollX} ${scrollY}`);
+			log()(`Moving: ${xDiff !== 0 ? (xDiff < 0 ? 'right' : 'left') : (yDiff !== 0 ? (yDiff < 0 ? 'down' : 'up') : 'nowhere')}`);
+
+			const viewWidth = phaserload.toGridPos(phaserload.config.width), viewHeight = phaserload.toGridPos(phaserload.config.height);
+			const old_x = phaserload.toGridPos(phaserload.scene.cameras.main.scrollX), old_y = phaserload.toGridPos(phaserload.scene.cameras.main.scrollY);
+
+			if(xDiff !== 0){
+				let x;
+
+				if(xDiff < 0 && old_x > 0) x = old_x - 1;
+				else if(xDiff > 0 && old_x + viewWidth < phaserload.state.world.width - 1) x = old_x + viewWidth + 1;
+
+				if(typeof x !== 'undefined'){
+					log()(`Kill sprite column: ${x}`);
+
+					for(let y = Math.max(0, old_y - 2); y < Math.min(old_y + viewHeight + 2, phaserload.view.map[x].length); ++y){
+						phaserload.killTile(x, y);
+					}
+				}
+			}
+
+			if(yDiff !== 0){
+				let y;
+
+				if(yDiff < 0 && old_y > 0) y = old_y - 1;
+				else if(yDiff > 0 && old_y + viewHeight < phaserload.state.world.depth - 1) y = old_y + viewHeight + 1;
+
+				if(typeof y !== 'undefined'){
+					log()(`Kill sprite row: ${y}`);
+
+					for(let x = Math.max(0, old_x - 2); x < Math.min(old_x + viewWidth + 2, phaserload.view.map[old_x].length); ++x){
+						phaserload.killTile(x, y);
+					}
+				}
+			}
+		}
 
 		phaserload.scene.tweens.add({
 			targets: phaserload.scene.cameras.main,
@@ -205,6 +245,15 @@ var phaserload = {
 			duration: time,
 			ease: 'Linear'
 		});
+	},
+	killTile: function(x, y){
+		if(phaserload.view.map[x] && phaserload.view.map[x][y]){
+			if(phaserload.view.map[x][y].ground.sprite) phaserload.view.map[x][y].ground.sprite.destroy()
+
+			if(phaserload.view.map[x][y].ground.mineral) phaserload.view.map[x][y].ground.mineral.destroy();
+
+			phaserload.view.map[x][y] = undefined;
+		}
 	},
 	drawTile: function(x, y, id, animation){
 		var { ground, items } = phaserload.mapPos(x, y);
