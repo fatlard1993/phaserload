@@ -1,13 +1,12 @@
-const fs = require('fs');
-const path = require('path');
-
 const { app, staticServer } = require('http-server');
 
-const fontAwesomePath = path.resolve(`${__dirname}/../../node_modules/@fortawesome/fontawesome-free/webfonts`);
+const { rootPath } = require('./phaserload');
 
-app.use(staticServer(path.resolve(`${__dirname}/../../src/client/resources`)));
-
-if(fs.existsSync(fontAwesomePath)) app.use('/webfonts', staticServer(fontAwesomePath));
+app.use(
+	staticServer(rootPath('src/client/resources')),
+	staticServer(rootPath('node_modules/@fortawesome/fontawesome-free')),
+	staticServer(rootPath('node_modules/source-code-pro'))
+);
 
 app.use(function(req, res, next){
 	next(res.reqType === 'file' ? { code: 404, detail: `Could not find ${req.originalUrl}` } : null);

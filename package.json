@@ -28,15 +28,16 @@
     "@fortawesome/fontawesome-free": "^5.15.2",
     "argi": "github:fatlard1993/argi",
     "augmented-ui": "^2.0.0",
+    "dom": "github:fatlard1993/dom#2.x.x",
+    "fs-extended": "github:fatlard1993/fs-extended#2.x.x",
     "http-server": "github:fatlard1993/http-server#4.x.x",
     "js-util": "github:fatlard1993/js-util#2.x.x",
     "lang": "github:fatlard1993/lang",
-    "dom": "github:fatlard1993/dom#2.x.x",
     "log": "github:fatlard1993/log#3.x.x",
     "page-compiler": "github:fatlard1993/page-compiler#1.x.x",
     "phaser": "^3.52.0",
-    "fs-extended": "github:fatlard1993/fs-extended#2.x.x",
     "socket-client": "github:fatlard1993/socket-client#2.x.x",
+    "source-code-pro": "^2.30.2",
     "websocket-server": "github:fatlard1993/websocket-server#2.x.x"
   }
 }

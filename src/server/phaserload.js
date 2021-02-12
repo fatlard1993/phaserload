@@ -1,4 +1,3 @@
-const fs = require('fs');
 const path = require('path');
 
 const log = new (require('log'))({ tag: 'phaserload' });
@@ -6,6 +5,7 @@ const util = require('js-util');
 const fsExtended = require('fs-extended');
 
 const phaserload = module.exports = {
+	rootPath: function(){ return path.join(__dirname, '../..', ...arguments); },
 	options: { // todo make these options configurable
 		mineralNames: {
 			white: 'tritanium',
@@ -55,13 +55,12 @@ const phaserload = module.exports = {
 			}
 		}
 	},
-	rootFolder: path.resolve(__dirname, '../..'),
 	init: function(options){
 		this.options = Object.assign(this.options, options);
 
 		require('./debugPrompt');
 
-		const { app } = require('http-server').init(options.port, this.rootFolder);
+		const { app } = require('http-server').init(options.port, this.rootPath());
 
 		require('./router');
 
@@ -73,7 +72,7 @@ const phaserload = module.exports = {
 	loadDataPack: function(name, done){
 		//todo add parts datapacks
 
-		const packPath = path.join(this.rootFolder, 'src', name);
+		const packPath = this.rootPath('src', name);
 
 		this[name] = this[name] = {};
 
@@ -117,7 +116,7 @@ const phaserload = module.exports = {
 			safeDepth: 9,
 			items: 'random',
 			hazards: 'random',
-			layers: [ { ground: 'random' } ]
+			layers: [{ ground: 'random' }]
 		}, this.worlds[worldPack][worldIndex]);
 
 		if(options.airGap instanceof Array) options.airGap = util.randInt.apply(null, options.airGap);
@@ -297,7 +296,7 @@ const phaserload = module.exports = {
 	getSurroundingRadiusPositions: function(pos, radius){
 		const x_from = pos.x - radius, x_to = pos.x + radius;
 		const y_from = pos.y - radius, y_to = pos.y + radius;
-		let surroundingRadius = [];
+		const surroundingRadius = [];
 
 		for(let x = x_from, y; x <= x_to; ++x) for(y = y_from; y <= y_to; ++y) surroundingRadius.push({ x: x, y: y });
 
