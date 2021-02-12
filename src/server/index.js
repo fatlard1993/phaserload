@@ -3,7 +3,7 @@
 const argi = require('argi').parse({
 	port: {
 		type: 'int',
-		defaultValue: 80,
+		defaultValue: 1040,
 		alias: 'p'
 	},
 	verbosity: {
