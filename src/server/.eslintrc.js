@@ -1,8 +1,10 @@
 module.exports = {
 	env: {
 		es6: true,
-		node: true,
-    ecmaVersion: 9
+		node: true
+	},
+	parserOptions: {
+		ecmaVersion: 9
 	},
 	extends: 'eslint:recommended'
 };
