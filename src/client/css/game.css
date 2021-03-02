@@ -42,7 +42,49 @@ div#console {
 		font-size: 20px;
 		top: 25px;
 		left: 25px;
-		width: 590px;
-		height: 425px;
+		width: 588px;
+		height: 424px;
+	}
+
+	div.navbar {
+		width: 20%;
+		height: 97%;
+		padding-top: 3%;
+		float: left;
+
+		button {
+			font-size: 24px;
+			height: 16%;
+			margin: 3px 0 0 9%;
+			width: 95%;
+			display: block;
+			border: none;
+
+			&.selected {
+				width: 100%;
+				color: $green;
+				background-color: $black;
+
+				--aug-border: initial;
+				--aug-border-bg: $green;
+			}
+
+			&:focus {
+				outline: none;
+			}
+		}
+	}
+
+	div.content {
+		width: 78%;
+		height: 98%;
+		margin: 1%;
+		float: right;
+		background-color: $green;
+		box-sizing: border-box;
+		padding: 3%;
+
+		--aug-inlay-bg: $black;
+		--aug-inlay-all: 1%;
 	}
 }

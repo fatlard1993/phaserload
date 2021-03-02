@@ -46,6 +46,16 @@ class SocketServer extends WebsocketServer {
 			},
 			player_move: function(data){
 				server.rooms[this.roomName].playerMove(data);
+			},
+			console_connect: function(){
+				const playerPosition = server.rooms[this.roomName].state.players[this.name].position;
+				let type;
+
+				if(phaserload.spacecoAt(server.rooms[this.roomName].state.world.spaceco, playerPosition)) type = 'spaceco';
+
+				else type = 'inventory';
+
+				this.reply('console_connect', type);
 			}
 		});
 	}

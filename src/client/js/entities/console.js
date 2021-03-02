@@ -4,6 +4,7 @@ import phaserload from '../phaserload';
 
 import util from 'js-util';
 import dom from 'dom';
+import socketClient from 'socket-client';
 
 import Phaser from './node_modules/phaser/dist/phaser.min.js';
 
@@ -18,7 +19,7 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		this.setOrigin(0);
 		this.setScale(0.4);
 		this.setInteractive();
-		this.on('pointerdown', this.toggle.bind(this));
+		this.on('pointerdown', () => { if(!this.isOpen) this.open(); });
 
 		this.elem = dom.createElem('div', { id: 'console', appendTo: document.body });
 
@@ -39,7 +40,7 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 			scaleY: 2,
 			duration: 400,
 			ease: 'Linear',
-			onComplete: this.draw_big.bind(this)
+			onComplete: socketClient.reply.bind(this, 'console_connect', true)
 		});
 	}
 
@@ -79,6 +80,9 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		this.isOpen = 'notification';
 
 		dom.empty(this.elem);
+
+		//todo add notification (stay small || add notification ui to the pre-existing big ui structure)
+		// eg: open to trade with spaceco/player.name || spaceco/player.name died || cargoBay almost full || almost out of fuel || health is low || ect..
 
 		this.elem.className = 'small';
 
@@ -143,14 +147,21 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 
 		//todo add briefing text for this world
 		//todo add general help info
+
+		const assemblyFragment = new DocumentFragment();
+
+		this.navbar = dom.createElem('div', {
+			className: 'navbar',
+			appendTo: assemblyFragment,
+			appendChildren: ['Briefing', 'Help'].map((name, index) => {
+				return dom.createElem('button', { textContent: name, className: index === 0 ? 'selected' : '', attr: { 'data-augmented-ui': 'tl-clip bl-clip' } });
+			})
+		});
+		this.content = dom.createElem('div', { className: 'content', attr: { 'data-augmented-ui': 'tl-clip tr-clip br-clip bl-2-clip-y inlay' }, appendTo: assemblyFragment });
+
+		this.elem.className = 'big';
+		this.elem.appendChild(assemblyFragment);
 	}
-
-	// draw_notification(){
-	// 	log()('draw_notification');
-
-	// 	//todo add notification (stay small || add notification ui to the pre-existing big ui structure)
-	// 	// eg: open to trade with spaceco/player.name || spaceco/player.name died || cargoBay almost full || almost out of fuel || health is low || ect..
-	// }
 
 	draw_inventory(){
 		log()('draw_inventory');
@@ -158,7 +169,73 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		//todo add inventory items
 		//todo add cargoBay contents
 		//todo add drill configuration editor
+		//todo add settings (volume, alert levels, ect)
 		//todo add general help info
+
+		const assemblyFragment = new DocumentFragment();
+
+		this.navbar = dom.createElem('div', {
+			className: 'navbar',
+			appendTo: assemblyFragment,
+			appendChildren: ['Items', 'Cargo Bay', 'Drill Config', 'Settings', 'Help'].map((name, index) => {
+				return dom.createElem('button', {
+					textContent: name,
+					className: index === 0 ? 'selected' : '',
+					attr: { 'data-augmented-ui': 'tl-clip bl-clip' },
+					onPointerPress: (evt) => {
+						this.navbar.getElementsByClassName('selected')[0].classList.remove('selected');
+
+						evt.target.classList.add('selected');
+
+						this[`draw_inventory_${util.toCamelCase(name.toLowerCase())}`]();
+					}
+				});
+			})
+		});
+		this.content = dom.createElem('div', { className: 'content', attr: { 'data-augmented-ui': 'tl-clip tr-clip br-clip bl-2-clip-y inlay' }, appendTo: assemblyFragment });
+
+		this.draw_inventory_items();
+
+		this.elem.className = 'big';
+		this.elem.appendChild(assemblyFragment);
+	}
+
+	draw_inventory_items(){
+		dom.empty(this.content);
+
+		dom.createElem('div', { textContent: '[Items]', appendTo: this.content });
+
+		Object.keys(phaserload.player.inventory).forEach((name) => {
+			dom.createElem('div', { textContent: `${name}: ${phaserload.player.inventory[name]}`, appendTo: this.content });
+		});
+	}
+
+	draw_inventory_cargoBay(){
+		dom.empty(this.content);
+
+		dom.createElem('div', { textContent: '[Cargo Bay Material]', appendTo: this.content });
+
+		Object.keys(phaserload.player.cargoBay.material).forEach((name) => {
+			dom.createElem('div', { textContent: `${name}: ${phaserload.player.cargoBay.material[name]}`, appendTo: this.content });
+		});
+	}
+
+	draw_inventory_drillConfig(){
+		dom.empty(this.content);
+
+		dom.createElem('div', { textContent: '[Drill Config]', appendTo: this.content });
+	}
+
+	draw_inventory_settings(){
+		dom.empty(this.content);
+
+		dom.createElem('div', { textContent: '[Settings]', appendTo: this.content });
+	}
+
+	draw_inventory_help(){
+		dom.empty(this.content);
+
+		dom.createElem('div', { textContent: '[Help]', appendTo: this.content });
 	}
 
 	draw_spaceco(){
@@ -169,6 +246,58 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		//todo add drill part products (availability and price based on world config)
 		//todo add purchaseable items (availability and price based on world config)\
 		//todo add player stats: health, fuel, credits
+
+		phaserload.scene.sound.play('coin', { loop: true, rate: 3 });
+		setTimeout(() => { phaserload.scene.sound.stopByKey('coin'); }, 500);
+
+		const assemblyFragment = new DocumentFragment();
+
+		this.navbar = dom.createElem('div', {
+			className: 'navbar',
+			appendTo: assemblyFragment,
+			appendChildren: ['Price List', 'Fuel', 'Drill Parts', 'Items'].map((name, index) => {
+				return dom.createElem('button', {
+					textContent: name,
+					className: index === 0 ? 'selected' : '',
+					attr: { 'data-augmented-ui': 'tl-clip bl-clip' },
+					onPointerPress: (evt) => {
+						this.navbar.getElementsByClassName('selected')[0].classList.remove('selected');
+
+						evt.target.classList.add('selected');
+
+						this[`draw_spaceco_${util.toCamelCase(name.toLowerCase())}`]();
+					}
+				});
+			})
+		});
+		this.content = dom.createElem('div', { className: 'content', attr: { 'data-augmented-ui': 'tl-clip tr-clip br-clip bl-2-clip-y inlay' }, appendTo: assemblyFragment });
+
+		this.elem.className = 'big';
+		this.elem.appendChild(assemblyFragment);
+	}
+
+	draw_spaceco_priceList(){
+		dom.empty(this.content);
+
+		dom.createElem('div', { textContent: '[Price List]', appendTo: this.content });
+	}
+
+	draw_spaceco_fuel(){
+		dom.empty(this.content);
+
+		dom.createElem('div', { textContent: '[Fuel]', appendTo: this.content });
+	}
+
+	draw_spaceco_drillParts(){
+		dom.empty(this.content);
+
+		dom.createElem('div', { textContent: '[Drill Parts]', appendTo: this.content });
+	}
+
+	draw_spaceco_items(){
+		dom.empty(this.content);
+
+		dom.createElem('div', { textContent: '[Items]', appendTo: this.content });
 	}
 
 	draw_trade(){
@@ -177,6 +306,20 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		//todo add inventory items
 		//todo add cargoBay contents
 		//todo add trade page that shows the current offer from both sides
+
+		const assemblyFragment = new DocumentFragment();
+
+		this.navbar = dom.createElem('div', {
+			className: 'navbar',
+			appendTo: assemblyFragment,
+			appendChildren: ['Items', 'Materials', 'Trade'].map((name, index) => {
+				return dom.createElem('button', { textContent: name, className: index === 0 ? 'selected' : '', attr: { 'data-augmented-ui': 'tl-clip bl-clip' } });
+			})
+		});
+		this.content = dom.createElem('div', { className: 'content', attr: { 'data-augmented-ui': 'tl-clip tr-clip br-clip bl-2-clip-y inlay' }, appendTo: assemblyFragment });
+
+		this.elem.className = 'big';
+		this.elem.appendChild(assemblyFragment);
 	}
 
 	draw_load_item_slot(){

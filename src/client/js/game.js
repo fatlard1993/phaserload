@@ -51,6 +51,12 @@ const game = {
 			else if(game.view === 'play') phaserload.update();
 		});
 
+		socketClient.on('console_connect', (type) => {
+			log()('console_connect', type);
+
+			phaserload.player.console[`draw_${type}`]();
+		});
+
 		document.addEventListener('visibilitychange', (evt) => {
 			log(1)(evt, document.hidden);
 

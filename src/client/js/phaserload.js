@@ -25,7 +25,7 @@ var phaserload = {
 		players: {}
 	},
 	groupNames: ['ground', 'fluid', 'mobs', 'items', 'interfaces'],
-	soundNames: ['dig', 'hurt', 'pickup', 'console_open', 'alert', 'blip'],
+	soundNames: ['dig', 'hurt', 'pickup', 'console_open', 'alert', 'blip', 'coin'],
 	init: function(){
 		var clientHeight = document.body.clientHeight - 2;
 		var clientWidth = document.body.clientWidth - 1;
@@ -154,7 +154,10 @@ var phaserload = {
 				const old_x = phaserload.toGridPos(phaserload.view.players[name].x), old_y = phaserload.toGridPos(phaserload.view.players[name].y);
 
 				if(name === phaserload.player.name){
-					if(phaserload.player.digging) phaserload.scene.sound.play('dig', { rate: (phaserload.scene.sound.get('dig').duration * 1000) / phaserload.player.moveTime });
+					if(phaserload.player.digging){
+						phaserload.scene.sound.stopByKey('dig');
+						phaserload.scene.sound.play('dig', { rate: (phaserload.scene.sound.get('dig').duration * 1000) / (phaserload.player.moveTime + 250) });
+					}
 
 					phaserload.adjustViewPosition(px_x, px_y, phaserload.player.moveTime);
 
