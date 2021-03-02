@@ -11,7 +11,11 @@ var phaserload = {
 	blockPx: 64,
 	config: {
 		type: Phaser.AUTO,
-		scene: {}
+		scene: {},
+		volume: {
+			music: parseFloat(dom.storage.get('volume.music') || 1),
+			sounds: parseFloat(dom.storage.get('volume.sounds') || 1)
+		}
 	},
 	options: {},
 	player: {},
@@ -41,6 +45,9 @@ var phaserload = {
 		phaserload.scale = scale;
 
 		phaserload.game = new Phaser.Game(phaserload.config);
+	},
+	playSound: function(name, options = {}){
+		phaserload.scene.sound.play(name, Object.assign({ volume: phaserload.config.volume.sounds }, options));
 	},
 	update: function(){
 		phaserload.drawView();
@@ -156,7 +163,7 @@ var phaserload = {
 				if(name === phaserload.player.name){
 					if(phaserload.player.digging){
 						phaserload.scene.sound.stopByKey('dig');
-						phaserload.scene.sound.play('dig', { rate: (phaserload.scene.sound.get('dig').duration * 1000) / (phaserload.player.moveTime + 250) });
+						phaserload.playSound('dig', { rate: (phaserload.scene.sound.get('dig').duration * 1000) / (phaserload.player.moveTime + 100) });
 					}
 
 					phaserload.adjustViewPosition(px_x, px_y, phaserload.player.moveTime);
@@ -296,7 +303,7 @@ var phaserload = {
 				phaserload.view.map[x][y].ground.sprite.dig(phaserload.player.moveTime);
 
 				if(phaserload.view.map[x][y].ground.mineral){
-					phaserload.scene.sound.play('pickup');
+					phaserload.playSound('pickup');
 
 					phaserload.view.map[x][y].ground.mineral.collect();
 				}

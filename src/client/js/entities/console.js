@@ -32,7 +32,7 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		this.isOpen = true;
 		//todo account for game scale
 
-		phaserload.scene.sound.play('console_open');
+		phaserload.playSound('console_open');
 
 		phaserload.scene.tweens.add({
 			targets: this,
@@ -47,7 +47,7 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 	close(){
 		dom.empty(this.elem);
 
-		phaserload.scene.sound.play('blip');
+		phaserload.playSound('blip');
 
 		phaserload.scene.tweens.add({
 			targets: this,
@@ -60,7 +60,7 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 	}
 
 	notify(text){
-		phaserload.scene.sound.play('alert');
+		phaserload.playSound('alert');
 
 		phaserload.scene.tweens.add({
 			targets: this,
@@ -247,7 +247,7 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		//todo add purchaseable items (availability and price based on world config)\
 		//todo add player stats: health, fuel, credits
 
-		phaserload.scene.sound.play('coin', { loop: true, rate: 3 });
+		phaserload.playSound('coin', { loop: true, rate: 3 });
 		setTimeout(() => { phaserload.scene.sound.stopByKey('coin'); }, 500);
 
 		const assemblyFragment = new DocumentFragment();
