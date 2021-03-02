@@ -170,7 +170,7 @@ var phaserload = {
 
 					if(!phaserload.player.alertedFuel && phaserload.player.fuel.available <= 10){
 						phaserload.player.alertedFuel = true;
-						phaserload.player.console.notify(phaserload.player.fuel.available ? 'Out of fuel!' : 'Fuel is low!');
+						phaserload.player.console.notify(phaserload.player.fuel.available <= 1 ? 'Out of fuel!' : 'Fuel is low!');
 					}
 
 					if(!phaserload.player.alertedCargo && phaserload.player.cargoBay.available <= 10){
