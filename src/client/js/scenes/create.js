@@ -3,7 +3,9 @@ import phaserload from '../phaserload';
 phaserload.config.scene.create = function(){
 	phaserload.scene = this;
 
-	['ground', 'fluid', 'mobs', 'items', 'interfaces'].forEach((name) => { phaserload.groups[name] = this.add.group(); });
+	phaserload.groupNames.forEach((name) => { phaserload.groups[name] = this.add.group(); });
+
+	phaserload.soundNames.forEach((sound) => { this.sound.add(sound); });
 
 	phaserload.drawView();
 

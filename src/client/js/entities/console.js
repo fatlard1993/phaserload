@@ -31,6 +31,8 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		this.isOpen = true;
 		//todo account for game scale
 
+		phaserload.scene.sound.play('console_open');
+
 		phaserload.scene.tweens.add({
 			targets: this,
 			scaleX: 2,
@@ -44,6 +46,8 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 	close(){
 		dom.empty(this.elem);
 
+		phaserload.scene.sound.play('blip');
+
 		phaserload.scene.tweens.add({
 			targets: this,
 			scaleX: 0.4,
@@ -54,8 +58,37 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		});
 	}
 
+	notify(text){
+		phaserload.scene.sound.play('alert');
+
+		phaserload.scene.tweens.add({
+			targets: this,
+			scaleX: 0.5,
+			scaleY: 0.5,
+			duration: 150,
+			ease: 'Linear',
+			onComplete: this.draw_notification.bind(this, text)
+		});
+	}
+
 	toggle(){
 		this[this.isOpen ? 'close' : 'open'].apply(this);
+	}
+
+	draw_notification(textContent){
+		this.isOpen = 'notification';
+
+		dom.empty(this.elem);
+
+		this.elem.className = 'small';
+
+		log()('draw_notification', textContent);
+
+		dom.createElem('div', { appendTo: this.elem, textContent });
+
+		setTimeout(() => {
+			if(!this.isOpen || this.isOpen === 'notification') this.close();
+		}, 1500);
 	}
 
 	draw_small(){
@@ -112,12 +145,12 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		//todo add general help info
 	}
 
-	draw_notification(){
-		log()('draw_notification');
+	// draw_notification(){
+	// 	log()('draw_notification');
 
-		//todo add notification (stay small || add notification ui to the pre-existing big ui structure)
-		// eg: open to trade with spaceco/player.name || spaceco/player.name died || cargoBay almost full || almost out of fuel || health is low || ect..
-	}
+	// 	//todo add notification (stay small || add notification ui to the pre-existing big ui structure)
+	// 	// eg: open to trade with spaceco/player.name || spaceco/player.name died || cargoBay almost full || almost out of fuel || health is low || ect..
+	// }
 
 	draw_inventory(){
 		log()('draw_inventory');

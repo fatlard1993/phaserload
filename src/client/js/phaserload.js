@@ -24,6 +24,8 @@ var phaserload = {
 		map: [],
 		players: {}
 	},
+	groupNames: ['ground', 'fluid', 'mobs', 'items', 'interfaces'],
+	soundNames: ['dig', 'hurt', 'pickup', 'console_open', 'alert', 'blip'],
 	init: function(){
 		var clientHeight = document.body.clientHeight - 2;
 		var clientWidth = document.body.clientWidth - 1;
@@ -81,10 +83,10 @@ var phaserload = {
 
 		log()(`Drawing view ${((bottom - top) + 1) * ((right - left) + 1)} sprites, from: x ${left} y ${top} TO x ${right} y ${bottom}`);
 
-		for(let x = left, y; x <= right; ++x) for(y = top; y <= bottom; ++y) phaserload.drawTile(x, y);
-
 		phaserload.drawPlayers();
 		phaserload.drawSpaceco();
+
+		for(let x = left, y; x <= right; ++x) for(y = top; y <= bottom; ++y) phaserload.drawTile(x, y);
 
 		if(!phaserload.player.console.isOpen) phaserload.player.console.draw_small();
 	},
@@ -151,7 +153,26 @@ var phaserload = {
 
 				const old_x = phaserload.toGridPos(phaserload.view.players[name].x), old_y = phaserload.toGridPos(phaserload.view.players[name].y);
 
-				if(name === phaserload.player.name) phaserload.adjustViewPosition(px_x, px_y, phaserload.player.moveTime);
+				if(name === phaserload.player.name){
+					if(phaserload.player.digging) phaserload.scene.sound.play('dig', { rate: (phaserload.scene.sound.get('dig').duration * 1000) / phaserload.player.moveTime });
+
+					phaserload.adjustViewPosition(px_x, px_y, phaserload.player.moveTime);
+
+					if(!phaserload.player.alertedFuel && phaserload.player.fuel.available <= 10){
+						phaserload.player.alertedFuel = true;
+						phaserload.player.console.notify(phaserload.player.fuel.available ? 'Out of fuel!' : 'Fuel is low!');
+					}
+
+					if(!phaserload.player.alertedCargo && phaserload.player.cargoBay.available <= 10){
+						phaserload.player.alertedCargo = true;
+						phaserload.player.console.notify(phaserload.player.cargoBay.available <= 1 ? 'Cargo bay is full!' : 'Cargo bay almost full!');
+					}
+
+					if(!phaserload.player.alertedHealth && phaserload.player.health.available <= 10){
+						phaserload.player.alertedHealth = true;
+						phaserload.player.console.notify(phaserload.player.health.available <= 1 ? 'You are dead!' : 'Health is low!');
+					}
+				}
 
 				phaserload.scene.tweens.add({
 					targets: phaserload.view.players[name],
@@ -269,9 +290,13 @@ var phaserload = {
 
 		if(phaserload.view.map[x][y].ground.type !== ground.type){
 			if(!ground.type && phaserload.view.map[x][y].ground.sprite){
-				phaserload.view.map[x][y].ground.sprite.dig();
+				phaserload.view.map[x][y].ground.sprite.dig(phaserload.player.moveTime);
 
-				if(phaserload.view.map[x][y].ground.mineral) phaserload.view.map[x][y].ground.mineral.collect();
+				if(phaserload.view.map[x][y].ground.mineral){
+					phaserload.scene.sound.play('pickup');
+
+					phaserload.view.map[x][y].ground.mineral.collect();
+				}
 			}
 
 			phaserload.view.map[x][y].ground.type = ground.type;

@@ -9,6 +9,10 @@ Inspired by the countless hours I spent playing [Motherload](http://www.xgenstud
 ![game_play](./etc/screenshots/game_play.png)
 
 
+## JFXR
+
+[The awesome JS reincarnation of SFXR/BFXR](https://jfxr.frozenfractal.com/)
+
 # TODO
 
 * Build in pallet swapping instead of separate image source for each color difference: https://github.com/Colbydude/phaser-3-palette-swapping-example

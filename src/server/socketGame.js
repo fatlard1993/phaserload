@@ -159,9 +159,9 @@ class SocketGame extends SocketRoom {
 		};
 
 		playerNames.forEach((name) => {
-			const { configuration, inventory, moveTime, credits, health, fuel, cargoBay, position } = players[name];
+			const { configuration, inventory, moveTime, credits, health, fuel, cargoBay, position, digging } = players[name];
 
-			viewState.players[name] = { name, configuration, inventory, moveTime, credits, health, fuel, cargoBay, position };
+			viewState.players[name] = { name, configuration, inventory, moveTime, credits, health, fuel, cargoBay, position, digging };
 		});
 
 		this.broadcast('state', viewState);
@@ -181,8 +181,6 @@ class SocketGame extends SocketRoom {
 
 		if(this.state.players[name].fuel.available - this.state.players[name].fuel.consumption <= 0) return this.server.users[name].reply('invalid_move', 'Out of fuel');
 
-		this.state.players[name].updateFuel(true);
-
 		if(!this.dig({ x, y }, this.state.players[name])) y = phaserload.checkMobFall(this.state.world.map, { x, y }); //todo hurt mob based on fall distance
 
 		this.state.players[name].updateCargoBay();
@@ -192,6 +190,8 @@ class SocketGame extends SocketRoom {
 
 			return this.server.users[name].reply('invalid_move', true);
 		}
+
+		this.state.players[name].updateFuel(true);
 
 		log(1)(`Player move from ${oldPos.x} ${oldPos.y} to ${x} ${y} | MoveTime: ${this.state.players[name].moveTime}`);
 
@@ -205,12 +205,18 @@ class SocketGame extends SocketRoom {
 	}
 
 	dig({ x, y }, player){
-		if(!this.state.world.map[x][y].ground.type) return false;
+		if(!this.state.world.map[x][y].ground.type){
+			if(player) player.digging = false;
+
+			return false;
+		}
 
 		let dig = true;
 
 		if(player){
 			const { type, mineral } = this.state.world.map[x][y].ground;
+
+			player.digging = true;
 
 			if(((player.cargoBay.available / 100) * player.cargoBay.max) - phaserload.getMineralConsumption(`trace_${type}`, this.state.world) > 0){
 				if(!player.cargoBay.material[`trace_${type}`]) player.cargoBay.material[`trace_${type}`] = 1;
