@@ -48,10 +48,34 @@ class SocketServer extends WebsocketServer {
 				server.rooms[this.roomName].playerMove(data);
 			},
 			console_connect: function(){
-				const playerPosition = server.rooms[this.roomName].state.players[this.name].position;
+				const { position, cargoBay, fuel, health } = server.rooms[this.roomName].state.players[this.name];
 				let type;
 
-				if(phaserload.spacecoAt(server.rooms[this.roomName].state.world.spaceco, playerPosition)) type = 'spaceco';
+				if(phaserload.spacecoAt(server.rooms[this.roomName].state.world.spaceco, position)){
+					type = 'spaceco';
+
+					log('spaceco trade', cargoBay, server.rooms[this.roomName].state.players[this.name]);
+
+					//todo allow player to sell cargo individually
+					Object.keys(cargoBay.material).forEach((mineral) => {
+						server.rooms[this.roomName].state.players[this.name].credits += phaserload.getMineralPrice(mineral, server.rooms[this.roomName].state.world) * cargoBay.material[mineral];
+					});
+
+					server.rooms[this.roomName].state.players[this.name].cargoBay.material = {};
+					server.rooms[this.roomName].state.players[this.name].updateCargoBay();
+
+					//todo allow players to buy as fuel at-will
+					server.rooms[this.roomName].state.players[this.name].credits -= (100 - fuel.available) * 10;
+					server.rooms[this.roomName].state.players[this.name].fuel.available = 100;
+					server.rooms[this.roomName].state.players[this.name].updateFuel();
+
+					//todo allow players to purchase repairs at-will
+					server.rooms[this.roomName].state.players[this.name].credits -= (100 - health.available) * 10;
+					server.rooms[this.roomName].state.players[this.name].health.available = 100;
+					server.rooms[this.roomName].state.players[this.name].updateHealth();
+
+					server.users[this.name].reply('player_state', server.rooms[this.roomName].state.players[this.name]);
+				}
 
 				else type = 'inventory';
 
@@ -59,8 +83,6 @@ class SocketServer extends WebsocketServer {
 			}
 		});
 	}
-
-
 }
 
 module.exports = SocketServer;

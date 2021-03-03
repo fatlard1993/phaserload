@@ -98,27 +98,20 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 	draw_small(){
 		this.isOpen = false;
 
-		this.elem.className = 'small';
-
 		log()('draw_small');
 
-		['position', 'credits', 'health', 'fuel', 'cargoBay'].forEach((name, index) => {
-			const elem = this.elem.children[index] || dom.createElem('div', { appendTo: this.elem });
+		dom.empty(this.elem);
 
-			if(name === 'cargoBay'){
-				elem.textContent = `Cargo: ${util.toFixed(phaserload.player.cargoBay.available, 1, true)}%`;
-			}
+		const assemblyFragment = new DocumentFragment();
 
-			else if(name === 'fuel'){
-				elem.textContent = `Fuel: ${util.toFixed(phaserload.player.fuel.available, 1, true)}%`;
-			}
+		dom.createElem('div', { textContent: `GPS: x${phaserload.player.position.x} y${phaserload.player.position.y}`, appendTo: this.elem });
+		dom.createElem('div', { textContent: `Health: ${util.toFixed(phaserload.player.health.available, 1, true)}%`, appendTo: this.elem });
+		dom.createElem('div', { textContent: `Fuel: ${util.toFixed(phaserload.player.fuel.available, 1, true)}%`, appendTo: this.elem });
+		dom.createElem('div', { textContent: `Cargo: ${util.toFixed(phaserload.player.cargoBay.available, 1, true)}%`, appendTo: this.elem });
+		dom.createElem('div', { textContent: `$: ${util.toFixed(phaserload.player.credits, 2, true)}`, appendTo: this.elem });
 
-			else if(name === 'health'){
-				elem.textContent = `Health: ${util.toFixed(phaserload.player.health.available, 1, true)}%`;
-			}
-
-			else elem.textContent = (name === 'position' ? `GPS: x${phaserload.player[name].x} y${phaserload.player[name].y}` : `${name === 'credits' ? '$' : util.capitalize(name)}: ${phaserload.player[name]}`);
-		});
+		this.elem.className = 'small';
+		this.elem.appendChild(assemblyFragment);
 	}
 
 	draw_big(){
@@ -253,9 +246,6 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		//todo add drill part products (availability and price based on world config)
 		//todo add purchaseable items (availability and price based on world config)\
 		//todo add player stats: health, fuel, credits
-
-		phaserload.playSound('coin', { loop: true, rate: 3 });
-		setTimeout(() => { phaserload.scene.sound.stopByKey('coin'); }, 500);
 
 		const assemblyFragment = new DocumentFragment();
 

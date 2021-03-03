@@ -32,7 +32,16 @@ const game = {
 		socketClient.on('player_state', (state) => {
 			log()('player_state', state);
 
+			const previousCredits = phaserload.player.credits;
+
 			phaserload.player = Object.assign(phaserload.player, state);
+
+			if(phaserload.scene && previousCredits !== phaserload.player.credits){
+				log('credits change', previousCredits - phaserload.player.credits);
+
+				phaserload.playSound('coin', { loop: true, rate: 3.5 });
+				setTimeout(() => { phaserload.scene.sound.stopByKey('coin'); }, Math.abs(previousCredits - phaserload.player.credits) * 2);
+			}
 		});
 
 		socketClient.on('invalid_move', () => {

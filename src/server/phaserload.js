@@ -332,5 +332,10 @@ const phaserload = module.exports = {
 		const type = mineral.split('_');
 
 		return world.densities[type[1]] * (type[0] === 'pure' ? 0.00015 : 0.00028);
+	},
+	getMineralPrice: function(mineral, world){
+		const type = mineral.split('_');
+
+		return world.densities[type[1]] * (type[0] === 'pure' ? 0.15 : 0.05);
 	}
 };
