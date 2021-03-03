@@ -4,6 +4,18 @@ Inspired by the countless hours I spent playing [Motherload](http://www.xgenstud
 
 ![comic](http://art.penny-arcade.com/photos/i-pxNH7Mz/0/XL/i-pxNH7Mz-X3.jpg)
 
+## Setup
+
+### Prerequisites
+
+* [nodeJS]()
+
+### Steps
+
+1. /phaserload $ `npm i`
+1. /phaserload $ `npm start`
+
+
 ## Screenshots
 
 ![game_play](./etc/screenshots/game_play.png)
