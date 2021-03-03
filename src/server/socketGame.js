@@ -54,14 +54,14 @@ class SocketGame extends SocketRoom {
 				const cargoBayPart = this.configuration.cargoBay.split(':~:');
 				const drillPart = this.configuration.drill.split(':~:');
 				const fuelTankPart = this.configuration.fuelTank.split(':~:');
-				let maxHealth = 5;
+				let maxHealth = 0;
 
 				//todo base the health on the part types and material
-				// if(tracksPart[1] === 'standard') maxHealth += 1;
-				// if(hullPart[1] === 'standard') maxHealth += 1;
-				// if(cargoBayPart[1] === 'standard') maxHealth += 1;
-				// if(drillPart[1] === 'standard') maxHealth += 1;
-				// if(fuelTankPart[1] === 'standard') maxHealth += 1;
+				maxHealth += { standard: 0.5 }[tracksPart[0]];
+				maxHealth += { standard: 2 }[hullPart[0]];
+				maxHealth += { standard: 1 }[cargoBayPart[0]];
+				maxHealth += { standard: 1 }[drillPart[0]];
+				maxHealth += { standard: 0.5 }[fuelTankPart[0]];
 
 				let availableHealth = typeof this.health.available === 'undefined' ? maxHealth : (this.health.available / 100) * this.health.max;
 
