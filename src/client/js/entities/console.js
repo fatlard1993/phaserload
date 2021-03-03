@@ -198,7 +198,7 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 	draw_inventory_items(){
 		dom.empty(this.content);
 
-		dom.createElem('div', { textContent: '[Items]', appendTo: this.content });
+		dom.createElem('div', { className: 'heading', attr: { 'data-augmented-ui': 'tl-clip tr-clip' }, textContent: '[Items]', appendTo: this.content });
 
 		Object.keys(phaserload.player.inventory).forEach((name) => {
 			dom.createElem('div', { textContent: `${util.capitalize(name)}: ${phaserload.player.inventory[name]}`, appendTo: this.content });
@@ -208,7 +208,7 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 	draw_inventory_cargoBay(){
 		dom.empty(this.content);
 
-		dom.createElem('div', { textContent: '[Cargo Bay Material]', appendTo: this.content });
+		dom.createElem('div', { className: 'heading', attr: { 'data-augmented-ui': 'tl-clip tr-clip' }, textContent: '[Cargo Bay Material]', appendTo: this.content });
 
 		Object.keys(phaserload.player.cargoBay.material).forEach((name) => {
 			dom.createElem('div', { textContent: `${util.capitalize(name.split('_')[0])} ${util.capitalize(phaserload.options.mineralNames[name.split('_')[1]])}: ${phaserload.player.cargoBay.material[name]}`, appendTo: this.content });
@@ -218,13 +218,13 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 	draw_inventory_drillConfig(){
 		dom.empty(this.content);
 
-		dom.createElem('div', { textContent: '[Drill Config]', appendTo: this.content });
+		dom.createElem('div', { className: 'heading', attr: { 'data-augmented-ui': 'tl-clip tr-clip' }, textContent: '[Drill Config]', appendTo: this.content });
 	}
 
 	draw_inventory_settings(){
 		dom.empty(this.content);
 
-		dom.createElem('div', { textContent: '[Settings]', appendTo: this.content });
+		dom.createElem('div', { className: 'heading', attr: { 'data-augmented-ui': 'tl-clip tr-clip' }, textContent: '[Settings]', appendTo: this.content });
 		dom.createElem('div', { textContent: `Sounds Volume: ${phaserload.config.volume.sounds * 100}%`, appendTo: this.content });
 		dom.createElem('div', { textContent: `Music Volume: ${phaserload.config.volume.sounds * 100}%`, appendTo: this.content });
 		dom.createElem('div', { textContent: `Health Alert: ${phaserload.config.alert.health}%`, appendTo: this.content });
@@ -235,7 +235,7 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 	draw_inventory_help(){
 		dom.empty(this.content);
 
-		dom.createElem('div', { textContent: '[Help]', appendTo: this.content });
+		dom.createElem('div', { className: 'heading', attr: { 'data-augmented-ui': 'tl-clip tr-clip' }, textContent: '[Help]', appendTo: this.content });
 	}
 
 	draw_spaceco(){
@@ -278,25 +278,25 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 	draw_spaceco_priceList(){
 		dom.empty(this.content);
 
-		dom.createElem('div', { textContent: '[Price List]', appendTo: this.content });
+		dom.createElem('div', { className: 'heading', attr: { 'data-augmented-ui': 'tl-clip tr-clip' }, textContent: '[Price List]', appendTo: this.content });
 	}
 
 	draw_spaceco_fuel(){
 		dom.empty(this.content);
 
-		dom.createElem('div', { textContent: '[Fuel]', appendTo: this.content });
+		dom.createElem('div', { className: 'heading', attr: { 'data-augmented-ui': 'tl-clip tr-clip' }, textContent: '[Fuel]', appendTo: this.content });
 	}
 
 	draw_spaceco_drillParts(){
 		dom.empty(this.content);
 
-		dom.createElem('div', { textContent: '[Drill Parts]', appendTo: this.content });
+		dom.createElem('div', { className: 'heading', attr: { 'data-augmented-ui': 'tl-clip tr-clip' }, textContent: '[Drill Parts]', appendTo: this.content });
 	}
 
 	draw_spaceco_items(){
 		dom.empty(this.content);
 
-		dom.createElem('div', { textContent: '[Items]', appendTo: this.content });
+		dom.createElem('div', { className: 'heading', attr: { 'data-augmented-ui': 'tl-clip tr-clip' }, textContent: '[Items]', appendTo: this.content });
 	}
 
 	draw_trade(){

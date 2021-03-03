@@ -82,9 +82,17 @@ div#console {
 		float: right;
 		background-color: $green;
 		box-sizing: border-box;
-		padding: 3%;
+		padding: 2%;
 
 		--aug-inlay-bg: $black;
 		--aug-inlay-all: 1%;
+
+		div.heading {
+			background-color: $grey-darkest;
+			color: $green;
+			padding: 1%;
+			margin-bottom: 1%;
+			text-align: center;
+		}
 	}
 }
