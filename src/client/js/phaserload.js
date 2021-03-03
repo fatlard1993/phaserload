@@ -13,8 +13,13 @@ var phaserload = {
 		type: Phaser.AUTO,
 		scene: {},
 		volume: {
-			music: parseFloat(dom.storage.get('volume.music') || 1),
+			music: parseFloat(dom.storage.get('volume.music') || 0.15),
 			sounds: parseFloat(dom.storage.get('volume.sounds') || 1)
+		},
+		alert: {
+			health: parseFloat(dom.storage.get('alert.health') || 10),
+			fuel: parseFloat(dom.storage.get('alert.fuel') || 10),
+			cargo: parseFloat(dom.storage.get('alert.cargo') || 10)
 		}
 	},
 	options: {},
@@ -30,6 +35,10 @@ var phaserload = {
 	},
 	groupNames: ['ground', 'fluid', 'mobs', 'items', 'interfaces'],
 	soundNames: ['dig', 'hurt', 'pickup', 'console_open', 'alert', 'blip', 'coin'],
+	musicNames: ['last_breath', 'devotion'],
+	get audioNames(){
+		return phaserload.soundNames.concat(phaserload.musicNames.map((name) => { return `music/${name}`; }));
+	},
 	init: function(){
 		var clientHeight = document.body.clientHeight - 2;
 		var clientWidth = document.body.clientWidth - 1;
@@ -48,6 +57,23 @@ var phaserload = {
 	},
 	playSound: function(name, options = {}){
 		phaserload.scene.sound.play(name, Object.assign({ volume: phaserload.config.volume.sounds }, options));
+	},
+	playMusic: function(name){
+		if(!name) name = util.randFromArr(phaserload.musicNames);
+
+		name = `music/${name}`;
+
+		const options = { volume: phaserload.config.volume.music };
+
+		if(phaserload.scene.sound.locked) phaserload.scene.sound.once(Phaser.Sound.Events.UNLOCKED, phaserload.playMusic(...arguments));
+
+		if(phaserload.music) phaserload.music.stop();
+
+		phaserload.music = phaserload.scene.sound.add(name, options);
+
+		phaserload.music.once('complete', () => { phaserload.playMusic(); });
+
+		phaserload.music.play();
 	},
 	update: function(){
 		phaserload.drawView();
@@ -168,17 +194,17 @@ var phaserload = {
 
 					phaserload.adjustViewPosition(px_x, px_y, phaserload.player.moveTime);
 
-					if(!phaserload.player.alertedFuel && phaserload.player.fuel.available <= 10){
+					if(!phaserload.player.alertedFuel && phaserload.player.fuel.available <= phaserload.config.alert.fuel){
 						phaserload.player.alertedFuel = true;
 						phaserload.player.console.notify(phaserload.player.fuel.available <= 1 ? 'Out of fuel!' : 'Fuel is low!');
 					}
 
-					if(!phaserload.player.alertedCargo && phaserload.player.cargoBay.available <= 10){
+					if(!phaserload.player.alertedCargo && phaserload.player.cargoBay.available <= phaserload.config.alert.cargo){
 						phaserload.player.alertedCargo = true;
 						phaserload.player.console.notify(phaserload.player.cargoBay.available <= 1 ? 'Cargo bay is full!' : 'Cargo bay almost full!');
 					}
 
-					if(!phaserload.player.alertedHealth && phaserload.player.health.available <= 10){
+					if(!phaserload.player.alertedHealth && phaserload.player.health.available <= phaserload.config.alert.health){
 						phaserload.player.alertedHealth = true;
 						phaserload.player.console.notify(phaserload.player.health.available <= 1 ? 'You are dead!' : 'Health is low!');
 					}

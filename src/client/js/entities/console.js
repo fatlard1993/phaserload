@@ -187,6 +187,8 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 
 						evt.target.classList.add('selected');
 
+						phaserload.playSound('blip');
+
 						this[`draw_inventory_${util.toCamelCase(name.toLowerCase())}`]();
 					}
 				});
@@ -206,7 +208,7 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		dom.createElem('div', { textContent: '[Items]', appendTo: this.content });
 
 		Object.keys(phaserload.player.inventory).forEach((name) => {
-			dom.createElem('div', { textContent: `${name}: ${phaserload.player.inventory[name]}`, appendTo: this.content });
+			dom.createElem('div', { textContent: `${util.capitalize(name)}: ${phaserload.player.inventory[name]}`, appendTo: this.content });
 		});
 	}
 
@@ -216,7 +218,7 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		dom.createElem('div', { textContent: '[Cargo Bay Material]', appendTo: this.content });
 
 		Object.keys(phaserload.player.cargoBay.material).forEach((name) => {
-			dom.createElem('div', { textContent: `${name}: ${phaserload.player.cargoBay.material[name]}`, appendTo: this.content });
+			dom.createElem('div', { textContent: `${util.capitalize(name.split('_')[0])} ${util.capitalize(phaserload.options.mineralNames[name.split('_')[1]])}: ${phaserload.player.cargoBay.material[name]}`, appendTo: this.content });
 		});
 	}
 
@@ -230,6 +232,11 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		dom.empty(this.content);
 
 		dom.createElem('div', { textContent: '[Settings]', appendTo: this.content });
+		dom.createElem('div', { textContent: `Sounds Volume: ${phaserload.config.volume.sounds * 100}%`, appendTo: this.content });
+		dom.createElem('div', { textContent: `Music Volume: ${phaserload.config.volume.sounds * 100}%`, appendTo: this.content });
+		dom.createElem('div', { textContent: `Health Alert: ${phaserload.config.alert.health}%`, appendTo: this.content });
+		dom.createElem('div', { textContent: `Cargo Alert: ${phaserload.config.alert.cargo}%`, appendTo: this.content });
+		dom.createElem('div', { textContent: `Fuel Alert: ${phaserload.config.alert.fuel}%`, appendTo: this.content });
 	}
 
 	draw_inventory_help(){
@@ -264,6 +271,8 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 						this.navbar.getElementsByClassName('selected')[0].classList.remove('selected');
 
 						evt.target.classList.add('selected');
+
+						phaserload.playSound('blip');
 
 						this[`draw_spaceco_${util.toCamelCase(name.toLowerCase())}`]();
 					}

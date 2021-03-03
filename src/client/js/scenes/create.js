@@ -5,7 +5,9 @@ phaserload.config.scene.create = function(){
 
 	phaserload.groupNames.forEach((name) => { phaserload.groups[name] = this.add.group(); });
 
-	phaserload.soundNames.forEach((sound) => { this.sound.add(sound); });
+	phaserload.audioNames.forEach((sound) => { this.sound.add(sound); });
+
+	phaserload.playMusic();
 
 	phaserload.drawView();
 
