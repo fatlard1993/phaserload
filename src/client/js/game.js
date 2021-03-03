@@ -40,7 +40,7 @@ const game = {
 				log('credits change', previousCredits - phaserload.player.credits);
 
 				phaserload.playSound('coin', { loop: true, rate: 3.5 });
-				setTimeout(() => { phaserload.scene.sound.stopByKey('coin'); }, Math.abs(previousCredits - phaserload.player.credits) * 2);
+				setTimeout(() => { phaserload.scene.sound.stopByKey('coin'); }, Math.abs(previousCredits - phaserload.player.credits) * 4);
 			}
 		});
 
