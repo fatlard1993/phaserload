@@ -34,7 +34,7 @@ var phaserload = {
 		players: {}
 	},
 	groupNames: ['ground', 'fluid', 'mobs', 'items', 'interfaces'],
-	soundNames: ['dig', 'hurt', 'pickup', 'console_open', 'alert', 'blip', 'coin'],
+	soundNames: ['dig', 'hurt', 'pickup', 'console_open', 'alert', 'blip', 'coin', 'explode'],
 	musicNames: ['last_breath', 'devotion'],
 	get audioNames(){
 		return phaserload.soundNames.concat(phaserload.musicNames.map((name) => { return `music/${name}`; }));
@@ -239,7 +239,11 @@ var phaserload = {
 					y: px_y,
 					duration: phaserload.state.world.gravity * (Math.abs(old_x - x) + Math.abs(old_y - y)),
 					ease: 'Linear',
-					onComplete: () => { phaserload.view.spaceco.setFrame(`spaceco_hurt${phaserload.state.world.spaceco.damage}`); }
+					onComplete: () => {
+						phaserload.playSound(phaserload.state.world.spaceco.damage < 9 ? 'hurt' : 'spaceco_die');
+
+						phaserload.view.spaceco.setFrame(`spaceco_hurt${phaserload.state.world.spaceco.damage}`);
+					}
 				});
 			}
 
