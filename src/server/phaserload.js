@@ -183,7 +183,7 @@ const phaserload = module.exports = {
 			}
 		}
 
-		let holeChance, mineralChance, itemChance, hazardChance, depthPercent, layer, groundType, item, hazard;
+		let holeChance, mineralChance, depthPercent, layer, groundType;//, itemChance, hazardChance, item, hazard;
 
 		for(let x = 0, y; x < world.width; ++x){
 			for(y = 0; y < world.depth; ++y){//todo make y based modifications account for depth and be configurable if possible (maybe with a bezier curve?)
@@ -314,7 +314,7 @@ const phaserload = module.exports = {
 		return position.y === y && (position.x === x || position.x === x - 1 || position.x === x + 1);
 	},
 	playersAt: function(map, pos){
-
+		log('phaserload.playersAt is not-yet-implemented', map, pos);
 	},
 	checkMobFall: function(map, pos){
 		const surrounds = phaserload.getImmediateSurrounds(map, pos, { bottomLeft: 1, bottom: 1, bottomRight: 1 });
