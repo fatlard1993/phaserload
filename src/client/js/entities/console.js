@@ -225,11 +225,75 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		dom.empty(this.content);
 
 		dom.createElem('div', { className: 'heading', attr: { 'data-augmented-ui': 'tl-clip tr-clip' }, textContent: '[Settings]', appendTo: this.content });
-		dom.createElem('div', { textContent: `Sounds Volume: ${phaserload.config.volume.sounds * 100}%`, appendTo: this.content });
-		dom.createElem('div', { textContent: `Music Volume: ${phaserload.config.volume.sounds * 100}%`, appendTo: this.content });
-		dom.createElem('div', { textContent: `Health Alert: ${phaserload.config.alert.health}%`, appendTo: this.content });
-		dom.createElem('div', { textContent: `Cargo Alert: ${phaserload.config.alert.cargo}%`, appendTo: this.content });
-		dom.createElem('div', { textContent: `Fuel Alert: ${phaserload.config.alert.fuel}%`, appendTo: this.content });
+		dom.createElem('label', {
+			textContent: `Sounds Volume`,
+			appendChild: dom.createElem('input', {
+				type: 'number',
+				value: phaserload.config.volume.sounds * 100,
+				onChange: ({ value }) => {
+					value /= 100;
+
+					phaserload.config.volume.sounds = value;
+
+					dom.storage.set('volume.sounds', value);
+				}
+			}),
+			appendTo: this.content
+		});
+		dom.createElem('label', {
+			textContent: `Music Volume`,
+			appendChild: dom.createElem('input', {
+				type: 'number',
+				value: phaserload.config.volume.music * 100,
+				onChange: ({ value }) => {
+					value /= 100;
+
+					phaserload.config.volume.music = value;
+
+					dom.storage.set('volume.music', value);
+				}
+			}),
+			appendTo: this.content
+		});
+		dom.createElem('label', {
+			textContent: `Health Alert`,
+			appendChild: dom.createElem('input', {
+				type: 'number',
+				value: phaserload.config.alert.health,
+				onChange: ({ value }) => {
+					phaserload.config.alert.health = value;
+
+					dom.storage.set('alert.health', value);
+				}
+			}),
+			appendTo: this.content
+		});
+		dom.createElem('label', {
+			textContent: `Cargo Alert`,
+			appendChild: dom.createElem('input', {
+				type: 'number',
+				value: phaserload.config.alert.cargo,
+				onChange: ({ value }) => {
+					phaserload.config.alert.cargo = value;
+
+					dom.storage.set('alert.cargo', value);
+				}
+			}),
+			appendTo: this.content
+		});
+		dom.createElem('label', {
+			textContent: `Fuel Alert`,
+			appendChild: dom.createElem('input', {
+				type: 'number',
+				value: phaserload.config.alert.fuel,
+				onChange: ({ value }) => {
+					phaserload.config.alert.fuel = value;
+
+					dom.storage.set('alert.fuel', value);
+				}
+			}),
+			appendTo: this.content
+		});
 	}
 
 	draw_inventory_help(){

@@ -94,5 +94,18 @@ div#console {
 			margin-bottom: 1%;
 			text-align: center;
 		}
+
+		label {
+			display: block;
+			text-align: center;
+			color: $white;
+
+			input {
+				display: block;
+				margin: 1% auto;
+				text-align: center;
+				width: 20%;
+			}
+		}
 	}
 }
