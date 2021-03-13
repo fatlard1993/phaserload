@@ -339,3 +339,249 @@ const phaserload = module.exports = {
 		return world.densities[type[1]] * (type[0] === 'pure' ? 0.15 : 0.05);
 	}
 };
+
+
+// effects: {
+// 	explode: function(pos, radius){
+// 		var distanceFromPlayer = phaserload.phaser.math.distance(pos.x, pos.y, phaserload.toGridPos(phaserload.player.sprite.x), phaserload.toGridPos(phaserload.player.sprite.y));
+
+// 		var intensity = Math.max(1, (radius * 2) + (radius - distanceFromPlayer));
+// 		phaserload.phaser.camera.shake(intensity / 1000, 1000);
+
+// 		if(!phaserload.player.isDisoriented && distanceFromPlayer < 10) phaserload.phaser.camera.flash(undefined, 1000, 1, 0.3);
+
+// 		socketClient.reply('explosion', { pos: pos, radius: radius });
+
+// 		if(phaserload.phaser.math.distance(pos.x, pos.y, phaserload.toGridPos(phaserload.spaceco.sprite.x), phaserload.toGridPos(phaserload.spaceco.sprite.y)) < phaserload.blockPx * (radius + 1)){
+// 			phaserload.spaceco.hurt((radius + 1) - (phaserload.phaser.math.distance(pos.x, pos.y, phaserload.toGridPos(phaserload.spaceco.sprite.x), phaserload.toGridPos(phaserload.spaceco.sprite.y)) / phaserload.blockPx), 'an explosion');
+// 		}
+
+// 		if(distanceFromPlayer < radius){
+// 			phaserload.effects.hurt('explosion', util.rand(radius, radius * 2) * (radius - distanceFromPlayer), 3);
+// 		}
+
+// 		var surroundingGround = phaserload.getSurroundingRadius(pos, radius);
+
+// 		surroundingGround.forEach(function(pos){
+// 			phaserload.setMapPos(pos);
+// 		});
+// 	},
+// 	freeze: function(pos, radius){
+// 		if(!phaserload.player.isDisoriented) phaserload.phaser.camera.flash(undefined, 1000, 1, 0.1);
+
+// 		var surroundingGround = phaserload.getSurroundingRadius(pos, radius);
+
+// 		surroundingGround.forEach(function(pos){
+// 			var ground = phaserload.mapPos(pos).ground;
+
+// 			if(ground.name === 'lava') phaserload.setMapPos(pos, 'ground_'+ util.weightedChance({ white: 90, red: 10 }));
+// 		});
+// 	},
+// 	exploding: function(chance, pos){
+// 		if(util.chance(chance)) phaserload.effects.explode(pos, util.randInt(2, 3));
+// 	},
+// 	freezing: function(chance, pos){
+// 		if(util.chance(chance)) phaserload.effects.freeze(pos, util.randInt(2, 4));
+// 	},
+// 	teleporting: function(chance){
+// 		if(util.chance(chance)){
+// 			var pos = util.randFromArr(phaserload.findGround('ground_teal'));//todo use dynamic ground name
+
+// 			if(pos) phaserload.effects.teleport(pos);
+// 		}
+// 	},
+// 	bonus: function(chance, color, count){
+// 		if(util.chance(chance)){
+// 			if(color === 'rand') color = util.randFromArr(phaserload.mineralColors);
+
+// 			phaserload.effects.getHullItem('mineral_'+ color, typeof count === 'number' ? count : (typeof count === 'object' ? util.randInt.apply(null, count) : 1));
+// 		}
+// 	},
+// 	lava: function(chance, pos){
+// 		if(util.chance(chance)) phaserload.setMapPos(pos, 'lava', 'fill');
+// 	},
+// 	poisonous_gas: function(chance, pos){
+// 		if(util.chance(chance)) phaserload.setMapPos(pos, 'poisonous_gas', 'fill');
+// 	},
+// 	noxious_gas: function(chance, pos){
+// 		if(util.chance(chance)) phaserload.setMapPos(pos, 'noxious_gas', 'fill');
+// 	},
+// 	lavaRelease: function(){
+// 		for(var x = 0; x < phaserload.config.width; ++x){
+// 			for(var y = phaserload.config.depth - phaserload.toGridPos(phaserload.viewHeight); y < phaserload.config.depth; ++y){
+// 				if(util.chance(90) && phaserload.mapPos(x, y).ground.name === 'ground_red'){
+// 					phaserload.setMapPos({ x: x, y: y }, 'lava', 'fill');
+// 				}
+// 			}
+// 		}
+// 	},
+// 	repair: function(chance, variation){
+// 		if(!util.chance(chance)) return;
+
+// 		phaserload.player.health = phaserload.effects.heal(phaserload.player.max_health, variation);
+// 	},
+// 	disorient: function(duration){
+// 		if(phaserload.player.isDisoriented) clearTimeout(phaserload.player.isDisoriented_TO);
+
+// 		else{
+// 			phaserload.phaser.camera.fade(undefined, duration, 1, 0.5);
+// 		}
+
+// 		phaserload.phaser.camera.shake(0.001, duration);
+
+// 		phaserload.player.isDisoriented = true;
+// 		phaserload.player.isDisoriented_TO = setTimeout(function(){
+// 			phaserload.player.isDisoriented = false;
+
+// 			phaserload.phaser.camera.flash(undefined, 1000, 1, 0.2);
+// 		}, duration);
+// 	},
+// 	heal: function(amount, variation){
+// 		amount = amount || phaserload.player.max_health;
+
+// 		phaserload.player.health = Math.min(phaserload.player.max_health, phaserload.player.health + (variation ? util.rand(amount - variation, amount + variation) : amount));
+
+// 		phaserload.hud.update();
+// 	},
+// 	hurt: function(by, amount, variation){
+// 		if(phaserload.player.justHurt) return; //todo make this depend on what the damage is from
+
+// 		phaserload.player.justHurt = true;
+// 		phaserload.player.justHurt_TO = setTimeout(function(){ phaserload.player.justHurt = false; }, 800);
+
+// 		phaserload.player.health = Math.max(0, phaserload.player.health - (variation ? util.rand(amount - variation, amount + variation) : amount));
+
+// 		if(phaserload.player.health <= 0) phaserload.player.kill(by);
+
+// 		else if(phaserload.player.health <= 25){
+// 			phaserload.notify('Your health is\nrunning low', 1.5);
+// 		}
+
+// 		else phaserload.hud.update();
+// 	},
+// 	refuel: function(amount, variation){
+// 		phaserload.player.fuel = Math.min(phaserload.player.max_fuel, phaserload.player.fuel + (variation ? util.rand(amount - variation, amount + variation) : amount));
+// 	},
+// 	useFuel: function(amount, variation){
+// 		phaserload.player.fuel = Math.max(0, phaserload.player.fuel - (variation ? util.rand(amount - variation, amount + variation) : amount));
+
+// 		if(phaserload.player.fuel <= 0) phaserload.player.kill('fuel');
+
+// 		else if(phaserload.player.fuel <= 1){
+// 			phaserload.notify('Your fuel is\nrunning low', 1.5);
+// 		}
+
+// 		else phaserload.hud.update();
+// 	},
+// 	getInvItem: function(itemName, count){
+// 		phaserload.player.inventory[itemName] = phaserload.player.inventory[itemName] !== undefined ? phaserload.player.inventory[itemName] : 0;
+
+// 		phaserload.player.inventory[itemName] += count || 1;
+// 	},
+// 	loseInvItem: function(itemName, count){
+// 		if(!phaserload.player.inventory[itemName]) return;
+
+// 		phaserload.player.inventory[itemName] -= count || 1;
+
+// 		if(phaserload.player.inventory[itemName] < 1) delete phaserload.player.inventory[itemName];
+// 	},
+// 	getHullItem: function(itemName, count){
+// 		count = count || 1;
+
+// 		var weight, isMineral = itemName.startsWith('mineral');
+// 		var densityMod = phaserload.state.densities[itemName.replace('mineral_', '').replace('ground_', '')] * 0.0001;
+
+// 		if(isMineral) weight = densityMod;
+// 		else weight = 0.07 + densityMod;
+
+// 		if(phaserload.player.hull.space < (weight * count)) return false;
+
+// 		phaserload.player.hull.space -= (weight * count);
+
+// 		phaserload.player.hull[itemName] = phaserload.player.hull[itemName] !== undefined ? phaserload.player.hull[itemName] : 0;
+
+// 		phaserload.player.hull[itemName] += count;
+
+// 		return true;
+// 	},
+// 	teleport: function(pos){
+// 		var teleportPos;
+
+// 		phaserload.player.sprite.animations.play('teleporting');
+
+// 		if(pos === 'spaceco'){
+// 			teleportPos = phaserload.toGridPos(phaserload.spaceco.sprite);
+// 		}
+
+// 		else if(pos === 'responder'){
+// 			teleportPos = phaserload.toGridPos(phaserload.player.responder);
+// 		}
+
+// 		else if(typeof pos === 'object'){
+// 			teleportPos = pos;
+// 		}
+
+// 		phaserload.player.move('teleport', null, teleportPos);
+// 	},
+// 	intractable: function(){
+// 		//todo notify and provide a custom interaction screen for things like bomb disarm, loot drop, responder disarm
+// 	},
+// 	collect: function(item){
+// 		if(item.name.startsWith('mineral_')){
+// 			var gotIt = phaserload.effects.getHullItem(item.name);
+
+// 			if(!gotIt) return;
+// 		}
+
+// 		var animationTime = 200 + Math.ceil(phaserload.phaser.math.distance(phaserload.phaser.camera.x, phaserload.phaser.camera.y, item.sprite.x, item.sprite.y));
+
+// 		phaserload.phaser.add.tween(item.sprite).to({ x: phaserload.phaser.camera.x, y: phaserload.phaser.camera.y }, animationTime, Phaser.Easing.Quadratic.Out, true);
+
+// 		setTimeout(item.sprite.kill, animationTime);
+
+// 	},
+// 	dropItem: function(itemName, pos){
+// 		console.log(`todo create ${itemName} at ${pos}`);
+// 	}
+// },
+// applyEffects: function(effects, pos){
+// 	pos = pos && pos.x && pos.y ? pos : phaserload.toGridPos(phaserload.player.sprite);
+
+// 	for(var x = 0; x < effects.length; ++x){
+// 		var params = effects[x].split(':~:'), effect = params.shift();
+
+// 		if({ poisonous_gas: 1, noxious_gas: 1, lava: 1, exploding: 1, freezing: 1, dropItem: 1 }[effect]) params[1] = pos;
+
+// 		else if({ bonus: 1 }[effect]) params[3] = JSON.parse(params[2]);
+
+// 		else if({ collect: 1 }[effect]) params[0] = arguments[2];
+
+// 		phaserload.effects[effect].apply(null, params);
+// 	}
+// },
+// achievements: {
+// 	depth10: {
+// 		text: 'Congratulations\nyouve made it to\nlevel 10',
+// 		effects: ['bonus:~:100:~:rand:~:[1,3]']
+// 	},
+// 	depth50: {
+// 		text: 'Congratulations\nyouve made it to\nlevel 50',
+// 		effects: ['bonus:~:100:~:rand:~:[5,7]']
+// 	},
+// 	depth100: {
+// 		text: 'Congratulations\nyouve made it to\nlevel 100',
+// 		effects: ['bonus:~:100:~:rand:~:[7,9]']
+// 	},
+// 	depth200: {
+// 		text: 'Congratulations\nyouve made it to\nlevel 200',
+// 		effects: ['bonus:~:100:~:rand:~:[9,13]']
+// 	}
+// },
+// getAchievement: function(name){
+// 	if(phaserload.achievements[name].achieved) return;
+// 	phaserload.achievements[name].achieved = true;
+
+// 	phaserload.notify(phaserload.achievements[name].text);
+
+// 	phaserload.applyEffects(phaserload.achievements[name].effects);
+// },
