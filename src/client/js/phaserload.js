@@ -1,11 +1,14 @@
 import log from './logger';
-import lang from './lang/index';
+// import lang from './lang/index';
 import GroundEntity from './entities/ground';
 import MineralEntity from './entities/mineral';
+import DrillEntity from './entities/drill';
 import PlayerEntity from './entities/player';
 import SpacecoEntity from './entities/spaceco';
 
 import Phaser from './node_modules/phaser/dist/phaser.min.js';
+import util from 'js-util';
+import dom from 'dom';
 
 var phaserload = {
 	blockPx: 64,
@@ -35,7 +38,7 @@ var phaserload = {
 	},
 	groupNames: ['ground', 'fluid', 'mobs', 'items', 'interfaces'],
 	soundNames: ['dig', 'hurt', 'pickup', 'console_open', 'alert', 'blip', 'coin', 'explode'],
-	musicNames: ['last_breath', 'devotion'],
+	musicNames: ['chip1', 'chip2', 'chip3', 'chip4', 'chip5'],
 	get audioNames(){
 		return phaserload.soundNames.concat(phaserload.musicNames.map((name) => { return `music/${name}`; }));
 	},
@@ -184,7 +187,7 @@ var phaserload = {
 					phaserload.view.players[name].rotation = positions[direction].rotation;
 				}
 
-				const old_x = phaserload.toGridPos(phaserload.view.players[name].x), old_y = phaserload.toGridPos(phaserload.view.players[name].y);
+				// const old_x = phaserload.toGridPos(phaserload.view.players[name].x), old_y = phaserload.toGridPos(phaserload.view.players[name].y);
 
 				if(name === phaserload.player.name){
 					if(phaserload.player.digging){
@@ -254,7 +257,7 @@ var phaserload = {
 		log()('adjustViewPosition', px_x, px_y, time);
 
 		var scrollX = Math.max(0, Math.min(phaserload.toPxPos(phaserload.state.world.width) - phaserload.config.width - 32, px_x - (phaserload.config.width / 2)));
-		var scrollY = Math.max(0, Math.min(phaserload.toPxPos(phaserload.state.world.depth) - phaserload.config.height - 32, px_y - (phaserload.config.height / 2)));;
+		var scrollY = Math.max(0, Math.min(phaserload.toPxPos(phaserload.state.world.depth) - phaserload.config.height - 32, px_y - (phaserload.config.height / 2)));
 
 		//todo world wrap?
 
@@ -316,8 +319,8 @@ var phaserload = {
 			phaserload.view.map[x][y] = undefined;
 		}
 	},
-	drawTile: function(x, y, id, animation){
-		var { ground, items } = phaserload.mapPos(x, y);
+	drawTile: function(x, y){//, id, animation){
+		var { ground } = phaserload.mapPos(x, y);//, items
 
 		if(!phaserload.view.map[x]) phaserload.view.map[x] = [];
 
@@ -346,6 +349,6 @@ var phaserload = {
 			if(ground.mineral) phaserload.view.map[x][y].ground.mineral = new MineralEntity(x, y, ground.type);
 		}
 
-		if(animation) entity.anims.play(animation);
+		// if(animation) entity.anims.play(animation);
 	}
 };

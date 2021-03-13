@@ -32,3 +32,5 @@ class GroundEntity extends Phaser.GameObjects.Sprite {
 		setTimeout(() => { this.destroy(); }, speed);
 	}
 }
+
+if(typeof module === 'object') module.exports = GroundEntity;

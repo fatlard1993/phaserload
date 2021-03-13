@@ -1,10 +1,10 @@
 import phaserload from '../phaserload';
 
 phaserload.config.scene.stop = function(){
-	var tweenTime = 500;
-	var delay = 0;
-	var delayIncrement = 100;
-	var text;
+	// var tweenTime = 500;
+	// var delay = 0;
+	// var delayIncrement = 100;
+	// var text;
 
 	// text = phaserload.game.add.text(0, -100, 'Game over!', { font: '60px ' + phaserload.config.font, fill: phaserload.config.textColor });
 	// text.updateTransform();

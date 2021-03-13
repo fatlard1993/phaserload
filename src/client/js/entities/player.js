@@ -3,7 +3,7 @@ import DrillEntity from './drill';
 import ConsoleEntity from './console';
 import ItemSlotEntity from './itemSlot';
 
-import util from 'js-util';
+// import util from 'js-util';
 import socketClient from 'socket-client';
 
 class PlayerEntity extends DrillEntity {
@@ -31,7 +31,7 @@ class PlayerEntity extends DrillEntity {
 	}
 
 	stopMoving(direction){
-		this.moving = null;
+		if(this.moving === direction) this.moving = null;
 	}
 
 	sendMove(x, y){
@@ -47,154 +47,156 @@ class PlayerEntity extends DrillEntity {
 
 		return;
 
-		if(!phaserload.initialized) return;
+		// if(!phaserload.initialized) return;
 
-		// if(phaserload.player.sprite.emitter){// particle decay
-		// 	phaserload.player.sprite.emitter.forEachAlive(function(particle){
-		// 		particle.alpha = Math.max(0, Math.min(1, (particle.lifespan / phaserload.player.sprite.emitter.lifespan) * 2));
-		// 	});
+		// // if(phaserload.player.sprite.emitter){// particle decay
+		// // 	phaserload.player.sprite.emitter.forEachAlive(function(particle){
+		// // 		particle.alpha = Math.max(0, Math.min(1, (particle.lifespan / phaserload.player.sprite.emitter.lifespan) * 2));
+		// // 	});
+		// // }
+		// var spriteGridPos = phaserload.toGridPos(phaserload.player.sprite);
+
+		// var playerCollision = phaserload.mapPos(spriteGridPos).ground.name;
+
+		// if(!phaserload.player.sprite.animations.getAnimation('teleport').isPlaying && typeof playerCollision === 'string'){
+		// 	log()('playerCollision', playerCollision);
+
+		// 	if(playerCollision === 'lava') phaserload.effects.hurt('lava', 12, 3);
+		// 	else if(playerCollision === 'poisonous_gas') phaserload.effects.hurt('poisonous_gas', 10, 5);
+		// 	else if(playerCollision === 'noxious_gas') phaserload.effects.disorient(3000);
+		// 	else if(playerCollision === 'red_monster') phaserload.effects.hurt('red_monster', 8, 3);
+		// 	else if(playerCollision === 'purple_monster') phaserload.effects.hurt('purple_monster', 6, 2);
 		// }
-		var spriteGridPos = phaserload.toGridPos(phaserload.player.sprite);
 
-		var playerCollision = phaserload.mapPos(spriteGridPos).ground.name;
+		// if(!phaserload.game.tweens.isTweening(phaserload.player.sprite)){
+		// 	var moving, altDirection;
+		// 	var surrounds = phaserload.getSurrounds(phaserload.toGridPos(phaserload.player.sprite), undefined, 'ground');
+		// 	var hudIsTweening = phaserload.game.tweens.isTweening(phaserload.hud.scale);
 
-		if(!phaserload.player.sprite.animations.getAnimation('teleport').isPlaying && typeof playerCollision === 'string'){
-			log()('playerCollision', playerCollision);
+		// 	if(phaserload.game.input.activePointer.isDown){
+		// 		if(phaserload.hud.isOpen){//&& !phaserload.hud.justUsedItemSlot
+		// 			if(!hudIsTweening && (phaserload.game.input.activePointer.x > 575 || phaserload.game.input.activePointer.y > 460)) phaserload.hud.close();
 
-			if(playerCollision === 'lava') phaserload.effects.hurt('lava', 12, 3);
-			else if(playerCollision === 'poisonous_gas') phaserload.effects.hurt('poisonous_gas', 10, 5);
-			else if(playerCollision === 'noxious_gas') phaserload.effects.disorient(3000);
-			else if(playerCollision === 'red_monster') phaserload.effects.hurt('red_monster', 8, 3);
-			else if(playerCollision === 'purple_monster') phaserload.effects.hurt('purple_monster', 6, 2);
-		}
+		// 			else if(!hudIsTweening) phaserload.hud.handlePointer(phaserload.game.input.activePointer);
 
-		if(!phaserload.game.tweens.isTweening(phaserload.player.sprite)){
-			var moving, altDirection;
-			var surrounds = phaserload.getSurrounds(phaserload.toGridPos(phaserload.player.sprite), undefined, 'ground');
-			var hudIsTweening = phaserload.game.tweens.isTweening(phaserload.hud.scale);
+		// 			return;
+		// 		}
 
-			if(phaserload.game.input.activePointer.isDown){
-				if(phaserload.hud.isOpen){//&& !phaserload.hud.justUsedItemSlot
-					if(!hudIsTweening && (phaserload.game.input.activePointer.x > 575 || phaserload.game.input.activePointer.y > 460)) phaserload.hud.close();
+		// 		else if(!phaserload.hud.isOpen && phaserload.game.math.distance(phaserload.game.input.activePointer.x, phaserload.game.input.activePointer.y, 70, 50) < 128){
+		// 			return phaserload.player.openHUD();
+		// 		}
 
-					else if(!hudIsTweening) phaserload.hud.handlePointer(phaserload.game.input.activePointer);
+		// 		else if(phaserload.game.math.distance(phaserload.game.input.activePointer.x, phaserload.game.input.activePointer.y, phaserload.config.width - 32, 32) < 32){
+		// 			if(phaserload.hud.justUsedItemSlot || phaserload.hud.isOpen) return;
 
-					return;
-				}
+		// 			phaserload.hud.justUsedItemSlot = true;
+		// 			phaserload.hud.justUsedItemSlot_TO = setTimeout(function(){ phaserload.hud.justUsedItemSlot = false; }, 500);
 
-				else if(!phaserload.hud.isOpen && phaserload.game.math.distance(phaserload.game.input.activePointer.x, phaserload.game.input.activePointer.y, 70, 50) < 128){
-					return phaserload.player.openHUD();
-				}
+		// 			if(!phaserload.itemSlot1.item) phaserload.hud.open('console');
 
-				else if(phaserload.game.math.distance(phaserload.game.input.activePointer.x, phaserload.game.input.activePointer.y, phaserload.config.width - 32, 32) < 32){
-					if(phaserload.hud.justUsedItemSlot || phaserload.hud.isOpen) return;
+		// 			else phaserload.player.useItem(1, phaserload.itemSlot1.item);
 
-					phaserload.hud.justUsedItemSlot = true;
-					phaserload.hud.justUsedItemSlot_TO = setTimeout(function(){ phaserload.hud.justUsedItemSlot = false; }, 500);
+		// 			return;
+		// 		}
 
-					if(!phaserload.itemSlot1.item) phaserload.hud.open('console');
+		// 		else if(phaserload.game.math.distance(phaserload.game.input.activePointer.x, phaserload.game.input.activePointer.y, phaserload.config.width - 32, 106) < 32){
+		// 			if(phaserload.hud.justUsedItemSlot || phaserload.hud.isOpen) return;
 
-					else phaserload.player.useItem(1, phaserload.itemSlot1.item);
+		// 			phaserload.hud.justUsedItemSlot = true;
+		// 			phaserload.hud.justUsedItemSlot_TO = setTimeout(function(){ phaserload.hud.justUsedItemSlot = false; }, 500);
 
-					return;
-				}
+		// 			if(!phaserload.itemSlot2.item) phaserload.hud.open('console');
 
-				else if(phaserload.game.math.distance(phaserload.game.input.activePointer.x, phaserload.game.input.activePointer.y, phaserload.config.width - 32, 106) < 32){
-					if(phaserload.hud.justUsedItemSlot || phaserload.hud.isOpen) return;
+		// 			else phaserload.player.useItem(2, phaserload.itemSlot2.item);
 
-					phaserload.hud.justUsedItemSlot = true;
-					phaserload.hud.justUsedItemSlot_TO = setTimeout(function(){ phaserload.hud.justUsedItemSlot = false; }, 500);
+		// 			return;
+		// 		}
 
-					if(!phaserload.itemSlot2.item) phaserload.hud.open('console');
+		// 		else{
+		// 			var xDiff = phaserload.player.sprite.x - phaserload.game.input.activePointer.x - phaserload.scene.cameras.main.x;
+		// 			var yDiff = phaserload.player.sprite.y - phaserload.game.input.activePointer.y - phaserload.scene.cameras.main.y;
 
-					else phaserload.player.useItem(2, phaserload.itemSlot2.item);
+		// 			var xDirection = xDiff > 0 ? 'left' : 'right';
+		// 			var yDirection = yDiff > 0 ? 'up' : 'down';
 
-					return;
-				}
+		// 			log()(xDiff, yDiff);
 
-				else{
-					var xDiff = phaserload.player.sprite.x - phaserload.game.input.activePointer.x - phaserload.scene.cameras.main.x;
-					var yDiff = phaserload.player.sprite.y - phaserload.game.input.activePointer.y - phaserload.scene.cameras.main.y;
+		// 			xDiff = Math.abs(xDiff);
+		// 			yDiff = Math.abs(yDiff);
 
-					var xDirection = xDiff > 0 ? 'left' : 'right';
-					var yDirection = yDiff > 0 ? 'up' : 'down';
+		// 			moving = xDiff > yDiff ? (xDiff > 10 ? xDirection : null) : (yDiff > 10 ? yDirection : null);
+		// 			altDirection = xDiff > yDiff ? (yDiff > 10 ? yDirection : null) : (xDiff > 10 ? xDirection : null);
+		// 		}
+		// 	}
 
-					log()(xDiff, yDiff);
+		// 	else if(phaserload.game.input.keyboard.isDown(Phaser.Keyboard.ESC) && !phaserload.justPressedEsc){
+		// 		phaserload.justPressedEsc = true;
+		// 		phaserload.justPressedEsc_TO = setTimeout(function(){ phaserload.justPressedEsc = false; }, 1000);
 
-					xDiff = Math.abs(xDiff);
-					yDiff = Math.abs(yDiff);
+		// 		if(phaserload.hud.isOpen) phaserload.hud.close();
 
-					moving = xDiff > yDiff ? (xDiff > 10 ? xDirection : null) : (yDiff > 10 ? yDirection : null);
-					altDirection = xDiff > yDiff ? (yDiff > 10 ? yDirection : null) : (xDiff > 10 ? xDirection : null);
-				}
-			}
+		// 		else phaserload.player.openHUD();
 
-			else if(phaserload.game.input.keyboard.isDown(Phaser.Keyboard.ESC) && !phaserload.justPressedEsc){
-				phaserload.justPressedEsc = true;
-				phaserload.justPressedEsc_TO = setTimeout(function(){ phaserload.justPressedEsc = false; }, 1000);
+		// 		return;
+		// 	}
 
-				if(phaserload.hud.isOpen) phaserload.hud.close();
+		// 	else if(phaserload.game.input.keyboard.isDown(Phaser.Keyboard.ONE)){
+		// 		return phaserload.player.useItem(1, phaserload.itemSlot1.item);
+		// 	}
+		// 	else if(phaserload.game.input.keyboard.isDown(Phaser.Keyboard.TWO)){
+		// 		return phaserload.player.useItem(2, phaserload.itemSlot2.item);
+		// 	}
 
-				else phaserload.player.openHUD();
+		// 	else if(phaserload.game.input.keyboard.isDown(Phaser.Keyboard.LEFT) || phaserload.game.input.keyboard.isDown(Phaser.Keyboard.A)){
+		// 		moving = 'left';
+		// 	}
+		// 	else if(phaserload.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || phaserload.game.input.keyboard.isDown(Phaser.Keyboard.D)){
+		// 		moving = 'right';
+		// 	}
+		// 	else if(phaserload.game.input.keyboard.isDown(Phaser.Keyboard.DOWN) || phaserload.game.input.keyboard.isDown(Phaser.Keyboard.S)){
+		// 		moving = 'down';
+		// 	}
+		// 	else if(phaserload.game.input.keyboard.isDown(Phaser.Keyboard.UP) || phaserload.game.input.keyboard.isDown(Phaser.Keyboard.W)){
+		// 		moving = 'up';
+		// 	}
 
-				return;
-			}
+		// 	var canMove;
 
-			else if(phaserload.game.input.keyboard.isDown(Phaser.Keyboard.ONE)){
-				return phaserload.player.useItem(1, phaserload.itemSlot1.item);
-			}
-			else if(phaserload.game.input.keyboard.isDown(Phaser.Keyboard.TWO)){
-				return phaserload.player.useItem(2, phaserload.itemSlot2.item);
-			}
+		// 	if(moving && phaserload.player.isDisoriented) moving = ['up', 'down', 'left', 'right'][util.randInt(0, 3)];
 
-			else if(phaserload.game.input.keyboard.isDown(Phaser.Keyboard.LEFT) || phaserload.game.input.keyboard.isDown(Phaser.Keyboard.A)){
-				moving = 'left';
-			}
-			else if(phaserload.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || phaserload.game.input.keyboard.isDown(Phaser.Keyboard.D)){
-				moving = 'right';
-			}
-			else if(phaserload.game.input.keyboard.isDown(Phaser.Keyboard.DOWN) || phaserload.game.input.keyboard.isDown(Phaser.Keyboard.S)){
-				moving = 'down';
-			}
-			else if(phaserload.game.input.keyboard.isDown(Phaser.Keyboard.UP) || phaserload.game.input.keyboard.isDown(Phaser.Keyboard.W)){
-				moving = 'up';
-			}
+		// 	if(moving) canMove = phaserload.player.checkMove(moving, surrounds);
 
-			var canMove;
+		// 	if(!canMove && altDirection){
+		// 		canMove = phaserload.player.checkMove(altDirection, surrounds);
+		// 		if(canMove) moving = altDirection;
+		// 	}
 
-			if(moving && phaserload.player.isDisoriented) moving = ['up', 'down', 'left', 'right'][util.randInt(0, 3)];
+		// 	if(!canMove) moving = null;
 
-			if(moving) canMove = phaserload.player.checkMove(moving, surrounds);
+		// 	if(moving) phaserload.player.move(moving, surrounds);
 
-			if(!canMove && altDirection){
-				canMove = phaserload.player.checkMove(altDirection, surrounds);
-				if(canMove) moving = altDirection;
-			}
+		// 	else if(!phaserload.player.justMoved){
+		// 		if(!surrounds.left && !surrounds.right && !surrounds.bottom){
+		// 			var direction;
 
-			if(!canMove) moving = null;
+		// 			if(phaserload.player.lastMove === 'up' && (surrounds.bottomLeft || surrounds.bottomRight)){
+		// 				direction = surrounds.bottomLeft && !surrounds.bottomRight ? 'left' : (surrounds.bottomLeft && surrounds.bottomRight ? (phaserload.player.lastMoveInvert ? 'left' : 'right') : 'right');
 
-			if(moving) phaserload.player.move(moving, surrounds);
+		// 				log()('Automove from: '+ phaserload.player.lastMove +' to: '+ direction, surrounds);
+		// 			}
+		// 			else{
+		// 				direction = 'down';
 
-			else if(!phaserload.player.justMoved){
-				if(!surrounds.left && !surrounds.right && !surrounds.bottom){
-					var direction;
+		// 				if(phaserload.player.lastMove === 'down') phaserload.effects.hurt('falling', 4, 3);
 
-					if(phaserload.player.lastMove === 'up' && (surrounds.bottomLeft || surrounds.bottomRight)){
-						direction = surrounds.bottomLeft && !surrounds.bottomRight ? 'left' : (surrounds.bottomLeft && surrounds.bottomRight ? (phaserload.player.lastMoveInvert ? 'left' : 'right') : 'right');
+		// 				log()('falling');
+		// 			}
 
-						log()('Automove from: '+ phaserload.player.lastMove +' to: '+ direction, surrounds);
-					}
-					else{
-						direction = 'down';
-
-						if(phaserload.player.lastMove === 'down') phaserload.effects.hurt('falling', 4, 3);
-
-						log()('falling');
-					}
-
-					phaserload.player.move(direction);
-				}
-			}
-		}
+		// 			phaserload.player.move(direction);
+		// 		}
+		// 	}
+		// }
 	}
 }
+
+if(typeof module === 'object') module.exports = PlayerEntity;

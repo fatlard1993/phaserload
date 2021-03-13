@@ -1,5 +1,5 @@
 import log from '../logger';
-import lang from '../lang/index';
+// import lang from '../lang/index';
 import phaserload from '../phaserload';
 
 import util from 'js-util';
@@ -327,3 +327,5 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		//todo add itemSlot-able inventory items
 	}
 }
+
+if(typeof module === 'object') module.exports = ConsoleEntity;

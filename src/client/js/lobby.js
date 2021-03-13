@@ -66,7 +66,7 @@ const lobby = {
 		});
 	},
 	draw_new_game: function(){
-		var newGameForm = dom.createElem('div', { id: 'newGameForm', appendTo: wrapper });
+		var newGameForm = dom.createElem('div', { id: 'newGameForm', appendTo: dom.getElemById('wrapper') });
 
 		var nameInput = dom.createElem('input', { type: 'text', id: 'newGameRoomName', placeholder: 'rand :: Room Name', validation: /^.{4,32}$|(^(?![\s\S]))/, validate: 0, appendTo: newGameForm });
 		dom.createElem('input', { type: 'number', id: 'newGameStartingWorld', placeholder: 'rand :: Starting World Index', validation: /(^([0-9]|10)$)|(^(?![\s\S]))/, validate: 0, appendTo: newGameForm });

@@ -1,5 +1,5 @@
 import log from '../logger';
-import lang from '../lang/index';
+// import lang from '../lang/index';
 
 import util from 'js-util';
 import socketClient from 'socket-client';
@@ -225,7 +225,7 @@ var phaserload = {
 
 		},
 		dropItem: function(itemName, pos){
-			//todo create item at pos
+			console.log(`todo create ${itemName} at ${pos}`);
 		}
 	},
 	applyEffects: function(effects, pos){

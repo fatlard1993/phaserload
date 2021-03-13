@@ -1,5 +1,5 @@
 import log from '../logger';
-import lang from '../lang/index';
+// import lang from '../lang/index';
 import phaserload from '../phaserload';
 import '../entities/index';
 import './states/index';

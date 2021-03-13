@@ -78,3 +78,5 @@ class ItemEntity extends Phaser.GameObjects.Image {
 // 		phaserload.applyEffects(interactEffects, pos, { name: itemName, sprite: itemSprite });
 // 	}
 // };
+
+if(typeof module === 'object') module.exports = ItemEntity;

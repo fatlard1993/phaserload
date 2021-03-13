@@ -26,3 +26,5 @@ class MineralEntity extends Phaser.GameObjects.Image {
 		});
 	}
 }
+
+if(typeof module === 'object') module.exports = MineralEntity;

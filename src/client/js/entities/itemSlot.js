@@ -37,3 +37,5 @@ class ItemSlotEntity extends Phaser.GameObjects.Image {
 		log()('use', this.linkedItem);
 	}
 }
+
+if(typeof module === 'object') module.exports = ItemSlotEntity;

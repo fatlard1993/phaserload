@@ -1,11 +1,11 @@
 import phaserload from '../phaserload';
 
-import util from 'js-util';
-import socketClient from 'socket-client';
+// import util from 'js-util';
+// import socketClient from 'socket-client';
 import Phaser from './node_modules/phaser/dist/phaser.min.js';
 
-var BaseGroundValue = 0.5;	// todo make these a mode setting
-var BaseMineralValue = 2.5;
+// var BaseGroundValue = 0.5;	// todo make these a mode setting
+// var BaseMineralValue = 2.5;
 
 class SpacecoEntity extends Phaser.GameObjects.Sprite {
 	constructor(x, y){
@@ -128,3 +128,5 @@ class SpacecoEntity extends Phaser.GameObjects.Sprite {
 // 		return Math.max(0, value);
 // 	};
 // };
+
+if(typeof module === 'object') module.exports = SpacecoEntity;

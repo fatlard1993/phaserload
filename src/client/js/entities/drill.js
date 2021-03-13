@@ -37,3 +37,5 @@ class DrillEntity extends Phaser.GameObjects.Sprite {
 		this.anims.play('move');
 	}
 }
+
+if(typeof module === 'object') module.exports = DrillEntity;
