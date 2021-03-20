@@ -219,6 +219,14 @@ class ConsoleEntity extends Phaser.GameObjects.Image {
 		dom.empty(this.content);
 
 		dom.createElem('div', { className: 'heading', attr: { 'data-augmented-ui': 'tl-clip tr-clip' }, textContent: '[Drill Config]', appendTo: this.content });
+
+		Object.keys(phaserload.player.configuration).forEach((name) => {
+			dom.createElem('label', {
+				textContent: `${util.capitalize(name.split('_')[0])}`,
+				appendTo: this.content,
+				appendChildren: phaserload.player.configuration[name].split(':~:').map((data) => { return dom.createElem('div', { textContent: data }); })
+			});
+		});
 	}
 
 	draw_inventory_settings(){
