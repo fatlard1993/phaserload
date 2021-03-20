@@ -263,7 +263,7 @@ var phaserload = {
 				if(typeof x !== 'undefined'){
 					log()(`Kill sprite column: ${x}`);
 
-					for(let y = Math.max(0, old_y - 2); y < Math.min(old_y + viewHeight + 2, phaserload.view.map[x].length); ++y){
+					for(let y = Math.max(0, old_y - 2); y < Math.min(old_y + viewHeight + 2, phaserload.view.map[old_x].length); ++y){
 						phaserload.killTile(x, y);
 					}
 				}
