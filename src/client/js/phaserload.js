@@ -10,6 +10,8 @@ import Phaser from './node_modules/phaser/dist/phaser.min.js';
 import util from 'js-util';
 import dom from 'dom';
 
+const halfPi = Math.PI / 2;
+
 var phaserload = {
 	blockPx: 64,
 	config: {
@@ -39,6 +41,32 @@ var phaserload = {
 	groupNames: ['ground', 'fluid', 'mobs', 'items', 'interfaces'],
 	soundNames: ['dig', 'hurt', 'pickup', 'console_open', 'alert', 'blip', 'coin', 'explode'],
 	musicNames: ['chip1', 'chip2', 'chip3', 'chip4', 'chip5'],
+	playerPositions: {
+		right: {
+			flipX: false,
+			rotation: 0
+		},
+		left: {
+			flipX: true,
+			rotation: 0
+		},
+		up_left: {
+			flipX: true,
+			rotation: halfPi
+		},
+		up_right: {
+			flipX: false,
+			rotation: -halfPi
+		},
+		down_left: {
+			flipX: true,
+			rotation: -halfPi
+		},
+		down_right: {
+			flipX: false,
+			rotation: halfPi
+		}
+	},
 	get audioNames(){
 		return phaserload.soundNames.concat(phaserload.musicNames.map((name) => { return `music/${name}`; }));
 	},
@@ -139,53 +167,8 @@ var phaserload = {
 			}
 
 			else if(phaserload.view.players[name].x !== px_x || phaserload.view.players[name].y !== px_y){
-				const halfPi = Math.PI / 2, positions = {
-					right: {
-						flipX: false,
-						rotation: 0
-					},
-					left: {
-						flipX: true,
-						rotation: 0
-					},
-					up_left: {
-						flipX: true,
-						rotation: halfPi
-					},
-					up_right: {
-						flipX: false,
-						rotation: -halfPi
-					},
-					down_left: {
-						flipX: true,
-						rotation: -halfPi
-					},
-					down_right: {
-						flipX: false,
-						rotation: halfPi
-					}
-				};
-
-				let direction, { lastDirection = 'right' } = phaserload.view.players[name];
-
-				if(phaserload.view.players[name].x !== px_x){
-					direction = phaserload.view.players[name].x > px_x ? 'left' : 'right';
-				}
-				else if(phaserload.view.players[name].y !== px_y){
-					direction = phaserload.view.players[name].y > px_y ? 'up' : 'down';
-
-					if(/up|down/.test(lastDirection)){
-						if(new RegExp(direction).test(lastDirection)) direction = lastDirection;
-						else direction += `_${/left/.test(lastDirection) ? 'right' : 'left'}`;
-					}
-					else direction += `_${lastDirection}`;
-				}
-
-				if(direction !== lastDirection){
-					phaserload.view.players[name].lastDirection = direction;
-					phaserload.view.players[name].flipX = positions[direction].flipX;
-					phaserload.view.players[name].rotation = positions[direction].rotation;
-				}
+				phaserload.view.players[name].flipX = phaserload.playerPositions[phaserload.state.players[name].orientation].flipX;
+				phaserload.view.players[name].rotation = phaserload.playerPositions[phaserload.state.players[name].orientation].rotation;
 
 				// const old_x = phaserload.toGridPos(phaserload.view.players[name].x), old_y = phaserload.toGridPos(phaserload.view.players[name].y);
 
