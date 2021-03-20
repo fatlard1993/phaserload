@@ -40,6 +40,7 @@ class SocketGame extends SocketRoom {
 				drill: 'standard:~:tritanium',
 				fuelTank: 'standard:~:tritanium'
 			},
+			orientation: 'right',
 			inventory: { teleporter: 1 },
 			moveTime: 0,
 			credits: [0, 9],
@@ -159,9 +160,9 @@ class SocketGame extends SocketRoom {
 		};
 
 		playerNames.forEach((name) => {
-			const { configuration, inventory, moveTime, credits, health, fuel, cargoBay, position, digging } = players[name];
+			const { configuration, inventory, moveTime, credits, health, fuel, cargoBay, position, digging, orientation } = players[name];
 
-			viewState.players[name] = { name, configuration, inventory, moveTime, credits, health, fuel, cargoBay, position, digging };
+			viewState.players[name] = { name, configuration, inventory, moveTime, credits, health, fuel, cargoBay, position, digging, orientation };
 		});
 
 		this.broadcast('state', viewState);
@@ -196,6 +197,23 @@ class SocketGame extends SocketRoom {
 		log(1)(`Player move from ${oldPos.x} ${oldPos.y} to ${x} ${y} | MoveTime: ${this.state.players[name].moveTime}`);
 
 		this.state.players[name].position = { x, y };
+
+		let orientation, lastOrientation = this.state.players[name].orientation;
+
+		if(oldPos.x !== x){
+			orientation = oldPos.x > x ? 'left' : 'right';
+		}
+		else if(oldPos.y !== y){
+			orientation = oldPos.y > y ? 'up' : 'down';
+
+			if(/up|down/.test(lastOrientation)){
+				if(new RegExp(orientation).test(lastOrientation)) orientation = lastOrientation;
+				else orientation += `_${/left/.test(lastOrientation) ? 'right' : 'left'}`;
+			}
+			else orientation += `_${lastOrientation}`;
+		}
+
+		this.state.players[name].orientation = orientation;
 
 		const game = this;
 
