@@ -44,8 +44,8 @@ const game = {
 			}
 		});
 
-		socketClient.on('invalid_move', () => {
-			log()('invalid_move');
+		socketClient.on('invalid_move', (message) => {
+			log()('invalid_move', message);
 
 			phaserload.player.midMove = false;
 		});
