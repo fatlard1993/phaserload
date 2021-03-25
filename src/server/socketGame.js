@@ -169,9 +169,11 @@ class SocketGame extends SocketRoom {
 	}
 
 	playerMove({ name, x, y }){
-		const oldPos = this.state.players[name].position;
+		const oldPos = this.state.players[name].position, position = { x, y };
 
-		if(this.state.players[name].moving || x < 0 || y < 0 || (oldPos.x === x && oldPos.y === y)) return this.server.users[name].reply('invalid_move', true);
+		if(this.state.players[name].moving) return this.server.users[name].reply('invalid_move', 'Already moving');
+		if(x < 0 || y < 0) return this.server.users[name].reply('invalid_move', 'Out of bounds');
+		if(oldPos.x === x && oldPos.y === y) return this.server.users[name].reply('invalid_move', 'Not moving');
 
 		this.state.players[name].moving = true;
 
@@ -182,37 +184,92 @@ class SocketGame extends SocketRoom {
 
 		if(this.state.players[name].fuel.available - this.state.players[name].fuel.consumption <= 0) return this.server.users[name].reply('invalid_move', 'Out of fuel');
 
-		if(!this.dig({ x, y }, this.state.players[name])) y = phaserload.checkMobFall(this.state.world.map, { x, y }); //todo hurt mob based on fall distance
+		let orientation, lastOrientation = this.state.players[name].orientation;
 
-		this.state.players[name].updateCargoBay();
+		if(oldPos.x !== x) orientation = oldPos.x > x ? 'left' : 'right';
+
+		else if(oldPos.y !== y){
+			orientation = oldPos.y > y ? 'up' : 'down';
+
+			if(/up|down/.test(lastOrientation)){
+				if(new RegExp(orientation).test(lastOrientation)) orientation = lastOrientation;
+				else if() orientation += `_${/left/.test(lastOrientation) ? 'right' : 'left'}`;//todo up/down from left/right is broken
+				else orientation += `_${/left/.test(lastOrientation) ? 'right' : 'left'}`;
+			}
+			else orientation = `${orientation}_${/left/.test(lastOrientation) ? 'right' : 'left'}`;
+		}
+
+		//todo check for supporting ground
+		const surrounds = phaserload.getImmediateSurrounds(this.state.world.map, position);
+		let supportingGround;
+
+		if(surrounds.bottom.type) supportingGround = 'bottom';
+		else if(surrounds.left.type) supportingGround = 'left';
+		else if(surrounds.right.type) supportingGround = 'right';
+
+		if((!supportingGround || supportingGround === 'bottom') && /down|up/.test(orientation)){
+			if(surrounds.left.type && /left/.test(orientation)) supportingGround = 'left';
+			else if(surrounds.right.type) supportingGround = 'right';
+
+			if(!supportingGround){
+				log('NO SUPPORT');
+
+				if(surrounds.bottomLeft.type && /left/.test(orientation)){
+					log('auto move left');
+					setTimeout(this.playerMove.bind(this, { name, x: x - 1, y }), this.state.players[name].moveTime + 100);
+					// x -= 1;
+					// position.x = x;
+					// orientation = 'left';
+				}
+
+				else if(surrounds.bottomRight.type && /right/.test(orientation)){
+					log('auto move right');
+					setTimeout(this.playerMove.bind(this, { name, x: x + 1, y }), this.state.players[name].moveTime + 100);
+					// x += 1;
+					// position.x = x;
+					// orientation = 'right';
+				}
+			}
+		}
+
+		//todo reset orientation based on supporting ground available
+		if(supportingGround && /down|up/.test(orientation)){
+			log('up/down supportingGround', supportingGround, orientation);
+
+			if(supportingGround === 'left' && !/left/.test(orientation)) orientation = orientation.replace('right', 'left');
+			else if(supportingGround === 'right' && !/right/.test(orientation)) orientation = orientation.replace('left', 'right');
+
+			log('new orientation', orientation);
+		}
+
+		// log('player surrounds', surrounds);
+
+		if(this.dig(position, this.state.players[name])) this.state.players[name].updateCargoBay();
+
+		let fallY = phaserload.checkMobFall(this.state.world.map, position);
+
+		y = fallY;
+		position.y = fallY;
 
 		if(oldPos.x === x && oldPos.y === y){
 			this.state.players[name].moving = false;
 
-			return this.server.users[name].reply('invalid_move', true);
+			return this.server.users[name].reply('invalid_move', 'Fell to same position');
+		}
+
+		let hurtIndex = Math.abs(y - fallY);
+
+		if(hurtIndex){
+			log.warn('HURT!', hurtIndex);
+
+			this.state.players[name].updateHealth(hurtIndex);
 		}
 
 		this.state.players[name].updateFuel(true);
 
 		log(1)(`Player move from ${oldPos.x} ${oldPos.y} to ${x} ${y} | MoveTime: ${this.state.players[name].moveTime}`);
 
-		this.state.players[name].position = { x, y };
-
-		let orientation, lastOrientation = this.state.players[name].orientation;
-
-		if(oldPos.x !== x){
-			orientation = oldPos.x > x ? 'left' : 'right';
-		}
-		else if(oldPos.y !== y){
-			orientation = oldPos.y > y ? 'up' : 'down';
-
-			if(/up|down/.test(lastOrientation)){
-				if(new RegExp(orientation).test(lastOrientation)) orientation = lastOrientation;
-				else orientation += `_${/left/.test(lastOrientation) ? 'right' : 'left'}`;
-			}
-			else orientation += `_${lastOrientation}`;
-		}
-
+		this.state.players[name].position = position;
 		this.state.players[name].orientation = orientation;
 
 		const game = this;

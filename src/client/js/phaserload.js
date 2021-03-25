@@ -58,11 +58,11 @@ var phaserload = {
 			flipX: false,
 			rotation: -halfPi
 		},
-		down_left: {
+		down_right: {
 			flipX: true,
 			rotation: -halfPi
 		},
-		down_right: {
+		down_left: {
 			flipX: false,
 			rotation: halfPi
 		}
