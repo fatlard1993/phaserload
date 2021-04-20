@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 
-const argi = require('argi').parse({
+const argi = require('argi');
+
+const { options } = argi.parse({
 	port: {
-		type: 'int',
+		type: 'number',
 		defaultValue: 1040,
-		alias: 'p'
+		alias: 'p',
 	},
 	verbosity: {
-		type: 'int',
+		type: 'number',
 		defaultValue: 1,
-		alias: 'v'
+		alias: 'v',
 	}
 });
-
-const options = argi.options.named;
 
 const log = new (require('log'))({ tag: 'phaserload', defaults: { verbosity: options.verbosity, color: true } });
 
