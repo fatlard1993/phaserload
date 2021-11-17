@@ -4,28 +4,29 @@ Inspired by the countless hours I spent playing [Motherload](http://www.xgenstud
 
 ![comic](http://art.penny-arcade.com/photos/i-pxNH7Mz/0/XL/i-pxNH7Mz-X3.jpg)
 
+## Prerequisites
+
+* nodeJS >= v12
+
 ## Setup
 
-### Prerequisites
-
-* [nodeJS]()
-
-### Steps
-
-1. /phaserload $ `npm i`
-1. /phaserload $ `npm start`
-
+1. `npm install`
+1. `npm run build`
+1. `npm run server`
 
 ## Screenshots
 
 ![game_play](./etc/screenshots/game_play.png)
 
+## Dev
 
-## JFXR
+To run the hot reload dev server for the frontend run `npm run dev` while the server is running
 
-[The awesome JS reincarnation of SFXR/BFXR](https://jfxr.frozenfractal.com/)
+### JFXR
 
-# TODO
+Currently using [this awesome JS reincarnation of SFXR/BFXR](https://jfxr.frozenfractal.com/) to create sound effects.
+
+### TODO
 
 * Build in pallet swapping instead of separate image source for each color difference: https://github.com/Colbydude/phaser-3-palette-swapping-example
 * allow discarding material to lighten load

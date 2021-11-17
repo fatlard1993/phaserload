@@ -1,0 +1,5 @@
+@import '../input.css';
+
+input[type='number'].numberInput {
+	@mixin Input;
+}

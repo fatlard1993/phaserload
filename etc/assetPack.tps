@@ -36,7 +36,7 @@
         <key>dataFormat</key>
         <string>phaser-json-hash</string>
         <key>textureFileName</key>
-        <filename>../src/client/resources/map.png</filename>
+        <filename>../client/resources/map.png</filename>
         <key>flipPVR</key>
         <false/>
         <key>pvrCompressionQuality</key>
@@ -134,7 +134,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>../src/client/resources/map.json</filename>
+                <filename>../client/resources/map.json</filename>
             </struct>
         </map>
         <key>multiPack</key>

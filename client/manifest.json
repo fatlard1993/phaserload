@@ -1,0 +1,10 @@
+{
+	"name": "Phaserload",
+	"short_name": "Phaserload",
+	"lang": "en-US",
+	"orientation": "any",
+	"display": "standalone",
+	"theme_color": "#3475b2",
+	"background_color": "#1b1b1b",
+	"start_url": "."
+}

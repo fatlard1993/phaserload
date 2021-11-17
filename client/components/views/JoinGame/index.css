@@ -1,0 +1,8 @@
+@import '../../../styles/colors';
+
+div.joinGame {
+	button.button {
+		display: block;
+		margin: 6px auto;
+	}
+}
